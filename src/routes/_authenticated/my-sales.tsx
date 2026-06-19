@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star, ClipboardList, Save, X } from "lucide-react";
+  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, ClipboardList, Save, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -35,16 +35,16 @@ type ViewKey =
   | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
   | "knowledge" | "questions" | "audio" | "reports";
 
-const MENU: { key: ViewKey; label: string; icon: any; star?: boolean }[] = [
+const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "roles", label: "Roles & Responsibilities", icon: ClipboardList },
-  { key: "leads", label: "Leads", icon: Users, star: true },
-  { key: "followups", label: "Follow-ups", icon: CalendarClock, star: true },
+  { key: "leads", label: "Leads", icon: Users },
+  { key: "followups", label: "Follow-ups", icon: CalendarClock },
   { key: "meetings", label: "Meetings", icon: Video },
   { key: "bookings", label: "Bookings", icon: PackageCheck },
-  { key: "knowledge", label: "Knowledge Center", icon: BookOpen, star: true },
-  { key: "questions", label: "Question Bank", icon: HelpCircle, star: true },
-  { key: "audio", label: "Audio Library", icon: Headphones, star: true },
+  { key: "knowledge", label: "Knowledge Center", icon: BookOpen },
+  { key: "questions", label: "Question Bank", icon: HelpCircle },
+  { key: "audio", label: "Audio Library", icon: Headphones },
   { key: "reports", label: "Reports", icon: BarChart3 },
 ];
 
@@ -111,7 +111,6 @@ function SalesOpsDashboard() {
                     >
                       <Icon className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")} />
                       <span className="flex-1">{m.label}</span>
-                      {m.star && <Star className={cn("w-3.5 h-3.5", active ? "text-white fill-white" : "text-amber-500 fill-amber-500")} />}
                     </button>
                   );
                 })}
