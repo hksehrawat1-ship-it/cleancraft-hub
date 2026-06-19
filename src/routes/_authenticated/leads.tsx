@@ -45,7 +45,7 @@ const BOOKING_AMT_STATUSES = ["Not Required", "Pending", "Partially Received", "
 
 export type Lead = {
   id: string;
-  name: string | null;
+  name: string;
   phone: string | null;
   email: string | null;
   city: string | null;
@@ -143,7 +143,7 @@ function LeadsPage() {
   const filtered = useMemo(() => {
     const today = todayISO();
     return leads.filter((l) => {
-      if (search && !(`${l.name ?? ""} ${l.phone ?? ""} ${l.city ?? ""}`.toLowerCase().includes(search.toLowerCase()))) return false;
+      if (search && !(`${l.name} ${l.phone ?? ""} ${l.city ?? ""}`.toLowerCase().includes(search.toLowerCase()))) return false;
       if (fSource !== "all" && l.lead_source !== fSource) return false;
       if (fClass !== "all" && l.lead_classification !== fClass) return false;
       if (fStage !== "all" && l.lead_stage !== fStage) return false;
@@ -400,6 +400,7 @@ export function LeadDialog({
   function update(k: string, v: any) { setForm((f: any) => ({ ...f, [k]: v })); }
 
   async function save() {
+    if (!form.name) return toast.error("Lead Name is required");
     // No Lead Left Behind: stage, next action, follow-up date all required
     if (!form.lead_stage) return toast.error("Lead Stage is required");
     if (!form.next_action) return toast.error("Next Action is required");
@@ -441,7 +442,7 @@ export function LeadDialog({
 
         <SectionLabel>Personal Details</SectionLabel>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <Field label="Lead Name"><Input value={form.name ?? ""} onChange={(e) => update("name", e.target.value)} /></Field>
+          <Field label="Lead Name *"><Input value={form.name ?? ""} onChange={(e) => update("name", e.target.value)} /></Field>
           <Field label="Mobile Number"><Input value={form.phone ?? ""} onChange={(e) => update("phone", e.target.value)} /></Field>
           <Field label="Email"><Input type="email" value={form.email ?? ""} onChange={(e) => update("email", e.target.value)} /></Field>
           <Field label="City"><Input value={form.city ?? ""} onChange={(e) => update("city", e.target.value)} /></Field>

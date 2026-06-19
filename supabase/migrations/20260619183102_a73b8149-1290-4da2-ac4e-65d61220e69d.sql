@@ -1,1 +1,0 @@
-ALTER TABLE public.franchise_bookings ALTER COLUMN franchisee_name DROP NOT NULL;
