@@ -145,6 +145,7 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "dashboard": return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "roles": return <RolesView />;
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "notes": return <NotesView profiles={profiles} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "bookings": return <BookingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
