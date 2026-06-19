@@ -9,11 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, ClipboardList, Save, X } from "lucide-react";
+  PackageCheck, BookOpen, HelpCircle, Headphones, TrendingUp, Search, ClipboardList, Save, X,
+  Target, Clock, DollarSign, Trophy, Activity, MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -33,7 +37,7 @@ type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
   | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
-  | "knowledge" | "questions" | "audio" | "reports";
+  | "knowledge" | "questions" | "audio" | "performance";
 
 const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -45,7 +49,7 @@ const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "knowledge", label: "Knowledge Center", icon: BookOpen },
   { key: "questions", label: "Question Bank", icon: HelpCircle },
   { key: "audio", label: "Audio Library", icon: Headphones },
-  { key: "reports", label: "Reports", icon: BarChart3 },
+  { key: "performance", label: "Performance", icon: TrendingUp },
 ];
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -145,7 +149,7 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "knowledge": return <KnowledgeCenterView />;
     case "questions": return <QuestionBankView />;
     case "audio": return <AudioLibraryView />;
-    case "reports": return <ReportsView leads={leads} />;
+    case "performance": return <PerformanceView leads={leads} profiles={profiles} />;
   }
 }
 
@@ -1169,23 +1173,526 @@ function AudioLibraryView() {
   );
 }
 
-function ReportsView({ leads }: { leads: Lead[] }) {
-  const closures = leads.filter((l) => isHandoverDone(l.lead_stage)).length;
-  const elCollected = leads.filter((l) => l.engagement_letter_fee_status === "Received");
-  const elValue = elCollected.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-  const followups = leads.filter((l) => !!l.followup_date).length;
-  const conversion = leads.length ? Math.round((closures / leads.length) * 100) : 0;
+/* ============== Performance (weekly dashboard) ============== */
+
+const PERF_TARGETS = {
+  winRate: 25,                 // %
+  pipelineCoverage: 3,         // x of monthly quota
+  responseWithin1h: 80,        // %
+  responseWithin24h: 95,       // %
+  monthlyClosures: 5,          // KRA
+  avgDealSize: 250000,         // ₹
+};
+
+const PERF_FEEDBACK_KEY = "ccos.sales-perf-feedback.v1";
+
+type FeedbackNote = { id: string; rep: string; author: string; body: string; created_at: string };
+
+function loadFeedback(): FeedbackNote[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(window.localStorage.getItem(PERF_FEEDBACK_KEY) || "[]"); } catch { return []; }
+}
+function saveFeedback(notes: FeedbackNote[]) {
+  try { window.localStorage.setItem(PERF_FEEDBACK_KEY, JSON.stringify(notes)); } catch { /* noop */ }
+}
+
+function startOfWeekISO(offsetWeeks = 0) {
+  const d = new Date();
+  const day = (d.getDay() + 6) % 7; // Monday=0
+  d.setDate(d.getDate() - day + offsetWeeks * 7);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString().slice(0, 10);
+}
+
+function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: string; full_name: string }[] }) {
+  const { user, isLeadership } = useAuth();
+
+  // CEO/COO/Sales VP see team-wide data; salesperson sees their own.
+  const { data: teamLeads = [] } = useQuery({
+    enabled: !!user?.id && isLeadership,
+    queryKey: ["perf-team-leads"],
+    queryFn: async () => {
+      const { data, error } = await (supabase as any).from("leads").select("*");
+      if (error) throw error;
+      return data as Lead[];
+    },
+  });
+
+  const [repFilter, setRepFilter] = useState<string>("all"); // for leadership: rep id or "all"
+  const source = isLeadership ? teamLeads : leads;
+  const scoped = useMemo(() => {
+    if (!isLeadership) return leads;
+    if (repFilter === "all") return source;
+    return source.filter((l) => l.assigned_to === repFilter);
+  }, [isLeadership, leads, source, repFilter]);
+
+  // Time windows
+  const weekStart = startOfWeekISO(0);
+  const prevWeekStart = startOfWeekISO(-1);
+  const monthStart = startOfMonthISO();
+
+  // ---------- Metric calculations ----------
+  const metrics = useMemo(() => {
+    const total = scoped.length;
+    const contacted = scoped.filter((l) => l.lead_stage !== "New Lead").length;
+    const qualified = scoped.filter((l) => !["New Lead", "Contacted", "Lost"].includes(l.lead_stage)).length;
+    const won = scoped.filter((l) => isHandoverDone(l.lead_stage));
+    const wonExcludingNoise = scoped.filter(
+      (l) => isHandoverDone(l.lead_stage) && l.lead_classification !== "Dangerous" && l.lead_classification !== "Time Waster",
+    );
+    const qualifiedExcludingNoise = scoped.filter(
+      (l) => !["New Lead", "Contacted", "Lost"].includes(l.lead_stage)
+        && l.lead_classification !== "Dangerous" && l.lead_classification !== "Time Waster",
+    ).length;
+
+    const winRate = qualified ? Math.round((won.length / qualified) * 100) : 0;
+    const adjustedWinRate = qualifiedExcludingNoise ? Math.round((wonExcludingNoise.length / qualifiedExcludingNoise) * 100) : 0;
+
+    // Stage breakdown
+    const stageCounts: Record<string, number> = {};
+    PIPELINE_STAGES.forEach((s) => { stageCounts[s] = scoped.filter((l) => l.lead_stage === s).length; });
+    const lost = scoped.filter((l) => l.lead_stage === "Lost").length;
+
+    // Drop-off: % of total leads that exited (Lost) vs reached each stage
+    const dropOff = PIPELINE_STAGES.map((stage, i) => {
+      const reached = scoped.filter((l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i || isHandoverDone(l.lead_stage)).length;
+      const next = i < PIPELINE_STAGES.length - 1
+        ? scoped.filter((l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i + 1 || isHandoverDone(l.lead_stage)).length
+        : reached;
+      const dropPct = reached ? Math.round(((reached - next) / reached) * 100) : 0;
+      return { stage, reached, dropPct };
+    });
+
+    // Lead response time — proxy: created_at → followup_date (first scheduled touch)
+    const respMs: number[] = [];
+    scoped.forEach((l) => {
+      if (l.followup_date) {
+        const a = new Date(l.created_at).getTime();
+        const b = new Date(l.followup_date + "T09:00:00").getTime();
+        if (b > a) respMs.push(b - a);
+      }
+    });
+    const avgRespHrs = respMs.length ? Math.round(respMs.reduce((s, n) => s + n, 0) / respMs.length / 3600000) : 0;
+    const within1h = respMs.length ? Math.round((respMs.filter((m) => m <= 3600000).length / respMs.length) * 100) : 0;
+    const within24h = respMs.length ? Math.round((respMs.filter((m) => m <= 86400000).length / respMs.length) * 100) : 0;
+
+    // Average deal size
+    const dealValues = won.map((l) => Number(l.engagement_letter_fee_amount) || 0).filter((n) => n > 0);
+    const avgDeal = dealValues.length ? Math.round(dealValues.reduce((s, n) => s + n, 0) / dealValues.length) : 0;
+
+    // Pipeline coverage — open pipeline value vs monthly quota (KRA: 5 * avg deal target)
+    const openLeads = scoped.filter((l) => !isTerminal(l.lead_stage) && l.lead_stage !== "Lost");
+    const openValue = openLeads.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || PERF_TARGETS.avgDealSize), 0);
+    const monthlyQuota = PERF_TARGETS.monthlyClosures * PERF_TARGETS.avgDealSize;
+    const coverage = monthlyQuota ? +(openValue / monthlyQuota).toFixed(1) : 0;
+
+    // Sales cycle length — created_at → converted_to_franchise_at (days)
+    const cycleDays: number[] = [];
+    scoped.forEach((l) => {
+      if (l.converted_to_franchise_at) {
+        const d = (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000;
+        if (d >= 0) cycleDays.push(d);
+      }
+    });
+    const avgCycle = cycleDays.length ? Math.round(cycleDays.reduce((s, n) => s + n, 0) / cycleDays.length) : 0;
+
+    // Activity: contacted / followups scheduled / meetings done this week
+    const calls = scoped.filter((l) => l.lead_stage !== "New Lead" && l.created_at.slice(0, 10) >= weekStart).length;
+    const followupsWk = scoped.filter((l) => l.followup_date && l.followup_date >= weekStart).length;
+    const meetingsWk = scoped.filter((l) => l.meeting_date && l.meeting_date >= weekStart).length;
+    const proposalsWk = scoped.filter((l) => l.proposal_sent_date && l.proposal_sent_date >= weekStart).length;
+
+    // Weekly revenue & growth — engagement letter fee received this week vs last week
+    const revWeek = scoped.filter((l) => l.engagement_letter_fee_received_date && l.engagement_letter_fee_received_date >= weekStart)
+      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
+    const revPrev = scoped.filter((l) => l.engagement_letter_fee_received_date
+      && l.engagement_letter_fee_received_date >= prevWeekStart
+      && l.engagement_letter_fee_received_date < weekStart)
+      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
+    const growth = revPrev ? Math.round(((revWeek - revPrev) / revPrev) * 100) : (revWeek ? 100 : 0);
+
+    // Additional revenue (placeholder — upsell flag not in schema yet)
+    const upsell = scoped.filter((l) => (l.remarks || "").toLowerCase().includes("upsell")
+      || (l.remarks || "").toLowerCase().includes("repeat")).length;
+
+    return {
+      total, contacted, qualified, won, wonExcludingNoise, lost,
+      winRate, adjustedWinRate, stageCounts, dropOff,
+      avgRespHrs, within1h, within24h,
+      avgDeal, dealValues, openLeads, openValue, monthlyQuota, coverage,
+      avgCycle, calls, followupsWk, meetingsWk, proposalsWk,
+      revWeek, revPrev, growth, upsell,
+    };
+  }, [scoped, weekStart, prevWeekStart]);
+
+  // Drill-down dialog
+  const [drill, setDrill] = useState<{ title: string; leads: Lead[] } | null>(null);
+  const openDrill = (title: string, items: Lead[]) => setDrill({ title, leads: items });
+
+  // Feedback notes
+  const repKey = isLeadership ? (repFilter === "all" ? "team" : repFilter) : (user?.id ?? "me");
+  const [notes, setNotes] = useState<FeedbackNote[]>(() => loadFeedback());
+  const [draft, setDraft] = useState("");
+  const repNotes = notes.filter((n) => n.rep === repKey).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const canCoach = isLeadership;
+
+  const addNote = () => {
+    if (!draft.trim()) return;
+    const next: FeedbackNote = {
+      id: crypto.randomUUID(),
+      rep: repKey,
+      author: user?.email ?? "Sales VP",
+      body: draft.trim(),
+      created_at: new Date().toISOString(),
+    };
+    const all = [next, ...notes];
+    setNotes(all); saveFeedback(all); setDraft("");
+    toast.success("Coaching note saved");
+  };
+
+  const repLabel = repFilter === "all" ? "Whole team" : (profiles.find((p) => p.id === repFilter)?.full_name ?? "Rep");
 
   return (
-    <Section title="Personal Reports">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        <Stat label="Leads" value={leads.length} />
-        <Stat label="Closures" value={closures} tone="text-emerald-700" />
-        <Stat label="Follow-ups" value={followups} />
-        <Stat label="Conversion %" value={conversion} sub="Handover / Total" />
-        <Stat label="EL Collection" value={elCollected.length} sub={`₹${elValue.toLocaleString("en-IN")}`} tone="text-emerald-700" />
-      </div>
-    </Section>
+    <div className="space-y-8">
+      <Section
+        title="Weekly Performance"
+        subtitle={isLeadership ? `Viewing: ${repLabel} — week of ${weekStart}` : `Week of ${weekStart}`}
+        right={isLeadership ? (
+          <div className="w-56">
+            <Select value={repFilter} onValueChange={setRepFilter}>
+              <SelectTrigger><SelectValue placeholder="Filter by rep" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Whole team</SelectItem>
+                {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+        ) : null}
+      >
+        {/* A. Lead pipeline statistics */}
+        <MetricBlock
+          icon={Users}
+          name="Lead pipeline statistics"
+          why="Shows leads assigned, contacted and converted with win rate, so leadership can see where leads drop off and identify coaching needs."
+          impl="Funnel by stage. Adjusted win rate excludes Dangerous / Time Waster leads."
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <ClickStat label="Leads assigned" value={metrics.total} onClick={() => openDrill("All assigned leads", scoped)} />
+            <ClickStat label="Contacted" value={metrics.contacted} onClick={() => openDrill("Contacted leads", scoped.filter((l) => l.lead_stage !== "New Lead"))} />
+            <ClickStat label="Won (handover)" value={metrics.won.length} tone="text-emerald-700"
+              onClick={() => openDrill("Won deals", metrics.won)} />
+            <TargetStat label="Win rate" value={`${metrics.winRate}%`} target={PERF_TARGETS.winRate} actual={metrics.winRate}
+              sub={`Adjusted: ${metrics.adjustedWinRate}%`} onClick={() => openDrill("Won deals (closed opportunities)", metrics.won)} />
+          </div>
+          <div className="mt-4">
+            <div className="text-xs text-muted-foreground mb-2">Stage breakdown</div>
+            <div className="space-y-1.5">
+              {PIPELINE_STAGES.map((s) => {
+                const c = metrics.stageCounts[s] || 0;
+                const pct = metrics.total ? (c / metrics.total) * 100 : 0;
+                return (
+                  <button key={s} className="w-full text-left group" onClick={() => openDrill(`Stage: ${s}`, scoped.filter((l) => l.lead_stage === s))}>
+                    <div className="flex items-center gap-3">
+                      <div className="w-44 text-xs text-slate-600 truncate">{s}</div>
+                      <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div className="h-full bg-[#2563EB] group-hover:opacity-80 transition" style={{ width: `${pct}%` }} />
+                      </div>
+                      <div className="w-10 text-right text-xs tabular-nums">{c}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </MetricBlock>
+
+        {/* B. Stage drop-off */}
+        <MetricBlock
+          icon={Activity}
+          name="Stage drop-off analysis"
+          why="Tracks where leads die in the funnel. High drop-off at a single stage signals coaching needs (e.g., weak proposals)."
+          impl="Percentage of leads exiting at each stage relative to the leads that reached it."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {metrics.dropOff.map((d) => (
+              <button key={d.stage} className="text-left rounded-lg border p-3 hover:bg-slate-50"
+                onClick={() => openDrill(`Stuck at: ${d.stage}`, scoped.filter((l) => l.lead_stage === d.stage))}>
+                <div className="text-xs font-medium text-slate-700">{d.stage}</div>
+                <div className="text-lg font-semibold mt-0.5">{d.dropPct}%</div>
+                <div className="text-[11px] text-muted-foreground">drop-off · {d.reached} reached</div>
+              </button>
+            ))}
+          </div>
+        </MetricBlock>
+
+        {/* C. Lead response time */}
+        <MetricBlock
+          icon={Clock}
+          name="Lead response time"
+          why="Companies that respond within an hour are nearly 7× more likely to qualify a lead. Long response time signals follow-up discipline issues."
+          impl="Avg hours from lead creation to first scheduled follow-up. Targets: 80% within 1 hour, 95% within 24 hours."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Stat label="Avg response" value={`${metrics.avgRespHrs} hrs`} />
+            <TargetStat label="Within 1 hour" value={`${metrics.within1h}%`} target={PERF_TARGETS.responseWithin1h} actual={metrics.within1h} />
+            <TargetStat label="Within 24 hours" value={`${metrics.within24h}%`} target={PERF_TARGETS.responseWithin24h} actual={metrics.within24h} />
+          </div>
+        </MetricBlock>
+
+        {/* D. Average deal size */}
+        <MetricBlock
+          icon={DollarSign}
+          name="Average deal size"
+          why="A low average deal size may indicate the rep discounts too aggressively or doesn't follow up on high-value leads."
+          impl="Average engagement-letter fee across won deals."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <TargetStat label="Avg deal" value={`₹${metrics.avgDeal.toLocaleString("en-IN")}`}
+              target={PERF_TARGETS.avgDealSize} actual={metrics.avgDeal}
+              sub={`Target ₹${PERF_TARGETS.avgDealSize.toLocaleString("en-IN")}`}
+              onClick={() => openDrill("Won deals (by value)", metrics.won)} />
+            <ClickStat label="Deals counted" value={metrics.dealValues.length} onClick={() => openDrill("Won deals", metrics.won)} />
+            <Stat label="Total won value"
+              value={`₹${metrics.dealValues.reduce((s, n) => s + n, 0).toLocaleString("en-IN")}`} tone="text-emerald-700" />
+          </div>
+        </MetricBlock>
+
+        {/* E. Win rate / conversion */}
+        <MetricBlock
+          icon={Trophy}
+          name="Win rate / conversion rate"
+          why="Percentage of deals closed relative to qualified leads. Highlights where leads drop off and how reps compare."
+          impl="Click into the metric to see all closed opportunities and their notes."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <TargetStat label="Win rate" value={`${metrics.winRate}%`} target={PERF_TARGETS.winRate} actual={metrics.winRate}
+              onClick={() => openDrill("Closed opportunities", metrics.won)} />
+            <Stat label="Adjusted win rate" value={`${metrics.adjustedWinRate}%`} sub="excl. dangerous / time-waster" />
+            <ClickStat label="Lost" value={metrics.lost} tone="text-red-600"
+              onClick={() => openDrill("Lost leads", scoped.filter((l) => l.lead_stage === "Lost"))} />
+          </div>
+        </MetricBlock>
+
+        {/* F. Pipeline coverage */}
+        <MetricBlock
+          icon={Target}
+          name="Sales pipeline coverage"
+          why="High-performing teams maintain pipeline coverage of 3×–5× their revenue target."
+          impl="Open pipeline value ÷ monthly quota. Coloured against target."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <TargetStat label="Coverage" value={`${metrics.coverage}×`} target={PERF_TARGETS.pipelineCoverage} actual={metrics.coverage}
+              sub={`Target ${PERF_TARGETS.pipelineCoverage}× quota`}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)} />
+            <ClickStat label="Open pipeline value"
+              value={`₹${metrics.openValue.toLocaleString("en-IN")}`}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)} />
+            <Stat label="Monthly quota" value={`₹${metrics.monthlyQuota.toLocaleString("en-IN")}`}
+              sub={`${PERF_TARGETS.monthlyClosures} closures × avg deal`} />
+          </div>
+        </MetricBlock>
+
+        {/* G. Sales cycle length */}
+        <MetricBlock
+          icon={Clock}
+          name="Sales cycle length"
+          why="Monitoring stage durations helps identify bottlenecks and optimise the process."
+          impl="Average days from lead created to franchise conversion."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Stat label="Avg cycle" value={`${metrics.avgCycle} days`} />
+            <ClickStat label="Closed in <30 days"
+              value={metrics.won.filter((l) => l.converted_to_franchise_at
+                && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 <= 30).length}
+              onClick={() => openDrill("Fast closures (<30 days)",
+                metrics.won.filter((l) => l.converted_to_franchise_at
+                  && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 <= 30))} />
+            <ClickStat label="Closed >60 days"
+              value={metrics.won.filter((l) => l.converted_to_franchise_at
+                && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 > 60).length}
+              tone="text-orange-600"
+              onClick={() => openDrill("Slow closures (>60 days)",
+                metrics.won.filter((l) => l.converted_to_franchise_at
+                  && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 > 60))} />
+          </div>
+        </MetricBlock>
+
+        {/* H. Time spent selling & activity */}
+        <MetricBlock
+          icon={Activity}
+          name="Time spent selling & activity"
+          why="Reps spend only ~33% of time directly selling; monitoring activity encourages more revenue-generating work."
+          impl="Calls, follow-ups, meetings and proposals logged this week."
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <Stat label="Contacted this week" value={metrics.calls} />
+            <Stat label="Follow-ups" value={metrics.followupsWk} />
+            <Stat label="Meetings" value={metrics.meetingsWk} />
+            <Stat label="Proposals" value={metrics.proposalsWk} />
+          </div>
+        </MetricBlock>
+
+        {/* I. Weekly revenue & growth */}
+        <MetricBlock
+          icon={TrendingUp}
+          name="Weekly sales revenue & growth"
+          why="A weekly view of closed revenue motivates the team and alerts leaders if momentum is slowing."
+          impl="Total engagement-letter fee received this week vs last week."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <Stat label="This week" value={`₹${metrics.revWeek.toLocaleString("en-IN")}`} tone="text-emerald-700" />
+            <Stat label="Last week" value={`₹${metrics.revPrev.toLocaleString("en-IN")}`} />
+            <Stat label="Growth"
+              value={`${metrics.growth >= 0 ? "+" : ""}${metrics.growth}%`}
+              tone={metrics.growth >= 0 ? "text-emerald-700" : "text-red-600"} />
+          </div>
+        </MetricBlock>
+
+        {/* J. Additional revenue opportunities */}
+        <MetricBlock
+          icon={DollarSign}
+          name="Additional revenue opportunities"
+          why="Tracks upsell, cross-sell and repeat business — highlights whether reps nurture existing customers."
+          impl="Counts leads tagged 'upsell' or 'repeat' in remarks."
+        >
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <ClickStat label="Upsell / repeat leads" value={metrics.upsell}
+              onClick={() => openDrill("Upsell / repeat opportunities",
+                scoped.filter((l) => (l.remarks || "").toLowerCase().match(/upsell|repeat/)))} />
+            <Stat label="Note" value="Tag remarks with 'upsell' or 'repeat' to track here." />
+          </div>
+        </MetricBlock>
+      </Section>
+
+      {/* Sales VP feedback / coaching */}
+      <Section
+        title="Coaching notes"
+        subtitle={canCoach
+          ? `Leave feedback for ${repLabel} based on the metrics above.`
+          : "Feedback from your Sales VP based on the metrics above."}
+      >
+        <Card>
+          <CardContent className="p-4 space-y-3">
+            {canCoach && (
+              <div className="space-y-2">
+                <Textarea value={draft} onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Coaching note (e.g., 'Lift response time under 1hr — currently 35%.')" rows={3} />
+                <div className="flex justify-end">
+                  <Button onClick={addNote} disabled={!draft.trim()}>
+                    <MessageSquare className="w-4 h-4 mr-2" /> Post note
+                  </Button>
+                </div>
+              </div>
+            )}
+            <div className="space-y-2">
+              {repNotes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No coaching notes yet.</p>
+              ) : repNotes.map((n) => (
+                <div key={n.id} className="rounded-lg border p-3 bg-slate-50">
+                  <div className="text-xs text-muted-foreground flex justify-between">
+                    <span>{n.author}</span>
+                    <span>{new Date(n.created_at).toLocaleString()}</span>
+                  </div>
+                  <div className="text-sm mt-1 whitespace-pre-wrap">{n.body}</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </Section>
+
+      {/* Drill-down dialog */}
+      <Dialog open={!!drill} onOpenChange={(o) => { if (!o) setDrill(null); }}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>{drill?.title} ({drill?.leads.length})</DialogTitle></DialogHeader>
+          <div className="space-y-2">
+            {!drill?.leads.length && <p className="text-sm text-muted-foreground">No leads in this slice.</p>}
+            {drill?.leads.map((l) => (
+              <Link key={l.id} to="/leads/$id" params={{ id: l.id }}
+                className="block rounded-lg border p-3 hover:bg-slate-50">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{l.name}</div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {l.city ?? "—"} · {l.phone ?? "—"} · {l.lead_stage}
+                    </div>
+                    {l.remarks && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{l.remarks}</div>}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {l.lead_classification && (
+                      <Badge variant="outline" className={classificationVariant(l.lead_classification)}>{l.lead_classification}</Badge>
+                    )}
+                    {l.engagement_letter_fee_amount
+                      ? <div className="text-sm tabular-nums">₹{Number(l.engagement_letter_fee_amount).toLocaleString("en-IN")}</div>
+                      : null}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function MetricBlock({ icon: Icon, name, why, impl, children }: {
+  icon: any; name: string; why: string; impl: string; children: React.ReactNode;
+}) {
+  return (
+    <Card className="mb-4">
+      <CardContent className="p-5 space-y-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center shrink-0">
+            <Icon className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="font-semibold text-slate-900">{name}</div>
+            <div className="text-xs text-muted-foreground mt-0.5"><span className="font-medium text-slate-600">Why it matters: </span>{why}</div>
+            <div className="text-xs text-muted-foreground mt-0.5"><span className="font-medium text-slate-600">Implementation: </span>{impl}</div>
+          </div>
+        </div>
+        {children}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ClickStat({ label, value, tone, sub, onClick }: { label: string; value: number | string; tone?: string; sub?: string; onClick?: () => void }) {
+  return (
+    <button onClick={onClick} className="text-left">
+      <Card className="hover:border-[#2563EB] transition">
+        <CardContent className="p-4">
+          <div className="text-xs text-muted-foreground">{label}</div>
+          <div className={`text-2xl font-semibold mt-1 ${tone ?? ""}`}>{value}</div>
+          {sub && <div className="text-xs text-muted-foreground mt-0.5">{sub}</div>}
+        </CardContent>
+      </Card>
+    </button>
+  );
+}
+
+function TargetStat({ label, value, target, actual, sub, onClick }: {
+  label: string; value: string | number; target: number; actual: number; sub?: string; onClick?: () => void;
+}) {
+  const pct = target ? Math.min(100, Math.round((actual / target) * 100)) : 0;
+  const meets = actual >= target;
+  return (
+    <button onClick={onClick} className="text-left" disabled={!onClick}>
+      <Card className={cn("transition", onClick && "hover:border-[#2563EB]")}>
+        <CardContent className="p-4 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-muted-foreground">{label}</div>
+            <Badge variant="outline" className={meets ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-orange-50 text-orange-700 border-orange-200"}>
+              {meets ? "On target" : "Below target"}
+            </Badge>
+          </div>
+          <div className={`text-2xl font-semibold ${meets ? "text-emerald-700" : ""}`}>{value}</div>
+          <Progress value={pct} className="h-1.5" />
+          <div className="text-[11px] text-muted-foreground">Target: {target}{typeof value === "string" && value.includes("%") ? "%" : ""}{sub ? ` · ${sub}` : ""}</div>
+        </CardContent>
+      </Card>
+    </button>
   );
 }
 
