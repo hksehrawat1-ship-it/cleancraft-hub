@@ -102,17 +102,62 @@ export type Database = {
           },
         ]
       }
+      lead_activities: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          details: Json | null
+          id: string
+          lead_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          lead_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          details?: Json | null
+          id?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           assigned_to: string | null
           booking_amount_status: string | null
+          booking_date: string | null
           budget_range: string | null
+          buying_factor_brand: boolean
+          buying_factor_profitability: boolean
+          buying_factor_support: boolean
+          buying_factor_technology: boolean
+          buying_factor_training: boolean
           city: string | null
           converted_to_franchise_at: string | null
           created_at: string
           created_by: string | null
           decision_maker_status: string | null
           email: string | null
+          engagement_letter_fee_amount: number | null
+          engagement_letter_fee_received_date: string | null
+          engagement_letter_fee_status: string | null
+          engagement_letter_sent_date: string | null
           followup_date: string | null
           id: string
           lead_classification: string | null
@@ -121,6 +166,7 @@ export type Database = {
           location_status: string | null
           meeting_date: string | null
           name: string
+          next_action: string | null
           notes: string | null
           owner_id: string | null
           partnership_status: string | null
@@ -128,6 +174,7 @@ export type Database = {
           proposal_sent_date: string | null
           remarks: string | null
           source: string | null
+          state: string | null
           status: Database["public"]["Enums"]["lead_status"]
           timeline: string | null
           updated_at: string
@@ -135,13 +182,23 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           booking_amount_status?: string | null
+          booking_date?: string | null
           budget_range?: string | null
+          buying_factor_brand?: boolean
+          buying_factor_profitability?: boolean
+          buying_factor_support?: boolean
+          buying_factor_technology?: boolean
+          buying_factor_training?: boolean
           city?: string | null
           converted_to_franchise_at?: string | null
           created_at?: string
           created_by?: string | null
           decision_maker_status?: string | null
           email?: string | null
+          engagement_letter_fee_amount?: number | null
+          engagement_letter_fee_received_date?: string | null
+          engagement_letter_fee_status?: string | null
+          engagement_letter_sent_date?: string | null
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
@@ -150,6 +207,7 @@ export type Database = {
           location_status?: string | null
           meeting_date?: string | null
           name: string
+          next_action?: string | null
           notes?: string | null
           owner_id?: string | null
           partnership_status?: string | null
@@ -157,6 +215,7 @@ export type Database = {
           proposal_sent_date?: string | null
           remarks?: string | null
           source?: string | null
+          state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timeline?: string | null
           updated_at?: string
@@ -164,13 +223,23 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           booking_amount_status?: string | null
+          booking_date?: string | null
           budget_range?: string | null
+          buying_factor_brand?: boolean
+          buying_factor_profitability?: boolean
+          buying_factor_support?: boolean
+          buying_factor_technology?: boolean
+          buying_factor_training?: boolean
           city?: string | null
           converted_to_franchise_at?: string | null
           created_at?: string
           created_by?: string | null
           decision_maker_status?: string | null
           email?: string | null
+          engagement_letter_fee_amount?: number | null
+          engagement_letter_fee_received_date?: string | null
+          engagement_letter_fee_status?: string | null
+          engagement_letter_sent_date?: string | null
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
@@ -179,6 +248,7 @@ export type Database = {
           location_status?: string | null
           meeting_date?: string | null
           name?: string
+          next_action?: string | null
           notes?: string | null
           owner_id?: string | null
           partnership_status?: string | null
@@ -186,6 +256,7 @@ export type Database = {
           proposal_sent_date?: string | null
           remarks?: string | null
           source?: string | null
+          state?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
           timeline?: string | null
           updated_at?: string

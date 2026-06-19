@@ -20,6 +20,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Search, AlertCircle, Trash2, ArrowRightCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -29,11 +30,17 @@ export const Route = createFileRoute("/_authenticated/leads")({
 });
 
 const LEAD_SOURCES = ["Website", "Google Ads", "IVR", "Referral", "YouTube", "Instagram"];
-const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"];
-const STAGES = [
+export const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"];
+export const STAGES = [
   "New Lead", "Contacted", "Qualified", "Proposal Sent", "Follow-up",
-  "Meeting Done", "Booking Pending", "Booking Received", "Handover Done", "Lost",
+  "Meeting Done", "Engagement Letter Pending", "Booking Received",
+  "Handover Completed", "Lost",
 ];
+export const NEXT_ACTIONS = [
+  "Call", "Follow-up", "Send Proposal", "Schedule Meeting",
+  "Collect Engagement Fee", "Handover", "Disqualify",
+];
+const EL_FEE_STATUSES = ["Not Required", "Pending", "Partially Received", "Received"];
 const BOOKING_AMT_STATUSES = ["Not Required", "Pending", "Partially Received", "Received"];
 
 export type Lead = {
@@ -42,6 +49,7 @@ export type Lead = {
   phone: string | null;
   email: string | null;
   city: string | null;
+  state: string | null;
   lead_source: string | null;
   budget_range: string | null;
   timeline: string | null;
@@ -50,11 +58,22 @@ export type Lead = {
   location_status: string | null;
   lead_classification: string | null;
   lead_stage: string;
+  next_action: string | null;
   assigned_to: string | null;
   proposal_sent_date: string | null;
   followup_date: string | null;
   meeting_date: string | null;
+  engagement_letter_sent_date: string | null;
+  engagement_letter_fee_status: string | null;
+  engagement_letter_fee_received_date: string | null;
+  engagement_letter_fee_amount: number | null;
+  booking_date: string | null;
   booking_amount_status: string | null;
+  buying_factor_profitability: boolean;
+  buying_factor_training: boolean;
+  buying_factor_technology: boolean;
+  buying_factor_support: boolean;
+  buying_factor_brand: boolean;
   remarks: string | null;
   converted_to_franchise_at: string | null;
   created_at: string;
@@ -71,16 +90,19 @@ function startOfMonthISO() {
   return new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
 }
 
-function classificationVariant(c: string | null) {
+export function classificationVariant(c: string | null) {
   switch (c) {
-    case "Hot": return "bg-red-100 text-red-700 border-red-200";
-    case "Warm": return "bg-amber-100 text-amber-700 border-amber-200";
+    case "Hot": return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "Warm": return "bg-orange-100 text-orange-700 border-orange-200";
     case "Cold": return "bg-blue-100 text-blue-700 border-blue-200";
-    case "Dangerous": return "bg-purple-100 text-purple-700 border-purple-200";
+    case "Dangerous": return "bg-red-100 text-red-700 border-red-200";
     case "Time Waster": return "bg-gray-100 text-gray-600 border-gray-200";
     default: return "bg-muted text-muted-foreground";
   }
 }
+
+export const HANDOVER_STAGES = ["Handover Completed", "Handover Done"];
+export const TERMINAL_STAGES = [...HANDOVER_STAGES, "Lost"];
 
 function LeadsPage() {
   const qc = useQueryClient();
@@ -379,10 +401,23 @@ export function LeadDialog({
 
   async function save() {
     if (!form.name) return toast.error("Lead Name is required");
+    // No Lead Left Behind: stage, next action, follow-up date all required
+    if (!form.lead_stage) return toast.error("Lead Stage is required");
+    if (!form.next_action) return toast.error("Next Action is required");
+    if (!form.followup_date) return toast.error("Follow-up Date is required");
     setSaving(true);
     const payload: any = { ...form };
-    for (const k of ["proposal_sent_date", "followup_date", "meeting_date"]) {
+    for (const k of [
+      "proposal_sent_date", "followup_date", "meeting_date",
+      "engagement_letter_sent_date", "engagement_letter_fee_received_date",
+      "booking_date",
+    ]) {
       if (payload[k] === "") payload[k] = null;
+    }
+    if (payload.engagement_letter_fee_amount === "" || payload.engagement_letter_fee_amount === undefined) {
+      payload.engagement_letter_fee_amount = null;
+    } else if (payload.engagement_letter_fee_amount != null) {
+      payload.engagement_letter_fee_amount = Number(payload.engagement_letter_fee_amount);
     }
     if (payload.assigned_to === "" || payload.assigned_to === "none") payload.assigned_to = null;
     let error;
@@ -404,19 +439,46 @@ export function LeadDialog({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader><DialogTitle>{lead ? "Edit Lead" : "New Lead"}</DialogTitle></DialogHeader>
+
+        <SectionLabel>Personal Details</SectionLabel>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Field label="Lead Name *"><Input value={form.name ?? ""} onChange={(e) => update("name", e.target.value)} /></Field>
           <Field label="Mobile Number"><Input value={form.phone ?? ""} onChange={(e) => update("phone", e.target.value)} /></Field>
           <Field label="Email"><Input type="email" value={form.email ?? ""} onChange={(e) => update("email", e.target.value)} /></Field>
           <Field label="City"><Input value={form.city ?? ""} onChange={(e) => update("city", e.target.value)} /></Field>
+          <Field label="State"><Input value={form.state ?? ""} onChange={(e) => update("state", e.target.value)} /></Field>
           <SelectField label="Lead Source" value={form.lead_source} onChange={(v) => update("lead_source", v)} options={LEAD_SOURCES} />
-          <Field label="Budget Range"><Input placeholder="e.g. 10-15 Lakh" value={form.budget_range ?? ""} onChange={(e) => update("budget_range", e.target.value)} /></Field>
+        </div>
+
+        <SectionLabel>Qualification Details</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <SelectField label="Decision Maker" value={form.decision_maker_status} onChange={(v) => update("decision_maker_status", v)} options={["Yes", "No"]} />
+          <Field label="Budget"><Input placeholder="e.g. 10-15 Lakh" value={form.budget_range ?? ""} onChange={(e) => update("budget_range", e.target.value)} /></Field>
           <Field label="Timeline"><Input placeholder="e.g. 1-3 months" value={form.timeline ?? ""} onChange={(e) => update("timeline", e.target.value)} /></Field>
-          <SelectField label="Decision Maker Status" value={form.decision_maker_status} onChange={(v) => update("decision_maker_status", v)} options={["Self", "Family", "Partner", "Other"]} />
           <SelectField label="Partnership Status" value={form.partnership_status} onChange={(v) => update("partnership_status", v)} options={["Solo", "With Partner", "Looking for Partner"]} />
           <SelectField label="Location Status" value={form.location_status} onChange={(v) => update("location_status", v)} options={["Identified", "Shortlisted", "Not Yet", "Owned"]} />
+        </div>
+
+        <SectionLabel>Buying Factors</SectionLabel>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {([
+            ["buying_factor_profitability", "Profitability"],
+            ["buying_factor_training", "Training"],
+            ["buying_factor_technology", "Technology"],
+            ["buying_factor_support", "Support"],
+            ["buying_factor_brand", "Brand"],
+          ] as [string, string][]).map(([k, label]) => (
+            <label key={k} className="flex items-center gap-2 text-sm">
+              <Checkbox checked={!!form[k]} onCheckedChange={(v) => update(k, !!v)} />
+              {label}
+            </label>
+          ))}
+        </div>
+
+        <SectionLabel>Classification & Stage</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <SelectField label="Lead Classification" value={form.lead_classification} onChange={(v) => update("lead_classification", v)} options={CLASSIFICATIONS} />
-          <SelectField label="Lead Stage" value={form.lead_stage} onChange={(v) => update("lead_stage", v)} options={STAGES} />
+          <SelectField label="Lead Stage *" value={form.lead_stage} onChange={(v) => update("lead_stage", v)} options={STAGES} />
           <Field label="Assigned Sales Executive">
             <Select value={form.assigned_to ?? "none"} onValueChange={(v) => update("assigned_to", v === "none" ? null : v)}>
               <SelectTrigger><SelectValue placeholder="Unassigned" /></SelectTrigger>
@@ -426,15 +488,33 @@ export function LeadDialog({
               </SelectContent>
             </Select>
           </Field>
+          <SelectField label="Next Action *" value={form.next_action} onChange={(v) => update("next_action", v)} options={NEXT_ACTIONS} />
+        </div>
+
+        <SectionLabel>Sales Information</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <Field label="Proposal Sent Date"><Input type="date" value={form.proposal_sent_date ?? ""} onChange={(e) => update("proposal_sent_date", e.target.value)} /></Field>
-          <Field label="Follow-up Date"><Input type="date" value={form.followup_date ?? ""} onChange={(e) => update("followup_date", e.target.value)} /></Field>
           <Field label="Meeting Date"><Input type="date" value={form.meeting_date ?? ""} onChange={(e) => update("meeting_date", e.target.value)} /></Field>
+          <Field label="Engagement Letter Sent Date"><Input type="date" value={form.engagement_letter_sent_date ?? ""} onChange={(e) => update("engagement_letter_sent_date", e.target.value)} /></Field>
+          <SelectField label="Engagement Letter Fee Status" value={form.engagement_letter_fee_status} onChange={(v) => update("engagement_letter_fee_status", v)} options={EL_FEE_STATUSES} />
+          <Field label="Engagement Fee Received Date"><Input type="date" value={form.engagement_letter_fee_received_date ?? ""} onChange={(e) => update("engagement_letter_fee_received_date", e.target.value)} /></Field>
+          <Field label="Engagement Fee Amount (₹)"><Input type="number" value={form.engagement_letter_fee_amount ?? ""} onChange={(e) => update("engagement_letter_fee_amount", e.target.value)} /></Field>
+          <Field label="Booking Date"><Input type="date" value={form.booking_date ?? ""} onChange={(e) => update("booking_date", e.target.value)} /></Field>
           <SelectField label="Booking Amount Status" value={form.booking_amount_status} onChange={(v) => update("booking_amount_status", v)} options={BOOKING_AMT_STATUSES} />
+        </div>
+
+        <SectionLabel>Follow-up *</SectionLabel>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <Field label="Follow-up Date *"><Input type="date" value={form.followup_date ?? ""} onChange={(e) => update("followup_date", e.target.value)} /></Field>
           <div className="md:col-span-2">
             <Label>Remarks</Label>
             <Textarea rows={3} value={form.remarks ?? ""} onChange={(e) => update("remarks", e.target.value)} />
           </div>
         </div>
+
+        <p className="text-xs text-muted-foreground mt-2">
+          Lead Stage, Next Action and Follow-up Date are all required — no lead left behind.
+        </p>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
           <Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save Lead"}</Button>
@@ -446,6 +526,10 @@ export function LeadDialog({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><Label>{label}</Label>{children}</div>;
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <div className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{children}</div>;
 }
 
 function SelectField({ label, value, onChange, options }: {
