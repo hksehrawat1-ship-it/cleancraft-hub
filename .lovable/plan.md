@@ -1,40 +1,33 @@
 ## Goal
-Give salespeople a dedicated "My Sales Board" page that shows only leads where they are the Assigned Sales Executive.
+Provision a salesperson account and make sales users land directly on their CRM (My Sales Board) after login.
 
-## What to build
+## Steps
 
-### 1. New route: `/my-sales`
-File: `src/routes/_authenticated/my-sales.tsx`
+### 1. Create the user (migration)
+- Insert `sale1@cleancraftapp.com` into `auth.users` with bcrypt-hashed password `sales@123`, `email_confirmed_at = now()` so they can sign in immediately.
+- The existing `handle_new_user` trigger will auto-create the matching `profiles` row.
+- Insert into `public.user_roles` with role `sales_executive` (existing enum value) for this user.
+- Set profile `full_name = "Sales Executive 1"`.
+- Make the migration idempotent: skip if the email already exists.
 
-Page contents (all scoped to `assigned_to = current user id`):
-- Heading: "My Sales Board" + subtitle "Leads assigned to you"
-- KPI cards (same style as Leads page, just user-scoped):
-  - My Total Leads
-  - My Hot Leads
-  - My Warm Leads
-  - Follow-ups Due Today
-  - Overdue Follow-ups
-  - Proposals Sent
-  - Meetings Done
-  - Bookings This Month
-  - Converted to Franchise
-- Quick filter pills: All / Due Today / Overdue / Hot / This Week's Meetings
-- List/table of my leads with: Name, Phone, Stage badge, Classification badge, Follow-up date (red if overdue, blue if today), Edit button
-- Reuse the existing `LeadDialog` from `leads.tsx` so edits work the same way
+### 2. Role-aware post-login redirect
+Edit `src/routes/auth.tsx`:
+- After `signInWithPassword` succeeds, fetch the user's `user_roles`.
+- If the user has `ceo` or `coo` → navigate to `/dashboard` (current behavior).
+- If the user has any sales role (`sales_executive` or `sales_coordinator`) and no leadership role → navigate to `/my-sales`.
+- Otherwise → `/dashboard`.
+- Apply the same role check in the existing "already has a session" effect so refreshing on `/auth` while signed in as sales lands on `/my-sales`.
 
-### 2. Navigation entry
-Add a "My Sales Board" link in the authenticated sidebar/topbar so salespeople can reach it. Visible to every signed-in user (leadership can also use it to see their own assigned leads if any).
-
-### 3. Data access
-- Query: `supabase.from("leads").select("*").eq("assigned_to", user.id).order("followup_date")`
-- No schema change, no migration — `leads.assigned_to` already exists.
-- Existing RLS on `leads` already allows assignees to read/update their own leads.
+### 3. No other changes
+- The My Sales Board page already exists at `/my-sales` and filters by `assigned_to = current user`.
+- Sidebar already shows the "My Sales Board" link for all signed-in users.
+- RLS on `leads` already lets assignees read their own leads.
 
 ## Files touched
-- **Create** `src/routes/_authenticated/my-sales.tsx`
-- **Edit** the authenticated layout / nav component to add a "My Sales Board" link (`src/routes/_authenticated/route.tsx` or whichever file renders the nav)
+- New migration: create user + role
+- Edit `src/routes/auth.tsx` for role-based redirect
 
-## Not in scope
-- No new Kanban drag-and-drop board (you chose "My assigned leads page")
-- No changes to global `/leads` page
-- No RLS / DB schema changes
+## Credentials you'll use
+- Email: `sale1@cleancraftapp.com`
+- Password: `sales@123`
+- Role: `sales_executive`
