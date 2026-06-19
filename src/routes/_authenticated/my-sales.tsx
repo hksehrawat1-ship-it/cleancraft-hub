@@ -2255,21 +2255,40 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
           )}
 
           {total > 0 && (
-            <ul className="space-y-1">
-              {note.checklist.slice(0, 6).map((i) => (
-                <li key={i.id} className="flex items-center gap-2 text-sm">
+            <div className="space-y-1">
+              {/* Active items */}
+              {note.checklist.filter((i) => !i.done).slice(0, 6).map((i) => (
+                <li key={i.id} className="flex items-center gap-2 text-sm list-none">
                   <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
-                    {i.done
-                      ? <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
-                      : <Square className="w-3.5 h-3.5 text-muted-foreground" />}
+                    <Square className="w-3.5 h-3.5 text-muted-foreground" />
                   </button>
-                  <span className={cn(i.done && "line-through text-muted-foreground")}>{i.text || <em className="opacity-50">empty</em>}</span>
+                  <span>{i.text || <em className="opacity-50">empty</em>}</span>
                 </li>
               ))}
-              {note.checklist.length > 6 && (
-                <li className="text-xs text-muted-foreground">+ {note.checklist.length - 6} more…</li>
+
+              {/* Completed divider + items */}
+              {note.checklist.filter((i) => i.done).length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pt-1">
+                    <div className="h-px flex-1 bg-slate-200" />
+                    <span>Completed</span>
+                    <div className="h-px flex-1 bg-slate-200" />
+                  </div>
+                  {note.checklist.filter((i) => i.done).slice(0, 6 - note.checklist.filter((i) => !i.done).length).map((i) => (
+                    <li key={i.id} className="flex items-center gap-2 text-sm list-none line-through text-muted-foreground">
+                      <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
+                        <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+                      </button>
+                      <span>{i.text || <em className="opacity-50">empty</em>}</span>
+                    </li>
+                  ))}
+                </>
               )}
-            </ul>
+
+              {note.checklist.length > 6 && (
+                <li className="text-xs text-muted-foreground list-none">+ {note.checklist.length - 6} more…</li>
+              )}
+            </div>
           )}
 
           <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
