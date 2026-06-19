@@ -308,7 +308,6 @@ function LeadTrackerSheet() {
   const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
-  const [showHandoverForm, setShowHandoverForm] = useState(false);
 
   useMemo(() => {
     if (typeof window === "undefined") return;
@@ -331,10 +330,6 @@ function LeadTrackerSheet() {
     persist(next.length ? next : [emptyRow()]);
     if (selectedId === id) setSelectedId(null);
   }
-  function openHandover() {
-    if (!selectedId) return;
-    setShowHandoverForm(true);
-  }
   function completeHandover(id: string, payload: HandoverPayload) {
     update(id, { handedOver: true });
     try {
@@ -343,7 +338,6 @@ function LeadTrackerSheet() {
       prev.push({ ...payload, leadId: id, submittedAt: new Date().toISOString() });
       window.localStorage.setItem(key, JSON.stringify(prev));
     } catch {}
-    setShowHandoverForm(false);
     alert("Submitted to Account Department.");
   }
 
@@ -485,7 +479,6 @@ function LeadTrackerSheet() {
         <div className="flex items-center justify-between gap-3 mt-3">
           <Button onClick={addRow} variant="outline" size="sm">+ Add New Lead</Button>
           <Button
-            onClick={openHandover}
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
@@ -494,15 +487,14 @@ function LeadTrackerSheet() {
         </div>
         {!selected && (
           <p className="text-xs text-muted-foreground mt-2">
-            Click any row to see its completion status and enable the Hand Over button.
+            Click any row to see its completion status and enable the Hand Over form.
           </p>
         )}
 
-        {showHandoverForm && selected && (
+        {selected && (
           <HandoverForm
             lead={selected}
             leads={rows}
-            onCancel={() => setShowHandoverForm(false)}
             onSubmit={(payload) => completeHandover(selected.id, payload)}
           />
         )}
@@ -525,12 +517,11 @@ type HandoverPayload = {
 };
 
 function HandoverForm({
-  lead, leads, onSubmit, onCancel,
+  lead, leads, onSubmit,
 }: {
   lead: SheetRow;
   leads: SheetRow[];
   onSubmit: (p: HandoverPayload) => void;
-  onCancel: () => void;
 }) {
   const [form, setForm] = useState<HandoverPayload>({
     name: lead.name,
@@ -572,10 +563,7 @@ function HandoverForm({
   return (
     <Card className="mt-4 border-emerald-200">
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
-          <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
-        </div>
+        <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -635,7 +623,6 @@ function HandoverForm({
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
           <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
             Submit to Account Department
           </Button>
