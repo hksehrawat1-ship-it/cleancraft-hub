@@ -563,10 +563,7 @@ function HandoverForm({
   return (
     <Card className="mt-4 border-emerald-200">
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
-          <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
-        </div>
+        <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -626,7 +623,6 @@ function HandoverForm({
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
           <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
             Submit to Account Department
           </Button>
