@@ -400,7 +400,6 @@ export function LeadDialog({
   function update(k: string, v: any) { setForm((f: any) => ({ ...f, [k]: v })); }
 
   async function save() {
-    if (!form.name) return toast.error("Lead Name is required");
     // No Lead Left Behind: stage, next action, follow-up date all required
     if (!form.lead_stage) return toast.error("Lead Stage is required");
     if (!form.next_action) return toast.error("Next Action is required");
