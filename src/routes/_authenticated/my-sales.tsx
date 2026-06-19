@@ -485,7 +485,7 @@ function LeadTrackerSheet() {
         <div className="flex items-center justify-between gap-3 mt-3">
           <Button onClick={addRow} variant="outline" size="sm">+ Add New Lead</Button>
           <Button
-            onClick={() => selected && handover(selected.id)}
+            onClick={openHandover}
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
@@ -496,6 +496,15 @@ function LeadTrackerSheet() {
           <p className="text-xs text-muted-foreground mt-2">
             Click any row to see its completion status and enable the Hand Over button.
           </p>
+        )}
+
+        {showHandoverForm && selected && (
+          <HandoverForm
+            lead={selected}
+            leads={rows}
+            onCancel={() => setShowHandoverForm(false)}
+            onSubmit={(payload) => completeHandover(selected.id, payload)}
+          />
         )}
       </Section>
     </div>
