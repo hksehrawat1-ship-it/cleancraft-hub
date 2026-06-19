@@ -143,7 +143,7 @@ function LeadsPage() {
   const filtered = useMemo(() => {
     const today = todayISO();
     return leads.filter((l) => {
-      if (search && !(`${l.name} ${l.phone ?? ""} ${l.city ?? ""}`.toLowerCase().includes(search.toLowerCase()))) return false;
+      if (search && !(`${l.name ?? ""} ${l.phone ?? ""} ${l.city ?? ""}`.toLowerCase().includes(search.toLowerCase()))) return false;
       if (fSource !== "all" && l.lead_source !== fSource) return false;
       if (fClass !== "all" && l.lead_classification !== fClass) return false;
       if (fStage !== "all" && l.lead_stage !== fStage) return false;
