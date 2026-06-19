@@ -36,7 +36,7 @@ const STAGES = [
 ];
 const BOOKING_AMT_STATUSES = ["Not Required", "Pending", "Partially Received", "Received"];
 
-type Lead = {
+export type Lead = {
   id: string;
   name: string;
   phone: string | null;
@@ -360,7 +360,7 @@ function ConvertButton({ lead, onDone }: { lead: Lead; onDone: () => void }) {
   );
 }
 
-function LeadDialog({
+export function LeadDialog({
   children, lead, profiles, onSaved,
 }: {
   children: React.ReactNode;
