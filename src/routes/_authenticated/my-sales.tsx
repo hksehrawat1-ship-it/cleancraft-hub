@@ -723,10 +723,16 @@ function mostCommon(arr: string[]): string | null {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, subtitle, right }: { title: string; children: React.ReactNode; subtitle?: string; right?: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{title}</h2>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+          {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+        </div>
+        {right}
+      </div>
       {children}
     </section>
   );
