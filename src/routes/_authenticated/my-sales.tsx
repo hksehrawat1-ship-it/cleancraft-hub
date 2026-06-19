@@ -10,7 +10,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
   PackageCheck, BookOpen, HelpCircle, Headphones, TrendingUp, Search, ClipboardList, Save, X,
-  Target, Clock, DollarSign, Trophy, Activity, MessageSquare } from "lucide-react";
+  Target, Clock, DollarSign, Trophy, Activity, MessageSquare,
+  StickyNote, Pin, PinOff, Plus, Trash2, CheckSquare, Square } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
