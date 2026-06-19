@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   CheckSquare,
   Users,
-  Target,
   Store,
   Briefcase,
   AlertOctagon,
