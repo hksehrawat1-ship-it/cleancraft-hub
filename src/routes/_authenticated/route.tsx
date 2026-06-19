@@ -14,6 +14,7 @@ import {
   UserCog,
   LogOut,
   Menu,
+  Crown,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -31,6 +32,7 @@ export const Route = createFileRoute("/_authenticated")({
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/master", label: "Master Dashboard", icon: Crown },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/leads", label: "Leads", icon: Users },
   { to: "/stores", label: "Stores", icon: Store },
