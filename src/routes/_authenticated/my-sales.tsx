@@ -138,6 +138,7 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
 }) {
   switch (view) {
     case "dashboard": return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "roles": return <RolesView />;
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
