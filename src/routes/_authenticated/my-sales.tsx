@@ -9,7 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star } from "lucide-react";
+  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star, ClipboardList, Save, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
