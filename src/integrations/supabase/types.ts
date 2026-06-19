@@ -158,9 +158,6 @@ export type Database = {
           engagement_letter_fee_received_date: string | null
           engagement_letter_fee_status: string | null
           engagement_letter_sent_date: string | null
-          exploration_completed_date: string | null
-          final_meeting_store_name: string | null
-          final_meeting_type: string | null
           followup_date: string | null
           id: string
           lead_classification: string | null
@@ -168,7 +165,6 @@ export type Database = {
           lead_stage: string
           location_status: string | null
           meeting_date: string | null
-          meeting_link: string | null
           name: string
           next_action: string | null
           notes: string | null
@@ -203,9 +199,6 @@ export type Database = {
           engagement_letter_fee_received_date?: string | null
           engagement_letter_fee_status?: string | null
           engagement_letter_sent_date?: string | null
-          exploration_completed_date?: string | null
-          final_meeting_store_name?: string | null
-          final_meeting_type?: string | null
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
@@ -213,7 +206,6 @@ export type Database = {
           lead_stage?: string
           location_status?: string | null
           meeting_date?: string | null
-          meeting_link?: string | null
           name: string
           next_action?: string | null
           notes?: string | null
@@ -248,9 +240,6 @@ export type Database = {
           engagement_letter_fee_received_date?: string | null
           engagement_letter_fee_status?: string | null
           engagement_letter_sent_date?: string | null
-          exploration_completed_date?: string | null
-          final_meeting_store_name?: string | null
-          final_meeting_type?: string | null
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
@@ -258,7 +247,6 @@ export type Database = {
           lead_stage?: string
           location_status?: string | null
           meeting_date?: string | null
-          meeting_link?: string | null
           name?: string
           next_action?: string | null
           notes?: string | null

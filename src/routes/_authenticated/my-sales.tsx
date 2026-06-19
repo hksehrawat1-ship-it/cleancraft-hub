@@ -9,12 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video, FileText, FileSignature,
-  PackageCheck, XCircle, Handshake, Check } from "lucide-react";
+  PackageCheck, XCircle, Handshake } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -24,6 +20,10 @@ export const Route = createFileRoute("/_authenticated/my-sales")({
   component: SalesOpsDashboard,
 });
 
+const PIPELINE_STAGES = [
+  "New Lead", "Contacted", "Qualified", "Proposal Sent", "Follow-up",
+  "Meeting Done", "Engagement Letter Pending", "Booking Received", "Handover Completed",
+];
 
 const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as const;
 type Classification = (typeof CLASSIFICATIONS)[number];
@@ -228,10 +228,32 @@ function DashboardView({ leads, profiles, onSaved }: ViewProps) {
 
 function LeadsView({ leads, profiles, onSaved }: ViewProps) {
   const [filter, setFilter] = useState<Classification | "All">("All");
+  const stageCounts: Record<string, number> = {};
+  PIPELINE_STAGES.forEach((s) => { stageCounts[s] = 0; });
+  leads.forEach((l) => {
+    const s = l.lead_stage === "Handover Done" ? "Handover Completed" : l.lead_stage;
+    if (stageCounts[s] != null) stageCounts[s]++;
+  });
   const filtered = filter === "All" ? leads : leads.filter((l) => l.lead_classification === filter);
 
   return (
     <div className="space-y-6">
+      <Section title="Sales Pipeline">
+        <Card><CardContent className="p-4 overflow-x-auto">
+          <div className="flex gap-2 min-w-max">
+            {PIPELINE_STAGES.map((s, i) => (
+              <div key={s} className="flex items-center gap-2">
+                <div className="px-3 py-2 rounded-lg border bg-card min-w-[140px]">
+                  <div className="text-[11px] uppercase tracking-wide opacity-80">{s}</div>
+                  <div className="text-xl font-semibold">{stageCounts[s] ?? 0}</div>
+                </div>
+                {i < PIPELINE_STAGES.length - 1 && <span className="text-muted-foreground">→</span>}
+              </div>
+            ))}
+          </div>
+        </CardContent></Card>
+      </Section>
+
       <Section title="All Leads">
         <div className="flex flex-wrap gap-2 mb-3">
           <FilterChip active={filter === "All"} onClick={() => setFilter("All")}>All ({leads.length})</FilterChip>
@@ -244,214 +266,11 @@ function LeadsView({ leads, profiles, onSaved }: ViewProps) {
             );
           })}
         </div>
-
-        {filtered.length === 0 ? (
-          <Card><CardContent className="p-6 text-sm text-muted-foreground text-center">No leads.</CardContent></Card>
-        ) : (
-          <div className="space-y-3">
-            {filtered.map((l) => (
-              <LeadExcelRow key={l.id} lead={l} profiles={profiles} onSaved={onSaved} />
-            ))}
-          </div>
-        )}
+        <LeadTable leads={filtered} profiles={profiles} onSaved={onSaved} />
       </Section>
     </div>
   );
 }
-
-function LeadExcelRow({ lead, profiles, onSaved }: { lead: Lead; profiles: { id: string; full_name: string }[]; onSaved: () => void }) {
-  const [saving, setSaving] = useState(false);
-  const l = lead as any;
-
-  async function update(patch: Record<string, any>) {
-    setSaving(true);
-    const { error } = await (supabase as any).from("leads").update(patch).eq("id", lead.id);
-    setSaving(false);
-    if (error) { toast.error(error.message); return; }
-    onSaved();
-  }
-
-  const steps = [
-    !!lead.lead_classification,
-    !!lead.proposal_sent_date,
-    !!l.exploration_completed_date,
-    !!(l.final_meeting_type && (l.meeting_link || l.final_meeting_store_name || lead.meeting_date)),
-    !!lead.engagement_letter_sent_date,
-    lead.engagement_letter_fee_status === "Received" || l.booking_amount_status === "Received",
-    !!lead.followup_date,
-  ];
-  const completed = steps.filter(Boolean).length;
-  const pct = Math.round((completed / steps.length) * 100);
-  const handedOver = !!lead.converted_to_franchise_at;
-
-  async function handover() {
-    if (!confirm("Hand over this lead to the Account department?")) return;
-    await update({
-      converted_to_franchise_at: new Date().toISOString(),
-      lead_stage: "Handover Completed",
-    });
-    toast.success("Handed over to Account department");
-  }
-
-  return (
-    <Card>
-      <CardContent className="p-4 space-y-3">
-        {/* Completion bar */}
-        <div className="flex items-center gap-3">
-          <Progress value={pct} className="h-2 flex-1" />
-          <span className="text-xs text-muted-foreground tabular-nums w-24 text-right">{completed}/{steps.length} · {pct}%</span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr_auto] gap-3 items-start">
-          {/* Fixed: Name + Phone */}
-          <div className="min-w-0">
-            <div className="font-semibold truncate flex items-center gap-2">
-              {lead.name}
-              {lead.lead_classification && (
-                <Badge variant="outline" className={classificationVariant(lead.lead_classification)}>{lead.lead_classification}</Badge>
-              )}
-            </div>
-            <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-              <Phone className="w-3.5 h-3.5" />{lead.phone ?? "—"}
-            </div>
-            <div className="mt-2 flex gap-1">
-              {lead.phone && <a href={`tel:${lead.phone}`}><Button size="sm" variant="ghost" className="h-7 px-2"><Phone className="w-3.5 h-3.5" /></Button></a>}
-              {lead.phone && (
-                <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                  <Button size="sm" variant="ghost" className="h-7 px-2 text-emerald-700"><MessageCircle className="w-3.5 h-3.5" /></Button>
-                </a>
-              )}
-              <Link to="/leads/$id" params={{ id: lead.id }}>
-                <Button size="sm" variant="ghost" className="h-7 px-2"><ExternalLink className="w-3.5 h-3.5" /></Button>
-              </Link>
-              <LeadDialog lead={lead} profiles={profiles} onSaved={onSaved}>
-                <Button size="sm" variant="ghost" className="h-7 px-2"><Pencil className="w-3.5 h-3.5" /></Button>
-              </LeadDialog>
-            </div>
-          </div>
-
-          {/* Editable cells */}
-          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-7 gap-2">
-            <Cell label="Lead Temp">
-              <Select value={lead.lead_classification ?? ""} onValueChange={(v) => update({ lead_classification: v })} disabled={saving}>
-                <SelectTrigger className="h-9"><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent>
-                  {CLASSIFICATIONS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </Cell>
-
-            <Cell label="Proposal Sent">
-              <DateToggle value={lead.proposal_sent_date} onChange={(v) => update({ proposal_sent_date: v })} disabled={saving} />
-            </Cell>
-
-            <Cell label="Expl. Completed">
-              <DateToggle value={l.exploration_completed_date} onChange={(v) => update({ exploration_completed_date: v })} disabled={saving} />
-            </Cell>
-
-            <Cell label="Final Meet">
-              <Select
-                value={l.final_meeting_type ?? ""}
-                onValueChange={(v) => update({ final_meeting_type: v })}
-                disabled={saving}
-              >
-                <SelectTrigger className="h-9"><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Google Meet">Google Meet</SelectItem>
-                  <SelectItem value="Store Visit">Store Visit</SelectItem>
-                </SelectContent>
-              </Select>
-              {l.final_meeting_type === "Google Meet" && (
-                <Input
-                  className="h-8 mt-1 text-xs"
-                  placeholder="Meet link"
-                  defaultValue={l.meeting_link ?? ""}
-                  onBlur={(e) => { if (e.target.value !== (l.meeting_link ?? "")) update({ meeting_link: e.target.value || null }); }}
-                />
-              )}
-              {l.final_meeting_type === "Store Visit" && (
-                <Input
-                  className="h-8 mt-1 text-xs"
-                  placeholder="Store name"
-                  defaultValue={l.final_meeting_store_name ?? ""}
-                  onBlur={(e) => { if (e.target.value !== (l.final_meeting_store_name ?? "")) update({ final_meeting_store_name: e.target.value || null }); }}
-                />
-              )}
-            </Cell>
-
-            <Cell label="EA Sent (Email)">
-              <DateToggle value={lead.engagement_letter_sent_date} onChange={(v) => update({ engagement_letter_sent_date: v })} disabled={saving} />
-            </Cell>
-
-            <Cell label="Booking Amt Received">
-              <Select
-                value={lead.engagement_letter_fee_status ?? ""}
-                onValueChange={(v) => update({ engagement_letter_fee_status: v, engagement_letter_fee_received_date: v === "Received" ? todayISO() : null })}
-                disabled={saving}
-              >
-                <SelectTrigger className="h-9"><SelectValue placeholder="—" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Partially Received">Partially Received</SelectItem>
-                  <SelectItem value="Received">Received</SelectItem>
-                </SelectContent>
-              </Select>
-            </Cell>
-
-            <Cell label="Follow-up Date">
-              <Input
-                type="date"
-                className="h-9"
-                value={lead.followup_date ?? ""}
-                onChange={(e) => update({ followup_date: e.target.value || null })}
-                disabled={saving}
-              />
-            </Cell>
-          </div>
-
-          {/* Hand Over button */}
-          <div className="flex lg:flex-col items-stretch gap-2">
-            <Button
-              onClick={handover}
-              disabled={saving || handedOver}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
-              <Handshake className="w-4 h-4 mr-1" />
-              {handedOver ? "Handed Over" : "Hand Over"}
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function Cell({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
-      {children}
-    </div>
-  );
-}
-
-function DateToggle({ value, onChange, disabled }: { value: string | null | undefined; onChange: (v: string | null) => void; disabled?: boolean }) {
-  const done = !!value;
-  return (
-    <div className="flex items-center gap-1">
-      <Button
-        size="sm"
-        variant={done ? "default" : "outline"}
-        className={cn("h-9 flex-1", done && "bg-emerald-600 hover:bg-emerald-700 text-white")}
-        disabled={disabled}
-        onClick={() => onChange(done ? null : todayISO())}
-      >
-        {done ? <><Check className="w-3.5 h-3.5 mr-1" />{value}</> : "Mark Done"}
-      </Button>
-    </div>
-  );
-}
-
 
 function FollowupsView({ leads, profiles, onSaved }: ViewProps) {
   const today = todayISO();
