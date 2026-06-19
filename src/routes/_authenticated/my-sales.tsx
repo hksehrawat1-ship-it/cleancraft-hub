@@ -2136,26 +2136,56 @@ function ChecklistEditor({ items, onChange }: { items: ChecklistItem[]; onChange
   function remove(id: string) { onChange(items.filter((i) => i.id !== id)); }
   function add() { onChange([...items, { id: uid(), text: "", done: false }]); }
 
+  const active = items.filter((i) => !i.done);
+  const done = items.filter((i) => i.done);
+
   return (
     <div className="space-y-1 px-1">
-      {items.map((i) => (
+      {active.map((i) => (
         <div key={i.id} className="flex items-center gap-2">
           <button onClick={() => update(i.id, { done: !i.done })} className="p-0.5">
-            {i.done
-              ? <CheckSquare className="w-4 h-4 text-emerald-600" />
-              : <Square className="w-4 h-4 text-muted-foreground" />}
+            <Square className="w-4 h-4 text-muted-foreground" />
           </button>
           <Input
             value={i.text}
             onChange={(e) => update(i.id, { text: e.target.value })}
             placeholder="List item"
-            className={cn("h-8 border-0 bg-transparent px-1 focus-visible:ring-0", i.done && "line-through text-muted-foreground")}
+            className="h-8 border-0 bg-transparent px-1 focus-visible:ring-0"
           />
           <button onClick={() => remove(i.id)} className="p-1 rounded hover:bg-black/5">
             <X className="w-3.5 h-3.5 text-muted-foreground" />
           </button>
         </div>
       ))}
+
+      {done.length > 0 && (
+        <div className="pt-2">
+          <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+            <div className="h-px flex-1 bg-slate-200" />
+            <span>Completed</span>
+            <div className="h-px flex-1 bg-slate-200" />
+          </div>
+          <div className="space-y-1 pt-1">
+            {done.map((i) => (
+              <div key={i.id} className="flex items-center gap-2">
+                <button onClick={() => update(i.id, { done: !i.done })} className="p-0.5">
+                  <CheckSquare className="w-4 h-4 text-emerald-600" />
+                </button>
+                <Input
+                  value={i.text}
+                  onChange={(e) => update(i.id, { text: e.target.value })}
+                  placeholder="List item"
+                  className="h-8 border-0 bg-transparent px-1 focus-visible:ring-0 line-through text-muted-foreground"
+                />
+                <button onClick={() => remove(i.id)} className="p-1 rounded hover:bg-black/5">
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <Button type="button" variant="ghost" size="sm" onClick={add} className="h-7 px-2 text-xs">
         <Plus className="w-3.5 h-3.5 mr-1" /> Add item
       </Button>
@@ -2225,21 +2255,40 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
           )}
 
           {total > 0 && (
-            <ul className="space-y-1">
-              {note.checklist.slice(0, 6).map((i) => (
-                <li key={i.id} className="flex items-center gap-2 text-sm">
+            <div className="space-y-1">
+              {/* Active items */}
+              {note.checklist.filter((i) => !i.done).slice(0, 6).map((i) => (
+                <li key={i.id} className="flex items-center gap-2 text-sm list-none">
                   <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
-                    {i.done
-                      ? <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
-                      : <Square className="w-3.5 h-3.5 text-muted-foreground" />}
+                    <Square className="w-3.5 h-3.5 text-muted-foreground" />
                   </button>
-                  <span className={cn(i.done && "line-through text-muted-foreground")}>{i.text || <em className="opacity-50">empty</em>}</span>
+                  <span>{i.text || <em className="opacity-50">empty</em>}</span>
                 </li>
               ))}
-              {note.checklist.length > 6 && (
-                <li className="text-xs text-muted-foreground">+ {note.checklist.length - 6} more…</li>
+
+              {/* Completed divider + items */}
+              {note.checklist.filter((i) => i.done).length > 0 && (
+                <>
+                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-muted-foreground font-semibold pt-1">
+                    <div className="h-px flex-1 bg-slate-200" />
+                    <span>Completed</span>
+                    <div className="h-px flex-1 bg-slate-200" />
+                  </div>
+                  {note.checklist.filter((i) => i.done).slice(0, 6 - note.checklist.filter((i) => !i.done).length).map((i) => (
+                    <li key={i.id} className="flex items-center gap-2 text-sm list-none line-through text-muted-foreground">
+                      <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
+                        <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+                      </button>
+                      <span>{i.text || <em className="opacity-50">empty</em>}</span>
+                    </li>
+                  ))}
+                </>
               )}
-            </ul>
+
+              {note.checklist.length > 6 && (
+                <li className="text-xs text-muted-foreground list-none">+ {note.checklist.length - 6} more…</li>
+              )}
+            </div>
           )}
 
           <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
