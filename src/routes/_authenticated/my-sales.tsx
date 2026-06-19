@@ -1860,3 +1860,464 @@ function RolesView() {
     </Section>
   );
 }
+
+/* ============== Mind & Task (Google Keep style) ============== */
+
+type ChecklistItem = { id: string; text: string; done: boolean };
+type SalesNote = {
+  id: string;
+  created_by: string;
+  title: string | null;
+  content: string | null;
+  color: string;
+  pinned: boolean;
+  checklist: ChecklistItem[];
+  created_at: string;
+  updated_at: string;
+};
+
+const NOTE_COLORS: { key: string; bg: string; ring: string; label: string }[] = [
+  { key: "default", bg: "bg-white", ring: "ring-slate-200", label: "Default" },
+  { key: "yellow", bg: "bg-amber-50", ring: "ring-amber-200", label: "Yellow" },
+  { key: "green", bg: "bg-emerald-50", ring: "ring-emerald-200", label: "Green" },
+  { key: "blue", bg: "bg-sky-50", ring: "ring-sky-200", label: "Blue" },
+  { key: "pink", bg: "bg-pink-50", ring: "ring-pink-200", label: "Pink" },
+  { key: "purple", bg: "bg-violet-50", ring: "ring-violet-200", label: "Purple" },
+  { key: "orange", bg: "bg-orange-50", ring: "ring-orange-200", label: "Orange" },
+];
+function noteColor(k: string) { return NOTE_COLORS.find((c) => c.key === k) ?? NOTE_COLORS[0]; }
+function uid() { return Math.random().toString(36).slice(2, 10); }
+
+function NotesView({ profiles }: { profiles: { id: string; full_name: string }[] }) {
+  const { user, isLeadership } = useAuth();
+  const qc = useQueryClient();
+  const [q, setQ] = useState("");
+
+  const { data: notes = [], isLoading } = useQuery({
+    queryKey: ["sales-notes"],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("sales_notes").select("*")
+        .order("pinned", { ascending: false })
+        .order("updated_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []).map((n: any) => ({
+        ...n,
+        checklist: Array.isArray(n.checklist) ? n.checklist : [],
+      })) as SalesNote[];
+    },
+  });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("sales_notes_rt")
+      .on("postgres_changes", { event: "*", schema: "public", table: "sales_notes" }, () => {
+        qc.invalidateQueries({ queryKey: ["sales-notes"] });
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [qc]);
+
+  const profMap = useMemo(() => {
+    const m = new Map<string, string>();
+    profiles.forEach((p) => m.set(p.id, p.full_name || "Unknown"));
+    return m;
+  }, [profiles]);
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return notes;
+    return notes.filter((n) =>
+      (n.title || "").toLowerCase().includes(term) ||
+      (n.content || "").toLowerCase().includes(term) ||
+      n.checklist.some((c) => c.text.toLowerCase().includes(term))
+    );
+  }, [notes, q]);
+
+  const pinned = filtered.filter((n) => n.pinned);
+  const others = filtered.filter((n) => !n.pinned);
+
+  async function createNote(partial: Partial<SalesNote>) {
+    if (!user) return;
+    const payload = {
+      created_by: user.id,
+      title: partial.title ?? null,
+      content: partial.content ?? null,
+      color: partial.color ?? "default",
+      pinned: partial.pinned ?? false,
+      checklist: partial.checklist ?? [],
+    };
+    const { error } = await (supabase as any).from("sales_notes").insert(payload);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["sales-notes"] });
+  }
+
+  async function updateNote(id: string, patch: Partial<SalesNote>) {
+    const { error } = await (supabase as any).from("sales_notes").update(patch).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["sales-notes"] });
+  }
+
+  async function deleteNote(id: string) {
+    const { error } = await (supabase as any).from("sales_notes").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    qc.invalidateQueries({ queryKey: ["sales-notes"] });
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div>
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <StickyNote className="w-5 h-5 text-amber-500" /> Mind &amp; Task
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Shared notes board for Sales VP &amp; CEO — pin ideas, jot tasks, collaborate live.
+            {isLeadership ? " You can see and edit everyone's notes." : " You see your own notes; leadership can see and reply."}
+          </p>
+        </div>
+        <div className="relative w-full max-w-sm">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search notes & tasks…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      </div>
+
+      <NoteComposer onCreate={createNote} />
+
+      {isLoading ? (
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-sm text-muted-foreground border border-dashed rounded-xl p-8 text-center">
+          No notes yet. Add your first thought above.
+        </div>
+      ) : (
+        <>
+          {pinned.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Pinned</div>
+              <NotesGrid notes={pinned} authorOf={(id) => profMap.get(id) || "Unknown"} onUpdate={updateNote} onDelete={deleteNote} />
+            </div>
+          )}
+          {others.length > 0 && (
+            <div className="space-y-2">
+              {pinned.length > 0 && (
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Others</div>
+              )}
+              <NotesGrid notes={others} authorOf={(id) => profMap.get(id) || "Unknown"} onUpdate={updateNote} onDelete={deleteNote} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function NoteComposer({ onCreate }: { onCreate: (n: Partial<SalesNote>) => Promise<void> }) {
+  const [expanded, setExpanded] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
+  const [color, setColor] = useState("default");
+  const [pinned, setPinned] = useState(false);
+  const [mode, setMode] = useState<"note" | "task">("note");
+  const c = noteColor(color);
+
+  function reset() {
+    setTitle(""); setContent(""); setChecklist([]); setColor("default"); setPinned(false);
+    setMode("note"); setExpanded(false);
+  }
+  async function save() {
+    const hasContent = title.trim() || content.trim() || checklist.some((i) => i.text.trim());
+    if (!hasContent) { reset(); return; }
+    await onCreate({
+      title: title.trim() || null,
+      content: content.trim() || null,
+      checklist: checklist.filter((i) => i.text.trim()),
+      color, pinned,
+    });
+    reset();
+  }
+
+  return (
+    <Card className={cn("rounded-2xl shadow-sm ring-1 transition", c.bg, c.ring)}>
+      <CardContent className="p-3">
+        {!expanded ? (
+          <button
+            className="w-full text-left text-sm text-muted-foreground px-2 py-2"
+            onClick={() => setExpanded(true)}
+          >
+            Take a note or add a task…
+          </button>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Input
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="border-0 bg-transparent text-base font-medium px-2 focus-visible:ring-0"
+              />
+              <button
+                onClick={() => setPinned((v) => !v)}
+                className="p-1.5 rounded hover:bg-black/5"
+                title={pinned ? "Unpin" : "Pin"}
+              >
+                {pinned ? <Pin className="w-4 h-4 text-amber-600" /> : <PinOff className="w-4 h-4 text-muted-foreground" />}
+              </button>
+            </div>
+
+            {mode === "note" ? (
+              <Textarea
+                placeholder="Write your thought…"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="border-0 bg-transparent px-2 min-h-[80px] focus-visible:ring-0 resize-none"
+              />
+            ) : (
+              <ChecklistEditor items={checklist} onChange={setChecklist} />
+            )}
+
+            <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
+              <div className="flex items-center gap-1">
+                <Button
+                  type="button" size="sm" variant={mode === "note" ? "secondary" : "ghost"}
+                  onClick={() => setMode("note")} className="h-7"
+                >Note</Button>
+                <Button
+                  type="button" size="sm" variant={mode === "task" ? "secondary" : "ghost"}
+                  onClick={() => { setMode("task"); if (checklist.length === 0) setChecklist([{ id: uid(), text: "", done: false }]); }}
+                  className="h-7"
+                >Tasks</Button>
+                <ColorPicker value={color} onChange={setColor} />
+              </div>
+              <div className="flex items-center gap-1">
+                <Button type="button" size="sm" variant="ghost" onClick={reset}>Cancel</Button>
+                <Button type="button" size="sm" onClick={save}>
+                  <Save className="w-4 h-4 mr-1" /> Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ColorPicker({ value, onChange }: { value: string; onChange: (k: string) => void }) {
+  return (
+    <div className="flex items-center gap-1 ml-1">
+      {NOTE_COLORS.map((c) => (
+        <button
+          key={c.key}
+          onClick={() => onChange(c.key)}
+          title={c.label}
+          className={cn(
+            "w-5 h-5 rounded-full border transition",
+            c.bg,
+            value === c.key ? "ring-2 ring-offset-1 ring-slate-700" : "border-slate-300"
+          )}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ChecklistEditor({ items, onChange }: { items: ChecklistItem[]; onChange: (next: ChecklistItem[]) => void }) {
+  function update(id: string, patch: Partial<ChecklistItem>) {
+    onChange(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
+  }
+  function remove(id: string) { onChange(items.filter((i) => i.id !== id)); }
+  function add() { onChange([...items, { id: uid(), text: "", done: false }]); }
+
+  return (
+    <div className="space-y-1 px-1">
+      {items.map((i) => (
+        <div key={i.id} className="flex items-center gap-2">
+          <button onClick={() => update(i.id, { done: !i.done })} className="p-0.5">
+            {i.done
+              ? <CheckSquare className="w-4 h-4 text-emerald-600" />
+              : <Square className="w-4 h-4 text-muted-foreground" />}
+          </button>
+          <Input
+            value={i.text}
+            onChange={(e) => update(i.id, { text: e.target.value })}
+            placeholder="List item"
+            className={cn("h-8 border-0 bg-transparent px-1 focus-visible:ring-0", i.done && "line-through text-muted-foreground")}
+          />
+          <button onClick={() => remove(i.id)} className="p-1 rounded hover:bg-black/5">
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+        </div>
+      ))}
+      <Button type="button" variant="ghost" size="sm" onClick={add} className="h-7 px-2 text-xs">
+        <Plus className="w-3.5 h-3.5 mr-1" /> Add item
+      </Button>
+    </div>
+  );
+}
+
+function NotesGrid({ notes, authorOf, onUpdate, onDelete }: {
+  notes: SalesNote[];
+  authorOf: (id: string) => string;
+  onUpdate: (id: string, patch: Partial<SalesNote>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+}) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {notes.map((n) => (
+        <NoteCard key={n.id} note={n} author={authorOf(n.created_by)} onUpdate={onUpdate} onDelete={onDelete} />
+      ))}
+    </div>
+  );
+}
+
+function NoteCard({ note, author, onUpdate, onDelete }: {
+  note: SalesNote;
+  author: string;
+  onUpdate: (id: string, patch: Partial<SalesNote>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+}) {
+  const c = noteColor(note.color);
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<SalesNote>(note);
+  useEffect(() => { setDraft(note); }, [note, open]);
+
+  function toggleItem(id: string) {
+    const next = draft.checklist.map((i) => (i.id === id ? { ...i, done: !i.done } : i));
+    setDraft({ ...draft, checklist: next });
+    onUpdate(note.id, { checklist: next });
+  }
+
+  const done = note.checklist.filter((i) => i.done).length;
+  const total = note.checklist.length;
+
+  return (
+    <>
+      <Card
+        className={cn("rounded-2xl shadow-sm ring-1 cursor-pointer hover:shadow-md transition", c.bg, c.ring)}
+        onClick={() => setOpen(true)}
+      >
+        <CardContent className="p-3 space-y-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="font-medium text-sm leading-snug">
+              {note.title || <span className="text-muted-foreground">Untitled</span>}
+            </div>
+            <button
+              onClick={(e) => { e.stopPropagation(); onUpdate(note.id, { pinned: !note.pinned }); }}
+              className="p-1 rounded hover:bg-black/5"
+              title={note.pinned ? "Unpin" : "Pin"}
+            >
+              {note.pinned
+                ? <Pin className="w-4 h-4 text-amber-600" />
+                : <PinOff className="w-4 h-4 text-muted-foreground" />}
+            </button>
+          </div>
+
+          {note.content && (
+            <div className="text-sm whitespace-pre-wrap line-clamp-6 text-slate-700">{note.content}</div>
+          )}
+
+          {total > 0 && (
+            <ul className="space-y-1">
+              {note.checklist.slice(0, 6).map((i) => (
+                <li key={i.id} className="flex items-center gap-2 text-sm">
+                  <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
+                    {i.done
+                      ? <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+                      : <Square className="w-3.5 h-3.5 text-muted-foreground" />}
+                  </button>
+                  <span className={cn(i.done && "line-through text-muted-foreground")}>{i.text || <em className="opacity-50">empty</em>}</span>
+                </li>
+              ))}
+              {note.checklist.length > 6 && (
+                <li className="text-xs text-muted-foreground">+ {note.checklist.length - 6} more…</li>
+              )}
+            </ul>
+          )}
+
+          <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
+            <span>By {author}</span>
+            <span className="flex items-center gap-2">
+              {total > 0 && <Badge variant="secondary" className="text-[10px]">{done}/{total}</Badge>}
+              <span>{new Date(note.updated_at).toLocaleDateString()}</span>
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className={cn("max-w-lg", c.bg)}>
+          <DialogHeader>
+            <DialogTitle className="sr-only">Edit note</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Input
+                value={draft.title ?? ""}
+                onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                placeholder="Title"
+                className="border-0 bg-transparent text-base font-semibold px-2 focus-visible:ring-0"
+              />
+              <button
+                onClick={() => setDraft({ ...draft, pinned: !draft.pinned })}
+                className="p-1.5 rounded hover:bg-black/5"
+              >
+                {draft.pinned ? <Pin className="w-4 h-4 text-amber-600" /> : <PinOff className="w-4 h-4 text-muted-foreground" />}
+              </button>
+            </div>
+
+            <Textarea
+              value={draft.content ?? ""}
+              onChange={(e) => setDraft({ ...draft, content: e.target.value })}
+              placeholder="Write your thought…"
+              className="border-0 bg-transparent px-2 min-h-[100px] focus-visible:ring-0 resize-none"
+            />
+
+            <ChecklistEditor
+              items={draft.checklist}
+              onChange={(next) => setDraft({ ...draft, checklist: next })}
+            />
+
+            <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+              <ColorPicker value={draft.color} onChange={(k) => setDraft({ ...draft, color: k })} />
+              <div className="text-[11px] text-muted-foreground">
+                By {author} · updated {new Date(draft.updated_at).toLocaleString()}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <Button variant="ghost" size="sm" onClick={() => { onDelete(note.id); setOpen(false); }}>
+                <Trash2 className="w-4 h-4 mr-1 text-red-500" /> Delete
+              </Button>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Close</Button>
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    await onUpdate(note.id, {
+                      title: draft.title?.trim() || null,
+                      content: draft.content?.trim() || null,
+                      checklist: draft.checklist.filter((i) => i.text.trim()),
+                      color: draft.color,
+                      pinned: draft.pinned,
+                    });
+                    setOpen(false);
+                  }}
+                >
+                  <Save className="w-4 h-4 mr-1" /> Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
