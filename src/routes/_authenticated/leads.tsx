@@ -20,6 +20,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Search, AlertCircle, Trash2, ArrowRightCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -29,11 +30,17 @@ export const Route = createFileRoute("/_authenticated/leads")({
 });
 
 const LEAD_SOURCES = ["Website", "Google Ads", "IVR", "Referral", "YouTube", "Instagram"];
-const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"];
-const STAGES = [
+export const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"];
+export const STAGES = [
   "New Lead", "Contacted", "Qualified", "Proposal Sent", "Follow-up",
-  "Meeting Done", "Booking Pending", "Booking Received", "Handover Done", "Lost",
+  "Meeting Done", "Engagement Letter Pending", "Booking Received",
+  "Handover Completed", "Lost",
 ];
+export const NEXT_ACTIONS = [
+  "Call", "Follow-up", "Send Proposal", "Schedule Meeting",
+  "Collect Engagement Fee", "Handover", "Disqualify",
+];
+const EL_FEE_STATUSES = ["Not Required", "Pending", "Partially Received", "Received"];
 const BOOKING_AMT_STATUSES = ["Not Required", "Pending", "Partially Received", "Received"];
 
 export type Lead = {
