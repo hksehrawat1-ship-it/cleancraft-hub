@@ -107,7 +107,8 @@ function SalesOpsDashboard() {
                       )}
                     >
                       <Icon className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")} />
-                      {m.label}
+                      <span className="flex-1">{m.label}</span>
+                      {m.star && <Star className={cn("w-3.5 h-3.5", active ? "text-white fill-white" : "text-amber-500 fill-amber-500")} />}
                     </button>
                   );
                 })}
