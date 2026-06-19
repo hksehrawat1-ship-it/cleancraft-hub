@@ -49,6 +49,7 @@ export type Lead = {
   phone: string | null;
   email: string | null;
   city: string | null;
+  state: string | null;
   lead_source: string | null;
   budget_range: string | null;
   timeline: string | null;
@@ -57,11 +58,22 @@ export type Lead = {
   location_status: string | null;
   lead_classification: string | null;
   lead_stage: string;
+  next_action: string | null;
   assigned_to: string | null;
   proposal_sent_date: string | null;
   followup_date: string | null;
   meeting_date: string | null;
+  engagement_letter_sent_date: string | null;
+  engagement_letter_fee_status: string | null;
+  engagement_letter_fee_received_date: string | null;
+  engagement_letter_fee_amount: number | null;
+  booking_date: string | null;
   booking_amount_status: string | null;
+  buying_factor_profitability: boolean;
+  buying_factor_training: boolean;
+  buying_factor_technology: boolean;
+  buying_factor_support: boolean;
+  buying_factor_brand: boolean;
   remarks: string | null;
   converted_to_franchise_at: string | null;
   created_at: string;
@@ -78,16 +90,19 @@ function startOfMonthISO() {
   return new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
 }
 
-function classificationVariant(c: string | null) {
+export function classificationVariant(c: string | null) {
   switch (c) {
-    case "Hot": return "bg-red-100 text-red-700 border-red-200";
-    case "Warm": return "bg-amber-100 text-amber-700 border-amber-200";
+    case "Hot": return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "Warm": return "bg-orange-100 text-orange-700 border-orange-200";
     case "Cold": return "bg-blue-100 text-blue-700 border-blue-200";
-    case "Dangerous": return "bg-purple-100 text-purple-700 border-purple-200";
+    case "Dangerous": return "bg-red-100 text-red-700 border-red-200";
     case "Time Waster": return "bg-gray-100 text-gray-600 border-gray-200";
     default: return "bg-muted text-muted-foreground";
   }
 }
+
+export const HANDOVER_STAGES = ["Handover Completed", "Handover Done"];
+export const TERMINAL_STAGES = [...HANDOVER_STAGES, "Lost"];
 
 function LeadsPage() {
   const qc = useQueryClient();
