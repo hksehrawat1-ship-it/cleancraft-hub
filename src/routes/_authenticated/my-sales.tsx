@@ -37,13 +37,14 @@ const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as c
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
+  | "dashboard" | "roles" | "leads" | "notes" | "followups" | "meetings" | "bookings"
   | "knowledge" | "questions" | "audio" | "performance";
 
 const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "roles", label: "Roles & Responsibilities", icon: ClipboardList },
   { key: "leads", label: "Leads", icon: Users },
+  { key: "notes", label: "Mind & Task", icon: StickyNote },
   { key: "followups", label: "Follow-ups", icon: CalendarClock },
   { key: "meetings", label: "Meetings", icon: Video },
   { key: "bookings", label: "Bookings", icon: PackageCheck },
