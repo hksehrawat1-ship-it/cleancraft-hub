@@ -8,8 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
-  LayoutDashboard, Users, CalendarClock, Video, FileText, FileSignature,
-  PackageCheck, XCircle, Handshake } from "lucide-react";
+  LayoutDashboard, Users, CalendarClock, Video,
+  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   LeadDialog, classificationVariant, type Lead,
@@ -29,19 +30,19 @@ const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as c
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "dashboard" | "leads" | "followups" | "meetings" | "proposals"
-  | "engagement" | "bookings" | "lost" | "handover";
+  | "dashboard" | "leads" | "followups" | "meetings" | "bookings"
+  | "knowledge" | "questions" | "audio" | "reports";
 
-const MENU: { key: ViewKey; label: string; icon: any }[] = [
+const MENU: { key: ViewKey; label: string; icon: any; star?: boolean }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "leads", label: "Leads", icon: Users },
-  { key: "followups", label: "Follow-ups", icon: CalendarClock },
+  { key: "leads", label: "Leads", icon: Users, star: true },
+  { key: "followups", label: "Follow-ups", icon: CalendarClock, star: true },
   { key: "meetings", label: "Meetings", icon: Video },
-  { key: "proposals", label: "Proposals", icon: FileText },
-  { key: "engagement", label: "Engagement Letters", icon: FileSignature },
   { key: "bookings", label: "Bookings", icon: PackageCheck },
-  { key: "lost", label: "Lost Leads", icon: XCircle },
-  { key: "handover", label: "Hand over", icon: Handshake },
+  { key: "knowledge", label: "Knowledge Center", icon: BookOpen, star: true },
+  { key: "questions", label: "Question Bank", icon: HelpCircle, star: true },
+  { key: "audio", label: "Audio Library", icon: Headphones, star: true },
+  { key: "reports", label: "Reports", icon: BarChart3 },
 ];
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
