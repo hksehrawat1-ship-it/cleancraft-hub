@@ -137,11 +137,11 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "proposals": return <ProposalsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "engagement": return <EngagementView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "bookings": return <BookingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "lost": return <LostView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "handover": return <HandoverView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "knowledge": return <KnowledgeCenterView />;
+    case "questions": return <QuestionBankView />;
+    case "audio": return <AudioLibraryView />;
+    case "reports": return <ReportsView leads={leads} />;
   }
 }
 
