@@ -13,11 +13,11 @@ import {
   Wallet,
   UserCog,
   LogOut,
-  Sparkles,
   Menu,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import cosLogo from "@/assets/cos-logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -62,9 +62,7 @@ function AuthedLayout() {
         )}
       >
         <div className="px-5 py-5 border-b flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-            <Sparkles className="w-4 h-4" />
-          </div>
+          <img src={cosLogo.url} alt="Clean Craft OS" className="h-8 w-auto" />
           <div>
             <div className="font-semibold text-sm leading-tight">Clean Craft OS</div>
             <div className="text-[11px] text-muted-foreground">cleancraftapp.com</div>
@@ -113,7 +111,7 @@ function AuthedLayout() {
           <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
             <Menu className="w-5 h-5" />
           </Button>
-          <span className="font-semibold">Clean Craft OS</span>
+          <img src={cosLogo.url} alt="Clean Craft OS" className="h-7 w-auto" />
         </header>
         <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
           <Outlet />
