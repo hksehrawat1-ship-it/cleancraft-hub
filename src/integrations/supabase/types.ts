@@ -104,48 +104,101 @@ export type Database = {
       }
       leads: {
         Row: {
+          assigned_to: string | null
+          booking_amount_status: string | null
+          budget_range: string | null
           city: string | null
+          converted_to_franchise_at: string | null
           created_at: string
           created_by: string | null
+          decision_maker_status: string | null
           email: string | null
+          followup_date: string | null
           id: string
+          lead_classification: string | null
+          lead_source: string | null
+          lead_stage: string
+          location_status: string | null
+          meeting_date: string | null
           name: string
           notes: string | null
           owner_id: string | null
+          partnership_status: string | null
           phone: string | null
+          proposal_sent_date: string | null
+          remarks: string | null
           source: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          timeline: string | null
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
+          booking_amount_status?: string | null
+          budget_range?: string | null
           city?: string | null
+          converted_to_franchise_at?: string | null
           created_at?: string
           created_by?: string | null
+          decision_maker_status?: string | null
           email?: string | null
+          followup_date?: string | null
           id?: string
+          lead_classification?: string | null
+          lead_source?: string | null
+          lead_stage?: string
+          location_status?: string | null
+          meeting_date?: string | null
           name: string
           notes?: string | null
           owner_id?: string | null
+          partnership_status?: string | null
           phone?: string | null
+          proposal_sent_date?: string | null
+          remarks?: string | null
           source?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          timeline?: string | null
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
+          booking_amount_status?: string | null
+          budget_range?: string | null
           city?: string | null
+          converted_to_franchise_at?: string | null
           created_at?: string
           created_by?: string | null
+          decision_maker_status?: string | null
           email?: string | null
+          followup_date?: string | null
           id?: string
+          lead_classification?: string | null
+          lead_source?: string | null
+          lead_stage?: string
+          location_status?: string | null
+          meeting_date?: string | null
           name?: string
           notes?: string | null
           owner_id?: string | null
+          partnership_status?: string | null
           phone?: string | null
+          proposal_sent_date?: string | null
+          remarks?: string | null
           source?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          timeline?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       payments: {
         Row: {
