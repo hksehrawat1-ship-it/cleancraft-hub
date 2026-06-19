@@ -308,6 +308,7 @@ function LeadTrackerSheet() {
   const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [showHandoverForm, setShowHandoverForm] = useState(false);
 
   useMemo(() => {
     if (typeof window === "undefined") return;
@@ -330,9 +331,20 @@ function LeadTrackerSheet() {
     persist(next.length ? next : [emptyRow()]);
     if (selectedId === id) setSelectedId(null);
   }
-  function handover(id: string) {
+  function openHandover() {
+    if (!selectedId) return;
+    setShowHandoverForm(true);
+  }
+  function completeHandover(id: string, payload: HandoverPayload) {
     update(id, { handedOver: true });
-    alert("Lead handed over to the Account Department.");
+    try {
+      const key = "ccos.handovers.v1";
+      const prev = JSON.parse(window.localStorage.getItem(key) || "[]");
+      prev.push({ ...payload, leadId: id, submittedAt: new Date().toISOString() });
+      window.localStorage.setItem(key, JSON.stringify(prev));
+    } catch {}
+    setShowHandoverForm(false);
+    alert("Submitted to Account Department.");
   }
 
   const selected = rows.find((r) => r.id === selectedId) || null;
@@ -473,7 +485,7 @@ function LeadTrackerSheet() {
         <div className="flex items-center justify-between gap-3 mt-3">
           <Button onClick={addRow} variant="outline" size="sm">+ Add New Lead</Button>
           <Button
-            onClick={() => selected && handover(selected.id)}
+            onClick={openHandover}
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
@@ -485,8 +497,151 @@ function LeadTrackerSheet() {
             Click any row to see its completion status and enable the Hand Over button.
           </p>
         )}
+
+        {showHandoverForm && selected && (
+          <HandoverForm
+            lead={selected}
+            leads={rows}
+            onCancel={() => setShowHandoverForm(false)}
+            onSubmit={(payload) => completeHandover(selected.id, payload)}
+          />
+        )}
       </Section>
     </div>
+  );
+}
+type OfferKind = "Transportation Free" | "Pappy Wash Free" | "Other";
+type ModelKind = "Single Machine" | "Double Machine" | "With Domus" | "Other";
+type HandoverPayload = {
+  name: string;
+  phone: string;
+  city: string;
+  pincode: string;
+  offer: OfferKind | "";
+  offerOther: string;
+  discount: string;
+  model: ModelKind | "";
+  modelOther: string;
+};
+
+function HandoverForm({
+  lead, leads, onSubmit, onCancel,
+}: {
+  lead: SheetRow;
+  leads: SheetRow[];
+  onSubmit: (p: HandoverPayload) => void;
+  onCancel: () => void;
+}) {
+  const [form, setForm] = useState<HandoverPayload>({
+    name: lead.name,
+    phone: lead.phone,
+    city: "",
+    pincode: "",
+    offer: "",
+    offerOther: "",
+    discount: "",
+    model: "",
+    modelOther: "",
+  });
+
+  const phoneSuggestions = useMemo(
+    () => Array.from(new Set(leads.map((l) => l.phone).filter(Boolean))),
+    [leads],
+  );
+
+  function set<K extends keyof HandoverPayload>(k: K, v: HandoverPayload[K]) {
+    setForm((f) => ({ ...f, [k]: v }));
+  }
+
+  function submit() {
+    if (!form.name || !form.phone || !form.city || !form.pincode) {
+      alert("Please fill Name, Phone, City and Pincode.");
+      return;
+    }
+    if (form.offer === "Other" && !form.offerOther.trim()) {
+      alert("Please specify the offer."); return;
+    }
+    if (form.model === "Other" && !form.modelOther.trim()) {
+      alert("Please specify the model."); return;
+    }
+    onSubmit(form);
+  }
+
+  const inputCls = "w-full rounded border px-2 py-1.5 text-sm bg-white";
+
+  return (
+    <Card className="mt-4 border-emerald-200">
+      <CardContent className="p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
+          <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground">Name (from lead)</label>
+            <input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Phone (from leads)</label>
+            <input className={inputCls} list="ho-phones" value={form.phone} onChange={(e) => set("phone", e.target.value)} inputMode="tel" />
+            <datalist id="ho-phones">
+              {phoneSuggestions.map((p) => <option key={p} value={p} />)}
+            </datalist>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">City</label>
+            <input className={inputCls} value={form.city} onChange={(e) => set("city", e.target.value)} />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Pincode</label>
+            <input className={inputCls} value={form.pincode} onChange={(e) => set("pincode", e.target.value)} inputMode="numeric" />
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">Offer</label>
+            <select className={inputCls} value={form.offer} onChange={(e) => set("offer", e.target.value as OfferKind | "")}>
+              <option value="">— Select —</option>
+              <option value="Transportation Free">Transportation Free</option>
+              <option value="Pappy Wash Free">Pappy Wash Free</option>
+              <option value="Other">Other</option>
+            </select>
+            {form.offer === "Other" && (
+              <input className={cn(inputCls, "mt-2")} placeholder="Specify offer" value={form.offerOther}
+                onChange={(e) => set("offerOther", e.target.value)} />
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">Discount</label>
+            <input className={inputCls} placeholder="e.g. ₹25,000 or 10%" value={form.discount}
+              onChange={(e) => set("discount", e.target.value)} />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="text-xs text-muted-foreground">Model</label>
+            <select className={inputCls} value={form.model} onChange={(e) => set("model", e.target.value as ModelKind | "")}>
+              <option value="">— Select —</option>
+              <option value="Single Machine">Single Machine</option>
+              <option value="Double Machine">Double Machine</option>
+              <option value="With Domus">With Domus</option>
+              <option value="Other">Other</option>
+            </select>
+            {form.model === "Other" && (
+              <input className={cn(inputCls, "mt-2")} placeholder="Specify model" value={form.modelOther}
+                onChange={(e) => set("modelOther", e.target.value)} />
+            )}
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-1">
+          <Button variant="outline" size="sm" onClick={onCancel}>Cancel</Button>
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
+            Submit to Account Department
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
