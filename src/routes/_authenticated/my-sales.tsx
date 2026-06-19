@@ -487,21 +487,23 @@ function LeadTrackerSheet() {
           <Button
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => setShowHandoverForm(true)}
           >
             {selected?.handedOver ? "Handed Over ✓" : "Hand Over to Account Dept."}
           </Button>
         </div>
         {!selected && (
           <p className="text-xs text-muted-foreground mt-2">
-            Click any row to see its completion status and enable the Hand Over form.
+            Click any row to select a lead, then click the Hand Over button to open the form.
           </p>
         )}
 
-        {selected && (
+        {showHandoverForm && selected && (
           <HandoverForm
             lead={selected}
             leads={rows}
             onSubmit={(payload) => completeHandover(selected.id, payload)}
+            onCancel={() => setShowHandoverForm(false)}
           />
         )}
       </Section>
