@@ -67,7 +67,7 @@ export type Database = {
           booking_amount: number
           city: string | null
           created_by: string | null
-          franchisee_name: string
+          franchisee_name: string | null
           id: string
           lead_id: string | null
           notes: string | null
@@ -77,7 +77,7 @@ export type Database = {
           booking_amount?: number
           city?: string | null
           created_by?: string | null
-          franchisee_name: string
+          franchisee_name?: string | null
           id?: string
           lead_id?: string | null
           notes?: string | null
@@ -87,7 +87,7 @@ export type Database = {
           booking_amount?: number
           city?: string | null
           created_by?: string | null
-          franchisee_name?: string
+          franchisee_name?: string | null
           id?: string
           lead_id?: string | null
           notes?: string | null
