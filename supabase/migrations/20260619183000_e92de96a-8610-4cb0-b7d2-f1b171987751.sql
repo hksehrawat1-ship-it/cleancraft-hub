@@ -1,0 +1,1 @@
+ALTER TABLE public.leads ALTER COLUMN name DROP NOT NULL;

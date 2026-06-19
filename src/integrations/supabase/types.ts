@@ -169,7 +169,7 @@ export type Database = {
           location_status: string | null
           meeting_date: string | null
           meeting_link: string | null
-          name: string
+          name: string | null
           next_action: string | null
           notes: string | null
           owner_id: string | null
@@ -214,7 +214,7 @@ export type Database = {
           location_status?: string | null
           meeting_date?: string | null
           meeting_link?: string | null
-          name: string
+          name?: string | null
           next_action?: string | null
           notes?: string | null
           owner_id?: string | null
@@ -259,7 +259,7 @@ export type Database = {
           location_status?: string | null
           meeting_date?: string | null
           meeting_link?: string | null
-          name?: string
+          name?: string | null
           next_action?: string | null
           notes?: string | null
           owner_id?: string | null
