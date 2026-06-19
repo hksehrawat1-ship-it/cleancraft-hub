@@ -628,3 +628,159 @@ function headerLabel(c: Col): string {
 function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-4 py-2 font-medium text-muted-foreground">{children}</th>;
 }
+
+/* ============== New Sales Modules ============== */
+
+const KNOWLEDGE_SECTIONS = [
+  { title: "Sales Pitch", desc: "Master scripts and pitch templates for franchise sales." },
+  { title: "Proposal", desc: "Standard proposal templates and customization guides." },
+  { title: "FAQ", desc: "Frequently asked questions from prospects with verified answers." },
+  { title: "Competitor Comparison", desc: "Side-by-side comparisons with key competitors." },
+  { title: "Objection Handling", desc: "Proven responses to the most common objections." },
+  { title: "Training Videos", desc: "On-demand video training from senior salespeople." },
+  { title: "Laundry Industry Data", desc: "Market size, growth, and industry benchmarks." },
+];
+
+function KnowledgeCenterView() {
+  return (
+    <Section title="Knowledge Center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {KNOWLEDGE_SECTIONS.map((s) => (
+          <Card key={s.title} className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold">{s.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{s.desc}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+const SAMPLE_QA: { q: string; a: string }[] = [
+  { q: "Royalty", a: "Royalty is 6% of monthly gross revenue, billed monthly in arrears." },
+  { q: "Territory", a: "Exclusive territory of 3 km radius around the store location, protected for 5 years." },
+  { q: "Manpower", a: "Typical store needs 4–6 staff: 1 manager, 2–3 operators, 1–2 delivery." },
+  { q: "ROI", a: "Average payback period is 18–24 months at standard footfall assumptions." },
+];
+
+function QuestionBankView() {
+  const [query, setQuery] = useState("");
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return SAMPLE_QA;
+    return SAMPLE_QA.filter((x) => x.q.toLowerCase().includes(q) || x.a.toLowerCase().includes(q));
+  }, [query]);
+
+  return (
+    <Section title="Question Bank">
+      <div className="space-y-4">
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Search: "Royalty", "Territory", "Manpower", "ROI"…'
+            className="pl-9"
+          />
+        </div>
+
+        <div className="space-y-2">
+          {matches.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center space-y-3">
+                <div className="text-sm text-muted-foreground">No answer found for "{query}".</div>
+                <Button onClick={() => setSubmitOpen(true)}>Submit Question to Sales Head</Button>
+              </CardContent>
+            </Card>
+          ) : (
+            matches.map((x) => (
+              <Card key={x.q}>
+                <CardContent className="p-4">
+                  <div className="text-sm font-semibold">{x.q}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{x.a}</div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {submitOpen && (
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <div className="text-sm font-medium">Submit new question</div>
+              <Input placeholder="Type your question…" />
+              <div className="flex gap-2">
+                <Button size="sm">Send to Sales Head</Button>
+                <Button size="sm" variant="ghost" onClick={() => setSubmitOpen(false)}>Cancel</Button>
+              </div>
+              <div className="text-xs text-muted-foreground">Approved answers will appear in the bank.</div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+const AUDIO_CATEGORIES = [
+  { title: "Best Qualification Calls", count: 0 },
+  { title: "Best Closing Calls", count: 0 },
+  { title: "Lost Calls", count: 0 },
+  { title: "Competitor Comparison Calls", count: 0 },
+  { title: "Training Calls", count: 0 },
+];
+
+function AudioLibraryView() {
+  return (
+    <Section title="Audio Library">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {AUDIO_CATEGORIES.map((c) => (
+          <Card key={c.title} className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                  <Headphones className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold">{c.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{c.count} recording{c.count === 1 ? "" : "s"}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground mt-3">New salespeople learn here. Upload best calls to share with the team.</p>
+    </Section>
+  );
+}
+
+function ReportsView({ leads }: { leads: Lead[] }) {
+  const closures = leads.filter((l) => isHandoverDone(l.lead_stage)).length;
+  const elCollected = leads.filter((l) => l.engagement_letter_fee_status === "Received");
+  const elValue = elCollected.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
+  const followups = leads.filter((l) => !!l.followup_date).length;
+  const conversion = leads.length ? Math.round((closures / leads.length) * 100) : 0;
+
+  return (
+    <Section title="Personal Reports">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <Stat label="Leads" value={leads.length} />
+        <Stat label="Closures" value={closures} tone="text-emerald-700" />
+        <Stat label="Follow-ups" value={followups} />
+        <Stat label="Conversion %" value={conversion} sub="Handover / Total" />
+        <Stat label="EL Collection" value={elCollected.length} sub={`₹${elValue.toLocaleString("en-IN")}`} tone="text-emerald-700" />
+      </div>
+    </Section>
+  );
+}
