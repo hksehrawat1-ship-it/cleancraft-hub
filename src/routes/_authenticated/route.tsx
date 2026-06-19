@@ -34,7 +34,6 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/tasks", label: "Tasks", icon: CheckSquare },
   { to: "/leads", label: "Leads", icon: Users },
-  { to: "/my-sales", label: "Sales Dashboard", icon: Target },
   { to: "/stores", label: "Stores", icon: Store },
   { to: "/projects", label: "Projects", icon: Briefcase },
   { to: "/complaints", label: "Complaints", icon: AlertOctagon },
