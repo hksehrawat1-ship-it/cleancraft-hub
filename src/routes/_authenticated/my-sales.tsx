@@ -81,16 +81,16 @@ function SalesOpsDashboard() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Franchise Sales Operating Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Your active sales board.</p>
+        <h1 className="text-2xl font-semibold tracking-tight">Clean Craft OS</h1>
+        <p className="text-sm text-muted-foreground">Salesperson dashboard</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
-        {/* Submenu */}
+      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6">
+        {/* Submenu — styled like the reference image */}
         <aside className="md:sticky md:top-4 self-start">
-          <Card>
-            <CardContent className="p-2">
-              <nav className="flex md:flex-col gap-1 overflow-x-auto">
+          <Card className="shadow-sm border rounded-2xl">
+            <CardContent className="p-3">
+              <nav className="flex md:flex-col gap-1.5 overflow-x-auto">
                 {MENU.map((m) => {
                   const Icon = m.icon;
                   const active = view === m.key;
@@ -99,11 +99,13 @@ function SalesOpsDashboard() {
                       key={m.key}
                       onClick={() => setView(m.key)}
                       className={cn(
-                        "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors text-left whitespace-nowrap",
-                        active ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground/80",
+                        "flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all text-left whitespace-nowrap",
+                        active
+                          ? "bg-[#2563EB] text-white shadow-sm"
+                          : "text-slate-700 hover:bg-slate-50"
                       )}
                     >
-                      <Icon className="w-4 h-4 shrink-0" />
+                      <Icon className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")} />
                       {m.label}
                     </button>
                   );
