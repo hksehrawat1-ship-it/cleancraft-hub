@@ -307,7 +307,12 @@ function completionSteps(r: SheetRow) {
 function LeadTrackerSheet() {
   const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showHandoverForm, setShowHandoverForm] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    setShowHandoverForm(false);
+  }, [selectedId]);
 
   useMemo(() => {
     if (typeof window === "undefined") return;
@@ -338,6 +343,7 @@ function LeadTrackerSheet() {
       prev.push({ ...payload, leadId: id, submittedAt: new Date().toISOString() });
       window.localStorage.setItem(key, JSON.stringify(prev));
     } catch {}
+    setShowHandoverForm(false);
     alert("Submitted to Account Department.");
   }
 
