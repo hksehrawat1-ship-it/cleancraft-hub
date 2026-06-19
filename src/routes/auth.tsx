@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Sparkles } from "lucide-react";
+import cosLogo from "@/assets/cos-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ title: "Sign in — Clean Craft OS" }] }),
@@ -57,9 +58,11 @@ function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-accent px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary text-primary-foreground mb-3">
-            <Sparkles className="w-6 h-6" />
-          </div>
+          <img
+            src={cosLogo.url}
+            alt="Clean Craft OS"
+            className="h-14 w-auto mx-auto mb-3"
+          />
           <h1 className="text-2xl font-semibold tracking-tight">Clean Craft OS</h1>
           <p className="text-sm text-muted-foreground mt-1">Operating system for the team</p>
         </div>
