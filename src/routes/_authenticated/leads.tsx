@@ -272,7 +272,7 @@ function LeadsPage() {
   );
 }
 
-function Th({ children }: { children: React.ReactNode }) {
+function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-4 py-2 font-medium text-muted-foreground">{children}</th>;
 }
 
