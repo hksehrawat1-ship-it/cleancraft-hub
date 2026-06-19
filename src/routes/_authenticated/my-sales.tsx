@@ -9,8 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video, FileText, FileSignature,
-  PackageCheck, XCircle, Handshake } from "lucide-react";
+  PackageCheck, XCircle, Handshake, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
