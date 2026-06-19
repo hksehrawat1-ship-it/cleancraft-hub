@@ -228,49 +228,292 @@ function DashboardView({ leads, profiles, onSaved }: ViewProps) {
   );
 }
 
-function LeadsView({ leads, profiles, onSaved }: ViewProps) {
-  const [filter, setFilter] = useState<Classification | "All">("All");
-  const stageCounts: Record<string, number> = {};
-  PIPELINE_STAGES.forEach((s) => { stageCounts[s] = 0; });
-  leads.forEach((l) => {
-    const s = l.lead_stage === "Handover Done" ? "Handover Completed" : l.lead_stage;
-    if (stageCounts[s] != null) stageCounts[s]++;
-  });
-  const filtered = filter === "All" ? leads : leads.filter((l) => l.lead_classification === filter);
+function LeadsView(_props: ViewProps) {
+  return <LeadTrackerSheet />;
+}
+
+/* ============== Excel-like Lead Tracker Sheet ============== */
+
+type Temp = "Hot" | "Warm" | "Cold" | "Time Waster" | "Dangerous";
+const TEMPS: Temp[] = ["Hot", "Warm", "Cold", "Time Waster", "Dangerous"];
+const TEMP_COLORS: Record<Temp, string> = {
+  Hot: "bg-red-100 text-red-700 border-red-200",
+  Warm: "bg-orange-100 text-orange-700 border-orange-200",
+  Cold: "bg-blue-100 text-blue-700 border-blue-200",
+  "Time Waster": "bg-slate-100 text-slate-600 border-slate-200",
+  Dangerous: "bg-purple-100 text-purple-700 border-purple-200",
+};
+
+type FinalMeetKind = "" | "Google Meet" | "Store Visit";
+
+type SheetRow = {
+  id: string;
+  name: string;
+  phone: string;
+  temp: Temp | "";
+  proposalSent: boolean;
+  explCompleted: boolean;
+  finalMeetKind: FinalMeetKind;
+  finalMeetStore: string;
+  eaSent: boolean;
+  bookingReceived: boolean;
+  followupAt: string;
+  handedOver: boolean;
+};
+
+function emptyRow(): SheetRow {
+  return {
+    id: crypto.randomUUID(),
+    name: "", phone: "", temp: "",
+    proposalSent: false, explCompleted: false,
+    finalMeetKind: "", finalMeetStore: "",
+    eaSent: false, bookingReceived: false,
+    followupAt: "", handedOver: false,
+  };
+}
+
+const STORAGE_KEY = "ccos.lead-tracker.v1";
+
+function loadRows(): SheetRow[] {
+  if (typeof window === "undefined") return [emptyRow()];
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [emptyRow()];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) && arr.length ? arr : [emptyRow()];
+  } catch { return [emptyRow()]; }
+}
+
+function isStarted(r: SheetRow) {
+  return !!(r.temp || r.proposalSent || r.explCompleted || r.finalMeetKind || r.eaSent || r.bookingReceived || r.followupAt);
+}
+
+function completionSteps(r: SheetRow) {
+  return [
+    { label: "Lead Temp.", done: !!r.temp },
+    { label: "Proposal Sent", done: r.proposalSent },
+    { label: "Expl. Completed", done: r.explCompleted },
+    { label: "Final Meet", done: !!r.finalMeetKind && (r.finalMeetKind === "Google Meet" || !!r.finalMeetStore) },
+    { label: "EA Sent via Email", done: r.eaSent },
+    { label: "Booking Amount Received", done: r.bookingReceived },
+    { label: "Follow-up Scheduled", done: !!r.followupAt },
+  ];
+}
+
+function LeadTrackerSheet() {
+  const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+
+  useMemo(() => {
+    if (typeof window === "undefined") return;
+    const t = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  function persist(next: SheetRow[]) {
+    setRows(next);
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+  }
+
+  function update(id: string, patch: Partial<SheetRow>) {
+    persist(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  }
+
+  function addRow() { persist([...rows, emptyRow()]); setSelectedId(null); }
+  function removeRow(id: string) {
+    const next = rows.filter((r) => r.id !== id);
+    persist(next.length ? next : [emptyRow()]);
+    if (selectedId === id) setSelectedId(null);
+  }
+  function handover(id: string) {
+    update(id, { handedOver: true });
+    alert("Lead handed over to the Account Department.");
+  }
+
+  const selected = rows.find((r) => r.id === selectedId) || null;
 
   return (
-    <div className="space-y-6">
-      <Section title="Sales Pipeline">
-        <Card><CardContent className="p-4 overflow-x-auto">
-          <div className="flex gap-2 min-w-max">
-            {PIPELINE_STAGES.map((s, i) => (
-              <div key={s} className="flex items-center gap-2">
-                <div className="px-3 py-2 rounded-lg border bg-card min-w-[140px]">
-                  <div className="text-[11px] uppercase tracking-wide opacity-80">{s}</div>
-                  <div className="text-xl font-semibold">{stageCounts[s] ?? 0}</div>
-                </div>
-                {i < PIPELINE_STAGES.length - 1 && <span className="text-muted-foreground">→</span>}
-              </div>
-            ))}
-          </div>
-        </CardContent></Card>
-      </Section>
+    <div className="space-y-4">
+      {selected && <CompletionBar row={selected} />}
 
-      <Section title="All Leads">
-        <div className="flex flex-wrap gap-2 mb-3">
-          <FilterChip active={filter === "All"} onClick={() => setFilter("All")}>All ({leads.length})</FilterChip>
-          {CLASSIFICATIONS.map((c) => {
-            const n = leads.filter((l) => l.lead_classification === c).length;
-            return (
-              <FilterChip key={c} active={filter === c} onClick={() => setFilter(c)} className={classificationVariant(c)}>
-                {c} ({n})
-              </FilterChip>
-            );
-          })}
+      <Section title="Lead Tracker">
+        <Card>
+          <CardContent className="p-0 overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead className="bg-muted/60 text-left">
+                <tr className="[&>th]:px-3 [&>th]:py-2 [&>th]:font-medium [&>th]:text-muted-foreground [&>th]:border-b [&>th]:border-r [&>th]:whitespace-nowrap">
+                  <th className="w-10 text-center">#</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Lead Temp.</th>
+                  <th className="text-center">Proposal Sent</th>
+                  <th className="text-center">Expl. Completed</th>
+                  <th>Final Meet</th>
+                  <th className="text-center">EA Sent (Email)</th>
+                  <th className="text-center">Booking Amt. Received</th>
+                  <th>Follow-up Date &amp; Time</th>
+                  <th className="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => {
+                  const frozen = isStarted(r);
+                  const fuMs = r.followupAt ? new Date(r.followupAt).getTime() : 0;
+                  const fuDue = fuMs > 0 && fuMs <= now;
+                  const isSel = r.id === selectedId;
+                  return (
+                    <tr
+                      key={r.id}
+                      onClick={() => setSelectedId(r.id)}
+                      className={cn(
+                        "[&>td]:px-3 [&>td]:py-2 [&>td]:border-b [&>td]:border-r [&>td]:align-middle cursor-pointer",
+                        isSel ? "bg-blue-50/60" : "hover:bg-muted/30",
+                        r.handedOver && "opacity-60",
+                      )}
+                    >
+                      <td className="text-center text-muted-foreground">{i + 1}</td>
+                      <td>
+                        <input
+                          value={r.name}
+                          readOnly={frozen}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => update(r.id, { name: e.target.value })}
+                          placeholder="Name"
+                          className={cn("w-40 bg-transparent outline-none px-1 py-1 rounded",
+                            frozen ? "cursor-not-allowed" : "focus:bg-white focus:ring-1 focus:ring-blue-300")}
+                        />
+                      </td>
+                      <td>
+                        <input
+                          value={r.phone}
+                          readOnly={frozen}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => update(r.id, { phone: e.target.value })}
+                          placeholder="Phone"
+                          inputMode="tel"
+                          className={cn("w-36 bg-transparent outline-none px-1 py-1 rounded",
+                            frozen ? "cursor-not-allowed" : "focus:bg-white focus:ring-1 focus:ring-blue-300")}
+                        />
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <select
+                          value={r.temp}
+                          onChange={(e) => update(r.id, { temp: e.target.value as Temp | "" })}
+                          disabled={!r.name || !r.phone}
+                          className={cn("rounded border px-2 py-1 text-xs",
+                            r.temp ? TEMP_COLORS[r.temp as Temp] : "bg-white")}
+                        >
+                          <option value="">—</option>
+                          {TEMPS.map((t) => <option key={t} value={t}>{t}</option>)}
+                        </select>
+                      </td>
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" checked={r.proposalSent}
+                          onChange={(e) => update(r.id, { proposalSent: e.target.checked })} />
+                      </td>
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" checked={r.explCompleted}
+                          onChange={(e) => update(r.id, { explCompleted: e.target.checked })} />
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center gap-1">
+                          <select
+                            value={r.finalMeetKind}
+                            onChange={(e) => update(r.id, { finalMeetKind: e.target.value as FinalMeetKind, finalMeetStore: e.target.value === "Store Visit" ? r.finalMeetStore : "" })}
+                            className="rounded border px-2 py-1 text-xs bg-white"
+                          >
+                            <option value="">—</option>
+                            <option value="Google Meet">Google Meet</option>
+                            <option value="Store Visit">Store Visit</option>
+                          </select>
+                          {r.finalMeetKind === "Store Visit" && (
+                            <input
+                              value={r.finalMeetStore}
+                              onChange={(e) => update(r.id, { finalMeetStore: e.target.value })}
+                              placeholder="Store name"
+                              className="w-32 rounded border px-2 py-1 text-xs bg-white"
+                            />
+                          )}
+                        </div>
+                      </td>
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" checked={r.eaSent}
+                          onChange={(e) => update(r.id, { eaSent: e.target.checked })} />
+                      </td>
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" checked={r.bookingReceived}
+                          onChange={(e) => update(r.id, { bookingReceived: e.target.checked })} />
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="datetime-local"
+                          value={r.followupAt}
+                          onChange={(e) => update(r.id, { followupAt: e.target.value })}
+                          className={cn("rounded border px-2 py-1 text-xs",
+                            fuDue ? "bg-emerald-100 border-emerald-300 text-emerald-800 font-medium" : "bg-white")}
+                        />
+                      </td>
+                      <td className="text-center" onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-red-600"
+                          onClick={() => removeRow(r.id)}>Del</Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+
+        <div className="flex items-center justify-between gap-3 mt-3">
+          <Button onClick={addRow} variant="outline" size="sm">+ Add New Lead</Button>
+          <Button
+            onClick={() => selected && handover(selected.id)}
+            disabled={!selected || selected.handedOver || !selected.bookingReceived}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            {selected?.handedOver ? "Handed Over ✓" : "Hand Over to Account Dept."}
+          </Button>
         </div>
-        <LeadTable leads={filtered} profiles={profiles} onSaved={onSaved} />
+        {!selected && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Click any row to see its completion status and enable the Hand Over button.
+          </p>
+        )}
       </Section>
     </div>
+  );
+}
+
+function CompletionBar({ row }: { row: SheetRow }) {
+  const steps = completionSteps(row);
+  const done = steps.filter((s) => s.done).length;
+  const pct = Math.round((done / steps.length) * 100);
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm font-medium">
+            {row.name || "Unnamed lead"} — Completion: <span className="text-emerald-700">{done}/7</span>
+          </div>
+          <div className="text-xs text-muted-foreground">{pct}%</div>
+        </div>
+        <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+          <div className="h-full bg-emerald-500 transition-all" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mt-3">
+          {steps.map((s, i) => (
+            <div key={i} className={cn(
+              "text-[11px] px-2 py-1 rounded border text-center",
+              s.done ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-muted/40 border-muted text-muted-foreground",
+            )}>
+              {i + 1}. {s.label} {s.done ? "✓" : ""}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
