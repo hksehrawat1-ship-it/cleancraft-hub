@@ -45,7 +45,7 @@ const BOOKING_AMT_STATUSES = ["Not Required", "Pending", "Partially Received", "
 
 export type Lead = {
   id: string;
-  name: string;
+  name: string | null;
   phone: string | null;
   email: string | null;
   city: string | null;
