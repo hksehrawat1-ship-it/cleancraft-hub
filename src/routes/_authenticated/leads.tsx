@@ -242,7 +242,7 @@ function LeadsPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-left">
                 <tr>
-                  <Th>Name</Th><Th>Phone</Th><Th>Source</Th><Th>City</Th>
+                  <Th className="sticky left-0 z-10 bg-muted/50">Name</Th><Th>Phone</Th><Th>Source</Th><Th>City</Th>
                   <Th>Class</Th><Th>Stage</Th><Th>Assigned</Th><Th>Follow-up</Th><Th></Th>
                 </tr>
               </thead>
@@ -252,7 +252,7 @@ function LeadsPage() {
                   const dueToday = l.followup_date === today;
                   return (
                     <tr key={l.id} className="border-t hover:bg-muted/30">
-                      <td className="px-4 py-3 font-medium">
+                      <td className="px-4 py-3 font-medium sticky left-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                         {l.name}
                         {l.converted_to_franchise_at && <Badge variant="outline" className="ml-2 text-emerald-700 border-emerald-200">Franchise</Badge>}
                       </td>
@@ -294,8 +294,8 @@ function LeadsPage() {
   );
 }
 
-function Th({ children }: { children?: React.ReactNode }) {
-  return <th className="px-4 py-2 font-medium text-muted-foreground">{children}</th>;
+function Th({ children, className }: { children?: React.ReactNode; className?: string }) {
+  return <th className={`px-4 py-2 font-medium text-muted-foreground ${className ?? ""}`}>{children}</th>;
 }
 
 function Stat({ label, value, tone }: { label: string; value: number; tone?: string }) {
