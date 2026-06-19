@@ -37,7 +37,7 @@ type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
   | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
-  | "knowledge" | "questions" | "audio" | "reports";
+  | "knowledge" | "questions" | "audio" | "performance";
 
 const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -49,7 +49,7 @@ const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "knowledge", label: "Knowledge Center", icon: BookOpen },
   { key: "questions", label: "Question Bank", icon: HelpCircle },
   { key: "audio", label: "Audio Library", icon: Headphones },
-  { key: "reports", label: "Reports", icon: BarChart3 },
+  { key: "performance", label: "Performance", icon: TrendingUp },
 ];
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
