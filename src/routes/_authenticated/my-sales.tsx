@@ -9,7 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star } from "lucide-react";
+  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star, ClipboardList, Save, X } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
@@ -30,11 +32,12 @@ const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as c
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "dashboard" | "leads" | "followups" | "meetings" | "bookings"
+  | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
   | "knowledge" | "questions" | "audio" | "reports";
 
 const MENU: { key: ViewKey; label: string; icon: any; star?: boolean }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { key: "roles", label: "Roles & Responsibilities", icon: ClipboardList },
   { key: "leads", label: "Leads", icon: Users, star: true },
   { key: "followups", label: "Follow-ups", icon: CalendarClock, star: true },
   { key: "meetings", label: "Meetings", icon: Video },
@@ -135,6 +138,7 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
 }) {
   switch (view) {
     case "dashboard": return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "roles": return <RolesView />;
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
@@ -719,10 +723,16 @@ function mostCommon(arr: string[]): string | null {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, subtitle, right }: { title: string; children: React.ReactNode; subtitle?: string; right?: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">{title}</h2>
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+          {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
+        </div>
+        {right}
+      </div>
       {children}
     </section>
   );
@@ -1024,6 +1034,168 @@ function ReportsView({ leads }: { leads: Lead[] }) {
         <Stat label="Conversion %" value={conversion} sub="Handover / Total" />
         <Stat label="EL Collection" value={elCollected.length} sub={`₹${elValue.toLocaleString("en-IN")}`} tone="text-emerald-700" />
       </div>
+    </Section>
+  );
+}
+
+/* ============== Roles & Responsibilities ============== */
+
+const ROLES_STORAGE_KEY = "ccos.sales-roles.v1";
+
+type RolesContent = {
+  title: string;
+  sections: { heading: string; body: string }[];
+};
+
+const DEFAULT_ROLES: RolesContent = {
+  title: "Role: Franchise Investment Consultant at Clean Craft",
+  sections: [
+    {
+      heading: "Role Definition",
+      body: "Responsible for converting qualified franchise enquiries into signed Clean Craft franchise partners.",
+    },
+    {
+      heading: "Trigger Point",
+      body: "Call within 10 mins after you get leads:\n1. Website\n2. Google Ads\n3. IVR\n4. Referral\n5. Organic enquiry",
+    },
+    {
+      heading: "Responsibility Deliverable",
+      body: "A. Lead Qualification\nB. Business Consultation\nC. Franchise Conversion\nD. Operations Handover",
+    },
+    {
+      heading: "Tasks & Activities",
+      body: "Lead Qualification\nProposal Process\nConversion Process\n1. Collect booking amount.\n2. Inform Accounts.\n3. Inform Project Coordinator.\n4. Clarity call after F.E.A — Handle after sales query if needed.",
+    },
+    {
+      heading: "Hand-over Matrix",
+      body: "A. After Booking Amt. Received\n• Create Franchise WhatsApp Group.\n• Fill Franchise Handover Form.\n• Mention the below in WhatsApp Group:\n   A. Send final payable at personal level\n   B. Discount\n   C. Machine model\n   D. Timeline\n   E. Special commitments if any\n• Hand over to Project Coordinator.",
+    },
+    {
+      heading: "Completion Matrix",
+      body: "1. Payment received proof sent to accounts.\n2. WhatsApp Group created.\n3. Hand-over form submitted.\n4. Accounts informed.\n5. Project coordinator informed.\n6. Sample franchise agreement and other docs. shared via mail for reading.\n7. Update CRM software.",
+    },
+    {
+      heading: "KPI & KRA",
+      body: "Daily KPI\n• Number of leads contacted\n• Number of follow-ups completed\n• Number of meetings scheduled\n\nWeekly KPI\n• Number of proposals sent\n• Number of Google Meets conducted\n\nMonthly KPI\n• Number of franchise closures\n• Number of booking amount collected\n• Conversion %\n• Proposal to conversion %\n\nKRA: 5 Franchise Closures Per Month",
+    },
+    {
+      heading: "What Not To Do",
+      body: "❌ Promise anything not approved.\n❌ Offer unauthorized discount.\n❌ Commit launch date without Operations approval.\n❌ Leave CRM incomplete.\n❌ Skip handover form.\n❌ Discuss competitors negatively.\n❌ Commit for more than 4 manpower and stay of Project Manager.\n\n# Follow Decision Authority Matrix before committing any exception.",
+    },
+    {
+      heading: "Escalation Matrix",
+      body: "• Discount request\n• Agreement change\n• Territory issue\n• Legal question\n• ROI guarantee request\n• Special support request\n\nThis prevents future disputes.",
+    },
+    {
+      heading: "A Successful Closer",
+      body: "A successful closer does NOT sell franchises. A successful closer:\n1. Identifies the right partner.\n2. Educates the investor.\n3. Builds trust.\n4. Removes confusion.\n5. Converts qualified investors.\n6. Hands over accurately.\n\nThis creates the right culture.",
+    },
+  ],
+};
+
+function loadRoles(): RolesContent {
+  if (typeof window === "undefined") return DEFAULT_ROLES;
+  try {
+    const raw = window.localStorage.getItem(ROLES_STORAGE_KEY);
+    if (!raw) return DEFAULT_ROLES;
+    const parsed = JSON.parse(raw);
+    if (parsed && Array.isArray(parsed.sections)) return parsed as RolesContent;
+  } catch {}
+  return DEFAULT_ROLES;
+}
+
+function RolesView() {
+  const { isLeadership } = useAuth();
+  const [content, setContent] = useState<RolesContent>(() => loadRoles());
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<RolesContent>(content);
+
+  function startEdit() {
+    setDraft(JSON.parse(JSON.stringify(content)));
+    setEditing(true);
+  }
+  function cancel() { setEditing(false); }
+  function save() {
+    setContent(draft);
+    try { window.localStorage.setItem(ROLES_STORAGE_KEY, JSON.stringify(draft)); } catch {}
+    setEditing(false);
+    toast.success("Roles & Responsibilities updated");
+  }
+  function resetDefaults() {
+    setDraft(JSON.parse(JSON.stringify(DEFAULT_ROLES)));
+  }
+
+  return (
+    <Section
+      title="Roles & Responsibilities"
+      subtitle={isLeadership ? "Editable by CEO/Leadership" : "Read-only — contact CEO for changes"}
+      right={
+        isLeadership && (
+          editing ? (
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={resetDefaults}>Reset</Button>
+              <Button size="sm" variant="ghost" onClick={cancel}><X className="w-4 h-4 mr-1" />Cancel</Button>
+              <Button size="sm" onClick={save}><Save className="w-4 h-4 mr-1" />Save</Button>
+            </div>
+          ) : (
+            <Button size="sm" variant="outline" onClick={startEdit}><Pencil className="w-4 h-4 mr-1" />Edit</Button>
+          )
+        )
+      }
+    >
+      <Card className="border rounded-2xl">
+        <CardContent className="p-6 space-y-5">
+          {editing ? (
+            <>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Title</label>
+                <Input
+                  value={draft.title}
+                  onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+                  className="mt-1 font-semibold"
+                />
+              </div>
+              {draft.sections.map((s, i) => (
+                <div key={i} className="border rounded-lg p-3 space-y-2 bg-slate-50/50">
+                  <Input
+                    value={s.heading}
+                    onChange={(e) => {
+                      const next = [...draft.sections];
+                      next[i] = { ...next[i], heading: e.target.value };
+                      setDraft({ ...draft, sections: next });
+                    }}
+                    className="font-semibold bg-white"
+                  />
+                  <Textarea
+                    value={s.body}
+                    onChange={(e) => {
+                      const next = [...draft.sections];
+                      next[i] = { ...next[i], body: e.target.value };
+                      setDraft({ ...draft, sections: next });
+                    }}
+                    rows={Math.min(14, Math.max(4, s.body.split("\n").length + 1))}
+                    className="bg-white font-mono text-sm"
+                  />
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold text-slate-900 border-b pb-3">{content.title}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-x-6 gap-y-5">
+                {content.sections.map((s, i) => (
+                  <div key={i} className="contents">
+                    <div className="font-semibold text-slate-800 pt-1">{s.heading}</div>
+                    <div className="whitespace-pre-wrap text-slate-700 text-sm leading-relaxed border-l-2 border-slate-200 pl-4">
+                      {s.body}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
     </Section>
   );
 }
