@@ -525,11 +525,12 @@ type HandoverPayload = {
 };
 
 function HandoverForm({
-  lead, leads, onSubmit,
+  lead, leads, onSubmit, onCancel,
 }: {
   lead: SheetRow;
   leads: SheetRow[];
   onSubmit: (p: HandoverPayload) => void;
+  onCancel: () => void;
 }) {
   const [form, setForm] = useState<HandoverPayload>({
     name: lead.name,
