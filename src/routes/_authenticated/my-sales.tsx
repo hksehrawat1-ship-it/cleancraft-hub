@@ -9,11 +9,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, ClipboardList, Save, X } from "lucide-react";
+  PackageCheck, BookOpen, HelpCircle, Headphones, TrendingUp, Search, ClipboardList, Save, X,
+  Target, Clock, DollarSign, Trophy, Activity, MessageSquare } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
