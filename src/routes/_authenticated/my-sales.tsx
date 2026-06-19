@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -307,7 +307,12 @@ function completionSteps(r: SheetRow) {
 function LeadTrackerSheet() {
   const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showHandoverForm, setShowHandoverForm] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    setShowHandoverForm(false);
+  }, [selectedId]);
 
   useMemo(() => {
     if (typeof window === "undefined") return;
@@ -338,6 +343,7 @@ function LeadTrackerSheet() {
       prev.push({ ...payload, leadId: id, submittedAt: new Date().toISOString() });
       window.localStorage.setItem(key, JSON.stringify(prev));
     } catch {}
+    setShowHandoverForm(false);
     alert("Submitted to Account Department.");
   }
 
@@ -481,21 +487,23 @@ function LeadTrackerSheet() {
           <Button
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => setShowHandoverForm(true)}
           >
             {selected?.handedOver ? "Handed Over ✓" : "Hand Over to Account Dept."}
           </Button>
         </div>
         {!selected && (
           <p className="text-xs text-muted-foreground mt-2">
-            Click any row to see its completion status and enable the Hand Over form.
+            Click any row to select a lead, then click the Hand Over button to open the form.
           </p>
         )}
 
-        {selected && (
+        {showHandoverForm && selected && (
           <HandoverForm
             lead={selected}
             leads={rows}
             onSubmit={(payload) => completeHandover(selected.id, payload)}
+            onCancel={() => setShowHandoverForm(false)}
           />
         )}
       </Section>
@@ -517,11 +525,12 @@ type HandoverPayload = {
 };
 
 function HandoverForm({
-  lead, leads, onSubmit,
+  lead, leads, onSubmit, onCancel,
 }: {
   lead: SheetRow;
   leads: SheetRow[];
   onSubmit: (p: HandoverPayload) => void;
+  onCancel: () => void;
 }) {
   const [form, setForm] = useState<HandoverPayload>({
     name: lead.name,
@@ -623,6 +632,7 @@ function HandoverForm({
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
+          <Button size="sm" variant="outline" onClick={onCancel}>Cancel</Button>
           <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
             Submit to Account Department
           </Button>
