@@ -149,7 +149,7 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "knowledge": return <KnowledgeCenterView />;
     case "questions": return <QuestionBankView />;
     case "audio": return <AudioLibraryView />;
-    case "reports": return <ReportsView leads={leads} />;
+    case "performance": return <PerformanceView leads={leads} profiles={profiles} />;
   }
 }
 
