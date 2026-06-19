@@ -308,6 +308,7 @@ function LeadTrackerSheet() {
   const [rows, setRows] = useState<SheetRow[]>(() => loadRows());
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [showHandoverForm, setShowHandoverForm] = useState(false);
 
   useMemo(() => {
     if (typeof window === "undefined") return;
@@ -330,9 +331,20 @@ function LeadTrackerSheet() {
     persist(next.length ? next : [emptyRow()]);
     if (selectedId === id) setSelectedId(null);
   }
-  function handover(id: string) {
+  function openHandover() {
+    if (!selectedId) return;
+    setShowHandoverForm(true);
+  }
+  function completeHandover(id: string, payload: HandoverPayload) {
     update(id, { handedOver: true });
-    alert("Lead handed over to the Account Department.");
+    try {
+      const key = "ccos.handovers.v1";
+      const prev = JSON.parse(window.localStorage.getItem(key) || "[]");
+      prev.push({ ...payload, leadId: id, submittedAt: new Date().toISOString() });
+      window.localStorage.setItem(key, JSON.stringify(prev));
+    } catch {}
+    setShowHandoverForm(false);
+    alert("Submitted to Account Department.");
   }
 
   const selected = rows.find((r) => r.id === selectedId) || null;
