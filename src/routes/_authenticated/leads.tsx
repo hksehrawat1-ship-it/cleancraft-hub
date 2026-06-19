@@ -528,6 +528,10 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return <div><Label>{label}</Label>{children}</div>;
 }
 
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return <div className="mt-4 mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{children}</div>;
+}
+
 function SelectField({ label, value, onChange, options }: {
   label: string; value: string | null | undefined; onChange: (v: string) => void; options: string[];
 }) {
