@@ -441,7 +441,7 @@ export function LeadDialog({
 
         <SectionLabel>Personal Details</SectionLabel>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <Field label="Lead Name *"><Input value={form.name ?? ""} onChange={(e) => update("name", e.target.value)} /></Field>
+          <Field label="Lead Name"><Input value={form.name ?? ""} onChange={(e) => update("name", e.target.value)} /></Field>
           <Field label="Mobile Number"><Input value={form.phone ?? ""} onChange={(e) => update("phone", e.target.value)} /></Field>
           <Field label="Email"><Input type="email" value={form.email ?? ""} onChange={(e) => update("email", e.target.value)} /></Field>
           <Field label="City"><Input value={form.city ?? ""} onChange={(e) => update("city", e.target.value)} /></Field>
