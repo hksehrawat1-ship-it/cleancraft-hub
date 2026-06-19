@@ -35,16 +35,16 @@ type ViewKey =
   | "dashboard" | "roles" | "leads" | "followups" | "meetings" | "bookings"
   | "knowledge" | "questions" | "audio" | "reports";
 
-const MENU: { key: ViewKey; label: string; icon: any; star?: boolean }[] = [
+const MENU: { key: ViewKey; label: string; icon: any }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { key: "roles", label: "Roles & Responsibilities", icon: ClipboardList },
-  { key: "leads", label: "Leads", icon: Users, star: true },
-  { key: "followups", label: "Follow-ups", icon: CalendarClock, star: true },
+  { key: "leads", label: "Leads", icon: Users },
+  { key: "followups", label: "Follow-ups", icon: CalendarClock },
   { key: "meetings", label: "Meetings", icon: Video },
   { key: "bookings", label: "Bookings", icon: PackageCheck },
-  { key: "knowledge", label: "Knowledge Center", icon: BookOpen, star: true },
-  { key: "questions", label: "Question Bank", icon: HelpCircle, star: true },
-  { key: "audio", label: "Audio Library", icon: Headphones, star: true },
+  { key: "knowledge", label: "Knowledge Center", icon: BookOpen },
+  { key: "questions", label: "Question Bank", icon: HelpCircle },
+  { key: "audio", label: "Audio Library", icon: Headphones },
   { key: "reports", label: "Reports", icon: BarChart3 },
 ];
 
