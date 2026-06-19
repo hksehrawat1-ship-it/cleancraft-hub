@@ -214,12 +214,9 @@ function SalesOpsDashboard() {
 
       {/* Section 5: Booking Tracker */}
       <Section title="Booking Tracker">
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <BookingStat label="Engagement Letter Sent" {...m.booking.elSent} />
-          <BookingStat label="EL Fee Pending" {...m.booking.elFeePending} tone="text-orange-600" />
-          <BookingStat label="EL Fee Received" {...m.booking.elFeeReceived} tone="text-emerald-600" />
-          <BookingStat label="Handover Pending" {...m.booking.handoverPending} />
-          <BookingStat label="Handover Completed" {...m.booking.handoverDone} tone="text-emerald-700" />
+        <div className="grid grid-cols-2 gap-3">
+          <BookingStat label="EL Fee Received : No." {...m.booking.elFeePending} tone="text-orange-600" />
+          <BookingStat label="Hand over to the Account department" {...m.booking.handoverPending} tone="text-blue-600" />
         </div>
       </Section>
 
