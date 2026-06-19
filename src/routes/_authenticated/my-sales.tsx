@@ -24,10 +24,6 @@ export const Route = createFileRoute("/_authenticated/my-sales")({
   component: SalesOpsDashboard,
 });
 
-const PIPELINE_STAGES = [
-  "New Lead", "Contacted", "Qualified", "Proposal Sent", "Follow-up",
-  "Meeting Done", "Engagement Letter Pending", "Booking Received", "Handover Completed",
-];
 
 const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as const;
 type Classification = (typeof CLASSIFICATIONS)[number];
