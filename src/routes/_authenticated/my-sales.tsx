@@ -214,18 +214,6 @@ function DashboardView({ leads, profiles, onSaved }: ViewProps) {
         </div>
       </Section>
 
-      <Section title="My KPIs">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          <Stat label="Total Leads" value={m.kpi.total} />
-          <Stat label="Qualified Leads" value={m.kpi.qualified} />
-          <Stat label="Proposal Sent" value={m.kpi.proposalSent} />
-          <Stat label="Meetings Done" value={m.kpi.meetingsDone} />
-          <Stat label="Engagement Fees Collected" value={m.kpi.feesCollected.count} sub={`₹${m.kpi.feesCollected.value.toLocaleString("en-IN")}`} tone="text-emerald-700" />
-          <Stat label="Bookings Received" value={m.kpi.bookingsReceived} tone="text-emerald-600" />
-          <Stat label="Conversion %" value={m.kpi.conversion} sub="Handover / Total" />
-          <Stat label="Overdue Follow-ups" value={m.kpi.overdue} tone="text-red-600" />
-        </div>
-      </Section>
 
       <Section title="My Follow-ups (Next 7 Days)">
         <LeadTable leads={myFollowups} profiles={profiles} onSaved={onSaved} />
