@@ -632,6 +632,7 @@ function HandoverForm({
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
+          <Button size="sm" variant="outline" onClick={onCancel}>Cancel</Button>
           <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
             Submit to Account Department
           </Button>
