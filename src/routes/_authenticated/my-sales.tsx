@@ -8,8 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil,
-  LayoutDashboard, Users, CalendarClock, Video, FileText, FileSignature,
-  PackageCheck, XCircle, Handshake } from "lucide-react";
+  LayoutDashboard, Users, CalendarClock, Video,
+  PackageCheck, BookOpen, HelpCircle, Headphones, BarChart3, Search, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   LeadDialog, classificationVariant, type Lead,
@@ -29,19 +30,19 @@ const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as c
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "dashboard" | "leads" | "followups" | "meetings" | "proposals"
-  | "engagement" | "bookings" | "lost" | "handover";
+  | "dashboard" | "leads" | "followups" | "meetings" | "bookings"
+  | "knowledge" | "questions" | "audio" | "reports";
 
-const MENU: { key: ViewKey; label: string; icon: any }[] = [
+const MENU: { key: ViewKey; label: string; icon: any; star?: boolean }[] = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "leads", label: "Leads", icon: Users },
-  { key: "followups", label: "Follow-ups", icon: CalendarClock },
+  { key: "leads", label: "Leads", icon: Users, star: true },
+  { key: "followups", label: "Follow-ups", icon: CalendarClock, star: true },
   { key: "meetings", label: "Meetings", icon: Video },
-  { key: "proposals", label: "Proposals", icon: FileText },
-  { key: "engagement", label: "Engagement Letters", icon: FileSignature },
   { key: "bookings", label: "Bookings", icon: PackageCheck },
-  { key: "lost", label: "Lost Leads", icon: XCircle },
-  { key: "handover", label: "Hand over", icon: Handshake },
+  { key: "knowledge", label: "Knowledge Center", icon: BookOpen, star: true },
+  { key: "questions", label: "Question Bank", icon: HelpCircle, star: true },
+  { key: "audio", label: "Audio Library", icon: Headphones, star: true },
+  { key: "reports", label: "Reports", icon: BarChart3 },
 ];
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -106,7 +107,8 @@ function SalesOpsDashboard() {
                       )}
                     >
                       <Icon className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")} />
-                      {m.label}
+                      <span className="flex-1">{m.label}</span>
+                      {m.star && <Star className={cn("w-3.5 h-3.5", active ? "text-white fill-white" : "text-amber-500 fill-amber-500")} />}
                     </button>
                   );
                 })}
@@ -136,11 +138,11 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "proposals": return <ProposalsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "engagement": return <EngagementView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "bookings": return <BookingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "lost": return <LostView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "handover": return <HandoverView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "knowledge": return <KnowledgeCenterView />;
+    case "questions": return <QuestionBankView />;
+    case "audio": return <AudioLibraryView />;
+    case "reports": return <ReportsView leads={leads} />;
   }
 }
 
@@ -625,4 +627,160 @@ function headerLabel(c: Col): string {
 
 function Th({ children }: { children?: React.ReactNode }) {
   return <th className="px-4 py-2 font-medium text-muted-foreground">{children}</th>;
+}
+
+/* ============== New Sales Modules ============== */
+
+const KNOWLEDGE_SECTIONS = [
+  { title: "Sales Pitch", desc: "Master scripts and pitch templates for franchise sales." },
+  { title: "Proposal", desc: "Standard proposal templates and customization guides." },
+  { title: "FAQ", desc: "Frequently asked questions from prospects with verified answers." },
+  { title: "Competitor Comparison", desc: "Side-by-side comparisons with key competitors." },
+  { title: "Objection Handling", desc: "Proven responses to the most common objections." },
+  { title: "Training Videos", desc: "On-demand video training from senior salespeople." },
+  { title: "Laundry Industry Data", desc: "Market size, growth, and industry benchmarks." },
+];
+
+function KnowledgeCenterView() {
+  return (
+    <Section title="Knowledge Center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {KNOWLEDGE_SECTIONS.map((s) => (
+          <Card key={s.title} className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold">{s.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{s.desc}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+const SAMPLE_QA: { q: string; a: string }[] = [
+  { q: "Royalty", a: "Royalty is 6% of monthly gross revenue, billed monthly in arrears." },
+  { q: "Territory", a: "Exclusive territory of 3 km radius around the store location, protected for 5 years." },
+  { q: "Manpower", a: "Typical store needs 4–6 staff: 1 manager, 2–3 operators, 1–2 delivery." },
+  { q: "ROI", a: "Average payback period is 18–24 months at standard footfall assumptions." },
+];
+
+function QuestionBankView() {
+  const [query, setQuery] = useState("");
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return SAMPLE_QA;
+    return SAMPLE_QA.filter((x) => x.q.toLowerCase().includes(q) || x.a.toLowerCase().includes(q));
+  }, [query]);
+
+  return (
+    <Section title="Question Bank">
+      <div className="space-y-4">
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Search: "Royalty", "Territory", "Manpower", "ROI"…'
+            className="pl-9"
+          />
+        </div>
+
+        <div className="space-y-2">
+          {matches.length === 0 ? (
+            <Card>
+              <CardContent className="p-6 text-center space-y-3">
+                <div className="text-sm text-muted-foreground">No answer found for "{query}".</div>
+                <Button onClick={() => setSubmitOpen(true)}>Submit Question to Sales Head</Button>
+              </CardContent>
+            </Card>
+          ) : (
+            matches.map((x) => (
+              <Card key={x.q}>
+                <CardContent className="p-4">
+                  <div className="text-sm font-semibold">{x.q}</div>
+                  <div className="text-sm text-muted-foreground mt-1">{x.a}</div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {submitOpen && (
+          <Card>
+            <CardContent className="p-4 space-y-2">
+              <div className="text-sm font-medium">Submit new question</div>
+              <Input placeholder="Type your question…" />
+              <div className="flex gap-2">
+                <Button size="sm">Send to Sales Head</Button>
+                <Button size="sm" variant="ghost" onClick={() => setSubmitOpen(false)}>Cancel</Button>
+              </div>
+              <div className="text-xs text-muted-foreground">Approved answers will appear in the bank.</div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+const AUDIO_CATEGORIES = [
+  { title: "Best Qualification Calls", count: 0 },
+  { title: "Best Closing Calls", count: 0 },
+  { title: "Lost Calls", count: 0 },
+  { title: "Competitor Comparison Calls", count: 0 },
+  { title: "Training Calls", count: 0 },
+];
+
+function AudioLibraryView() {
+  return (
+    <Section title="Audio Library">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {AUDIO_CATEGORIES.map((c) => (
+          <Card key={c.title} className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-5">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center shrink-0">
+                  <Headphones className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold">{c.title}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{c.count} recording{c.count === 1 ? "" : "s"}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground mt-3">New salespeople learn here. Upload best calls to share with the team.</p>
+    </Section>
+  );
+}
+
+function ReportsView({ leads }: { leads: Lead[] }) {
+  const closures = leads.filter((l) => isHandoverDone(l.lead_stage)).length;
+  const elCollected = leads.filter((l) => l.engagement_letter_fee_status === "Received");
+  const elValue = elCollected.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
+  const followups = leads.filter((l) => !!l.followup_date).length;
+  const conversion = leads.length ? Math.round((closures / leads.length) * 100) : 0;
+
+  return (
+    <Section title="Personal Reports">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <Stat label="Leads" value={leads.length} />
+        <Stat label="Closures" value={closures} tone="text-emerald-700" />
+        <Stat label="Follow-ups" value={followups} />
+        <Stat label="Conversion %" value={conversion} sub="Handover / Total" />
+        <Stat label="EL Collection" value={elCollected.length} sub={`₹${elValue.toLocaleString("en-IN")}`} tone="text-emerald-700" />
+      </div>
+    </Section>
+  );
 }
