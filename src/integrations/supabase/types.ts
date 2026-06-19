@@ -407,6 +407,42 @@ export type Database = {
           },
         ]
       }
+      sales_notes: {
+        Row: {
+          checklist: Json
+          color: string
+          content: string | null
+          created_at: string
+          created_by: string
+          id: string
+          pinned: boolean
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          checklist?: Json
+          color?: string
+          content?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          pinned?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checklist?: Json
+          color?: string
+          content?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          pinned?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       stores: {
         Row: {
           city: string | null
