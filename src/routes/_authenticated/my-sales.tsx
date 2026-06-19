@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Phone, MessageCircle, ExternalLink, Pencil } from "lucide-react";
 import {
-  LeadDialog, classificationVariant, STAGES, type Lead,
+  LeadDialog, classificationVariant, type Lead,
 } from "./leads";
 
 export const Route = createFileRoute("/_authenticated/my-sales")({
