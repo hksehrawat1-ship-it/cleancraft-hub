@@ -63,14 +63,16 @@ export const CEO_GROUPS: CeoGroup[] = [
       { key: "smm", label: "Social Media Account Manager", icon: Megaphone, blurb: "Content calendar, reach, engagement, lead generation from organic social." },
       { key: "video", label: "Video Editor", icon: Video, blurb: "Edit pipeline, deliverables, turnaround time, asset library." },
     ],
-  },
-  {
-    key: "sales-dept",
-    label: "2.1 Sales Department",
-    icon: Briefcase,
-    items: [
-      { key: "sales-head", label: "Sales Head", icon: Briefcase, blurb: "Team pipeline, conversion %, revenue forecast, coaching notes." },
-      { key: "sales-exec", label: "Sales Executive", icon: UserCheck, blurb: "Personal leads, follow-ups, bookings, win rate vs target." },
+    subGroups: [
+      {
+        key: "sales-dept",
+        label: "1.1 Sales Department",
+        icon: Briefcase,
+        items: [
+          { key: "sales-head", label: "Sales Head", icon: Briefcase, blurb: "Team pipeline, conversion %, revenue forecast, coaching notes." },
+          { key: "sales-exec", label: "Sales Executive", icon: UserCheck, blurb: "Personal leads, follow-ups, bookings, win rate vs target." },
+        ],
+      },
     ],
   },
   {
@@ -89,7 +91,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     icon: HeartHandshake,
     items: [
       { key: "rm", label: "Relationship Manager", icon: HeartHandshake, blurb: "Store health, NPS, escalations, monthly review notes." },
-      { key: "perf-mkt", label: "Performance Marketing Executive", icon: TrendingUp, blurb: "Ad spend, CAC, ROAS, campaign performance by store." },
+      { key: "perf-mktps", label: "Performance Marketing Executive", icon: TrendingUp, blurb: "Ad spend, CAC, ROAS, campaign performance by store." },
       { key: "btl", label: "BTL Executive", icon: Tent, blurb: "Activations, footfall generated, cost per lead, geo coverage." },
       { key: "crm", label: "CRM Executive", icon: MessageSquare, blurb: "Retention cohorts, repeat rate, win-back campaigns, churn signals." },
       { key: "training", label: "Training and manpower Centre", icon: Users, blurb: "Staff training, recruitment pipeline, manpower allocation by store." },
@@ -131,7 +133,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "app-pos",
-    label: "9. App & Pos Centre",
+    label: "8. App & Pos Centre",
     icon: Smartphone,
     items: [
       { key: "developer", label: "Developer", icon: Code, blurb: "App & POS development, releases, bug tracking, feature backlog." },
@@ -139,7 +141,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "hr",
-    label: "10. HR Dept.",
+    label: "9. HR Dept.",
     icon: Users,
     items: [
       { key: "hr-head", label: "HR Head", icon: UserCheck, blurb: "Recruitment strategy, employee relations, policy, org development." },
