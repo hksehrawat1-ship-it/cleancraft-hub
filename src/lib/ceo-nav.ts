@@ -27,6 +27,8 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Smartphone,
+  Code,
   type LucideIcon,
 } from "lucide-react";
 
