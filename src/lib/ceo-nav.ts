@@ -122,4 +122,12 @@ export const CEO_GROUPS: CeoGroup[] = [
       { key: "facility-mgr", label: "Facility Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
     ],
   },
+  {
+    key: "app-pos",
+    label: "App & Pos Centre",
+    icon: Smartphone,
+    items: [
+      { key: "developer", label: "Developer", icon: Code, blurb: "App & POS development, releases, bug tracking, feature backlog." },
+    ],
+  },
 ];
