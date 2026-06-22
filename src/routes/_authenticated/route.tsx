@@ -100,6 +100,33 @@ function AuthedLayout() {
                     {CEO_GROUPS.map((g, idx) => {
                       const GIcon = g.icon;
                       const isOpen = openGroups[g.key];
+
+                      // Company Overview: no dropdown — single link that opens the overview panel on /master
+                      if (g.key === "company") {
+                        const active = pathname === "/master" && hash.startsWith("company");
+                        return (
+                          <div key={g.key} className="mb-0.5">
+                            <Link
+                              to="/master"
+                              hash="company"
+                              onClick={() => setOpen(false)}
+                              className={cn(
+                                "w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium",
+                                active
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
+                              )}
+                            >
+                              <span className="text-muted-foreground tabular-nums text-xs w-4 shrink-0">
+                                {idx + 1}.
+                              </span>
+                              <GIcon className="w-4 h-4 shrink-0" />
+                              <span className="truncate">{g.label}</span>
+                            </Link>
+                          </div>
+                        );
+                      }
+
                       return (
                         <div key={g.key} className="mb-0.5">
                           <button

@@ -1,8 +1,8 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Crown, AlertTriangle } from "lucide-react";
+import { Crown, AlertTriangle, LayoutDashboard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CEO_GROUPS } from "@/lib/ceo-nav";
+import { CEO_GROUPS, type CeoItem } from "@/lib/ceo-nav";
 
 const RED_FLAGS = [
   "Project delayed 7 days",
@@ -10,6 +10,15 @@ const RED_FLAGS = [
   "Salesperson no activity 3 days",
   "RM follow-up pending",
   "Store sales below target",
+];
+
+// Group the Company Overview items into tracking sections.
+const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
+  { title: "Revenue", keys: ["rev-franchise", "rev-course", "rev-store"] },
+  { title: "Stores", keys: ["stores-active", "stores-setup", "stores-launch"] },
+  { title: "Projects", keys: ["proj-ontime", "proj-delayed"] },
+  { title: "Complaints", keys: ["comp-open", "comp-escalated"] },
+  { title: "Cash", keys: ["cash-collection", "cash-pending"] },
 ];
 
 export const Route = createFileRoute("/_authenticated/master")({
@@ -20,15 +29,33 @@ export const Route = createFileRoute("/_authenticated/master")({
 function MasterDashboard() {
   const hash = useRouterState({ select: (s) => s.location.hash });
   const [selected, setSelected] = useState<{ group: string; item: string } | null>(null);
+  const [companyOpen, setCompanyOpen] = useState(false);
 
   useEffect(() => {
     if (!hash) {
       setSelected(null);
+      setCompanyOpen(false);
       return;
     }
+    if (hash === "company" || hash.startsWith("company:")) {
+      setCompanyOpen(true);
+      const [, item] = hash.split(":");
+      if (item) {
+        setSelected({ group: "company", item });
+      } else {
+        setSelected(null);
+      }
+      return;
+    }
+    setCompanyOpen(false);
     const [group, item] = hash.split(":");
     if (group && item) setSelected({ group, item });
   }, [hash]);
+
+  const companyGroup = CEO_GROUPS.find((g) => g.key === "company");
+  const companyItems = new Map<string, CeoItem>(
+    (companyGroup?.items ?? []).map((it) => [it.key, it]),
+  );
 
   const current = (() => {
     if (!selected) return null;
@@ -69,11 +96,57 @@ function MasterDashboard() {
         </CardContent>
       </Card>
 
-
-
-      {!current ? (
+      {companyOpen && companyGroup ? (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <LayoutDashboard className="w-5 h-5 text-primary" />
+              Company Overview
+            </CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Live tracking across revenue, stores, projects, complaints and cash.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {COMPANY_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+                  {section.title}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {section.keys.map((k) => {
+                    const it = companyItems.get(k);
+                    if (!it) return null;
+                    const Icon = it.icon;
+                    const active = selected?.group === "company" && selected.item === k;
+                    return (
+                      <a
+                        key={k}
+                        href={`#company:${k}`}
+                        className={`rounded-lg border p-3 bg-muted/20 hover:bg-muted/40 transition-colors block ${
+                          active ? "border-primary ring-1 ring-primary/30" : ""
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          <Icon className="w-4 h-4 text-primary" />
+                          <span className="truncate">{it.label.replace(/^[^·]+·\s*/, "")}</span>
+                        </div>
+                        <div className="mt-2 flex items-end justify-between">
+                          <div className="text-2xl font-semibold tabular-nums">—</div>
+                          <div className="text-[11px] text-muted-foreground">Live</div>
+                        </div>
+                        <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2">{it.blurb}</p>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ) : !current ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          {CEO_GROUPS.map((g) => {
+          {CEO_GROUPS.filter((g) => g.key !== "company").map((g) => {
             const GIcon = g.icon;
             return (
               <Card key={g.key}>
