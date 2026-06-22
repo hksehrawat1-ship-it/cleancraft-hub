@@ -49,6 +49,28 @@ function MasterDashboard() {
         </div>
       </div>
 
+      <Card className="border-destructive/40 bg-destructive/5">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2 text-destructive">
+            <AlertTriangle className="w-4 h-4" />
+            Red Flag Center
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          {RED_FLAGS.map((flag) => (
+            <div
+              key={flag}
+              className="flex items-center gap-2 text-sm rounded-md border border-destructive/30 bg-background px-3 py-2"
+            >
+              <span aria-hidden>🚨</span>
+              <span className="text-foreground">{flag}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+
+
       {!current ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {CEO_GROUPS.map((g) => {
