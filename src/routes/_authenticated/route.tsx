@@ -49,8 +49,12 @@ function AuthedLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const hash = useRouterState({ select: (s) => s.location.hash });
   const [open, setOpen] = useState(false);
+  const allGroupKeys = CEO_GROUPS.flatMap((g) => [
+    g.key,
+    ...(g.subGroups?.map((sg) => `${g.key}/${sg.key}`) ?? []),
+  ]);
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
-    Object.fromEntries(CEO_GROUPS.map((g) => [g.key, true])),
+    Object.fromEntries(allGroupKeys.map((k) => [k, true])),
   );
 
   async function signOut() {
