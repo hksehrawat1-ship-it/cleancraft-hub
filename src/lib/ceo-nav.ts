@@ -62,6 +62,13 @@ export const CEO_GROUPS: CeoGroup[] = [
     items: [
       { key: "smm", label: "Social Media Account Manager", icon: Megaphone, blurb: "Content calendar, reach, engagement, lead generation from organic social." },
       { key: "video", label: "Video Editor", icon: Video, blurb: "Edit pipeline, deliverables, turnaround time, asset library." },
+    ],
+  },
+  {
+    key: "sales-dept",
+    label: "2.1 Sales Department",
+    icon: Briefcase,
+    items: [
       { key: "sales-head", label: "Sales Head", icon: Briefcase, blurb: "Team pipeline, conversion %, revenue forecast, coaching notes." },
       { key: "sales-exec", label: "Sales Executive", icon: UserCheck, blurb: "Personal leads, follow-ups, bookings, win rate vs target." },
     ],
@@ -128,6 +135,14 @@ export const CEO_GROUPS: CeoGroup[] = [
     icon: Smartphone,
     items: [
       { key: "developer", label: "Developer", icon: Code, blurb: "App & POS development, releases, bug tracking, feature backlog." },
+    ],
+  },
+  {
+    key: "hr",
+    label: "10. HR Dept.",
+    icon: Users,
+    items: [
+      { key: "hr-head", label: "HR Head", icon: UserCheck, blurb: "Recruitment strategy, employee relations, policy, org development." },
     ],
   },
 ];
