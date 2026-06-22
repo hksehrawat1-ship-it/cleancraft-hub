@@ -170,6 +170,53 @@ function AuthedLayout() {
                                   </li>
                                 );
                               })}
+                              {g.subGroups?.map((sg) => {
+                                const sgKey = `${g.key}/${sg.key}`;
+                                const sgOpen = openGroups[sgKey] ?? true;
+                                return (
+                                  <li key={sg.key} className="mt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => setOpenGroups((s) => ({ ...s, [sgKey]: !s[sgKey] }))}
+                                      className="w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-[13px] font-medium hover:bg-sidebar-accent/60 text-sidebar-foreground/75"
+                                    >
+                                      <span className="flex items-center gap-2 min-w-0">
+                                        <sg.icon className="w-3.5 h-3.5 shrink-0" />
+                                        <span className="truncate">{sg.label}</span>
+                                      </span>
+                                      <ChevronRight
+                                        className={cn("w-3.5 h-3.5 transition-transform shrink-0", sgOpen ? "rotate-90" : "")}
+                                      />
+                                    </button>
+                                    {sgOpen && (
+                                      <ul className="mt-0.5 ml-5 border-l border-sidebar-border/40 pl-2 space-y-0.5">
+                                        {sg.items.map((sit) => {
+                                          const SIcon = sit.icon;
+                                          const sActive = pathname === "/master" && hash === `${g.key}:${sit.key}`;
+                                          return (
+                                            <li key={sit.key}>
+                                              <Link
+                                                to="/master"
+                                                hash={`${g.key}:${sit.key}`}
+                                                onClick={() => setOpen(false)}
+                                                className={cn(
+                                                  "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[12px] transition-colors",
+                                                  sActive
+                                                    ? "bg-primary/15 text-primary font-medium"
+                                                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground",
+                                                )}
+                                              >
+                                                <SIcon className="w-3 h-3 shrink-0" />
+                                                <span className="truncate">{sit.label}</span>
+                                              </Link>
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    )}
+                                  </li>
+                                );
+                              })}
                             </ul>
                           )}
                         </div>
