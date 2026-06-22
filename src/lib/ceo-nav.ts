@@ -91,7 +91,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     icon: HeartHandshake,
     items: [
       { key: "rm", label: "Relationship Manager", icon: HeartHandshake, blurb: "Store health, NPS, escalations, monthly review notes." },
-      { key: "perf-mktps", label: "Performance Marketing Executive", icon: TrendingUp, blurb: "Ad spend, CAC, ROAS, campaign performance by store." },
+      { key: "perf-mkt", label: "Performance Marketing Executive", icon: TrendingUp, blurb: "Ad spend, CAC, ROAS, campaign performance by store." },
       { key: "btl", label: "BTL Executive", icon: Tent, blurb: "Activations, footfall generated, cost per lead, geo coverage." },
       { key: "crm", label: "CRM Executive", icon: MessageSquare, blurb: "Retention cohorts, repeat rate, win-back campaigns, churn signals." },
       { key: "training", label: "Training and manpower Centre", icon: Users, blurb: "Staff training, recruitment pipeline, manpower allocation by store." },
