@@ -36,6 +36,7 @@ export function useAuth() {
       });
   }, [user]);
 
-  const isLeadership = roles.includes("ceo") || roles.includes("coo");
-  return { session, user, roles, isLeadership, loading };
+  const isCEO = roles.includes("ceo");
+  const isLeadership = isCEO || roles.includes("coo");
+  return { session, user, roles, isCEO, isLeadership, loading };
 }
