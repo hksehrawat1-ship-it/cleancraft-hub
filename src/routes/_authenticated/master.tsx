@@ -60,7 +60,16 @@ function MasterDashboard() {
   const current = (() => {
     if (!selected) return null;
     const g = CEO_GROUPS.find((x) => x.key === selected.group);
-    const i = g?.items.find((x) => x.key === selected.item);
+    let i = g?.items.find((x) => x.key === selected.item);
+    if (!i && g?.subGroups) {
+      for (const sg of g.subGroups) {
+        const found = sg.items.find((x) => x.key === selected.item);
+        if (found) {
+          i = found;
+          break;
+        }
+      }
+    }
     return g && i ? { g, i } : null;
   })();
 
@@ -166,6 +175,25 @@ function MasterDashboard() {
                       <it.icon className="w-3.5 h-3.5 text-muted-foreground" />
                       {it.label}
                     </a>
+                  ))}
+                  {g.subGroups?.map((sg) => (
+                    <div key={sg.key} className="mt-2">
+                      <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1 px-2">
+                        {sg.label}
+                      </div>
+                      <div className="space-y-0.5">
+                        {sg.items.map((sit) => (
+                          <a
+                            key={sit.key}
+                            href={`#${g.key}:${sit.key}`}
+                            className="w-full text-left text-sm px-2 py-1.5 rounded-md hover:bg-muted/60 flex items-center gap-2"
+                          >
+                            <sit.icon className="w-3.5 h-3.5 text-muted-foreground" />
+                            {sit.label}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </CardContent>
               </Card>
