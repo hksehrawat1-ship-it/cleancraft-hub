@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 
 export type CeoItem = { key: string; label: string; icon: LucideIcon; blurb: string };
-export type CeoGroup = { key: string; label: string; icon: LucideIcon; items: CeoItem[] };
+export type CeoGroup = { key: string; label: string; icon: LucideIcon; items: CeoItem[]; subGroups?: CeoGroup[] };
 
 export const CEO_GROUPS: CeoGroup[] = [
   {
