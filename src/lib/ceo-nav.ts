@@ -15,6 +15,17 @@ import {
   Truck,
   Package,
   Building2,
+  LayoutDashboard,
+  IndianRupee,
+  Store,
+  Rocket,
+  Wrench,
+  AlertOctagon,
+  AlertTriangle,
+  Wallet,
+  Clock,
+  CheckCircle2,
+  XCircle,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +33,25 @@ export type CeoItem = { key: string; label: string; icon: LucideIcon; blurb: str
 export type CeoGroup = { key: string; label: string; icon: LucideIcon; items: CeoItem[] };
 
 export const CEO_GROUPS: CeoGroup[] = [
+  {
+    key: "company",
+    label: "Company Overview",
+    icon: LayoutDashboard,
+    items: [
+      { key: "rev-franchise", label: "Revenue · Franchise", icon: IndianRupee, blurb: "Franchise revenue: signups, fees collected, pipeline value." },
+      { key: "rev-course", label: "Revenue · Course", icon: IndianRupee, blurb: "Course revenue: enrolments, fees, refunds." },
+      { key: "rev-store", label: "Revenue · Store", icon: IndianRupee, blurb: "Store revenue: monthly sales across all stores." },
+      { key: "stores-active", label: "Stores · Active", icon: Store, blurb: "All currently operational stores." },
+      { key: "stores-setup", label: "Stores · Under Setup", icon: Wrench, blurb: "Stores in setup phase before launch." },
+      { key: "stores-launch", label: "Stores · Launch (This month)", icon: Rocket, blurb: "Stores scheduled to launch this month." },
+      { key: "proj-ontime", label: "Projects · On Time", icon: CheckCircle2, blurb: "Projects tracking on schedule." },
+      { key: "proj-delayed", label: "Projects · Delayed", icon: Clock, blurb: "Projects past their planned milestone dates." },
+      { key: "comp-open", label: "Complaints · Open", icon: AlertOctagon, blurb: "Open complaints across all stores." },
+      { key: "comp-escalated", label: "Complaints · Escalated", icon: AlertTriangle, blurb: "Complaints escalated to leadership." },
+      { key: "cash-collection", label: "Cash · Collection", icon: Wallet, blurb: "Cash collected: receipts vs target." },
+      { key: "cash-pending", label: "Cash · Pending", icon: XCircle, blurb: "Pending dues and receivables." },
+    ],
+  },
   {
     key: "revenue",
     label: "Revenue Engine",
