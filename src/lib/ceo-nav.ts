@@ -1,4 +1,5 @@
 import {
+  Users,
   Megaphone,
   Video,
   Briefcase,
