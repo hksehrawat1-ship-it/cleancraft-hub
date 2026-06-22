@@ -60,7 +60,16 @@ function MasterDashboard() {
   const current = (() => {
     if (!selected) return null;
     const g = CEO_GROUPS.find((x) => x.key === selected.group);
-    const i = g?.items.find((x) => x.key === selected.item);
+    let i = g?.items.find((x) => x.key === selected.item);
+    if (!i && g?.subGroups) {
+      for (const sg of g.subGroups) {
+        const found = sg.items.find((x) => x.key === selected.item);
+        if (found) {
+          i = found;
+          break;
+        }
+      }
+    }
     return g && i ? { g, i } : null;
   })();
 
