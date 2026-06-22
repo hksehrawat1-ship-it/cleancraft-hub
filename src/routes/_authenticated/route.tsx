@@ -117,9 +117,6 @@ function AuthedLayout() {
                                   : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
                               )}
                             >
-                              <span className="text-muted-foreground tabular-nums text-xs w-4 shrink-0">
-                                {idx + 1}.
-                              </span>
                               <GIcon className="w-4 h-4 shrink-0" />
                               <span className="truncate">{g.label}</span>
                             </Link>
@@ -135,9 +132,6 @@ function AuthedLayout() {
                             className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-medium hover:bg-sidebar-accent/60"
                           >
                             <span className="flex items-center gap-2 min-w-0">
-                              <span className="text-muted-foreground tabular-nums text-xs w-4 shrink-0">
-                                {idx + 1}.
-                              </span>
                               <GIcon className="w-4 h-4 shrink-0" />
                               <span className="truncate">{g.label}</span>
                             </span>

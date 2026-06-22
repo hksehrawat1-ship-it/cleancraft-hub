@@ -57,7 +57,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "revenue",
-    label: "Revenue Engine",
+    label: "1. Revenue Engine",
     icon: TrendingUp,
     items: [
       { key: "smm", label: "Social Media Account Manager", icon: Megaphone, blurb: "Content calendar, reach, engagement, lead generation from organic social." },
@@ -75,7 +75,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "ops",
-    label: "Operation Engine",
+    label: "2. Operation Engine",
     icon: ClipboardList,
     items: [
       { key: "proj-coord", label: "Project Coordinator", icon: ClipboardList, blurb: "Project intake, scheduling, vendor coordination, status reports." },
@@ -85,7 +85,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "store-success",
-    label: "Store Success Engine",
+    label: "3. Store Success Engine",
     icon: HeartHandshake,
     items: [
       { key: "rm", label: "Relationship Manager", icon: HeartHandshake, blurb: "Store health, NPS, escalations, monthly review notes." },
@@ -97,7 +97,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "tech",
-    label: "Tech Engine",
+    label: "4. Tech Engine",
     icon: Cpu,
     items: [
       { key: "engineer", label: "Engineer", icon: Cpu, blurb: "Sprint board, uptime, incidents, release notes." },
@@ -105,7 +105,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "accounts",
-    label: "Accounts",
+    label: "5. Accounts",
     icon: Calculator,
     items: [
       { key: "accounts-master", label: "Accounts Master", icon: Calculator, blurb: "Books overview, ledgers, GST, audit-ready reports." },
@@ -114,7 +114,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "supply",
-    label: "Supply Chain & Logistics",
+    label: "6. Supply Chain & Logistics",
     icon: Truck,
     items: [
       { key: "logistics", label: "Logistic Executive", icon: Truck, blurb: "Dispatches, in-transit, delivery SLA, freight cost." },
@@ -123,7 +123,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "facility",
-    label: "Facility",
+    label: "7. Facility",
     icon: Building2,
     items: [
       { key: "facility-mgr", label: "Facility Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
@@ -131,7 +131,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "app-pos",
-    label: "App & Pos Centre",
+    label: "9. App & Pos Centre",
     icon: Smartphone,
     items: [
       { key: "developer", label: "Developer", icon: Code, blurb: "App & POS development, releases, bug tracking, feature backlog." },
