@@ -1,4 +1,12 @@
+import { useState } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Video,
   TrendingUp,
@@ -9,6 +17,11 @@ import {
   RefreshCw,
   AlertTriangle,
   History,
+  ClipboardList,
+  GripVertical,
+  Plus,
+  X,
+  CheckCircle2,
 } from "lucide-react";
 
 const PRODUCTIVITY = [
@@ -214,7 +227,173 @@ export function VideoEditorCeoView() {
           </CardContent>
         </Card>
       </div>
+
+      <VideoEditorTaskPanel />
     </div>
+  );
+}
+
+function VideoEditorTaskPanel() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [draft, setDraft] = useState("");
+
+  const queryKey = ["video-editor-tasks"];
+  const { data: tasks = [] } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("tasks")
+        .select("id,title,status,created_at,completed_at")
+        .eq("department", "video_editor")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data as {
+        id: string;
+        title: string;
+        status: string;
+        created_at: string;
+        completed_at: string | null;
+      }[];
+    },
+  });
+
+  const addTask = useMutation({
+    mutationFn: async (title: string) => {
+      if (!user) throw new Error("Not signed in");
+      const { error } = await (supabase as any).from("tasks").insert({
+        title,
+        department: "video_editor",
+        created_by: user.id,
+        status: "pending",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setDraft("");
+      qc.invalidateQueries({ queryKey });
+      toast.success("Task assigned");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed to assign task"),
+  });
+
+  const toggleTask = useMutation({
+    mutationFn: async ({ id, done }: { id: string; done: boolean }) => {
+      const { error } = await (supabase as any)
+        .from("tasks")
+        .update({
+          status: done ? "completed" : "pending",
+          completed_at: done ? new Date().toISOString() : null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onError: (e: any) => toast.error(e.message ?? "Failed to update task"),
+  });
+
+  const deleteTask = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any).from("tasks").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onError: (e: any) => toast.error(e.message ?? "Failed to delete task"),
+  });
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const t = draft.trim();
+    if (!t) return;
+    addTask.mutate(t);
+  }
+
+  function fmt(iso: string) {
+    const d = new Date(iso);
+    return d.toLocaleString(undefined, {
+      day: "2-digit",
+      month: "short",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <ClipboardList className="w-4 h-4 text-primary" />
+          Task Assigned
+        </CardTitle>
+        <p className="text-[11px] text-muted-foreground">
+          Tasks added here appear on the Video Editor's "Mind and task" board.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {tasks.map((t) => {
+          const done = t.status === "completed";
+          return (
+            <div
+              key={t.id}
+              className="flex items-start gap-2 group border rounded-md px-2 py-2"
+            >
+              <GripVertical className="w-4 h-4 mt-1 text-muted-foreground/50 shrink-0" />
+              <Checkbox
+                className="mt-1"
+                checked={done}
+                onCheckedChange={(v) => toggleTask.mutate({ id: t.id, done: !!v })}
+              />
+              <div className="flex-1 min-w-0">
+                <div
+                  className={`text-sm ${
+                    done ? "line-through text-muted-foreground" : ""
+                  }`}
+                >
+                  {t.title}
+                </div>
+                {done && t.completed_at && (
+                  <div className="text-[11px] text-emerald-600 mt-0.5 tabular-nums">
+                    Completed · {fmt(t.completed_at)}
+                  </div>
+                )}
+              </div>
+              {done ? (
+                <span
+                  className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white shrink-0 mt-0.5"
+                  title="Completed by video editor"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </span>
+              ) : (
+                <span
+                  className="w-5 h-5 rounded-full border-2 border-muted-foreground/30 shrink-0 mt-0.5"
+                  title="Pending"
+                />
+              )}
+              <button
+                onClick={() => deleteTask.mutate(t.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive mt-1"
+                aria-label="Delete task"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          );
+        })}
+        <form onSubmit={submit} className="flex items-center gap-2 pt-1">
+          <Plus className="w-4 h-4 text-muted-foreground" />
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="List item"
+            className="h-9 border-0 focus-visible:ring-0 px-0 shadow-none"
+          />
+          <Button type="submit" size="sm" disabled={!draft.trim() || addTask.isPending}>
+            Add
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 
