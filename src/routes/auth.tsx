@@ -23,20 +23,35 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
 
+  async function routeForUser(userId: string) {
+    const { data } = await (supabase as any)
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const roles = (data ?? []).map((r: any) => r.role as string);
+    if (roles.includes("ceo") || roles.includes("coo")) return "/dashboard" as const;
+    if (roles.includes("hr_head")) return "/hr-head" as const;
+    return "/dashboard" as const;
+  }
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (data.session) {
+        const to = await routeForUser(data.session.user.id);
+        navigate({ to });
+      }
     });
   }, [navigate]);
 
   async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("Signed in");
-    navigate({ to: "/dashboard" });
+    const to = data.user ? await routeForUser(data.user.id) : "/dashboard";
+    navigate({ to });
   }
 
   async function handleSignUp(e: React.FormEvent) {
