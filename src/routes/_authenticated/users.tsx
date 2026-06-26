@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ROLES, roleLabel } from "@/lib/roles";
 import { seedHrHead } from "@/lib/hr-seed.functions";
+import { seedVideoEditor } from "@/lib/ve-seed.functions";
 import { toast } from "sonner";
 import { useState } from "react";
 import { X, UserPlus } from "lucide-react";
@@ -23,7 +24,9 @@ function UsersPage() {
   const qc = useQueryClient();
   const [newRole, setNewRole] = useState<Record<string, string>>({});
   const [seeding, setSeeding] = useState(false);
+  const [seedingVe, setSeedingVe] = useState(false);
   const runSeedHrHead = useServerFn(seedHrHead);
+  const runSeedVideoEditor = useServerFn(seedVideoEditor);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles-full"],
@@ -65,27 +68,50 @@ function UsersPage() {
           <h1 className="text-2xl font-semibold tracking-tight">Users & Roles</h1>
           <p className="text-sm text-muted-foreground">CEO & COO manage who can access what.</p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          disabled={seeding}
-          onClick={async () => {
-            setSeeding(true);
-            try {
-              await runSeedHrHead();
-              qc.invalidateQueries({ queryKey: ["profiles-full"] });
-              qc.invalidateQueries({ queryKey: ["user-roles-all"] });
-              toast.success("HR Head ready: hr@cleancraftApp.com / cleancraft@123");
-            } catch (e: any) {
-              toast.error(e?.message ?? "Failed to seed HR Head");
-            } finally {
-              setSeeding(false);
-            }
-          }}
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          {seeding ? "Seeding…" : "Seed HR Head"}
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={seeding}
+            onClick={async () => {
+              setSeeding(true);
+              try {
+                await runSeedHrHead();
+                qc.invalidateQueries({ queryKey: ["profiles-full"] });
+                qc.invalidateQueries({ queryKey: ["user-roles-all"] });
+                toast.success("HR Head ready: hr@cleancraftApp.com / cleancraft@123");
+              } catch (e: any) {
+                toast.error(e?.message ?? "Failed to seed HR Head");
+              } finally {
+                setSeeding(false);
+              }
+            }}
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            {seeding ? "Seeding…" : "Seed HR Head"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={seedingVe}
+            onClick={async () => {
+              setSeedingVe(true);
+              try {
+                await runSeedVideoEditor();
+                qc.invalidateQueries({ queryKey: ["profiles-full"] });
+                qc.invalidateQueries({ queryKey: ["user-roles-all"] });
+                toast.success("Video Editor ready: ve@cleancraftapp.com / cleancraft@123");
+              } catch (e: any) {
+                toast.error(e?.message ?? "Failed to seed Video Editor");
+              } finally {
+                setSeedingVe(false);
+              }
+            }}
+          >
+            <UserPlus className="w-4 h-4 mr-2" />
+            {seedingVe ? "Seeding…" : "Seed Video Editor"}
+          </Button>
+        </div>
       </div>
       <div className="space-y-3">
         {profiles.map((p: any) => {
