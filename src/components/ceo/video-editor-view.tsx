@@ -1,4 +1,12 @@
+import { useState } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Video,
   TrendingUp,
@@ -9,6 +17,11 @@ import {
   RefreshCw,
   AlertTriangle,
   History,
+  ClipboardList,
+  GripVertical,
+  Plus,
+  X,
+  CheckCircle2,
 } from "lucide-react";
 
 const PRODUCTIVITY = [
