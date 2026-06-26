@@ -14,6 +14,7 @@ type Person = {
   bookings: number;
   funnel: { label: string; value: number }[];
   leakage: { stage: string; lost: number }[];
+  discipline: { crmUpdated: number; followUpsCompleted: number; overdueFollowUps: number; avgResponseMin: number; taskCompletion: number };
 };
 
 const PEOPLE: Person[] = [
