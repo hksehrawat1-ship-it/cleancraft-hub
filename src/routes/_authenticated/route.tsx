@@ -102,7 +102,7 @@ function AuthedLayout() {
                     <Crown className="w-4 h-4" /> Master Dashboard
                   </Link>
                   <div className="pt-2">
-                    {CEO_GROUPS.map((g, idx) => {
+                    {CEO_GROUPS.map((g) => {
                       const GIcon = g.icon;
                       const isOpen = openGroups[g.key];
 
@@ -148,13 +148,16 @@ function AuthedLayout() {
                             <ul className="mt-0.5 ml-7 border-l border-sidebar-border/60 pl-2 space-y-0.5">
                               {g.items.map((it) => {
                                 const Icon = it.icon;
-                                const target = `#${g.key}:${it.key}`;
-                                const active = pathname === "/master" && hash === `${g.key}:${it.key}`;
+                                const isHrHead = g.key === "hr" && it.key === "hr-head";
+                                const target = isHrHead ? "/hr-head" : `#${g.key}:${it.key}`;
+                                const active = isHrHead
+                                  ? pathname === "/hr-head"
+                                  : pathname === "/master" && hash === `${g.key}:${it.key}`;
                                 return (
                                   <li key={it.key}>
                                     <Link
-                                      to="/master"
-                                      hash={`${g.key}:${it.key}`}
+                                      to={isHrHead ? "/hr-head" : "/master"}
+                                      {...(isHrHead ? {} : { hash: `${g.key}:${it.key}` })}
                                       onClick={() => setOpen(false)}
                                       className={cn(
                                         "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-colors",

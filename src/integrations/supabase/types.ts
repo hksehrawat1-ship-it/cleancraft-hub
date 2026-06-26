@@ -626,6 +626,7 @@ export type Database = {
         | "accountant"
         | "social_media_manager"
         | "video_editor"
+        | "hr_head"
       complaint_status: "open" | "in_progress" | "resolved" | "closed"
       lead_status: "new" | "hot" | "warm" | "cold" | "lost" | "converted"
       payment_status: "pending" | "paid" | "overdue" | "cancelled"
@@ -787,6 +788,7 @@ export const Constants = {
         "accountant",
         "social_media_manager",
         "video_editor",
+        "hr_head",
       ],
       complaint_status: ["open", "in_progress", "resolved", "closed"],
       lead_status: ["new", "hot", "warm", "cold", "lost", "converted"],

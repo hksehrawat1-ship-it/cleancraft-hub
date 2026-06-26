@@ -1,5 +1,6 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,9 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ROLES, roleLabel } from "@/lib/roles";
+import { seedHrHead } from "@/lib/hr-seed.functions";
 import { toast } from "sonner";
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, UserPlus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Users — Clean Craft OS" }] }),
@@ -20,6 +22,8 @@ function UsersPage() {
   const { isLeadership, loading } = useAuth();
   const qc = useQueryClient();
   const [newRole, setNewRole] = useState<Record<string, string>>({});
+  const [seeding, setSeeding] = useState(false);
+  const runSeedHrHead = useServerFn(seedHrHead);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles-full"],
@@ -56,9 +60,32 @@ function UsersPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Users & Roles</h1>
-        <p className="text-sm text-muted-foreground">CEO & COO manage who can access what.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Users & Roles</h1>
+          <p className="text-sm text-muted-foreground">CEO & COO manage who can access what.</p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={seeding}
+          onClick={async () => {
+            setSeeding(true);
+            try {
+              await runSeedHrHead();
+              qc.invalidateQueries({ queryKey: ["profiles-full"] });
+              qc.invalidateQueries({ queryKey: ["user-roles-all"] });
+              toast.success("HR Head ready: hr@cleancraftApp.com / cleancraft@123");
+            } catch (e: any) {
+              toast.error(e?.message ?? "Failed to seed HR Head");
+            } finally {
+              setSeeding(false);
+            }
+          }}
+        >
+          <UserPlus className="w-4 h-4 mr-2" />
+          {seeding ? "Seeding…" : "Seed HR Head"}
+        </Button>
       </div>
       <div className="space-y-3">
         {profiles.map((p: any) => {
