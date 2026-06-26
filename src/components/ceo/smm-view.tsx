@@ -1,4 +1,12 @@
+import { useState } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Megaphone,
   CalendarCheck,
@@ -9,6 +17,10 @@ import {
   Instagram,
   Youtube,
   Facebook,
+  Plus,
+  X,
+  ClipboardList,
+  GripVertical,
 } from "lucide-react";
 
 const PRODUCTION = [
@@ -26,6 +38,15 @@ const PENDING = [
 ];
 
 export function SmmCeoView() {
+  return (
+    <div className="space-y-4">
+      <SmmDashboardBody />
+      <TaskAssignedPanel />
+    </div>
+  );
+}
+
+function SmmDashboardBody() {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2">
@@ -149,7 +170,135 @@ export function SmmCeoView() {
   );
 }
 
+function TaskAssignedPanel() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [draft, setDraft] = useState("");
+
+  const queryKey = ["smm-tasks"];
+  const { data: tasks = [] } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .from("tasks")
+        .select("id,title,status,created_at")
+        .eq("department", "social_media")
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return data as { id: string; title: string; status: string; created_at: string }[];
+    },
+  });
+
+  const addTask = useMutation({
+    mutationFn: async (title: string) => {
+      if (!user) throw new Error("Not signed in");
+      const { error } = await (supabase as any).from("tasks").insert({
+        title,
+        department: "social_media",
+        created_by: user.id,
+        status: "pending",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      setDraft("");
+      qc.invalidateQueries({ queryKey });
+      toast.success("Task assigned");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed to assign task"),
+  });
+
+  const toggleTask = useMutation({
+    mutationFn: async ({ id, done }: { id: string; done: boolean }) => {
+      const { error } = await (supabase as any)
+        .from("tasks")
+        .update({
+          status: done ? "completed" : "pending",
+          completed_at: done ? new Date().toISOString() : null,
+        })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onError: (e: any) => toast.error(e.message ?? "Failed to update task"),
+  });
+
+  const deleteTask = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase as any).from("tasks").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey }),
+    onError: (e: any) => toast.error(e.message ?? "Failed to delete task"),
+  });
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    const t = draft.trim();
+    if (!t) return;
+    addTask.mutate(t);
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <ClipboardList className="w-4 h-4 text-primary" />
+          Task Assigned
+        </CardTitle>
+        <p className="text-[11px] text-muted-foreground">
+          Tasks added here appear on the Social Media Manager's "Mind and task" board with a notification.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {tasks.map((t) => {
+          const done = t.status === "completed";
+          return (
+            <div
+              key={t.id}
+              className="flex items-center gap-2 group border rounded-md px-2 py-2"
+            >
+              <GripVertical className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+              <Checkbox
+                checked={done}
+                onCheckedChange={(v) => toggleTask.mutate({ id: t.id, done: !!v })}
+              />
+              <span
+                className={`flex-1 text-sm ${
+                  done ? "line-through text-muted-foreground" : ""
+                }`}
+              >
+                {t.title}
+              </span>
+              <button
+                onClick={() => deleteTask.mutate(t.id)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                aria-label="Delete task"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          );
+        })}
+        <form onSubmit={submit} className="flex items-center gap-2 pt-1">
+          <Plus className="w-4 h-4 text-muted-foreground" />
+          <Input
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder="List item"
+            className="h-9 border-0 focus-visible:ring-0 px-0 shadow-none"
+          />
+          <Button type="submit" size="sm" disabled={!draft.trim() || addTask.isPending}>
+            Add
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 function Stat({
+
   label,
   value,
   tone,
