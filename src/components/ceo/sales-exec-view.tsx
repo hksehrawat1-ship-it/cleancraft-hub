@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { UserCheck, Target, TrendingDown, ArrowDown, Gauge, ArrowLeft } from "lucide-react";
+import { UserCheck, Target, TrendingDown, ArrowDown, Gauge, ArrowLeft, Star, ShieldCheck } from "lucide-react";
 
 type Person = {
   id: string;
@@ -14,6 +14,7 @@ type Person = {
   bookings: number;
   funnel: { label: string; value: number }[];
   leakage: { stage: string; lost: number }[];
+  discipline: { crmUpdated: number; followUpsCompleted: number; overdueFollowUps: number; avgResponseMin: number; taskCompletion: number };
 };
 
 const PEOPLE: Person[] = [
@@ -29,6 +30,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 2 }, { stage: "Proposal", lost: 5 },
       { stage: "Meeting", lost: 1 }, { stage: "EL Fee", lost: 0 },
     ],
+    discipline: { crmUpdated: 100, followUpsCompleted: 96, overdueFollowUps: 2, avgResponseMin: 18, taskCompletion: 98 },
   },
   {
     id: "amit", name: "Amit Verma", score: 78, target: 8, current: 4,
@@ -42,6 +44,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 4 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 92, followUpsCompleted: 88, overdueFollowUps: 4, avgResponseMin: 32, taskCompletion: 90 },
   },
   {
     id: "deepak", name: "Deepak Singh", score: 62, target: 8, current: 2,
@@ -55,6 +58,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 5 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 78, followUpsCompleted: 72, overdueFollowUps: 8, avgResponseMin: 55, taskCompletion: 74 },
   },
   {
     id: "priya", name: "Priya Nair", score: 88, target: 8, current: 7,
@@ -68,6 +72,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 4 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 2 },
     ],
+    discipline: { crmUpdated: 100, followUpsCompleted: 94, overdueFollowUps: 1, avgResponseMin: 14, taskCompletion: 97 },
   },
   {
     id: "kunal", name: "Kunal Mehta", score: 70, target: 8, current: 3,
@@ -81,6 +86,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 3 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 85, followUpsCompleted: 80, overdueFollowUps: 5, avgResponseMin: 40, taskCompletion: 82 },
   },
 ];
 
@@ -236,6 +242,52 @@ export function SalesExecCeoView() {
               ))}
             </tbody>
           </table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-primary" /> Work Discipline
+            <span className="ml-1 flex items-center gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </span>
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">One of the most important sections.</p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const d = person.discipline;
+            const rows: { kpi: string; result: string; ok: boolean }[] = [
+              { kpi: "CRM Updated", result: `${d.crmUpdated}%`, ok: d.crmUpdated >= 95 },
+              { kpi: "Follow-ups Completed", result: `${d.followUpsCompleted}%`, ok: d.followUpsCompleted >= 90 },
+              { kpi: "Overdue Follow-ups", result: `${d.overdueFollowUps}`, ok: d.overdueFollowUps <= 3 },
+              { kpi: "Average Response Time", result: `${d.avgResponseMin} min`, ok: d.avgResponseMin <= 30 },
+              { kpi: "Task Completion", result: `${d.taskCompletion}%`, ok: d.taskCompletion >= 95 },
+            ];
+            return (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground border-b">
+                    <th className="py-2">KPI</th>
+                    <th className="py-2 text-right">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.kpi} className="border-b last:border-0">
+                      <td className="py-2.5">{r.kpi}</td>
+                      <td className={`py-2.5 text-right tabular-nums font-medium ${r.ok ? "text-emerald-600" : "text-red-500"}`}>
+                        {r.result}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
         </CardContent>
       </Card>
     </div>
