@@ -22,6 +22,8 @@ function UsersPage() {
   const { isLeadership, loading } = useAuth();
   const qc = useQueryClient();
   const [newRole, setNewRole] = useState<Record<string, string>>({});
+  const [seeding, setSeeding] = useState(false);
+  const runSeedHrHead = useServerFn(seedHrHead);
 
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles-full"],
