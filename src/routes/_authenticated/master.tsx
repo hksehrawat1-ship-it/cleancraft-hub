@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CEO_GROUPS, type CeoItem } from "@/lib/ceo-nav";
 import { VideoEditorCeoView } from "@/components/ceo/video-editor-view";
 import { SmmCeoView } from "@/components/ceo/smm-view";
+import { SalesHeadCeoView } from "@/components/ceo/sales-head-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
