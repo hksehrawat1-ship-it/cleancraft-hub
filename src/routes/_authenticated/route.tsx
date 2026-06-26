@@ -102,7 +102,7 @@ function AuthedLayout() {
                     <Crown className="w-4 h-4" /> Master Dashboard
                   </Link>
                   <div className="pt-2">
-                    {CEO_GROUPS.map((g, idx) => {
+                    {CEO_GROUPS.map((g) => {
                       const GIcon = g.icon;
                       const isOpen = openGroups[g.key];
 
