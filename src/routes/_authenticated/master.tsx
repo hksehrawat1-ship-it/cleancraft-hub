@@ -1,16 +1,9 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Crown, AlertTriangle, LayoutDashboard } from "lucide-react";
+import { Crown, LayoutDashboard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CEO_GROUPS, type CeoItem } from "@/lib/ceo-nav";
-
-const RED_FLAGS = [
-  "Project delayed 7 days",
-  "15 overdue complaints",
-  "Salesperson no activity 3 days",
-  "RM follow-up pending",
-  "Store sales below target",
-];
+import { VideoEditorCeoView } from "@/components/ceo/video-editor-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
