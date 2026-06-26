@@ -179,6 +179,9 @@ function MasterDashboard() {
         </div>
       ) : selected?.group === "revenue" && selected.item === "video" ? (
         <VideoEditorCeoView />
+      ) : selected?.group === "revenue" && selected.item === "smm" ? (
+        <SmmCeoView />
+
       ) : (
         <Card>
           <CardHeader>
