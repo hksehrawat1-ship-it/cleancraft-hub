@@ -30,6 +30,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 2 }, { stage: "Proposal", lost: 5 },
       { stage: "Meeting", lost: 1 }, { stage: "EL Fee", lost: 0 },
     ],
+    discipline: { crmUpdated: 100, followUpsCompleted: 96, overdueFollowUps: 2, avgResponseMin: 18, taskCompletion: 98 },
   },
   {
     id: "amit", name: "Amit Verma", score: 78, target: 8, current: 4,
