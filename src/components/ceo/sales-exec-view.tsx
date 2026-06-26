@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { UserCheck, Target, TrendingDown, ArrowDown, Gauge, ArrowLeft } from "lucide-react";
+import { UserCheck, Target, TrendingDown, ArrowDown, Gauge, ArrowLeft, Star, ShieldCheck } from "lucide-react";
 
 type Person = {
   id: string;
