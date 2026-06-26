@@ -15,6 +15,7 @@ export const ROLES = [
   { value: "accountant", label: "Accountant" },
   { value: "social_media_manager", label: "Social Media Manager" },
   { value: "video_editor", label: "Video Editor" },
+  { value: "hr_head", label: "HR Head" },
 ] as const;
 
 export type RoleValue = (typeof ROLES)[number]["value"];
