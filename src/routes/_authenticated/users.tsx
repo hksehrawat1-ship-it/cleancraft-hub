@@ -60,9 +60,32 @@ function UsersPage() {
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Users & Roles</h1>
-        <p className="text-sm text-muted-foreground">CEO & COO manage who can access what.</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Users & Roles</h1>
+          <p className="text-sm text-muted-foreground">CEO & COO manage who can access what.</p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={seeding}
+          onClick={async () => {
+            setSeeding(true);
+            try {
+              await runSeedHrHead();
+              qc.invalidateQueries({ queryKey: ["profiles-full"] });
+              qc.invalidateQueries({ queryKey: ["user-roles-all"] });
+              toast.success("HR Head ready: hr@cleancraftApp.com / cleancraft@123");
+            } catch (e: any) {
+              toast.error(e?.message ?? "Failed to seed HR Head");
+            } finally {
+              setSeeding(false);
+            }
+          }}
+        >
+          <UserPlus className="w-4 h-4 mr-2" />
+          {seeding ? "Seeding…" : "Seed HR Head"}
+        </Button>
       </div>
       <div className="space-y-3">
         {profiles.map((p: any) => {
