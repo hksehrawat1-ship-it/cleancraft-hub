@@ -31,6 +31,7 @@ function AuthPage() {
     const roles = (data ?? []).map((r: any) => r.role as string);
     if (roles.includes("ceo") || roles.includes("coo")) return "/dashboard" as const;
     if (roles.includes("hr_head")) return "/hr-head" as const;
+    if (roles.includes("video_editor")) return "/video-editor" as const;
     return "/dashboard" as const;
   }
 
