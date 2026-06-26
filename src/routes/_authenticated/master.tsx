@@ -1,16 +1,9 @@
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Crown, AlertTriangle, LayoutDashboard } from "lucide-react";
+import { Crown, LayoutDashboard } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CEO_GROUPS, type CeoItem } from "@/lib/ceo-nav";
-
-const RED_FLAGS = [
-  "Project delayed 7 days",
-  "15 overdue complaints",
-  "Salesperson no activity 3 days",
-  "RM follow-up pending",
-  "Store sales below target",
-];
+import { VideoEditorCeoView } from "@/components/ceo/video-editor-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
@@ -85,25 +78,8 @@ function MasterDashboard() {
         </div>
       </div>
 
-      <Card className="border-destructive/40 bg-destructive/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2 text-destructive">
-            <AlertTriangle className="w-4 h-4" />
-            Red Flag Center
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {RED_FLAGS.map((flag) => (
-            <div
-              key={flag}
-              className="flex items-center gap-2 text-sm rounded-md border border-destructive/30 bg-background px-3 py-2"
-            >
-              <span aria-hidden>🚨</span>
-              <span className="text-foreground">{flag}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+
+
 
       {companyOpen && companyGroup ? (
         <Card>
@@ -200,6 +176,8 @@ function MasterDashboard() {
             );
           })}
         </div>
+      ) : selected?.group === "revenue" && selected.item === "video" ? (
+        <VideoEditorCeoView />
       ) : (
         <Card>
           <CardHeader>
