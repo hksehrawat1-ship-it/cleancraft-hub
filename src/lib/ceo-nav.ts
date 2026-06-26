@@ -125,10 +125,10 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "facility",
-    label: "7. Facility",
+    label: "7. Administration",
     icon: Building2,
     items: [
-      { key: "facility-mgr", label: "Facility Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
+      { key: "facility-mgr", label: "Administration Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
     ],
   },
   {
