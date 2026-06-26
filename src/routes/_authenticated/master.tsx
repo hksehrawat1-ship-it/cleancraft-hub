@@ -182,6 +182,9 @@ function MasterDashboard() {
         <VideoEditorCeoView />
       ) : selected?.group === "revenue" && selected.item === "smm" ? (
         <SmmCeoView />
+      ) : selected?.group === "revenue" && selected.item === "sales-head" ? (
+        <SalesHeadCeoView />
+
 
       ) : (
         <Card>
