@@ -185,6 +185,8 @@ function MasterDashboard() {
         <SmmCeoView />
       ) : selected?.group === "revenue" && selected.item === "sales-head" ? (
         <SalesHeadCeoView />
+      ) : selected?.group === "revenue" && selected.item === "sales-exec" ? (
+        <SalesExecCeoView />
 
 
       ) : (
