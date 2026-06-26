@@ -176,6 +176,8 @@ function MasterDashboard() {
             );
           })}
         </div>
+      ) : selected?.group === "revenue" && selected.item === "video" ? (
+        <VideoEditorCeoView />
       ) : (
         <Card>
           <CardHeader>
