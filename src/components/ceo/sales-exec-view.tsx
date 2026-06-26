@@ -244,6 +244,52 @@ export function SalesExecCeoView() {
           </table>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-primary" /> Work Discipline
+            <span className="ml-1 flex items-center gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+              ))}
+            </span>
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">One of the most important sections.</p>
+        </CardHeader>
+        <CardContent>
+          {(() => {
+            const d = person.discipline;
+            const rows: { kpi: string; result: string; ok: boolean }[] = [
+              { kpi: "CRM Updated", result: `${d.crmUpdated}%`, ok: d.crmUpdated >= 95 },
+              { kpi: "Follow-ups Completed", result: `${d.followUpsCompleted}%`, ok: d.followUpsCompleted >= 90 },
+              { kpi: "Overdue Follow-ups", result: `${d.overdueFollowUps}`, ok: d.overdueFollowUps <= 3 },
+              { kpi: "Average Response Time", result: `${d.avgResponseMin} min`, ok: d.avgResponseMin <= 30 },
+              { kpi: "Task Completion", result: `${d.taskCompletion}%`, ok: d.taskCompletion >= 95 },
+            ];
+            return (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground border-b">
+                    <th className="py-2">KPI</th>
+                    <th className="py-2 text-right">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.kpi} className="border-b last:border-0">
+                      <td className="py-2.5">{r.kpi}</td>
+                      <td className={`py-2.5 text-right tabular-nums font-medium ${r.ok ? "text-emerald-600" : "text-red-500"}`}>
+                        {r.result}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
+        </CardContent>
+      </Card>
     </div>
   );
 }
