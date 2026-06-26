@@ -44,6 +44,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 4 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 92, followUpsCompleted: 88, overdueFollowUps: 4, avgResponseMin: 32, taskCompletion: 90 },
   },
   {
     id: "deepak", name: "Deepak Singh", score: 62, target: 8, current: 2,
@@ -57,6 +58,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 5 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 78, followUpsCompleted: 72, overdueFollowUps: 8, avgResponseMin: 55, taskCompletion: 74 },
   },
   {
     id: "priya", name: "Priya Nair", score: 88, target: 8, current: 7,
@@ -70,6 +72,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 4 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 2 },
     ],
+    discipline: { crmUpdated: 100, followUpsCompleted: 94, overdueFollowUps: 1, avgResponseMin: 14, taskCompletion: 97 },
   },
   {
     id: "kunal", name: "Kunal Mehta", score: 70, target: 8, current: 3,
@@ -83,6 +86,7 @@ const PEOPLE: Person[] = [
       { stage: "Qualification", lost: 3 }, { stage: "Proposal", lost: 3 },
       { stage: "Meeting", lost: 3 }, { stage: "EL Fee", lost: 1 },
     ],
+    discipline: { crmUpdated: 85, followUpsCompleted: 80, overdueFollowUps: 5, avgResponseMin: 40, taskCompletion: 82 },
   },
 ];
 
