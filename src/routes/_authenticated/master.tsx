@@ -12,6 +12,7 @@ import { ProjectManagerCeoView } from "@/components/ceo/proj-mgr-view";
 import { TrainerCeoView } from "@/components/ceo/trainer-view";
 import { RmCeoView } from "@/components/ceo/rm-view";
 import { PerfMktCeoView } from "@/components/ceo/perf-mkt-view";
+import { TrainingCentreCeoView } from "@/components/ceo/training-centre-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
@@ -202,6 +203,8 @@ function MasterDashboard() {
         <RmCeoView />
       ) : selected?.group === "store-success" && selected.item === "perf-mkt" ? (
         <PerfMktCeoView />
+      ) : selected?.group === "store-success" && selected.item === "training" ? (
+        <TrainingCentreCeoView />
 
 
       ) : (
