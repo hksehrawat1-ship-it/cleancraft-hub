@@ -10,6 +10,7 @@ import { SalesExecCeoView } from "@/components/ceo/sales-exec-view";
 import { ProjectCoordinatorCeoView } from "@/components/ceo/proj-coord-view";
 import { ProjectManagerCeoView } from "@/components/ceo/proj-mgr-view";
 import { TrainerCeoView } from "@/components/ceo/trainer-view";
+import { RmCeoView } from "@/components/ceo/rm-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
