@@ -188,6 +188,8 @@ function MasterDashboard() {
         <SalesHeadCeoView />
       ) : selected?.group === "revenue" && selected.item === "sales-exec" ? (
         <SalesExecCeoView />
+      ) : selected?.group === "ops" && selected.item === "proj-coord" ? (
+        <ProjectCoordinatorCeoView />
 
 
       ) : (
