@@ -197,6 +197,8 @@ function MasterDashboard() {
         <ProjectManagerCeoView />
       ) : selected?.group === "ops" && selected.item === "tnl" ? (
         <TrainerCeoView />
+      ) : selected?.group === "store-success" && selected.item === "rm" ? (
+        <RmCeoView />
 
 
       ) : (
