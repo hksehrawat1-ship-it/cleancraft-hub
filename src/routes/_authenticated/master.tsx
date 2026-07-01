@@ -200,6 +200,8 @@ function MasterDashboard() {
         <TrainerCeoView />
       ) : selected?.group === "store-success" && selected.item === "rm" ? (
         <RmCeoView />
+      ) : selected?.group === "store-success" && selected.item === "perf-mkt" ? (
+        <PerfMktCeoView />
 
 
       ) : (
