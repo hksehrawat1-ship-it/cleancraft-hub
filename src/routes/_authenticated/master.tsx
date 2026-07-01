@@ -211,6 +211,8 @@ function MasterDashboard() {
         <TrainingCentreCeoView />
       ) : selected?.group === "tech" && selected.item === "engineer" ? (
         <EngineerCeoView />
+      ) : selected?.group === "accounts" ? (
+        <AccountsCeoView />
 
 
 
