@@ -7,6 +7,7 @@ import { VideoEditorCeoView } from "@/components/ceo/video-editor-view";
 import { SmmCeoView } from "@/components/ceo/smm-view";
 import { SalesHeadCeoView } from "@/components/ceo/sales-head-view";
 import { SalesExecCeoView } from "@/components/ceo/sales-exec-view";
+import { ProjectCoordinatorCeoView } from "@/components/ceo/proj-coord-view";
 
 // Group the Company Overview items into tracking sections.
 const COMPANY_SECTIONS: { title: string; keys: string[] }[] = [
