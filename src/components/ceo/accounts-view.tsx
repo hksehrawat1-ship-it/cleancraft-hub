@@ -57,9 +57,23 @@ export function AccountsCeoView() {
       </div>
 
       <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Users className="w-4 h-4 text-primary" />
+              Number of Employees
+            </div>
+            <div className="text-3xl font-semibold tabular-nums">128</div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
             <IndianRupee className="w-4 h-4 text-primary" /> 1. Revenue Summary
+          </CardTitle>
+        </CardHeader>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
