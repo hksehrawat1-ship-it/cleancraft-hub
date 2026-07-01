@@ -74,8 +74,6 @@ export function AccountsCeoView() {
             <IndianRupee className="w-4 h-4 text-primary" /> 1. Revenue Summary
           </CardTitle>
         </CardHeader>
-          </CardTitle>
-        </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="border rounded-md p-3 bg-muted/30">
