@@ -14,6 +14,7 @@ import { RmCeoView } from "@/components/ceo/rm-view";
 import { PerfMktCeoView } from "@/components/ceo/perf-mkt-view";
 import { TrainingCentreCeoView } from "@/components/ceo/training-centre-view";
 import { EngineerCeoView } from "@/components/ceo/engineer-view";
+import { AccountsCeoView } from "@/components/ceo/accounts-view";
 import { FranchiseSalesView } from "@/components/ceo/franchise-sales-view";
 
 // Group the Company Overview items into tracking sections.
@@ -210,6 +211,8 @@ function MasterDashboard() {
         <TrainingCentreCeoView />
       ) : selected?.group === "tech" && selected.item === "engineer" ? (
         <EngineerCeoView />
+      ) : selected?.group === "accounts" ? (
+        <AccountsCeoView />
 
 
 
