@@ -138,6 +138,7 @@ function MasterDashboard() {
                 </div>
               </div>
             ))}
+            <FranchiseSalesView />
           </CardContent>
         </Card>
       ) : !current ? (
