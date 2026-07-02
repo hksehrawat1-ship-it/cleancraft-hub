@@ -24,12 +24,6 @@ import cosLogo from "@/assets/cos-logo.png.asset.json";
 import { CEO_GROUPS } from "@/lib/ceo-nav";
 
 export const Route = createFileRoute("/_authenticated")({
-  ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
-  },
   component: AuthedLayout,
 });
 
