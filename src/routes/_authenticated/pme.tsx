@@ -814,8 +814,6 @@ function RMTasksSection() {
                       <label className="text-xs text-muted-foreground">Remarks</label>
                       <Input
                         placeholder="Why is this not resolved?"
-                      <Input
-                        placeholder="Why is this not resolved?"
                         value={s.remark}
                         onChange={(e) => setRemark(t.id, e.target.value)}
                         className="mt-1"
