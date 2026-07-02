@@ -731,13 +731,27 @@ function ActivityRow({
 }
 
 /* ---------------- Tasks by R.M. ---------------- */
+type RMTaskStatus = "open" | "resolved" | "unresolved";
+
 function RMTasksSection() {
-  const tasks = [
-    { title: "Prepare weekly ROAS report", due: "Today", priority: "High" },
-    { title: "Onboard 2 new influencers", due: "Tomorrow", priority: "Medium" },
-    { title: "Audit GMB listings for Thane", due: "Fri", priority: "High" },
-    { title: "Reduce CPL for Store #14", due: "Next week", priority: "Low" },
+  const initialTasks = [
+    { id: "t1", title: "Prepare weekly ROAS report", due: "Today", priority: "High" },
+    { id: "t2", title: "Onboard 2 new influencers", due: "Tomorrow", priority: "Medium" },
+    { id: "t3", title: "Audit GMB listings for Thane", due: "Fri", priority: "High" },
+    { id: "t4", title: "Reduce CPL for Store #14", due: "Next week", priority: "Low" },
   ];
+
+  const [state, setState] = useState<
+    Record<string, { status: RMTaskStatus; remark: string }>
+  >(() =>
+    Object.fromEntries(initialTasks.map((t) => [t.id, { status: "open", remark: "" }])),
+  );
+
+  const setStatus = (id: string, status: RMTaskStatus) =>
+    setState((p) => ({ ...p, [id]: { ...p[id], status } }));
+
+  const setRemark = (id: string, remark: string) =>
+    setState((p) => ({ ...p, [id]: { ...p[id], remark } }));
 
   return (
     <div className="space-y-6">
@@ -745,25 +759,70 @@ function RMTasksSection() {
       <Card>
         <CardContent className="p-0">
           <div className="divide-y">
-            {tasks.map((t) => (
-              <div key={t.title} className="flex items-center justify-between p-4">
-                <div>
-                  <div className="font-medium text-sm">{t.title}</div>
-                  <div className="text-xs text-muted-foreground">Due: {t.due}</div>
+            {initialTasks.map((t) => {
+              const s = state[t.id];
+              return (
+                <div key={t.id} className="p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <div>
+                      <div className="font-medium text-sm">{t.title}</div>
+                      <div className="text-xs text-muted-foreground">Due: {t.due}</div>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge
+                        variant={
+                          t.priority === "High"
+                            ? "destructive"
+                            : t.priority === "Medium"
+                              ? "default"
+                              : "secondary"
+                        }
+                      >
+                        {t.priority}
+                      </Badge>
+                      <Button
+                        size="sm"
+                        onClick={() => setStatus(t.id, "resolved")}
+                        className={
+                          s.status === "resolved"
+                            ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                            : "bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-700 dark:text-emerald-400"
+                        }
+                      >
+                        Resolve
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setStatus(t.id, "unresolved")}
+                        className={
+                          s.status === "unresolved"
+                            ? "bg-blue-600 hover:bg-blue-700 text-white"
+                            : "bg-blue-600/20 hover:bg-blue-600/30 text-blue-700 dark:text-blue-400"
+                        }
+                      >
+                        Not Resolved
+                      </Button>
+                    </div>
+                  </div>
+                  {s.status === "unresolved" && (
+                    <div className="pl-1">
+                      <label className="text-xs text-muted-foreground">Remarks</label>
+                      <Input
+                        placeholder="Why is this not resolved?"
+                        value={s.remark}
+                        onChange={(e) => setRemark(t.id, e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                  )}
+                  {s.status === "resolved" && (
+                    <div className="text-xs text-emerald-600 font-medium pl-1">
+                      ✓ Marked resolved
+                    </div>
+                  )}
                 </div>
-                <Badge
-                  variant={
-                    t.priority === "High"
-                      ? "destructive"
-                      : t.priority === "Medium"
-                        ? "default"
-                        : "secondary"
-                  }
-                >
-                  {t.priority}
-                </Badge>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
