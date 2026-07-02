@@ -526,7 +526,6 @@ const PRE_MARKETING: ActivityItem[] = [
   { id: "ig-ads", label: "Instagram ads (Pre-marketing)" },
   { id: "influencer", label: "Influencer setup" },
   { id: "gmail", label: "Create Gmail" },
-  { id: "ig-setup", label: "Instagram setup" },
 ];
 
 const POST_MARKETING: ActivityItem[] = [
