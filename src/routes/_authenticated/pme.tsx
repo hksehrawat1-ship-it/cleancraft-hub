@@ -148,21 +148,232 @@ function OverviewSection() {
 
 /* ---------------- Roles ---------------- */
 function RolesSection() {
-  const items = [
-    "Plan and launch performance campaigns across Meta & Google.",
-    "Manage store-level Google My Business listings and updates.",
-    "Coordinate with influencers and track deliverables.",
-    "Monitor daily spend, CPL, ROAS and optimize creatives.",
-    "Report weekly performance to the Reporting Manager.",
+  const deliverables = [
+    "Store Lead Generation through ads and GMB setup",
+    "Customer Acquisition",
+    "Paid Advertising Campaign Management",
+    "Campaign Optimization",
+    "Store Revenue Growth Support",
+    "Marketing Performance Reporting",
+    "Graphic creation",
   ];
+
+  const tasks = [
+    "Create, manage, monitor, and optimize Google Ads, Meta Ads and other approved digital campaigns for franchise stores.",
+    "Coordinate with the Relationship Manager on store requirements and campaign objectives.",
+    "Plan and execute customer acquisition, app download, offer, seasonal and store-launch campaigns.",
+    "Monitor campaign performance, cost per lead, cost per acquisition and return on ad spend.",
+    "Analyze customer behavior and campaign results, and continuously optimize for better performance.",
+    "Coordinate with Social Media Manager, CRM Retention Executive and BTL Team to support store growth.",
+    "Submit regular performance reports and recommendations to management.",
+  ];
+
+  const completeMatrix = [
+    "Campaign created",
+    "Budget approved",
+    "Ads launched",
+    "Tracking verified",
+    "Leads generated",
+    "Performance reviewed",
+    "Optimization completed",
+    "Report submitted",
+    "RM informed",
+  ];
+
+  const kra = [
+    "Generate qualified customers for stores.",
+    "Improve store revenue through paid marketing.",
+    "Achieve target ROAS.",
+    "Reduce customer acquisition cost.",
+    "Support successful store launches and growth campaigns.",
+  ];
+
+  const kpiDaily = ["Campaigns monitored", "Leads generated", "Campaign optimizations completed"];
+  const kpiWeekly = [
+    "Campaign performance reviews completed",
+    "Cost per lead achieved",
+    "Customer acquisition targets achieved",
+  ];
+  const kpiMonthly = [
+    "Leads generated",
+    "Customer acquisition cost (CAC)",
+    "Return on Ad Spend (ROAS)",
+    "App downloads generated",
+    "Orders generated",
+    "Store revenue contribution",
+  ];
+
+  const whatNotToDo = [
+    "Launch campaigns without approval.",
+    "Change offers without approval.",
+    "Overspend marketing budget.",
+    "Hide poor campaign performance.",
+    "Use misleading advertisements.",
+    "Ignore campaign optimization.",
+    "Run campaigns without proper tracking.",
+    "Commit sales guarantees to franchise partners.",
+  ];
+
+  const escalation = [
+    "Customer complaint received",
+    "Negative review received",
+    "CRM system issue",
+    "Campaign failure",
+    "High-value customer dissatisfaction",
+    "Data privacy issue",
+    "Mass campaign error",
+  ];
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Roles & Responsibilities</h1>
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Roles & Responsibilities</h1>
+        <p className="text-sm text-muted-foreground">Performance Marketing Executive — Clean Craft</p>
+      </div>
+
       <Card>
-        <CardContent className="p-6">
-          <ol className="list-decimal pl-5 space-y-2 text-sm">
-            {items.map((r) => (
-              <li key={r}>{r}</li>
+        <CardHeader>
+          <CardTitle className="text-base">Role Definition</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          Responsible for generating B2C sales, leads, app downloads, and customer acquisition for franchise stores
+          through paid digital marketing campaigns while ensuring maximum return on advertising spend.
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Trigger Point</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          New store opening, marketing campaign approval, monthly marketing plan, store performance improvement
+          requirement, seasonal campaign, festival campaign, or growth activity assigned by the Store Success Team.
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Responsibility Deliverables</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="list-[upper-alpha] pl-5 space-y-1.5 text-sm">
+              {deliverables.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Tasks & Activities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 space-y-1.5 text-sm">
+              {tasks.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Handover Matrix</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm space-y-2">
+          <div>
+            <span className="font-medium">Receives: </span>
+            <span className="text-muted-foreground">
+              Campaign requirements, budgets, offers and store objectives from Management.
+            </span>
+          </div>
+          <div>
+            <span className="font-medium">Shares: </span>
+            <span className="text-muted-foreground">
+              Campaign results, leads, customer acquisition data and performance reports with R.M and Management.
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Complete Matrix</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc pl-5 space-y-1.5 text-sm">
+              {completeMatrix.map((c) => (
+                <li key={c}>{c}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">KRA</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ol className="list-[upper-alpha] pl-5 space-y-1.5 text-sm">
+              {kra.map((k) => (
+                <li key={k}>{k}</li>
+              ))}
+            </ol>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">KPIs</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 md:grid-cols-3 text-sm">
+          <div>
+            <div className="font-semibold mb-1.5">Daily</div>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              {kpiDaily.map((k) => <li key={k}>{k}</li>)}
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-1.5">Weekly</div>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              {kpiWeekly.map((k) => <li key={k}>{k}</li>)}
+            </ul>
+          </div>
+          <div>
+            <div className="font-semibold mb-1.5">Monthly</div>
+            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+              {kpiMonthly.map((k) => <li key={k}>{k}</li>)}
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-destructive/40">
+        <CardHeader>
+          <CardTitle className="text-base text-destructive">What Not To Do</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="list-disc pl-5 space-y-1.5 text-sm">
+            {whatNotToDo.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Escalation Matrix</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ol className="list-[upper-alpha] pl-5 space-y-1.5 text-sm">
+            {escalation.map((e) => (
+              <li key={e}>{e}</li>
             ))}
           </ol>
         </CardContent>
