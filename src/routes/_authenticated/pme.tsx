@@ -305,9 +305,6 @@ function PmeDashboard() {
             </span>
           </div>
         </div>
-        <Button variant="outline" size="sm" className="w-full mt-4" onClick={logout}>
-          <LogOut className="w-3.5 h-3.5 mr-2" /> Logout
-        </Button>
       </aside>
 
       {/* Main */}

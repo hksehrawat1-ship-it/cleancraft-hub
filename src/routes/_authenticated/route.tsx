@@ -24,12 +24,6 @@ import cosLogo from "@/assets/cos-logo.png.asset.json";
 import { CEO_GROUPS } from "@/lib/ceo-nav";
 
 export const Route = createFileRoute("/_authenticated")({
-  ssr: false,
-  beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
-  },
   component: AuthedLayout,
 });
 
@@ -58,8 +52,7 @@ function AuthedLayout() {
   );
 
   async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    // Auth removed — no-op
   }
 
   const showSidebar = isCEO || isLeadership;
@@ -264,14 +257,10 @@ function AuthedLayout() {
 
             <div className="border-t p-3">
               <div className="px-2 py-2 text-xs">
-                <div className="font-medium truncate">{user?.email}</div>
                 <div className="text-muted-foreground">
                   {isCEO ? "CEO" : isLeadership ? "Leadership" : "Team member"}
                 </div>
               </div>
-              <Button variant="ghost" size="sm" className="w-full justify-start" onClick={signOut}>
-                <LogOut className="w-4 h-4 mr-2" /> Sign out
-              </Button>
             </div>
           </aside>
 
@@ -291,14 +280,6 @@ function AuthedLayout() {
             )}
             <img src={cosLogo.url} alt="Clean Craft OS" className="h-7 w-auto" />
           </div>
-          {!showSidebar && user && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground hidden sm:inline">{user.email}</span>
-              <Button variant="ghost" size="sm" onClick={signOut}>
-                <LogOut className="w-4 h-4 mr-2" /> Sign out
-              </Button>
-            </div>
-          )}
         </header>
         <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
           <Outlet />
