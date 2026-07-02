@@ -814,10 +814,27 @@ function RMTasksSection() {
                       <label className="text-xs text-muted-foreground">Remarks</label>
                       <Input
                         placeholder="Why is this not resolved?"
+                      <Input
+                        placeholder="Why is this not resolved?"
                         value={s.remark}
                         onChange={(e) => setRemark(t.id, e.target.value)}
                         className="mt-1"
                       />
+                      <div className="mt-2 flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => submitRemark(t.id)}
+                          disabled={!s.remark.trim() || s.submitted}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          {s.submitted ? "Submitted" : "Submit"}
+                        </Button>
+                        {s.submitted && (
+                          <span className="text-xs text-emerald-600 font-medium">
+                            ✓ Remarks submitted
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
                   {s.status === "resolved" && (
