@@ -17,6 +17,7 @@ import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
+import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedMySalesRouteImport } from './routes/_authenticated/my-sales'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
@@ -64,6 +65,11 @@ const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
 const AuthenticatedProjectsRoute = AuthenticatedProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPmeRoute = AuthenticatedPmeRouteImport.update({
+  id: '/pme',
+  path: '/pme',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/master': typeof AuthenticatedMasterRoute
   '/my-sales': typeof AuthenticatedMySalesRoute
   '/payments': typeof AuthenticatedPaymentsRoute
+  '/pme': typeof AuthenticatedPmeRoute
   '/projects': typeof AuthenticatedProjectsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/master': typeof AuthenticatedMasterRoute
   '/my-sales': typeof AuthenticatedMySalesRoute
   '/payments': typeof AuthenticatedPaymentsRoute
+  '/pme': typeof AuthenticatedPmeRoute
   '/projects': typeof AuthenticatedProjectsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/_authenticated/master': typeof AuthenticatedMasterRoute
   '/_authenticated/my-sales': typeof AuthenticatedMySalesRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
+  '/_authenticated/pme': typeof AuthenticatedPmeRoute
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
@@ -172,6 +181,7 @@ export interface FileRouteTypes {
     | '/master'
     | '/my-sales'
     | '/payments'
+    | '/pme'
     | '/projects'
     | '/stores'
     | '/tasks'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/master'
     | '/my-sales'
     | '/payments'
+    | '/pme'
     | '/projects'
     | '/stores'
     | '/tasks'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/_authenticated/master'
     | '/_authenticated/my-sales'
     | '/_authenticated/payments'
+    | '/_authenticated/pme'
     | '/_authenticated/projects'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProjectsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/pme': {
+      id: '/_authenticated/pme'
+      path: '/pme'
+      fullPath: '/pme'
+      preLoaderRoute: typeof AuthenticatedPmeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/payments': {
       id: '/_authenticated/payments'
       path: '/payments'
@@ -346,6 +365,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
   AuthenticatedMySalesRoute: typeof AuthenticatedMySalesRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
+  AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
@@ -362,6 +382,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
   AuthenticatedMySalesRoute: AuthenticatedMySalesRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
+  AuthenticatedPmeRoute: AuthenticatedPmeRoute,
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
