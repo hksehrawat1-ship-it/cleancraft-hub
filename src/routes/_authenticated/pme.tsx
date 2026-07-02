@@ -90,6 +90,7 @@ function PMEDashboard() {
         {active === "roles" && <RolesSection />}
         {active === "mind" && <MindSection />}
         {active === "stores" && <StoresSection />}
+        {active === "daily" && <DailyActivitySection />}
         {active === "rm-tasks" && <RMTasksSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
