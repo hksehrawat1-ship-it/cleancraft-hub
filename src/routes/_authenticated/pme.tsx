@@ -834,95 +834,285 @@ function PerformanceSection() {
 }
 
 /* ---------------- Daily Activity (Weekly view) ---------------- */
-const WEEKLY_ACTIVITIES = [
-  "Review store ad performance",
-  "Post 3 Instagram stories",
-  "Update GMB posts & photos",
-  "Follow up with influencers",
-  "Report metrics to R.M.",
+const DEFAULT_WEEKLY_ACTS: { id: string; label: string }[] = [
+  { id: "inf", label: "Influencer follow-up" },
+  { id: "gmb", label: "GMB follow-up" },
+  { id: "gfx", label: "Send graphics to franchise" },
 ];
 
-const DAILY_STORES = [
-  "Clean Craft — Andheri",
-  "Clean Craft — Bandra",
-  "Clean Craft — Powai",
-  "Clean Craft — Thane",
-  "Clean Craft — Vashi",
+type WeekState = {
+  checks: Record<string, boolean>;
+  custom: { id: string; label: string }[];
+};
+
+type DailyStore = { name: string; openingDate?: string };
+
+const INITIAL_DAILY_STORES: DailyStore[] = [
+  {
+    name: "Clean Craft — Andheri",
+    openingDate: new Date(Date.now() - 21 * 86400000).toISOString().slice(0, 10),
+  },
+  {
+    name: "Clean Craft — Bandra",
+    openingDate: new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10),
+  },
+  { name: "Clean Craft — Powai" },
+  { name: "Clean Craft — Thane" },
+  { name: "Clean Craft — Vashi" },
 ];
+
+function computeCurrentWeek(openingDate?: string): number | null {
+  if (!openingDate) return null;
+  const d = new Date(openingDate);
+  if (isNaN(d.getTime())) return null;
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (days < 0) return null;
+  return Math.min(48, Math.max(1, Math.floor(days / 7) + 1));
+}
 
 function DailyActivitySection() {
-  const [week, setWeek] = useState(1);
-  // checks[week][store][activityIdx] = boolean
-  const [checks, setChecks] = useState<Record<number, Record<string, Record<number, boolean>>>>({});
+  const [stores, setStores] = useState<DailyStore[]>(INITIAL_DAILY_STORES);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [viewWeek, setViewWeek] = useState<Record<string, number>>({});
+  const [data, setData] = useState<Record<string, Record<number, WeekState>>>({});
+  const [newActInput, setNewActInput] = useState<Record<string, string>>({});
 
-  const toggle = (store: string, idx: number) => {
-    setChecks((prev) => {
-      const w = { ...(prev[week] ?? {}) };
-      const s = { ...(w[store] ?? {}) };
-      s[idx] = !s[idx];
-      w[store] = s;
-      return { ...prev, [week]: w };
+  const getWeek = (store: string, w: number): WeekState =>
+    data[store]?.[w] ?? { checks: {}, custom: [] };
+
+  const setWeek = (store: string, w: number, updater: (s: WeekState) => WeekState) => {
+    setData((prev) => {
+      const forStore = { ...(prev[store] ?? {}) };
+      forStore[w] = updater(forStore[w] ?? { checks: {}, custom: [] });
+      return { ...prev, [store]: forStore };
     });
   };
 
-  const weekChecks = checks[week] ?? {};
+  const toggle = (store: string, w: number, id: string) =>
+    setWeek(store, w, (s) => ({ ...s, checks: { ...s.checks, [id]: !s.checks[id] } }));
+
+  const addCustom = (store: string, w: number) => {
+    const label = (newActInput[`${store}-${w}`] ?? "").trim();
+    if (!label) return;
+    const id = `c-${Date.now()}`;
+    setWeek(store, w, (s) => ({ ...s, custom: [...s.custom, { id, label }] }));
+    setNewActInput((p) => ({ ...p, [`${store}-${w}`]: "" }));
+  };
+
+  const setOpeningDate = (store: string, date: string) => {
+    setStores((prev) =>
+      prev.map((s) => (s.name === store ? { ...s, openingDate: date } : s)),
+    );
+  };
+
+  // Carry-forward: unchecked items from week w-1 shown in week w (linked to prior week).
+  const carriedFrom = (store: string, w: number) => {
+    if (w <= 1) return [] as { id: string; label: string; fromWeek: number }[];
+    const prev = getWeek(store, w - 1);
+    const prevAll = [...DEFAULT_WEEKLY_ACTS, ...prev.custom];
+    return prevAll
+      .filter((a) => !prev.checks[a.id])
+      .map((a) => ({ id: a.id, label: a.label, fromWeek: w - 1 }));
+  };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Daily Activity</h1>
         <p className="text-sm text-muted-foreground">
-          Weekly activities per store — 4-week rolling view.
+          Store weekly checklist — 48 weeks after opening. Unchecked tasks carry forward
+          automatically.
         </p>
       </div>
 
-      {/* Week tabs */}
-      <div className="flex gap-2">
-        {[1, 2, 3, 4].map((w) => (
-          <Button
-            key={w}
-            variant={week === w ? "default" : "outline"}
-            size="sm"
-            onClick={() => setWeek(w)}
-          >
-            Week {w}
-          </Button>
-        ))}
-      </div>
+      <div className="space-y-3">
+        {stores.map((store) => {
+          const isOpen = expanded === store.name;
+          const currentWeek = computeCurrentWeek(store.openingDate);
+          const w = viewWeek[store.name] ?? currentWeek ?? 1;
+          const ws = getWeek(store.name, w);
+          const carried = carriedFrom(store.name, w);
+          const baseActs = [...DEFAULT_WEEKLY_ACTS, ...ws.custom];
+          const doneCount = baseActs.filter((a) => ws.checks[a.id]).length;
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {DAILY_STORES.map((store) => {
-          const storeChecks = weekChecks[store] ?? {};
-          const done = WEEKLY_ACTIVITIES.filter((_, i) => storeChecks[i]).length;
           return (
-            <Card key={store}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{store}</CardTitle>
-                  <Badge variant="secondary">
-                    {done}/{WEEKLY_ACTIVITIES.length}
-                  </Badge>
+            <Card key={store.name}>
+              <button
+                onClick={() => setExpanded(isOpen ? null : store.name)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/40 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Store className="w-4 h-4 text-primary" />
+                  <div>
+                    <div className="font-medium">{store.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {store.openingDate
+                        ? `Opened ${store.openingDate} · Week ${currentWeek}/48`
+                        : "Opening date not set"}
+                    </div>
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {WEEKLY_ACTIVITIES.map((act, i) => {
-                  const checked = !!storeChecks[i];
-                  return (
-                    <label
-                      key={i}
-                      className="flex items-center gap-2 text-sm cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={() => toggle(store, i)}
-                      />
-                      <span className={checked ? "line-through text-muted-foreground" : ""}>
-                        {act}
-                      </span>
-                    </label>
-                  );
-                })}
-              </CardContent>
+                {currentWeek && (
+                  <Badge variant="secondary">
+                    W{w} · {doneCount}/{baseActs.length}
+                  </Badge>
+                )}
+              </button>
+
+              {isOpen && (
+                <CardContent className="border-t pt-4 space-y-4">
+                  {!store.openingDate ? (
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <label className="text-xs text-muted-foreground">
+                          Store opening date
+                        </label>
+                        <Input
+                          type="date"
+                          onChange={(e) => setOpeningDate(store.name, e.target.value)}
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground pb-2">
+                        Set opening date to unlock the 48-week checklist.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Week selector */}
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={w <= 1}
+                            onClick={() =>
+                              setViewWeek((p) => ({ ...p, [store.name]: Math.max(1, w - 1) }))
+                            }
+                          >
+                            ← Prev
+                          </Button>
+                          <div className="text-sm font-medium">
+                            Week {w}{" "}
+                            <span className="text-muted-foreground">
+                              of 48
+                              {currentWeek === w ? " · current" : ""}
+                            </span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={w >= 48}
+                            onClick={() =>
+                              setViewWeek((p) => ({
+                                ...p,
+                                [store.name]: Math.min(48, w + 1),
+                              }))
+                            }
+                          >
+                            Next →
+                          </Button>
+                        </div>
+                        <select
+                          className="border rounded-md text-sm px-2 py-1 bg-background"
+                          value={w}
+                          onChange={(e) =>
+                            setViewWeek((p) => ({
+                              ...p,
+                              [store.name]: Number(e.target.value),
+                            }))
+                          }
+                        >
+                          {Array.from({ length: 48 }, (_, i) => i + 1).map((n) => (
+                            <option key={n} value={n}>
+                              Jump to Week {n}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Activities */}
+                      <div className="space-y-2">
+                        {baseActs.map((a) => {
+                          const checked = !!ws.checks[a.id];
+                          return (
+                            <label
+                              key={a.id}
+                              className="flex items-center gap-2 text-sm cursor-pointer border rounded-md p-2 bg-muted/20"
+                            >
+                              <Checkbox
+                                checked={checked}
+                                onCheckedChange={() => toggle(store.name, w, a.id)}
+                              />
+                              <span
+                                className={
+                                  checked ? "line-through text-muted-foreground" : ""
+                                }
+                              >
+                                {a.label}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+
+                      {/* Carried forward */}
+                      {carried.length > 0 && (
+                        <div className="border rounded-md p-3 bg-amber-500/10 border-amber-500/30 space-y-2">
+                          <div className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                            Carried forward from Week {w - 1} ({carried.length})
+                          </div>
+                          {carried.map((c) => (
+                            <label
+                              key={`carry-${c.id}`}
+                              className="flex items-center gap-2 text-sm cursor-pointer"
+                            >
+                              <Checkbox
+                                checked={false}
+                                onCheckedChange={() =>
+                                  toggle(store.name, w - 1, c.id)
+                                }
+                              />
+                              <span>
+                                {c.label}{" "}
+                                <span className="text-xs text-muted-foreground">
+                                  (from W{c.fromWeek})
+                                </span>
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Add custom activity */}
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add custom activity for this week…"
+                          value={newActInput[`${store.name}-${w}`] ?? ""}
+                          onChange={(e) =>
+                            setNewActInput((p) => ({
+                              ...p,
+                              [`${store.name}-${w}`]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addCustom(store.name, w);
+                            }
+                          }}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => addCustom(store.name, w)}
+                          className="gap-1"
+                        >
+                          <Plus className="w-4 h-4" /> Add
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              )}
             </Card>
           );
         })}
