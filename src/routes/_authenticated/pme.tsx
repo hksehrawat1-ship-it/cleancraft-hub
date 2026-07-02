@@ -19,6 +19,7 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownRight,
+  CalendarCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pme")({
@@ -36,6 +37,7 @@ type SectionKey =
   | "roles"
   | "mind"
   | "stores"
+  | "daily"
   | "rm-tasks"
   | "performance";
 
@@ -44,6 +46,7 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "roles", label: "Roles & Responsibilities", icon: UserCircle2 },
   { key: "mind", label: "Mind & Tasks", icon: ListChecks },
   { key: "stores", label: "Stores Assigned", icon: Store },
+  { key: "daily", label: "Daily Activity", icon: CalendarCheck },
   { key: "rm-tasks", label: "Tasks by R.M.", icon: ClipboardList },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ];
@@ -87,6 +90,7 @@ function PMEDashboard() {
         {active === "roles" && <RolesSection />}
         {active === "mind" && <MindSection />}
         {active === "stores" && <StoresSection />}
+        {active === "daily" && <DailyActivitySection />}
         {active === "rm-tasks" && <RMTasksSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
@@ -825,6 +829,104 @@ function PerformanceSection() {
           ))}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+/* ---------------- Daily Activity (Weekly view) ---------------- */
+const WEEKLY_ACTIVITIES = [
+  "Review store ad performance",
+  "Post 3 Instagram stories",
+  "Update GMB posts & photos",
+  "Follow up with influencers",
+  "Report metrics to R.M.",
+];
+
+const DAILY_STORES = [
+  "Clean Craft — Andheri",
+  "Clean Craft — Bandra",
+  "Clean Craft — Powai",
+  "Clean Craft — Thane",
+  "Clean Craft — Vashi",
+];
+
+function DailyActivitySection() {
+  const [week, setWeek] = useState(1);
+  // checks[week][store][activityIdx] = boolean
+  const [checks, setChecks] = useState<Record<number, Record<string, Record<number, boolean>>>>({});
+
+  const toggle = (store: string, idx: number) => {
+    setChecks((prev) => {
+      const w = { ...(prev[week] ?? {}) };
+      const s = { ...(w[store] ?? {}) };
+      s[idx] = !s[idx];
+      w[store] = s;
+      return { ...prev, [week]: w };
+    });
+  };
+
+  const weekChecks = checks[week] ?? {};
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Daily Activity</h1>
+        <p className="text-sm text-muted-foreground">
+          Weekly activities per store — 4-week rolling view.
+        </p>
+      </div>
+
+      {/* Week tabs */}
+      <div className="flex gap-2">
+        {[1, 2, 3, 4].map((w) => (
+          <Button
+            key={w}
+            variant={week === w ? "default" : "outline"}
+            size="sm"
+            onClick={() => setWeek(w)}
+          >
+            Week {w}
+          </Button>
+        ))}
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {DAILY_STORES.map((store) => {
+          const storeChecks = weekChecks[store] ?? {};
+          const done = WEEKLY_ACTIVITIES.filter((_, i) => storeChecks[i]).length;
+          return (
+            <Card key={store}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">{store}</CardTitle>
+                  <Badge variant="secondary">
+                    {done}/{WEEKLY_ACTIVITIES.length}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {WEEKLY_ACTIVITIES.map((act, i) => {
+                  const checked = !!storeChecks[i];
+                  return (
+                    <label
+                      key={i}
+                      className="flex items-center gap-2 text-sm cursor-pointer"
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggle(store, i)}
+                      />
+                      <span className={checked ? "line-through text-muted-foreground" : ""}>
+                        {act}
+                      </span>
+                    </label>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
