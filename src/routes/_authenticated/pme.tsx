@@ -36,6 +36,7 @@ type SectionKey =
   | "roles"
   | "mind"
   | "stores"
+  | "daily"
   | "rm-tasks"
   | "performance";
 
@@ -44,6 +45,7 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "roles", label: "Roles & Responsibilities", icon: UserCircle2 },
   { key: "mind", label: "Mind & Tasks", icon: ListChecks },
   { key: "stores", label: "Stores Assigned", icon: Store },
+  { key: "daily", label: "Daily Activity", icon: CalendarCheck },
   { key: "rm-tasks", label: "Tasks by R.M.", icon: ClipboardList },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ];
