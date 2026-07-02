@@ -1,33 +1,45 @@
-## HR Head Dashboard
+## Performance Marketing Executive Dashboard — `/pme`
 
-Create a dedicated dashboard for the HR Head role with an editable welcome name and seeded credentials.
+A dedicated workspace where a signed-in PME manages their own stores, campaigns, influencers, tasks, and GMB health. Access limited to users with the `performance_marketing_executive` role (CEO/COO can also view).
 
-### 1. Seed HR Head user
-- Create auth user `hr@cleancraftApp.com` / `cleancraft@123` via admin server function (one-time seed, idempotent: skip if exists).
-- Ensure a `profiles` row exists with `full_name = "Himanshu"`.
-- Assign role `hr_head` in `user_roles` (add `hr_head` to the `app_role` enum and to `src/lib/roles.ts`).
+### Route
 
-### 2. Route: `/_authenticated/hr-head`
-- New file `src/routes/_authenticated/hr-head.tsx`.
-- Guards: redirect away if user is not `hr_head` (and not CEO/COO viewing).
-- Header: `Welcome, {full_name}` — clicking the name (or a small pencil icon) turns it into an inline input; on blur/Enter it saves `profiles.full_name` via Supabase and refreshes the query.
-- Body: placeholder sections for HR Head (Team, Hiring, Attendance, Policies) as empty cards — to be filled later.
+- New file: `src/routes/_authenticated/pme.tsx` → URL `/pme`
+- Head/title: "Performance Marketing — Clean Craft OS"
+- Access gate: `performance_marketing_executive`, `ceo`, or `coo`; otherwise redirect to `/dashboard`
 
-### 3. Wire-up from the CEO sidebar
-- The existing "10. HR Dept. → HR Head" item under master view should link to `/hr-head` (hash anchor stays for CEO overview; the link opens the actual dashboard).
+### Layout
 
-### 4. Post-login redirect
-- In `src/routes/auth.tsx` (or wherever the post-login redirect lives), if signed-in user has only the `hr_head` role, navigate to `/hr-head` instead of `/dashboard`.
+Left sidebar (like the Video Editor dashboard) with the PME's name, avatar/initials, editable name, and Logout. Main area is a tabbed workspace:
+
+1. **Dashboard** (default) — snapshot cards mirroring the CEO's PME view:
+   - Store Performance: Managed / Growing / Need Attention / Declining
+   - Campaign Status: Google Ads, Meta Ads, GMB, Influencer
+   - Influencers: Contacted / Live / Pending / Completed
+   - Tasks: Assigned / Completed / Pending + completion progress
+   - GMB Health: Profiles Created, Reviews, Rating, Pending
+2. **My Stores** — collapsible list of assigned stores with status badges (Live / Pending / Completed) and influencer counts.
+3. **Campaigns** — cards to toggle each channel's status (Running / Pending / Updated) with a "Last updated" timestamp.
+4. **Influencers** — table of influencers (name, store, status, notes) with add/edit/delete.
+5. **My Tasks** — task list (title, due date, status) with mark-complete and add-task.
+6. **My Performance** — completion %, month-to-month trend, top store, needs-attention list.
+
+### Data source
+
+Start with local component state seeded with realistic mock data (same shape as `PerfMktCeoView`), so the PME can click through and interact immediately. No new DB tables in this pass — a follow-up plan can wire persistence to Supabase (`pme_stores`, `pme_campaigns`, `pme_influencers`, `pme_tasks`) once the UI is approved.
 
 ### Technical notes
-- Migration: `ALTER TYPE app_role ADD VALUE IF NOT EXISTS 'hr_head';` + update `roles.ts`.
-- Seeding uses `supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true })` inside a server fn gated by `requireSupabaseAuth` + `has_role(..., 'ceo')`; runnable once from a small "Seed HR Head" button on the CEO master page, OR auto-run via migration using `supabase.auth.admin` is not available in SQL — so we expose a one-click seed action visible to CEO only.
-- Name edit: `update profiles set full_name = $1 where id = auth.uid()` (existing RLS already permits self-update).
 
-### Files to add/change
-- add `src/routes/_authenticated/hr-head.tsx`
-- add `src/lib/hr-seed.functions.ts` (CEO-gated seed server fn)
-- edit `src/lib/roles.ts` (add `hr_head`)
-- edit `src/routes/_authenticated/master.tsx` (HR Head link + seed button visible to CEO)
-- edit `src/routes/auth.tsx` (role-based redirect)
-- migration: extend `app_role` enum
+- Route file: `src/routes/_authenticated/pme.tsx`, `createFileRoute("/_authenticated/pme")`.
+- Auth gating via `useAuth()` hook; check `roles.includes("performance_marketing_executive") || isLeadership`.
+- Reuse UI atoms already in `perf-mkt-view.tsx` (`campaignBadge`, `influencerBadge`) — extract into `src/components/pme/shared.tsx` so both the CEO view and PME workspace stay in sync.
+- Tabs via existing shadcn `Tabs` component; icons from `lucide-react` (`LayoutDashboard`, `Store`, `Megaphone`, `Users`, `ClipboardList`, `TrendingUp`).
+- Profile name edit + logout mirrors the pattern in `src/routes/_authenticated/video-editor.tsx`.
+
+### Out of scope for this pass
+
+- Persisting campaigns/influencers/tasks to the database
+- Assigning stores to a PME from the CEO/HR side
+- Real ad-platform integrations (Google/Meta/GMB APIs)
+
+Once you approve, I'll build the route + shared components with interactive mock data. After you review the UX, we can layer in the DB tables and CRUD server functions.
