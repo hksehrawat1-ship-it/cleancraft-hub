@@ -233,44 +233,284 @@ function MindSection() {
 }
 
 /* ---------------- Stores Assigned ---------------- */
+type StoreInfo = {
+  id: string;
+  name: string;
+  status: string;
+  owner: string;
+  storePhone: string;
+  ownerPhone: string;
+  address: string;
+  email: string;
+};
+
+const INITIAL_STORES: StoreInfo[] = [
+  {
+    id: "andheri",
+    name: "Clean Craft — Andheri",
+    status: "Active",
+    owner: "Rahul Sharma",
+    storePhone: "+91 22 4000 1201",
+    ownerPhone: "+91 98200 11201",
+    address: "Shop 4, Link Road, Andheri West, Mumbai 400053",
+    email: "andheri@cleancraft.in",
+  },
+  {
+    id: "bandra",
+    name: "Clean Craft — Bandra",
+    status: "GMB Pending",
+    owner: "Neha Kapoor",
+    storePhone: "+91 22 4000 1202",
+    ownerPhone: "+91 98200 11202",
+    address: "Hill Road, Bandra West, Mumbai 400050",
+    email: "bandra@cleancraft.in",
+  },
+  {
+    id: "powai",
+    name: "Clean Craft — Powai",
+    status: "Active",
+    owner: "Amit Verma",
+    storePhone: "+91 22 4000 1203",
+    ownerPhone: "+91 98200 11203",
+    address: "Central Ave, Hiranandani, Powai, Mumbai 400076",
+    email: "powai@cleancraft.in",
+  },
+  {
+    id: "thane",
+    name: "Clean Craft — Thane",
+    status: "Onboarding",
+    owner: "Priya Nair",
+    storePhone: "+91 22 4000 1204",
+    ownerPhone: "+91 98200 11204",
+    address: "Ghodbunder Road, Thane West 400607",
+    email: "thane@cleancraft.in",
+  },
+  {
+    id: "vashi",
+    name: "Clean Craft — Vashi",
+    status: "Active",
+    owner: "Sanjay Iyer",
+    storePhone: "+91 22 4000 1205",
+    ownerPhone: "+91 98200 11205",
+    address: "Sector 17, Vashi, Navi Mumbai 400703",
+    email: "vashi@cleancraft.in",
+  },
+];
+
+type ActivityItem = { id: string; label: string; children?: ActivityItem[] };
+
+const PRE_MARKETING: ActivityItem[] = [
+  {
+    id: "graphics",
+    label: "Create all graphics for the new store",
+    children: [
+      { id: "graphics-a", label: "A. Opening Soon Banner" },
+      { id: "graphics-b", label: "B. Visiting Card" },
+      { id: "graphics-c", label: "C. Cake" },
+      { id: "graphics-d", label: "D. Grand Opening" },
+      { id: "graphics-e", label: "E. Flyer" },
+      { id: "graphics-f", label: "F. Cashbook" },
+    ],
+  },
+  { id: "ig-ads", label: "Instagram ads (Pre-marketing)" },
+  { id: "influencer", label: "Influencer setup" },
+  { id: "gmail", label: "Create Gmail" },
+  { id: "ig-setup", label: "Instagram setup" },
+];
+
+const POST_MARKETING: ActivityItem[] = [
+  { id: "gmb-live", label: "Go live on Google My Business" },
+  { id: "ig-live-post", label: "Instagram launch post" },
+  { id: "meta-ads", label: "Meta ads campaign live" },
+  { id: "google-ads", label: "Google Search / Local ads live" },
+  { id: "influencer-visit", label: "Influencer store visits" },
+  { id: "review-drive", label: "Review collection drive" },
+];
+
+function flattenIds(items: ActivityItem[]): string[] {
+  return items.flatMap((i) => [i.id, ...(i.children ? flattenIds(i.children) : [])]);
+}
+
 function StoresSection() {
-  const stores = [
-    { name: "Clean Craft — Andheri", status: "Active", campaigns: 3 },
-    { name: "Clean Craft — Bandra", status: "GMB Pending", campaigns: 1 },
-    { name: "Clean Craft — Powai", status: "Active", campaigns: 2 },
-    { name: "Clean Craft — Thane", status: "Onboarding", campaigns: 0 },
-    { name: "Clean Craft — Vashi", status: "Active", campaigns: 4 },
-  ];
+  const [openId, setOpenId] = useState<string | null>(INITIAL_STORES[0]?.id ?? null);
+  // checks: storeId -> activityId -> ISO timestamp string
+  const [checks, setChecks] = useState<Record<string, Record<string, string>>>({});
+
+  const toggle = (storeId: string, actId: string) => {
+    setChecks((prev) => {
+      const store = { ...(prev[storeId] ?? {}) };
+      if (store[actId]) delete store[actId];
+      else store[actId] = new Date().toISOString();
+      return { ...prev, [storeId]: store };
+    });
+  };
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">Stores Assigned</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {stores.map((s) => (
-          <Card key={s.name}>
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-semibold">{s.name}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {s.campaigns} active campaigns
+      <p className="text-sm text-muted-foreground">
+        Click a store to view details and update marketing activities.
+      </p>
+
+      <div className="space-y-3">
+        {INITIAL_STORES.map((s) => {
+          const isOpen = openId === s.id;
+          const storeChecks = checks[s.id] ?? {};
+          const allIds = [...flattenIds(PRE_MARKETING), ...flattenIds(POST_MARKETING)];
+          const doneCount = allIds.filter((id) => storeChecks[id]).length;
+
+          return (
+            <Card key={s.id} className="overflow-hidden">
+              <button
+                onClick={() => setOpenId(isOpen ? null : s.id)}
+                className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <Store className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <div className="font-semibold">{s.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {doneCount}/{allIds.length} activities complete
+                    </div>
                   </div>
                 </div>
-                <Badge
-                  variant={
-                    s.status === "Active"
-                      ? "default"
-                      : s.status === "GMB Pending"
-                        ? "destructive"
-                        : "secondary"
-                  }
-                >
-                  {s.status}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="flex items-center gap-3">
+                  <Badge
+                    variant={
+                      s.status === "Active"
+                        ? "default"
+                        : s.status === "GMB Pending"
+                          ? "destructive"
+                          : "secondary"
+                    }
+                  >
+                    {s.status}
+                  </Badge>
+                  <span className={`text-muted-foreground transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="border-t bg-muted/20 p-5 grid gap-6 lg:grid-cols-2">
+                  {/* Left: details */}
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                      Store Details
+                    </h3>
+                    <DetailRow label="Name of Owner" value={s.owner} />
+                    <DetailRow label="Store Phone" value={s.storePhone} />
+                    <DetailRow label="Owner Phone" value={s.ownerPhone} />
+                    <DetailRow label="Address" value={s.address} />
+                    <DetailRow label="Email" value={s.email} />
+                  </div>
+
+                  {/* Right: activities */}
+                  <div className="space-y-5">
+                    <ActivityList
+                      title="Pre-marketing Activities"
+                      items={PRE_MARKETING}
+                      checks={storeChecks}
+                      onToggle={(id) => toggle(s.id, id)}
+                    />
+                    <ActivityList
+                      title="Post-opening Marketing"
+                      items={POST_MARKETING}
+                      checks={storeChecks}
+                      onToggle={(id) => toggle(s.id, id)}
+                    />
+                  </div>
+                </div>
+              )}
+            </Card>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-sm font-medium">{value}</div>
+    </div>
+  );
+}
+
+function formatStamp(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString(undefined, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function ActivityList({
+  title,
+  items,
+  checks,
+  onToggle,
+}: {
+  title: string;
+  items: ActivityItem[];
+  checks: Record<string, string>;
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <div>
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+        {title}
+      </h3>
+      <ol className="space-y-2 list-decimal pl-5">
+        {items.map((item) => (
+          <li key={item.id}>
+            <ActivityRow item={item} checks={checks} onToggle={onToggle} />
+            {item.children && (
+              <ul className="mt-2 ml-2 space-y-1.5 border-l pl-3">
+                {item.children.map((child) => (
+                  <li key={child.id} className="list-none">
+                    <ActivityRow item={child} checks={checks} onToggle={onToggle} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
         ))}
+      </ol>
+    </div>
+  );
+}
+
+function ActivityRow({
+  item,
+  checks,
+  onToggle,
+}: {
+  item: ActivityItem;
+  checks: Record<string, string>;
+  onToggle: (id: string) => void;
+}) {
+  const stamp = checks[item.id];
+  return (
+    <div className="flex items-start gap-2">
+      <Checkbox
+        checked={!!stamp}
+        onCheckedChange={() => onToggle(item.id)}
+        className="mt-0.5"
+      />
+      <div>
+        <div className={`text-sm ${stamp ? "line-through text-muted-foreground" : ""}`}>
+          {item.label}
+        </div>
+        {stamp && (
+          <div className="text-[10px] text-muted-foreground mt-0.5">
+            Completed {formatStamp(stamp)}
+          </div>
+        )}
       </div>
     </div>
   );
