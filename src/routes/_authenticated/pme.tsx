@@ -46,7 +46,7 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "roles", label: "Roles & Responsibilities", icon: UserCircle2 },
   { key: "mind", label: "Mind & Tasks", icon: ListChecks },
   { key: "stores", label: "Stores Assigned", icon: Store },
-  { key: "daily", label: "Daily Activity", icon: CalendarCheck },
+  { key: "daily", label: "Weekly Activity", icon: CalendarCheck },
   { key: "rm-tasks", label: "Tasks by R.M.", icon: ClipboardList },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ];
@@ -833,7 +833,7 @@ function PerformanceSection() {
   );
 }
 
-/* ---------------- Daily Activity (Weekly view) ---------------- */
+/* ---------------- Weekly Activity (Weekly view) ---------------- */
 const DEFAULT_WEEKLY_ACTS: { id: string; label: string }[] = [
   { id: "inf", label: "Influencer follow-up" },
   { id: "gmb", label: "GMB follow-up" },
@@ -918,7 +918,7 @@ function DailyActivitySection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Daily Activity</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Weekly Activity</h1>
         <p className="text-sm text-muted-foreground">
           Store weekly checklist — 48 weeks after opening. Unchecked tasks carry forward
           automatically.
