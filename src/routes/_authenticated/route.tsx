@@ -52,8 +52,7 @@ function AuthedLayout() {
   );
 
   async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    // Auth removed — no-op
   }
 
   const showSidebar = isCEO || isLeadership;
