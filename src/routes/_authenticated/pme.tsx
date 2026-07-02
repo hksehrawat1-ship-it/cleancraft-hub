@@ -742,16 +742,21 @@ function RMTasksSection() {
   ];
 
   const [state, setState] = useState<
-    Record<string, { status: RMTaskStatus; remark: string }>
+    Record<string, { status: RMTaskStatus; remark: string; submitted: boolean }>
   >(() =>
-    Object.fromEntries(initialTasks.map((t) => [t.id, { status: "open", remark: "" }])),
+    Object.fromEntries(
+      initialTasks.map((t) => [t.id, { status: "open", remark: "", submitted: false }]),
+    ),
   );
 
   const setStatus = (id: string, status: RMTaskStatus) =>
-    setState((p) => ({ ...p, [id]: { ...p[id], status } }));
+    setState((p) => ({ ...p, [id]: { ...p[id], status, submitted: false } }));
 
   const setRemark = (id: string, remark: string) =>
     setState((p) => ({ ...p, [id]: { ...p[id], remark } }));
+
+  const submitRemark = (id: string) =>
+    setState((p) => ({ ...p, [id]: { ...p[id], submitted: true } }));
 
   return (
     <div className="space-y-6">
