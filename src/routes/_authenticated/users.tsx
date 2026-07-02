@@ -25,7 +25,7 @@ import {
 import { toast } from "sonner";
 import { Trash2, KeyRound, UserPlus, Search, Users } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/employees")({
+export const Route = createFileRoute("/_authenticated/users")({
   head: () => ({ meta: [{ title: "Employees — Clean Craft OS" }] }),
   component: EmployeesPage,
 });
