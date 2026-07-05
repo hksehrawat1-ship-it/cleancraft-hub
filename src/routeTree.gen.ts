@@ -16,6 +16,7 @@ import { Route as AuthenticatedVideoEditorRouteImport } from './routes/_authenti
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
+import { Route as AuthenticatedSalesCmsRouteImport } from './routes/_authenticated/sales-cms'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
@@ -60,6 +61,11 @@ const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
 const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
   id: '/stores',
   path: '/stores',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSalesCmsRoute = AuthenticatedSalesCmsRouteImport.update({
+  id: '/sales-cms',
+  path: '/sales-cms',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProjectsRoute = AuthenticatedProjectsRouteImport.update({
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/projects': typeof AuthenticatedProjectsRoute
+  '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/users': typeof AuthenticatedUsersRoute
@@ -143,6 +150,7 @@ export interface FileRoutesByTo {
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/projects': typeof AuthenticatedProjectsRoute
+  '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/users': typeof AuthenticatedUsersRoute
@@ -163,6 +171,7 @@ export interface FileRoutesById {
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pme': typeof AuthenticatedPmeRoute
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
+  '/_authenticated/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/pme'
     | '/projects'
+    | '/sales-cms'
     | '/stores'
     | '/tasks'
     | '/users'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/payments'
     | '/pme'
     | '/projects'
+    | '/sales-cms'
     | '/stores'
     | '/tasks'
     | '/users'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/payments'
     | '/_authenticated/pme'
     | '/_authenticated/projects'
+    | '/_authenticated/sales-cms'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
     | '/_authenticated/users'
@@ -282,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/stores'
       fullPath: '/stores'
       preLoaderRoute: typeof AuthenticatedStoresRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sales-cms': {
+      id: '/_authenticated/sales-cms'
+      path: '/sales-cms'
+      fullPath: '/sales-cms'
+      preLoaderRoute: typeof AuthenticatedSalesCmsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects': {
@@ -367,6 +386,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
+  AuthenticatedSalesCmsRoute: typeof AuthenticatedSalesCmsRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
@@ -384,6 +404,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPmeRoute: AuthenticatedPmeRoute,
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
+  AuthenticatedSalesCmsRoute: AuthenticatedSalesCmsRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
@@ -402,13 +423,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
