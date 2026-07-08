@@ -44,6 +44,8 @@ import {
   Car,
   Upload,
   AlertTriangle,
+  Phone,
+  User as UserIcon,
 
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
