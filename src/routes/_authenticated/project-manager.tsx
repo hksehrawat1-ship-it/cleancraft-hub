@@ -73,6 +73,8 @@ type SubStage = {
 type Store = {
   id: string;
   name: string;
+  franchiseName: string;
+  franchisePhone: string;
   // Simple boolean checkboxes with timestamps
   introCall: CheckItem;
   firstVisit: CheckItem;
