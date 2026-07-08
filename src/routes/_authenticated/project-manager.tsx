@@ -391,6 +391,7 @@ function ProjectManagerDashboard() {
             label="A. Introduction call done"
             item={selected.introCall}
             onToggle={() => toggleSimple("introCall")}
+            lockOnceDone
           />
 
           {/* B. First Visit */}
@@ -398,7 +399,9 @@ function ProjectManagerDashboard() {
             label="B. First Visit"
             item={selected.firstVisit}
             onToggle={() => toggleSimple("firstVisit")}
+            lockOnceDone
           />
+
 
           {/* 1. Shop Approval */}
           <StageBlock
