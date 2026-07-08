@@ -102,28 +102,7 @@ const mkItem = (id: string, label: string): CheckItem => ({ id, label, done: fal
 const defaultShopApproval = (): SubStage => ({
   id: "shop-approval",
   label: "Shop Approval",
-  items: [
-    mkItem("sa-franchise-name", "Franchise name & inspection date recorded"),
-    mkItem("sa-location", "Location / District of franchise captured"),
-    mkItem("sa-studio-type", "Live studio type confirmed (Lite / Flagship / Premium)"),
-    mkItem("sa-area", "Area available for studio verified (250 / 350 / 450 sq.ft)"),
-    mkItem("sa-store-location", "Store location assessed (Prime / Market / Side)"),
-    mkItem("sa-store-position", "Store position confirmed (Ground / First / Basement)"),
-    mkItem("sa-unloading", "Unloading & machine movement space available"),
-    mkItem("sa-gallery-gate", "Gallery & gate size measured for machine movement"),
-    mkItem("sa-water-tds", "Water quality TDS measured"),
-    mkItem("sa-mcd-water", "MCD water availability checked"),
-    mkItem("sa-softener", "Water softener requirement assessed"),
-    mkItem("sa-2000L", "2000 litre water storage available"),
-    mkItem("sa-tank-height", "Water tank height from ground recorded (ft)"),
-    mkItem("sa-drainage", "Drainage availability & size verified (inches)"),
-    mkItem("sa-electric-load", "Electricity load details captured (1φ / 3φ)"),
-    mkItem("sa-rent", "Rent cost documented"),
-    mkItem("sa-contact-company", "Point of contact — Company side recorded"),
-    mkItem("sa-contact-franchise", "Point of contact — Franchise side recorded"),
-    mkItem("sa-surroundings", "In/out condition of store documented (walls, roof, paint, wiring, seepage, etc.)"),
-    mkItem("sa-signatures", "Franchise & Inspection Head signatures obtained"),
-  ],
+  items: [],
 });
 
 const defaultInfra = (): SubStage => ({
