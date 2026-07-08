@@ -918,6 +918,334 @@ function StageBlock({
   );
 }
 
+// ---------- Shop Approval Form ----------
+type ShopApprovalState = {
+  modelDouble: boolean;
+  modelSingle: boolean;
+  modelCustomise: boolean;
+  shopArea: string;
+  locPrime: boolean;
+  locMarket: boolean;
+  locSide: boolean;
+  locOther: string;
+  posGround: boolean;
+  posFirst: boolean;
+  unloading: "" | "yes" | "no";
+  movement: "" | "yes" | "no";
+  movementRemark: string;
+  waterTDS: string;
+  mcdWater: "" | "yes" | "no";
+  softener: "" | "yes" | "no";
+  waterAvailable: "" | "yes" | "no";
+  tankHeight: string;
+  pressurePump: "" | "yes" | "no";
+  drainage: "" | "yes" | "no";
+  singlePhase: boolean;
+  threePhase: boolean;
+  videoUploaded: "" | "yes" | "no";
+  summaryConveyed: "" | "yes" | "no";
+};
+
+const emptyShopApproval = (): ShopApprovalState => ({
+  modelDouble: false,
+  modelSingle: false,
+  modelCustomise: false,
+  shopArea: "",
+  locPrime: false,
+  locMarket: false,
+  locSide: false,
+  locOther: "",
+  posGround: false,
+  posFirst: false,
+  unloading: "",
+  movement: "",
+  movementRemark: "",
+  waterTDS: "",
+  mcdWater: "",
+  softener: "",
+  waterAvailable: "",
+  tankHeight: "",
+  pressurePump: "",
+  drainage: "",
+  singlePhase: false,
+  threePhase: false,
+  videoUploaded: "",
+  summaryConveyed: "",
+});
+
+function ShopApprovalForm({
+  submitted,
+  onSubmit,
+}: {
+  submitted: boolean;
+  onSubmit: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [f, setF] = useState<ShopApprovalState>(emptyShopApproval());
+
+  const set = <K extends keyof ShopApprovalState>(k: K, v: ShopApprovalState[K]) =>
+    setF((p) => ({ ...p, [k]: v }));
+
+  const modelOk = f.modelDouble || f.modelSingle || f.modelCustomise;
+  const locOk = f.locPrime || f.locMarket || f.locSide || f.locOther.trim().length > 0;
+  const posOk = f.posGround || f.posFirst;
+  const phaseOk = f.singlePhase || f.threePhase;
+  const allDone =
+    modelOk &&
+    f.shopArea.trim() !== "" &&
+    locOk &&
+    posOk &&
+    f.unloading !== "" &&
+    f.movement !== "" &&
+    f.waterTDS.trim() !== "" &&
+    f.mcdWater !== "" &&
+    f.softener !== "" &&
+    f.waterAvailable !== "" &&
+    f.tankHeight.trim() !== "" &&
+    f.pressurePump !== "" &&
+    f.drainage !== "" &&
+    phaseOk &&
+    f.videoUploaded !== "" &&
+    f.summaryConveyed !== "";
+
+  const YesNo = ({
+    value,
+    onChange,
+    disabled,
+  }: {
+    value: "" | "yes" | "no";
+    onChange: (v: "yes" | "no") => void;
+    disabled?: boolean;
+  }) => (
+    <div className="flex items-center gap-4">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <Checkbox
+          checked={value === "yes"}
+          onCheckedChange={() => onChange("yes")}
+          disabled={disabled}
+        />
+        <span className="text-sm">Yes</span>
+      </label>
+      <label className="flex items-center gap-2 cursor-pointer">
+        <Checkbox
+          checked={value === "no"}
+          onCheckedChange={() => onChange("no")}
+          disabled={disabled}
+        />
+        <span className="text-sm">No</span>
+      </label>
+    </div>
+  );
+
+  const CB = ({
+    label,
+    checked,
+    onChange,
+    disabled,
+  }: {
+    label: string;
+    checked: boolean;
+    onChange: (v: boolean) => void;
+    disabled?: boolean;
+  }) => (
+    <label className="flex items-center gap-2 cursor-pointer">
+      <Checkbox
+        checked={checked}
+        onCheckedChange={(v) => onChange(!!v)}
+        disabled={disabled}
+      />
+      <span className="text-sm">{label}</span>
+    </label>
+  );
+
+  const dis = submitted;
+
+  return (
+    <div className="border rounded-lg bg-muted/10">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between p-3 gap-3"
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          {open ? (
+            <ChevronLeft className="w-4 h-4 rotate-[-90deg]" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+          <span className="font-medium truncate">1. Shop Approval</span>
+          {submitted && (
+            <Badge className="bg-emerald-600 hover:bg-emerald-600 text-white">
+              Submitted
+            </Badge>
+          )}
+        </div>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 space-y-4">
+          {/* 1. Type of Model */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">1. Type of Model</div>
+            <div className="flex flex-wrap gap-4">
+              <CB label="A. Double machine" checked={f.modelDouble} onChange={(v) => set("modelDouble", v)} disabled={dis} />
+              <CB label="B. Single machine" checked={f.modelSingle} onChange={(v) => set("modelSingle", v)} disabled={dis} />
+              <CB label="C. Customise" checked={f.modelCustomise} onChange={(v) => set("modelCustomise", v)} disabled={dis} />
+            </div>
+          </div>
+
+          {/* 2. Shop area */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <Label className="text-sm font-medium">2. Shop area</Label>
+            <Input
+              placeholder="e.g. 350 sq.ft"
+              value={f.shopArea}
+              onChange={(e) => set("shopArea", e.target.value)}
+              disabled={dis}
+            />
+          </div>
+
+          {/* 3. Store Location */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">3. Store Location</div>
+            <div className="flex flex-wrap gap-4">
+              <CB label="A. Prime location" checked={f.locPrime} onChange={(v) => set("locPrime", v)} disabled={dis} />
+              <CB label="B. In market" checked={f.locMarket} onChange={(v) => set("locMarket", v)} disabled={dis} />
+              <CB label="C. Side location" checked={f.locSide} onChange={(v) => set("locSide", v)} disabled={dis} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">D. Others</Label>
+              <Input
+                placeholder="Specify"
+                value={f.locOther}
+                onChange={(e) => set("locOther", e.target.value)}
+                disabled={dis}
+              />
+            </div>
+          </div>
+
+          {/* 4. Store Position */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">4. Store Position</div>
+            <div className="flex flex-wrap gap-4">
+              <CB label="Ground floor" checked={f.posGround} onChange={(v) => set("posGround", v)} disabled={dis} />
+              <CB label="First floor" checked={f.posFirst} onChange={(v) => set("posFirst", v)} disabled={dis} />
+            </div>
+          </div>
+
+          {/* 5. Unloading */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">5. Availability of space for unloading of machine</div>
+            <YesNo value={f.unloading} onChange={(v) => set("unloading", v)} disabled={dis} />
+          </div>
+
+          {/* 6. Movement */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">6. Availability of area for movement of machine in store</div>
+            <YesNo value={f.movement} onChange={(v) => set("movement", v)} disabled={dis} />
+            <p className="text-[11px] text-muted-foreground">
+              Remark: 3.5ft to 4ft gallery is required for machine movement.
+            </p>
+            <Textarea
+              placeholder="Remark (optional)"
+              value={f.movementRemark}
+              onChange={(e) => set("movementRemark", e.target.value)}
+              disabled={dis}
+              className="min-h-[60px]"
+            />
+          </div>
+
+          {/* 7. Water TDS */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <Label className="text-sm font-medium">7. Water TDS</Label>
+            <Input
+              placeholder="e.g. 250 ppm"
+              value={f.waterTDS}
+              onChange={(e) => set("waterTDS", e.target.value)}
+              disabled={dis}
+            />
+          </div>
+
+          {/* 8. MCD Water */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">8. MCD water available</div>
+            <YesNo value={f.mcdWater} onChange={(v) => set("mcdWater", v)} disabled={dis} />
+          </div>
+
+          {/* 9. Softener */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">9. Water softener required</div>
+            <YesNo value={f.softener} onChange={(v) => set("softener", v)} disabled={dis} />
+            <p className="text-[11px] text-muted-foreground">
+              Note: Inform the Franchise Partner on WhatsApp.
+            </p>
+          </div>
+
+          {/* 10. 1500/2000 L */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">10. 1500 / 2000 Litre water available</div>
+            <YesNo value={f.waterAvailable} onChange={(v) => set("waterAvailable", v)} disabled={dis} />
+          </div>
+
+          {/* 11. Tank height + pressure pump */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <Label className="text-sm font-medium">11. Height of water tank from ground level (in ft)</Label>
+            <Input
+              placeholder="e.g. 12 ft"
+              value={f.tankHeight}
+              onChange={(e) => set("tankHeight", e.target.value)}
+              disabled={dis}
+            />
+            <div className="text-sm font-medium pt-1">Pressure pump required</div>
+            <YesNo value={f.pressurePump} onChange={(v) => set("pressurePump", v)} disabled={dis} />
+          </div>
+
+          {/* 12. Drainage */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">12. Drainage availability</div>
+            <YesNo value={f.drainage} onChange={(v) => set("drainage", v)} disabled={dis} />
+          </div>
+
+          {/* 13. Electricity load */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">13. Electricity load details</div>
+            <div className="flex flex-wrap gap-4">
+              <CB label="A. Single phase" checked={f.singlePhase} onChange={(v) => set("singlePhase", v)} disabled={dis} />
+              <CB label="B. 3 Phase" checked={f.threePhase} onChange={(v) => set("threePhase", v)} disabled={dis} />
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Note: Inform the Franchise Partner on WhatsApp.
+            </p>
+          </div>
+
+          {/* 14. Video */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">14. Video of shop uploaded to the group</div>
+            <YesNo value={f.videoUploaded} onChange={(v) => set("videoUploaded", v)} disabled={dis} />
+          </div>
+
+          {/* 15. Summary */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <div className="text-sm font-medium">15. Summary of requirement conveyed in group</div>
+            <YesNo value={f.summaryConveyed} onChange={(v) => set("summaryConveyed", v)} disabled={dis} />
+          </div>
+
+          <div className="flex justify-end pt-1">
+            <Button
+              size="sm"
+              onClick={onSubmit}
+              disabled={!allDone || submitted}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {submitted ? "Submitted" : "Submit"}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 // ---------- Expense Sheet ----------
 type ExpenseCat = "food" | "accommodation" | "transportation";
 type ExpenseEntry = {
