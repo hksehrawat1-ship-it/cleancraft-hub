@@ -275,10 +275,12 @@ function ProjectManagerDashboard() {
   function addStore() {
     const name = newStoreName.trim();
     if (!name) return;
-    const s = makeStore(name);
+    const s = makeStore(name, newStoreFranchise.trim(), newStorePhone.trim());
     setStores((prev) => [...prev, s]);
     setSelectedId(s.id);
     setNewStoreName("");
+    setNewStoreFranchise("");
+    setNewStorePhone("");
     setAddOpen(false);
   }
 
@@ -300,14 +302,33 @@ function ProjectManagerDashboard() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Add new store</DialogTitle></DialogHeader>
-            <div className="space-y-2">
-              <Label>Store / Place name</Label>
-              <Input
-                value={newStoreName}
-                onChange={(e) => setNewStoreName(e.target.value)}
-                placeholder="e.g. Nashik"
-                onKeyDown={(e) => e.key === "Enter" && addStore()}
-              />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Store / Place name</Label>
+                <Input
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                  placeholder="e.g. Nashik"
+                  onKeyDown={(e) => e.key === "Enter" && addStore()}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Franchise name</Label>
+                <Input
+                  value={newStoreFranchise}
+                  onChange={(e) => setNewStoreFranchise(e.target.value)}
+                  placeholder="e.g. Ramesh Kulkarni"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Franchise phone</Label>
+                <Input
+                  value={newStorePhone}
+                  onChange={(e) => setNewStorePhone(e.target.value)}
+                  placeholder="e.g. +91 98765 43210"
+                  type="tel"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
