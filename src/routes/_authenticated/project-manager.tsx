@@ -896,17 +896,15 @@ function ExpenseSheetSection({ stores }: { stores: Store[] }) {
 
   // Check every minute after 21:00; also fire immediately when component mounts past 9 PM
   const [now, setNow] = useState(new Date());
-  useMemo(() => {
+  useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60_000);
     return () => clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const afterNine = now.getHours() >= 21;
-  useMemo(() => {
+  useEffect(() => {
     if (afterNine && missingStores.length > 0 && !dismissed) {
       setReminderOpen(true);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [afterNine, missingStores.length, dismissed]);
 
   const totalToday = entries
