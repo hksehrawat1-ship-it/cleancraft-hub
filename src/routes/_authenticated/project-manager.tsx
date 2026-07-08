@@ -38,6 +38,13 @@ import {
   FileText,
   Link as LinkIcon,
   Download,
+  Wallet,
+  Utensils,
+  BedDouble,
+  Car,
+  Upload,
+  AlertTriangle,
+
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
