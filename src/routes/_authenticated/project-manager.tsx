@@ -165,9 +165,15 @@ const defaultPainter = (): SubStage => ({
   ],
 });
 
-const makeStore = (name: string): Store => ({
+const makeStore = (
+  name: string,
+  franchiseName = "",
+  franchisePhone = ""
+): Store => ({
   id: `${name}-${Math.random().toString(36).slice(2, 7)}`,
   name,
+  franchiseName,
+  franchisePhone,
   introCall: mkItem("intro", "Introduction call done"),
   firstVisit: mkItem("first-visit", "First Visit"),
   shopApproval: defaultShopApproval(),
@@ -181,9 +187,9 @@ const makeStore = (name: string): Store => ({
 });
 
 const INITIAL_STORES: Store[] = [
-  makeStore("Pune 2"),
-  makeStore("Mathura"),
-  makeStore("New Raipur"),
+  makeStore("Pune 2", "Rahul Deshpande", "+91 98220 41567"),
+  makeStore("Mathura", "Anil Agarwal", "+91 99105 33421"),
+  makeStore("New Raipur", "Suresh Chaturvedi", "+91 90090 27834"),
 ];
 
 // ---------- Helpers ----------
