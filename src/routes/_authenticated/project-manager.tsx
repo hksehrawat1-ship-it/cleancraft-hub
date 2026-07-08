@@ -44,6 +44,8 @@ import {
   Car,
   Upload,
   AlertTriangle,
+  Phone,
+  User as UserIcon,
 
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -73,6 +75,8 @@ type SubStage = {
 type Store = {
   id: string;
   name: string;
+  franchiseName: string;
+  franchisePhone: string;
   // Simple boolean checkboxes with timestamps
   introCall: CheckItem;
   firstVisit: CheckItem;
@@ -163,9 +167,15 @@ const defaultPainter = (): SubStage => ({
   ],
 });
 
-const makeStore = (name: string): Store => ({
+const makeStore = (
+  name: string,
+  franchiseName = "",
+  franchisePhone = ""
+): Store => ({
   id: `${name}-${Math.random().toString(36).slice(2, 7)}`,
   name,
+  franchiseName,
+  franchisePhone,
   introCall: mkItem("intro", "Introduction call done"),
   firstVisit: mkItem("first-visit", "First Visit"),
   shopApproval: defaultShopApproval(),
@@ -179,9 +189,9 @@ const makeStore = (name: string): Store => ({
 });
 
 const INITIAL_STORES: Store[] = [
-  makeStore("Pune 2"),
-  makeStore("Mathura"),
-  makeStore("New Raipur"),
+  makeStore("Pune 2", "Rahul Deshpande", "+91 98220 41567"),
+  makeStore("Mathura", "Anil Agarwal", "+91 99105 33421"),
+  makeStore("New Raipur", "Suresh Chaturvedi", "+91 90090 27834"),
 ];
 
 // ---------- Helpers ----------
@@ -227,6 +237,8 @@ function ProjectManagerDashboard() {
   const [stores, setStores] = useState<Store[]>(INITIAL_STORES);
   const [selectedId, setSelectedId] = useState<string>(INITIAL_STORES[0].id);
   const [newStoreName, setNewStoreName] = useState("");
+  const [newStoreFranchise, setNewStoreFranchise] = useState("");
+  const [newStorePhone, setNewStorePhone] = useState("");
   const [addOpen, setAddOpen] = useState(false);
 
   const selected = useMemo(() => stores.find((s) => s.id === selectedId) ?? stores[0], [stores, selectedId]);
@@ -265,10 +277,12 @@ function ProjectManagerDashboard() {
   function addStore() {
     const name = newStoreName.trim();
     if (!name) return;
-    const s = makeStore(name);
+    const s = makeStore(name, newStoreFranchise.trim(), newStorePhone.trim());
     setStores((prev) => [...prev, s]);
     setSelectedId(s.id);
     setNewStoreName("");
+    setNewStoreFranchise("");
+    setNewStorePhone("");
     setAddOpen(false);
   }
 
@@ -290,14 +304,33 @@ function ProjectManagerDashboard() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader><DialogTitle>Add new store</DialogTitle></DialogHeader>
-            <div className="space-y-2">
-              <Label>Store / Place name</Label>
-              <Input
-                value={newStoreName}
-                onChange={(e) => setNewStoreName(e.target.value)}
-                placeholder="e.g. Nashik"
-                onKeyDown={(e) => e.key === "Enter" && addStore()}
-              />
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label>Store / Place name</Label>
+                <Input
+                  value={newStoreName}
+                  onChange={(e) => setNewStoreName(e.target.value)}
+                  placeholder="e.g. Nashik"
+                  onKeyDown={(e) => e.key === "Enter" && addStore()}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Franchise name</Label>
+                <Input
+                  value={newStoreFranchise}
+                  onChange={(e) => setNewStoreFranchise(e.target.value)}
+                  placeholder="e.g. Ramesh Kulkarni"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Franchise phone</Label>
+                <Input
+                  value={newStorePhone}
+                  onChange={(e) => setNewStorePhone(e.target.value)}
+                  placeholder="e.g. +91 98765 43210"
+                  type="tel"
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setAddOpen(false)}>Cancel</Button>
@@ -374,6 +407,22 @@ function ProjectManagerDashboard() {
                 <MapPin className="w-4 h-4 text-primary" />
                 <div className="font-medium truncate">{s.name}</div>
               </div>
+              {(s.franchiseName || s.franchisePhone) && (
+                <div className="mt-1 space-y-0.5 pl-6">
+                  {s.franchiseName && (
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate">
+                      <UserIcon className="w-3 h-3" />
+                      <span className="truncate">{s.franchiseName}</span>
+                    </div>
+                  )}
+                  {s.franchisePhone && (
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate">
+                      <Phone className="w-3 h-3" />
+                      <span className="truncate">{s.franchisePhone}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="mt-2 flex items-center gap-2">
                 <Progress value={pct} className="h-1.5 flex-1" />
                 <span className="text-[11px] tabular-nums text-muted-foreground">{pct}%</span>
@@ -393,6 +442,22 @@ function ProjectManagerDashboard() {
             </CardTitle>
             <Badge variant="outline">{storeProgress(selected)}% complete</Badge>
           </div>
+          {(selected.franchiseName || selected.franchisePhone) && (
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              {selected.franchiseName && (
+                <div className="flex items-center gap-1">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>Franchise: <span className="text-foreground font-medium">{selected.franchiseName}</span></span>
+                </div>
+              )}
+              {selected.franchisePhone && (
+                <a href={`tel:${selected.franchisePhone}`} className="flex items-center gap-1 hover:text-primary">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span className="text-foreground font-medium">{selected.franchisePhone}</span>
+                </a>
+              )}
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           {/* A. Intro call */}
