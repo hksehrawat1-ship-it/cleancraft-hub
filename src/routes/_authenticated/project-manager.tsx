@@ -858,3 +858,286 @@ function StageBlock({
     </div>
   );
 }
+
+// ---------- Expense Sheet ----------
+type ExpenseCat = "food" | "accommodation" | "transportation";
+type ExpenseEntry = {
+  id: string;
+  storeId: string;
+  storeName: string;
+  category: ExpenseCat;
+  date: string; // YYYY-MM-DD
+  amount: number;
+  note?: string;
+  proofName?: string;
+  createdAt: string;
+};
+
+const CAT_META: { key: ExpenseCat; label: string; icon: React.ComponentType<{ className?: string }>; tone: string }[] = [
+  { key: "food", label: "Food", icon: Utensils, tone: "text-amber-600" },
+  { key: "accommodation", label: "Accommodation", icon: BedDouble, tone: "text-sky-600" },
+  { key: "transportation", label: "Transportation", icon: Car, tone: "text-emerald-600" },
+];
+
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+function ExpenseSheetSection({ stores }: { stores: Store[] }) {
+  const [entries, setEntries] = useState<ExpenseEntry[]>([]);
+  const [reminderOpen, setReminderOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  // Reminder pop-up: after 9 PM local, if any store has no entry for today
+  const today = todayStr();
+  const missingStores = useMemo(() => {
+    return stores.filter(
+      (s) => !entries.some((e) => e.storeId === s.id && e.date === today)
+    );
+  }, [stores, entries, today]);
+
+  // Check every minute after 21:00; also fire immediately when component mounts past 9 PM
+  const [now, setNow] = useState(new Date());
+  useMemo(() => {
+    const t = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const afterNine = now.getHours() >= 21;
+  useMemo(() => {
+    if (afterNine && missingStores.length > 0 && !dismissed) {
+      setReminderOpen(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [afterNine, missingStores.length, dismissed]);
+
+  const totalToday = entries
+    .filter((e) => e.date === today)
+    .reduce((a, e) => a + e.amount, 0);
+
+  function addEntry(entry: Omit<ExpenseEntry, "id" | "createdAt">) {
+    setEntries((p) => [
+      { ...entry, id: Math.random().toString(36).slice(2), createdAt: nowStamp() },
+      ...p,
+    ]);
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Today's Spend</div>
+            <div className="text-2xl font-semibold tabular-nums mt-1">₹{totalToday.toLocaleString("en-IN")}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Entries Today</div>
+            <div className="text-2xl font-semibold tabular-nums mt-1">
+              {entries.filter((e) => e.date === today).length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Stores Pending Today</div>
+            <div className={cn("text-2xl font-semibold tabular-nums mt-1", missingStores.length ? "text-red-600" : "text-emerald-600")}>
+              {missingStores.length}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">Reminder Time</div>
+            <div className="text-2xl font-semibold tabular-nums mt-1">9:00 PM</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Per-project (store) blocks */}
+      {stores.map((s) => {
+        const storeEntries = entries.filter((e) => e.storeId === s.id);
+        const todays = storeEntries.filter((e) => e.date === today);
+        const totals: Record<ExpenseCat, number> = {
+          food: 0,
+          accommodation: 0,
+          transportation: 0,
+        };
+        storeEntries.forEach((e) => {
+          totals[e.category] += e.amount;
+        });
+        return (
+          <Card key={s.id}>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  {s.name}
+                </CardTitle>
+                <div className="flex items-center gap-2">
+                  {todays.length === 0 ? (
+                    <Badge variant="destructive">Not updated today</Badge>
+                  ) : (
+                    <Badge className="bg-emerald-600 hover:bg-emerald-600 text-white">
+                      {todays.length} entry{todays.length > 1 ? "s" : ""} today
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {/* Category totals */}
+              <div className="grid grid-cols-3 gap-2">
+                {CAT_META.map((c) => {
+                  const Icon = c.icon;
+                  return (
+                    <div key={c.key} className="border rounded-md p-2 bg-muted/10">
+                      <div className="flex items-center gap-1.5">
+                        <Icon className={cn("w-3.5 h-3.5", c.tone)} />
+                        <span className="text-[11px] text-muted-foreground">{c.label}</span>
+                      </div>
+                      <div className="text-lg font-semibold tabular-nums mt-0.5">
+                        ₹{totals[c.key].toLocaleString("en-IN")}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add entry row */}
+              <ExpenseAddRow
+                onAdd={(cat, amount, note, proofName) =>
+                  addEntry({
+                    storeId: s.id,
+                    storeName: s.name,
+                    category: cat,
+                    date: today,
+                    amount,
+                    note,
+                    proofName,
+                  })
+                }
+              />
+
+              {/* Recent entries */}
+              {storeEntries.length > 0 && (
+                <div className="border rounded-md divide-y">
+                  {storeEntries.slice(0, 5).map((e) => {
+                    const meta = CAT_META.find((c) => c.key === e.category)!;
+                    const Icon = meta.icon;
+                    return (
+                      <div key={e.id} className="p-2 flex items-center justify-between gap-2 text-sm">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Icon className={cn("w-4 h-4", meta.tone)} />
+                          <div className="min-w-0">
+                            <div className="truncate">
+                              <span className="font-medium">₹{e.amount.toLocaleString("en-IN")}</span>
+                              <span className="text-muted-foreground"> · {meta.label} · {e.date}</span>
+                            </div>
+                            {(e.note || e.proofName) && (
+                              <div className="text-[11px] text-muted-foreground truncate">
+                                {e.note}{e.note && e.proofName ? " · " : ""}
+                                {e.proofName && <span className="inline-flex items-center gap-1"><Upload className="w-3 h-3" />{e.proofName}</span>}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
+
+      {/* 9 PM Reminder pop-up */}
+      <Dialog open={reminderOpen} onOpenChange={(o) => { setReminderOpen(o); if (!o) setDismissed(true); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Expense reminder
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-sm space-y-2">
+            <p>It's past 9:00 PM and today's expenses aren't logged for:</p>
+            <ul className="list-disc pl-5 text-muted-foreground">
+              {missingStores.map((s) => <li key={s.id}>{s.name}</li>)}
+            </ul>
+            <p className="text-xs text-muted-foreground">Please update Food, Accommodation, and Transportation with proof.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setReminderOpen(false); setDismissed(true); }}>
+              Remind me later
+            </Button>
+            <Button onClick={() => { setReminderOpen(false); setDismissed(true); }}>
+              Log now
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+function ExpenseAddRow({
+  onAdd,
+}: {
+  onAdd: (cat: ExpenseCat, amount: number, note: string, proofName?: string) => void;
+}) {
+  const [cat, setCat] = useState<ExpenseCat>("food");
+  const [amount, setAmount] = useState("");
+  const [note, setNote] = useState("");
+  const [proofName, setProofName] = useState<string | undefined>(undefined);
+
+  function submit() {
+    const amt = Number(amount);
+    if (!amt || amt <= 0) return;
+    onAdd(cat, amt, note.trim(), proofName);
+    setAmount("");
+    setNote("");
+    setProofName(undefined);
+  }
+
+  return (
+    <div className="border rounded-md p-2 bg-background grid grid-cols-1 md:grid-cols-[140px_120px_1fr_auto_auto] gap-2 items-center">
+      <select
+        value={cat}
+        onChange={(e) => setCat(e.target.value as ExpenseCat)}
+        className="h-9 rounded-md border bg-background px-2 text-sm"
+      >
+        {CAT_META.map((c) => (
+          <option key={c.key} value={c.key}>{c.label}</option>
+        ))}
+      </select>
+      <Input
+        type="number"
+        inputMode="decimal"
+        placeholder="Amount ₹"
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+      />
+      <Input
+        placeholder="Note (optional)"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+      />
+      <label className="inline-flex items-center gap-1.5 text-xs px-2 py-2 border rounded-md cursor-pointer hover:bg-muted/50 whitespace-nowrap">
+        <Upload className="w-3.5 h-3.5" />
+        {proofName ? "Change proof" : "Upload proof"}
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*,application/pdf"
+          onChange={(e) => setProofName(e.target.files?.[0]?.name)}
+        />
+      </label>
+      <Button size="sm" onClick={submit} disabled={!amount}>
+        <Plus className="w-4 h-4 mr-1" /> Add
+      </Button>
+    </div>
+  );
+}
+
