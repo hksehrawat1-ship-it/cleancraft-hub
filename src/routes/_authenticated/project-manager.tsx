@@ -130,10 +130,10 @@ const defaultInfra = (): SubStage => ({
   id: "infra",
   label: "Infra Work",
   items: [
-    mkItem("in-demolition", "Demolition / clearing"),
-    mkItem("in-flooring", "Flooring done"),
-    mkItem("in-ceiling", "False ceiling"),
-    mkItem("in-signage", "Signage frame installed"),
+    mkItem("in-cable", "10 mm cable from pole to shop"),
+    mkItem("in-glass", "Glass work"),
+    mkItem("in-tile", "Tile work"),
+    mkItem("in-exhaust", "Exhaust work"),
   ],
 });
 
