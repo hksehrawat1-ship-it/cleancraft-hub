@@ -230,6 +230,8 @@ function ProjectManagerDashboard() {
   function toggleSimple(key: "introCall" | "firstVisit" | "machineOrder" | "engineerAligned") {
     updateStore((s) => {
       const item = s[key];
+      // Intro call and first visit are one-way: cannot be undone once ticked
+      if ((key === "introCall" || key === "firstVisit") && item.done) return s;
       const done = !item.done;
       return { ...s, [key]: { ...item, done, at: done ? nowStamp() : undefined } } as Store;
     });
@@ -389,6 +391,7 @@ function ProjectManagerDashboard() {
             label="A. Introduction call done"
             item={selected.introCall}
             onToggle={() => toggleSimple("introCall")}
+            lockOnceDone
           />
 
           {/* B. First Visit */}
@@ -396,7 +399,9 @@ function ProjectManagerDashboard() {
             label="B. First Visit"
             item={selected.firstVisit}
             onToggle={() => toggleSimple("firstVisit")}
+            lockOnceDone
           />
+
 
           {/* 1. Shop Approval */}
           <StageBlock
@@ -745,16 +750,26 @@ function SimpleCheckRow({
   label,
   item,
   onToggle,
+  lockOnceDone,
 }: {
   label: string;
   item: CheckItem;
   onToggle: () => void;
+  lockOnceDone?: boolean;
 }) {
+  const locked = !!lockOnceDone && item.done;
   return (
     <div className="border rounded-lg p-3 bg-muted/10 flex items-center justify-between flex-wrap gap-3">
-      <label className="flex items-center gap-3 cursor-pointer">
-        <Checkbox checked={item.done} onCheckedChange={onToggle} />
+      <label className={cn("flex items-center gap-3", locked ? "cursor-not-allowed" : "cursor-pointer")}>
+        <Checkbox
+          checked={item.done}
+          disabled={locked}
+          onCheckedChange={() => { if (!locked) onToggle(); }}
+        />
         <span className="font-medium">{label}</span>
+        {locked && (
+          <span className="text-[11px] text-muted-foreground">(locked)</span>
+        )}
       </label>
       {item.done && item.at && (
         <div className="flex items-center gap-1 text-xs text-emerald-600">
@@ -765,6 +780,7 @@ function SimpleCheckRow({
     </div>
   );
 }
+
 
 function StageBlock({
   index,
