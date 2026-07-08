@@ -750,16 +750,26 @@ function SimpleCheckRow({
   label,
   item,
   onToggle,
+  lockOnceDone,
 }: {
   label: string;
   item: CheckItem;
   onToggle: () => void;
+  lockOnceDone?: boolean;
 }) {
+  const locked = !!lockOnceDone && item.done;
   return (
     <div className="border rounded-lg p-3 bg-muted/10 flex items-center justify-between flex-wrap gap-3">
-      <label className="flex items-center gap-3 cursor-pointer">
-        <Checkbox checked={item.done} onCheckedChange={onToggle} />
+      <label className={cn("flex items-center gap-3", locked ? "cursor-not-allowed" : "cursor-pointer")}>
+        <Checkbox
+          checked={item.done}
+          disabled={locked}
+          onCheckedChange={() => { if (!locked) onToggle(); }}
+        />
         <span className="font-medium">{label}</span>
+        {locked && (
+          <span className="text-[11px] text-muted-foreground">(locked)</span>
+        )}
       </label>
       {item.done && item.at && (
         <div className="flex items-center gap-1 text-xs text-emerald-600">
@@ -770,6 +780,7 @@ function SimpleCheckRow({
     </div>
   );
 }
+
 
 function StageBlock({
   index,
