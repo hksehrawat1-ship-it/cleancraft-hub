@@ -472,12 +472,12 @@ function ProjectManagerDashboard() {
 
 
           {/* 1. Shop Approval */}
-          <StageBlock
-            index="1"
-            stage={selected.shopApproval}
-            onToggleItem={(id) => toggleSubItem("shopApproval", id)}
+          <ShopApprovalForm
+            key={selected.id}
+            submitted={!!selected.shopApproval.submitted}
             onSubmit={() => submitStage("shopApproval")}
           />
+
 
           {/* 2. Infra */}
           <StageBlock
