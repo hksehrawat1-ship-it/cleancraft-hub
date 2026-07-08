@@ -202,8 +202,20 @@ function storeProgress(store: Store) {
   return Math.round((done / total) * 100);
 }
 
+// ---------- Side nav ----------
+type SectionKey = "stores" | "mind" | "pc-tasks" | "resources" | "performance";
+
+const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { key: "stores", label: "Stores", icon: StoreIcon },
+  { key: "mind", label: "Mind & Tasks", icon: Brain },
+  { key: "pc-tasks", label: "Tasks Assigned By P.C", icon: Inbox },
+  { key: "resources", label: "Resources", icon: BookOpen },
+  { key: "performance", label: "Performance", icon: TrendingUp },
+];
+
 // ---------- Component ----------
 function ProjectManagerDashboard() {
+  const [section, setSection] = useState<SectionKey>("stores");
   const [stores, setStores] = useState<Store[]>(INITIAL_STORES);
   const [selectedId, setSelectedId] = useState<string>(INITIAL_STORES[0].id);
   const [newStoreName, setNewStoreName] = useState("");
