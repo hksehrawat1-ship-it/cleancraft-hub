@@ -407,6 +407,22 @@ function ProjectManagerDashboard() {
                 <MapPin className="w-4 h-4 text-primary" />
                 <div className="font-medium truncate">{s.name}</div>
               </div>
+              {(s.franchiseName || s.franchisePhone) && (
+                <div className="mt-1 space-y-0.5 pl-6">
+                  {s.franchiseName && (
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate">
+                      <UserIcon className="w-3 h-3" />
+                      <span className="truncate">{s.franchiseName}</span>
+                    </div>
+                  )}
+                  {s.franchisePhone && (
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground truncate">
+                      <Phone className="w-3 h-3" />
+                      <span className="truncate">{s.franchisePhone}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="mt-2 flex items-center gap-2">
                 <Progress value={pct} className="h-1.5 flex-1" />
                 <span className="text-[11px] tabular-nums text-muted-foreground">{pct}%</span>
