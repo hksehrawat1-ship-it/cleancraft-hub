@@ -442,6 +442,22 @@ function ProjectManagerDashboard() {
             </CardTitle>
             <Badge variant="outline">{storeProgress(selected)}% complete</Badge>
           </div>
+          {(selected.franchiseName || selected.franchisePhone) && (
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              {selected.franchiseName && (
+                <div className="flex items-center gap-1">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>Franchise: <span className="text-foreground font-medium">{selected.franchiseName}</span></span>
+                </div>
+              )}
+              {selected.franchisePhone && (
+                <a href={`tel:${selected.franchisePhone}`} className="flex items-center gap-1 hover:text-primary">
+                  <Phone className="w-3.5 h-3.5" />
+                  <span className="text-foreground font-medium">{selected.franchisePhone}</span>
+                </a>
+              )}
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4">
           {/* A. Intro call */}
