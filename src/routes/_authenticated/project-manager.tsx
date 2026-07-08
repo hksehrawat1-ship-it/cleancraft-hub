@@ -30,7 +30,16 @@ import {
   ChevronRight,
   ChevronLeft,
   ClipboardList,
+  Store as StoreIcon,
+  Brain,
+  Inbox,
+  BookOpen,
+  TrendingUp,
+  FileText,
+  Link as LinkIcon,
+  Download,
 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
