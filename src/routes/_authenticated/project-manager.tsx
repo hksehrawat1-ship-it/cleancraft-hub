@@ -104,13 +104,6 @@ const defaultShopApproval = (): SubStage => ({
   label: "Shop Approval",
   items: [],
 });
-    mkItem("sa-rent", "Rent cost documented"),
-    mkItem("sa-contact-company", "Point of contact — Company side recorded"),
-    mkItem("sa-contact-franchise", "Point of contact — Franchise side recorded"),
-    mkItem("sa-surroundings", "In/out condition of store documented (walls, roof, paint, wiring, seepage, etc.)"),
-    mkItem("sa-signatures", "Franchise & Inspection Head signatures obtained"),
-  ],
-});
 
 const defaultInfra = (): SubStage => ({
   id: "infra",
