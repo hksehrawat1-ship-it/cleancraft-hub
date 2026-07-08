@@ -496,9 +496,249 @@ function ProjectManagerDashboard() {
           </div>
         </CardContent>
       </Card>
+      </>
+    );
+  }
+}
+
+// ---------- Mind & Tasks ----------
+type MindTask = { id: string; text: string; done: boolean; at: string };
+function MindTasksSection() {
+  const [tasks, setTasks] = useState<MindTask[]>([
+    { id: "m1", text: "Call vendor for signage quote — Pune 2", done: false, at: nowStamp() },
+    { id: "m2", text: "Review Mathura civil work photos", done: false, at: nowStamp() },
+    { id: "m3", text: "Confirm engineer travel to New Raipur", done: true, at: nowStamp() },
+  ]);
+  const [input, setInput] = useState("");
+
+  function add() {
+    const t = input.trim();
+    if (!t) return;
+    setTasks((p) => [{ id: Math.random().toString(36).slice(2), text: t, done: false, at: nowStamp() }, ...p]);
+    setInput("");
+  }
+  function toggle(id: string) {
+    setTasks((p) => p.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Brain className="w-5 h-5 text-primary" /> Mind & Tasks
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">Personal task list — capture what's on your mind.</p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Add a task…"
+            onKeyDown={(e) => e.key === "Enter" && add()}
+          />
+          <Button onClick={add}><Plus className="w-4 h-4 mr-1" /> Add</Button>
+        </div>
+        <div className="space-y-2">
+          {tasks.map((t) => (
+            <div key={t.id} className="border rounded-md p-2 bg-muted/10 flex items-center gap-3">
+              <Checkbox checked={t.done} onCheckedChange={() => toggle(t.id)} />
+              <span className={cn("text-sm flex-1", t.done && "line-through text-muted-foreground")}>{t.text}</span>
+              <span className="text-[11px] text-muted-foreground tabular-nums">{t.at}</span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Tasks Assigned By P.C ----------
+type PCTask = {
+  id: string;
+  title: string;
+  store: string;
+  assignedBy: string;
+  due: string;
+  priority: "High" | "Medium" | "Low";
+  status: "open" | "in_progress" | "done";
+};
+function PCTasksSection() {
+  const [tasks, setTasks] = useState<PCTask[]>([
+    { id: "p1", title: "Submit shop agreement copy to legal", store: "Pune 2", assignedBy: "Ananya (P.C.)", due: "12 Jul 2026", priority: "High", status: "open" },
+    { id: "p2", title: "Share civil work photos of Day 3", store: "Mathura", assignedBy: "Ananya (P.C.)", due: "10 Jul 2026", priority: "Medium", status: "in_progress" },
+    { id: "p3", title: "Confirm machine delivery slot", store: "New Raipur", assignedBy: "Ananya (P.C.)", due: "15 Jul 2026", priority: "High", status: "open" },
+    { id: "p4", title: "Update opening tentative date", store: "Pune 2", assignedBy: "Ananya (P.C.)", due: "09 Jul 2026", priority: "Low", status: "done" },
+  ]);
+
+  function setStatus(id: string, status: PCTask["status"]) {
+    setTasks((p) => p.map((t) => (t.id === id ? { ...t, status } : t)));
+  }
+  const badgeFor = (s: PCTask["status"]) =>
+    s === "done" ? "bg-emerald-600" : s === "in_progress" ? "bg-sky-600" : "bg-amber-600";
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Inbox className="w-5 h-5 text-primary" /> Tasks Assigned By P.C
+        </CardTitle>
+        <p className="text-xs text-muted-foreground">Tasks pushed by your Project Coordinator.</p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {tasks.map((t) => (
+          <div key={t.id} className="border rounded-lg p-3 bg-muted/10 space-y-2">
+            <div className="flex items-start justify-between gap-2 flex-wrap">
+              <div className="min-w-0">
+                <div className="font-medium">{t.title}</div>
+                <div className="text-xs text-muted-foreground">
+                  {t.store} · By {t.assignedBy} · Due {t.due}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge variant={t.priority === "High" ? "destructive" : t.priority === "Medium" ? "default" : "secondary"}>
+                  {t.priority}
+                </Badge>
+                <Badge className={cn("text-white", badgeFor(t.status))}>{t.status.replace("_", " ")}</Badge>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={() => setStatus(t.id, "in_progress")} disabled={t.status === "in_progress"}>
+                In Progress
+              </Button>
+              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => setStatus(t.id, "done")} disabled={t.status === "done"}>
+                Mark Done
+              </Button>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ---------- Resources ----------
+function ResourcesSection() {
+  const files = [
+    { name: "Store Setup Playbook.pdf", type: "PDF", size: "2.4 MB" },
+    { name: "Vendor Master List.xlsx", type: "Excel", size: "180 KB" },
+    { name: "Electric Load Application Template.docx", type: "Word", size: "42 KB" },
+    { name: "Site Measurement Sheet.pdf", type: "PDF", size: "120 KB" },
+  ];
+  const links = [
+    { label: "Brand Guidelines", url: "#" },
+    { label: "Signage Vendor Portal", url: "#" },
+    { label: "Machine Order Form", url: "#" },
+  ];
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <FileText className="w-5 h-5 text-primary" /> Documents
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {files.map((f) => (
+            <div key={f.name} className="border rounded-md p-2 bg-muted/10 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="w-4 h-4 text-primary shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{f.name}</div>
+                  <div className="text-[11px] text-muted-foreground">{f.type} · {f.size}</div>
+                </div>
+              </div>
+              <Button size="sm" variant="outline"><Download className="w-3.5 h-3.5 mr-1" /> Download</Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <LinkIcon className="w-5 h-5 text-primary" /> Quick Links
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          {links.map((l) => (
+            <a key={l.label} href={l.url} className="border rounded-md p-3 bg-muted/10 hover:bg-muted/30 text-sm font-medium flex items-center gap-2">
+              <LinkIcon className="w-4 h-4 text-primary" /> {l.label}
+            </a>
+          ))}
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
+// ---------- Performance ----------
+function PerformanceSection({ stores }: { stores: Store[] }) {
+  const avg = stores.length
+    ? Math.round(stores.reduce((a, s) => a + storeProgress(s), 0) / stores.length)
+    : 0;
+  const opened = stores.filter((s) => storeProgress(s) === 100).length;
+  const inProgress = stores.length - opened;
+
+  const kpis = [
+    { label: "Stores Assigned", value: stores.length, tone: "text-primary" },
+    { label: "Completed", value: opened, tone: "text-emerald-600" },
+    { label: "In Progress", value: inProgress, tone: "text-sky-600" },
+    { label: "Avg. Readiness", value: `${avg}%`, tone: "text-amber-600" },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {kpis.map((k) => (
+          <Card key={k.label}>
+            <CardContent className="p-4">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{k.label}</div>
+              <div className={cn("text-2xl font-semibold tabular-nums mt-1", k.tone)}>{k.value}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <TrendingUp className="w-5 h-5 text-primary" /> Store Readiness
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {stores.map((s) => {
+            const pct = storeProgress(s);
+            return (
+              <div key={s.id} className="space-y-1">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    <span className="font-medium">{s.name}</span>
+                  </div>
+                  <span className="tabular-nums text-muted-foreground">{pct}%</span>
+                </div>
+                <Progress value={pct} className="h-2" />
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <FileText className="w-5 h-5 text-primary" /> Notes to CEO
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea rows={4} placeholder="Weekly highlights, blockers, escalations…" />
+          <div className="flex justify-end mt-2">
+            <Button size="sm">Save Note</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 
 // ---------- Row components ----------
 function SimpleCheckRow({
