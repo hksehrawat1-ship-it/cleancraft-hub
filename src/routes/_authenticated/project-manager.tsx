@@ -230,6 +230,8 @@ function ProjectManagerDashboard() {
   function toggleSimple(key: "introCall" | "firstVisit" | "machineOrder" | "engineerAligned") {
     updateStore((s) => {
       const item = s[key];
+      // Intro call and first visit are one-way: cannot be undone once ticked
+      if ((key === "introCall" || key === "firstVisit") && item.done) return s;
       const done = !item.done;
       return { ...s, [key]: { ...item, done, at: done ? nowStamp() : undefined } } as Store;
     });
