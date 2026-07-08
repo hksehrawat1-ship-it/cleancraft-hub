@@ -203,12 +203,13 @@ function storeProgress(store: Store) {
 }
 
 // ---------- Side nav ----------
-type SectionKey = "stores" | "mind" | "pc-tasks" | "resources" | "performance";
+type SectionKey = "stores" | "mind" | "pc-tasks" | "expenses" | "resources" | "performance";
 
 const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "stores", label: "Stores", icon: StoreIcon },
   { key: "mind", label: "Mind & Tasks", icon: Brain },
   { key: "pc-tasks", label: "Tasks Assigned By P.C", icon: Inbox },
+  { key: "expenses", label: "Expense Sheet", icon: Wallet },
   { key: "resources", label: "Resources", icon: BookOpen },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ];
