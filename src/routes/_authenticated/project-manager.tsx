@@ -262,18 +262,18 @@ function ProjectManagerDashboard() {
     setAddOpen(false);
   }
 
-  return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div className="flex items-center gap-2">
-          <HardHat className="w-6 h-6 text-primary" />
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Project Manager</h1>
-            <p className="text-sm text-muted-foreground">
-              Track store setup end-to-end — from introduction call to opening day.
-            </p>
-          </div>
+  const header = (
+    <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center gap-2">
+        <HardHat className="w-6 h-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Project Manager</h1>
+          <p className="text-sm text-muted-foreground">
+            Track store setup end-to-end — from introduction call to opening day.
+          </p>
         </div>
+      </div>
+      {section === "stores" && (
         <Dialog open={addOpen} onOpenChange={setAddOpen}>
           <DialogTrigger asChild>
             <Button><Plus className="w-4 h-4 mr-1" /> Add Store</Button>
@@ -295,7 +295,55 @@ function ProjectManagerDashboard() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
+      {/* Side menu */}
+      <aside className="md:sticky md:top-4 md:self-start">
+        <Card>
+          <CardContent className="p-2">
+            <nav className="flex md:flex-col gap-1 overflow-x-auto">
+              {NAV.map((n) => {
+                const Icon = n.icon;
+                const active = n.key === section;
+                return (
+                  <button
+                    key={n.key}
+                    onClick={() => setSection(n.key)}
+                    className={cn(
+                      "flex items-center gap-2 px-3 py-2 rounded-md text-sm text-left w-full whitespace-nowrap transition-colors",
+                      active ? "bg-primary/10 text-primary font-medium" : "hover:bg-muted/50 text-foreground"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{n.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </CardContent>
+        </Card>
+      </aside>
+
+      {/* Main content */}
+      <div className="space-y-6 min-w-0">
+        {header}
+        {section === "stores" && <StoresSection />}
+        {section === "mind" && <MindTasksSection />}
+        {section === "pc-tasks" && <PCTasksSection />}
+        {section === "resources" && <ResourcesSection />}
+        {section === "performance" && <PerformanceSection stores={stores} />}
       </div>
+    </div>
+  );
+
+  function StoresSection() {
+    return (
+      <>
+
 
       {/* Store selector */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
