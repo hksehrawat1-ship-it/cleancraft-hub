@@ -344,6 +344,7 @@ function ProjectManagerDashboard() {
         {section === "stores" && <StoresSection />}
         {section === "mind" && <MindTasksSection />}
         {section === "pc-tasks" && <PCTasksSection />}
+        {section === "expenses" && <ExpenseSheetSection stores={stores} />}
         {section === "resources" && <ResourcesSection />}
         {section === "performance" && <PerformanceSection stores={stores} />}
       </div>
