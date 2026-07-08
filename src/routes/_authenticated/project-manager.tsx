@@ -235,6 +235,8 @@ function ProjectManagerDashboard() {
   const [stores, setStores] = useState<Store[]>(INITIAL_STORES);
   const [selectedId, setSelectedId] = useState<string>(INITIAL_STORES[0].id);
   const [newStoreName, setNewStoreName] = useState("");
+  const [newStoreFranchise, setNewStoreFranchise] = useState("");
+  const [newStorePhone, setNewStorePhone] = useState("");
   const [addOpen, setAddOpen] = useState(false);
 
   const selected = useMemo(() => stores.find((s) => s.id === selectedId) ?? stores[0], [stores, selectedId]);
