@@ -472,6 +472,14 @@ function ProjectManagerDashboard() {
             lockOnceDone
           />
 
+          {/* C. Shop agreement done */}
+          <SimpleCheckRow
+            label="C. Shop agreement done"
+            item={selected.shopAgreement}
+            onToggle={() => toggleSimple("shopAgreement")}
+            lockOnceDone
+          />
+
 
           {/* 1. Shop Approval */}
           <ShopApprovalForm
