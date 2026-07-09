@@ -208,7 +208,7 @@ function storeProgress(store: Store) {
   ];
   const subTotal = stages.reduce((a, s) => a + s.items.length, 0);
   const subDone = stages.reduce((a, s) => a + s.items.filter((i) => i.done).length, 0);
-  const simple = [store.introCall, store.firstVisit, store.machineOrder, store.engineerAligned];
+  const simple = [store.introCall, store.firstVisit, store.shopAgreement, store.machineOrder, store.engineerAligned];
   const simpleDone = simple.filter((i) => i.done).length;
   const total = subTotal + simple.length + 1; // +1 for opening date
   const done = subDone + simpleDone + (store.openingDate ? 1 : 0);
