@@ -80,6 +80,7 @@ type Store = {
   // Simple boolean checkboxes with timestamps
   introCall: CheckItem;
   firstVisit: CheckItem;
+  shopAgreement: CheckItem;
   // Stages with sub-checklists
   shopApproval: SubStage;
   infraWork: SubStage;
@@ -172,6 +173,7 @@ const makeStore = (
   franchisePhone,
   introCall: mkItem("intro", "Introduction call done"),
   firstVisit: mkItem("first-visit", "First Visit"),
+  shopAgreement: mkItem("shop-agreement", "Shop agreement done"),
   shopApproval: defaultShopApproval(),
   infraWork: defaultInfra(),
   electric: defaultElectric(),
@@ -206,7 +208,7 @@ function storeProgress(store: Store) {
   ];
   const subTotal = stages.reduce((a, s) => a + s.items.length, 0);
   const subDone = stages.reduce((a, s) => a + s.items.filter((i) => i.done).length, 0);
-  const simple = [store.introCall, store.firstVisit, store.machineOrder, store.engineerAligned];
+  const simple = [store.introCall, store.firstVisit, store.shopAgreement, store.machineOrder, store.engineerAligned];
   const simpleDone = simple.filter((i) => i.done).length;
   const total = subTotal + simple.length + 1; // +1 for opening date
   const done = subDone + simpleDone + (store.openingDate ? 1 : 0);
@@ -241,11 +243,11 @@ function ProjectManagerDashboard() {
     setStores((prev) => prev.map((s) => (s.id === selected.id ? updater(s) : s)));
   }
 
-  function toggleSimple(key: "introCall" | "firstVisit" | "machineOrder" | "engineerAligned") {
+  function toggleSimple(key: "introCall" | "firstVisit" | "shopAgreement" | "machineOrder" | "engineerAligned") {
     updateStore((s) => {
       const item = s[key];
-      // Intro call and first visit are one-way: cannot be undone once ticked
-      if ((key === "introCall" || key === "firstVisit") && item.done) return s;
+      // Intro call, first visit, and shop agreement are one-way: cannot be undone once ticked
+      if ((key === "introCall" || key === "firstVisit" || key === "shopAgreement") && item.done) return s;
       const done = !item.done;
       return { ...s, [key]: { ...item, done, at: done ? nowStamp() : undefined } } as Store;
     });
@@ -467,6 +469,14 @@ function ProjectManagerDashboard() {
             label="B. First Visit"
             item={selected.firstVisit}
             onToggle={() => toggleSimple("firstVisit")}
+            lockOnceDone
+          />
+
+          {/* C. Shop agreement done */}
+          <SimpleCheckRow
+            label="C. Shop agreement done"
+            item={selected.shopAgreement}
+            onToggle={() => toggleSimple("shopAgreement")}
             lockOnceDone
           />
 
