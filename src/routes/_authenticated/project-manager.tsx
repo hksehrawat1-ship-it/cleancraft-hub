@@ -1127,8 +1127,9 @@ function ShopApprovalForm({
           <div className="border rounded-md p-3 bg-background space-y-2">
             <div className="text-sm font-medium">4. Store Position</div>
             <div className="flex flex-wrap gap-4">
-              <CB label="Ground floor" checked={f.posGround} onChange={(v) => set("posGround", v)} disabled={dis} />
-              <CB label="First floor" checked={f.posFirst} onChange={(v) => set("posFirst", v)} disabled={dis} />
+              <CB label="A. Ground floor" checked={f.posGround} onChange={(v) => set("posGround", v)} disabled={dis} />
+              <CB label="B. First floor" checked={f.posFirst} onChange={(v) => set("posFirst", v)} disabled={dis} />
+              <CB label="C. Shop agreement done" checked={f.shopAgreement ?? false} onChange={(v) => set("shopAgreement", v)} disabled={dis} />
             </div>
           </div>
 
