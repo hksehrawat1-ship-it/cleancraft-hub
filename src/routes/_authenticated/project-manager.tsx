@@ -173,6 +173,7 @@ const makeStore = (
   franchisePhone,
   introCall: mkItem("intro", "Introduction call done"),
   firstVisit: mkItem("first-visit", "First Visit"),
+  shopAgreement: mkItem("shop-agreement", "Shop agreement done"),
   shopApproval: defaultShopApproval(),
   infraWork: defaultInfra(),
   electric: defaultElectric(),
