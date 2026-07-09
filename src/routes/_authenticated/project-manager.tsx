@@ -80,6 +80,7 @@ type Store = {
   // Simple boolean checkboxes with timestamps
   introCall: CheckItem;
   firstVisit: CheckItem;
+  shopAgreement: CheckItem;
   // Stages with sub-checklists
   shopApproval: SubStage;
   infraWork: SubStage;
