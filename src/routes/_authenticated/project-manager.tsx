@@ -930,6 +930,7 @@ type ShopApprovalState = {
   locOther: string;
   posGround: boolean;
   posFirst: boolean;
+  shopAgreement: boolean;
   unloading: "" | "yes" | "no";
   movement: "" | "yes" | "no";
   movementRemark: string;
@@ -957,6 +958,7 @@ const emptyShopApproval = (): ShopApprovalState => ({
   locOther: "",
   posGround: false,
   posFirst: false,
+  shopAgreement: false,
   unloading: "",
   movement: "",
   movementRemark: "",
@@ -1129,7 +1131,7 @@ function ShopApprovalForm({
             <div className="flex flex-wrap gap-4">
               <CB label="A. Ground floor" checked={f.posGround} onChange={(v) => set("posGround", v)} disabled={dis} />
               <CB label="B. First floor" checked={f.posFirst} onChange={(v) => set("posFirst", v)} disabled={dis} />
-              <CB label="C. Shop agreement done" checked={f.shopAgreement ?? false} onChange={(v) => set("shopAgreement", v)} disabled={dis} />
+              <CB label="C. Shop agreement done" checked={f.shopAgreement} onChange={(v) => set("shopAgreement", v)} disabled={dis} />
             </div>
           </div>
 
