@@ -243,11 +243,11 @@ function ProjectManagerDashboard() {
     setStores((prev) => prev.map((s) => (s.id === selected.id ? updater(s) : s)));
   }
 
-  function toggleSimple(key: "introCall" | "firstVisit" | "machineOrder" | "engineerAligned") {
+  function toggleSimple(key: "introCall" | "firstVisit" | "shopAgreement" | "machineOrder" | "engineerAligned") {
     updateStore((s) => {
       const item = s[key];
-      // Intro call and first visit are one-way: cannot be undone once ticked
-      if ((key === "introCall" || key === "firstVisit") && item.done) return s;
+      // Intro call, first visit, and shop agreement are one-way: cannot be undone once ticked
+      if ((key === "introCall" || key === "firstVisit" || key === "shopAgreement") && item.done) return s;
       const done = !item.done;
       return { ...s, [key]: { ...item, done, at: done ? nowStamp() : undefined } } as Store;
     });
