@@ -536,12 +536,6 @@ function ProjectManagerDashboard() {
             onToggle={() => toggleSimple("machineOrder")}
           />
 
-          {/* 8. Engineer aligned */}
-          <SimpleCheckRow
-            label="8. Engineer aligned"
-            item={selected.engineerAligned}
-            onToggle={() => toggleSimple("engineerAligned")}
-          />
 
           {/* 9. Opening tentative date */}
           <div className="border rounded-lg p-3 bg-muted/10 flex items-center justify-between flex-wrap gap-3">
