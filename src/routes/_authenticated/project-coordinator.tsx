@@ -26,9 +26,13 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  Download,
+  Mail,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import sopDocAsset from "@/assets/tna-project-coordinator.docx.asset.json";
 
 export const Route = createFileRoute("/_authenticated/project-coordinator")({
   head: () => ({ meta: [{ title: "Project Coordinator — Clean Craft OS" }] }),
