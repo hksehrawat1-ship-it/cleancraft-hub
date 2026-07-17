@@ -78,6 +78,7 @@ type Task = {
   dueDate: string;
   notes: string;
   status: "assigned" | "in-progress" | "done";
+  assignedAt: string;
 };
 
 type MindItem = { id: string; text: string; done: boolean };
