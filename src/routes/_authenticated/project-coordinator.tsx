@@ -78,9 +78,25 @@ type Task = {
   dueDate: string;
   notes: string;
   status: "assigned" | "in-progress" | "done";
+  assignedAt: string;
 };
 
 type MindItem = { id: string; text: string; done: boolean };
+
+function formatDateInput(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateTime(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
 
 function ProjectCoordinatorDashboard() {
   const [active, setActive] = useState<MenuKey>("roles");
@@ -461,7 +477,7 @@ function MindTaskSection() {
 function DelegateSection() {
   const [pmId, setPmId] = useState<string>("");
   const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(() => formatDateInput(new Date()));
   const [notes, setNotes] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -476,10 +492,11 @@ function DelegateSection() {
       dueDate,
       notes: notes.trim(),
       status: "assigned",
+      assignedAt: new Date().toISOString(),
     };
     setTasks((prev) => [task, ...prev]);
     setTitle("");
-    setDueDate("");
+    setDueDate(formatDateInput(new Date()));
     setNotes("");
     toast.success(`Task assigned to ${pm?.name}`);
   }
@@ -575,6 +592,7 @@ function DelegateSection() {
                     <div className="text-xs text-muted-foreground">
                       Assigned to <span className="font-medium">{pm?.name}</span>
                       {t.dueDate && <> • Due {t.dueDate}</>}
+                      <> • {formatDateTime(t.assignedAt)}</>
                     </div>
                     {t.notes && <div className="text-sm">{t.notes}</div>}
                   </div>
