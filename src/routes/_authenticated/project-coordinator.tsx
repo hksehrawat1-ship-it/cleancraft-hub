@@ -866,6 +866,28 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
       "Standee (Hiring Manpower)",
     ],
   },
+  {
+    key: "franchise-bundle",
+    title: "D. Franchise Bundle",
+    items: [
+      "Store Manager Manual",
+      "Staff Job Descriptions (PDF)",
+      "Letter of Satisfaction (PDF)",
+      "Apology Letter (PDF)",
+      "Letter of Consent (PDF)",
+      "Receiving Letter (PDF)",
+      "Offer Letter (PDF)",
+      "Laundry Book - Spotless Profit in Laundry (PDF)",
+    ],
+  },
+  {
+    key: "essentials",
+    title: "E. Essentials",
+    items: [
+      "Consumables for Franchise",
+      "Manpower Accommodation Material",
+    ],
+  },
 ];
 
 const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
