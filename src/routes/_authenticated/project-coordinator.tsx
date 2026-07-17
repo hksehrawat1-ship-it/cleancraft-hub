@@ -195,9 +195,161 @@ function ProjectCoordinatorDashboard() {
         {active === "sops" && <SopsSection />}
         {active === "performance" && <PerformanceSection />}
       </div>
+
+      <OverdueSummaryDialog onGoToPerformance={() => setActive("performance")} />
     </div>
   );
 }
+
+function OverdueSummaryDialog({
+  onGoToPerformance,
+}: {
+  onGoToPerformance: () => void;
+}) {
+  const [pending, setPending] = useState<
+    { store: StoreRow; completedAt: string }[]
+  >([]);
+  const [drafts, setDrafts] = useState<
+    Record<string, { category: SummaryCategory | ""; remark: string }>
+  >({});
+
+  const scan = () => {
+    if (typeof window === "undefined") return;
+    let stores: StoreRow[] = STORES_SEED;
+    try {
+      const raw = window.localStorage.getItem(STORES_LS_KEY);
+      if (raw) stores = JSON.parse(raw) as StoreRow[];
+    } catch {
+      /* ignore */
+    }
+    const meta = loadMetaState();
+    const summaries = loadSummaries();
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    const list = stores
+      .map((s) => {
+        const m = meta[s.id];
+        if (!m || m.status !== "complete" || !m.completedAt) return null;
+        if (new Date(m.completedAt).getTime() > cutoff) return null;
+        if ((summaries[s.id] ?? []).length > 0) return null;
+        return { store: s, completedAt: m.completedAt };
+      })
+      .filter(Boolean) as { store: StoreRow; completedAt: string }[];
+    setPending(list);
+  };
+
+  useEffect(() => {
+    scan();
+    const t = setInterval(scan, 60 * 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const submit = (storeId: string) => {
+    const d = drafts[storeId];
+    if (!d?.category) return toast.error("Select a category");
+    if (!d.remark.trim()) return toast.error("Add a remark");
+    const summaries = loadSummaries();
+    const entry: ProjectSummary = {
+      category: d.category as SummaryCategory,
+      remark: d.remark.trim(),
+      createdAt: new Date().toISOString(),
+    };
+    saveSummaries({
+      ...summaries,
+      [storeId]: [...(summaries[storeId] ?? []), entry],
+    });
+    toast.success("Summary submitted");
+    setDrafts((prev) => {
+      const { [storeId]: _, ...rest } = prev;
+      return rest;
+    });
+    scan();
+  };
+
+  const open = pending.length > 0;
+  const current = pending[0];
+
+  return (
+    <Dialog open={open} onOpenChange={() => { /* required — cannot dismiss */ }}>
+      <DialogContent
+        className="max-w-lg"
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>Project summary pending</DialogTitle>
+          <DialogDescription>
+            {current
+              ? `${current.store.name} was marked complete on ${formatDateTime(
+                  current.completedAt,
+                )}. Please submit a project summary — it's been over 24 hours.`
+              : ""}
+          </DialogDescription>
+        </DialogHeader>
+        {current && (
+          <div className="space-y-3">
+            <Select
+              value={drafts[current.store.id]?.category ?? ""}
+              onValueChange={(v) =>
+                setDrafts((p) => ({
+                  ...p,
+                  [current.store.id]: {
+                    category: v as SummaryCategory,
+                    remark: p[current.store.id]?.remark ?? "",
+                  },
+                }))
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUMMARY_CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Textarea
+              rows={4}
+              placeholder="Write your project summary…"
+              value={drafts[current.store.id]?.remark ?? ""}
+              onChange={(e) =>
+                setDrafts((p) => ({
+                  ...p,
+                  [current.store.id]: {
+                    category: p[current.store.id]?.category ?? "",
+                    remark: e.target.value,
+                  },
+                }))
+              }
+            />
+            {pending.length > 1 && (
+              <div className="text-xs text-muted-foreground">
+                {pending.length - 1} more pending after this.
+              </div>
+            )}
+          </div>
+        )}
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => {
+              onGoToPerformance();
+            }}
+          >
+            Open Performance
+          </Button>
+          <Button onClick={() => current && submit(current.store.id)}>
+            Submit summary
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function SectionHeader({ icon: Icon, title, subtitle }: {
   icon: React.ComponentType<{ className?: string }>;
