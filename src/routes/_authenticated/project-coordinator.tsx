@@ -837,8 +837,51 @@ function RolesSection() {
   );
 }
 
+const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
+  {
+    key: "agreements",
+    title: "A. Agreements",
+    items: [
+      "Franchise Engagement Agreement (FEA)",
+      "Franchise Agreement",
+      "Manpower Agreement",
+    ],
+  },
+  {
+    key: "branding",
+    title: "B. Branding",
+    items: ["Sign Board", "Wall Branding", "Coming Soon Banner"],
+  },
+  {
+    key: "printable",
+    title: "C. Printable Material",
+    items: [
+      "Visiting Card",
+      "Cash Memo / Book",
+      "Cake Design",
+      "Invitation Card",
+      "Rate List Excel",
+      "Flyer for Offline Marketing",
+      "Standee (Offer)",
+      "Standee (Hiring Manpower)",
+    ],
+  },
+];
+
+const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
+
+function loadTaskState(): Record<string, Record<string, boolean>> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(PC_TASKS_LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
 function ProjectsStatusSection() {
-  const [stores, setStores] = useState<StoreRow[]>(() => {
+  const [stores] = useState<StoreRow[]>(() => {
     if (typeof window === "undefined") return STORES_SEED;
     try {
       const raw = window.localStorage.getItem(STORES_LS_KEY);
@@ -847,59 +890,163 @@ function ProjectsStatusSection() {
       return STORES_SEED;
     }
   });
-  // keep in sync if user switches tabs after edits elsewhere
-  void setStores;
 
-  const stageCounts = stores.reduce<Record<string, number>>((acc, s) => {
-    acc[s.stage] = (acc[s.stage] ?? 0) + 1;
-    return acc;
-  }, {});
+  const [taskState, setTaskState] =
+    useState<Record<string, Record<string, boolean>>>(loadTaskState);
+
+  const persist = (next: Record<string, Record<string, boolean>>) => {
+    setTaskState(next);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(PC_TASKS_LS_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  const toggle = (storeId: string, itemKey: string, checked: boolean) => {
+    const next = {
+      ...taskState,
+      [storeId]: { ...(taskState[storeId] ?? {}), [itemKey]: checked },
+    };
+    persist(next);
+  };
+
+  const totalItems = TASK_GROUPS.reduce((n, g) => n + g.items.length, 0);
+
+  // KPIs
+  const inProcess = stores.filter((s) => s.stage !== "Store Opened").length;
+  const now = new Date();
+  const openedThisMonth = stores.filter((s) => {
+    if (s.stage !== "Store Opened") return false;
+    if (!s.openedAt) return false;
+    const d = new Date(s.openedAt);
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
+  }).length;
+  const totalProjects = stores.length;
 
   return (
     <div className="space-y-4">
       <SectionHeader
         icon={ClipboardList}
         title="Projects Status"
-        subtitle="Live status of every store project under your coordination."
+        subtitle="Daily project activities and live status of every store project."
       />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {Object.entries(stageCounts).map(([stage, count]) => (
-          <Card key={stage}>
-            <CardContent className="p-3">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                {stage}
-              </div>
-              <div className="text-xl font-semibold tabular-nums mt-1">{count}</div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Total Projects
+            </div>
+            <div className="text-3xl font-semibold tabular-nums mt-1">
+              {totalProjects}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              In Process
+            </div>
+            <div className="text-3xl font-semibold tabular-nums mt-1 text-sky-600">
+              {inProcess}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Opened This Month
+            </div>
+            <div className="text-3xl font-semibold tabular-nums mt-1 text-emerald-600">
+              {openedThisMonth}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="space-y-3">
+        {stores.length === 0 && (
+          <Card>
+            <CardContent className="p-4 text-xs text-muted-foreground">
+              No stores yet. Add stores from the Stores section.
             </CardContent>
           </Card>
-        ))}
-      </div>
-      <Card>
-        <CardContent className="p-0 divide-y">
-          {stores.length === 0 && (
-            <div className="p-4 text-xs text-muted-foreground">
-              No stores yet. Add stores from the Stores section.
-            </div>
-          )}
-          {stores.map((s) => {
-            const pm = PROJECT_MANAGERS.find((p) => p.id === s.pmId);
-            return (
-              <div key={s.id} className="p-4 flex items-start justify-between gap-3 flex-wrap">
-                <div className="min-w-0">
-                  <div className="font-medium">{s.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    Partner: {s.partnerName} · {s.partnerPhone}
+        )}
+        {stores.map((s) => {
+          const pm = PROJECT_MANAGERS.find((p) => p.id === s.pmId);
+          const storeChecks = taskState[s.id] ?? {};
+          const completed = Object.values(storeChecks).filter(Boolean).length;
+          const pct = totalItems ? Math.round((completed / totalItems) * 100) : 0;
+          return (
+            <Card key={s.id}>
+              <CardHeader className="pb-2">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="min-w-0">
+                    <CardTitle className="text-base">{s.name}</CardTitle>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      Partner: {s.partnerName} · {s.partnerPhone}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      PM: {pm?.name ?? "Unassigned"}
+                    </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-0.5">
-                    PM: {pm?.name ?? "Unassigned"}
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">{s.stage}</Badge>
+                    <Badge variant="outline" className="tabular-nums">
+                      {completed}/{totalItems} · {pct}%
+                    </Badge>
                   </div>
                 </div>
-                <Badge variant="secondary">{s.stage}</Badge>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden mt-2">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {TASK_GROUPS.map((group) => (
+                  <div key={group.key} className="space-y-2">
+                    <div className="text-sm font-semibold">{group.title}</div>
+                    <ul className="space-y-1.5">
+                      {group.items.map((item) => {
+                        const key = `${group.key}:${item}`;
+                        const checked = !!storeChecks[key];
+                        const id = `${s.id}-${key}`;
+                        return (
+                          <li key={key} className="flex items-start gap-2">
+                            <Checkbox
+                              id={id}
+                              checked={checked}
+                              onCheckedChange={(v) =>
+                                toggle(s.id, key, v === true)
+                              }
+                              className="mt-0.5"
+                            />
+                            <label
+                              htmlFor={id}
+                              className={cn(
+                                "text-sm leading-snug cursor-pointer",
+                                checked &&
+                                  "line-through text-muted-foreground",
+                              )}
+                            >
+                              {item}
+                            </label>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
     </div>
   );
 }
