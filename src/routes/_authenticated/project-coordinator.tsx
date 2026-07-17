@@ -64,7 +64,7 @@ type StoreRow = {
 };
 
 const STORES_SEED: StoreRow[] = [
-  { id: "s1", name: "Sector 14 — Gurugram", partnerName: "Amit Singh", partnerPhone: "+91 98100 11122", stage: "Civil Work", pmId: "pm-1" },
+  { id: "s1", name: "Sector 14 — Gurugram", partnerName: "Amit Singh", partnerPhone: "+91 98100 11122", stage: "Site Approved", pmId: "pm-1" },
   { id: "s2", name: "Andheri West — Mumbai", partnerName: "Neha Joshi", partnerPhone: "+91 98200 22233", stage: "Machine Installed", pmId: "pm-2" },
   { id: "s3", name: "Koramangala — Bengaluru", partnerName: "Kiran Rao", partnerPhone: "+91 98450 33344", stage: "Design Approved", pmId: "pm-3" },
   { id: "s4", name: "Salt Lake — Kolkata", partnerName: "Debashish Sen", partnerPhone: "+91 98300 44455", stage: "Site Approved", pmId: "pm-4" },
