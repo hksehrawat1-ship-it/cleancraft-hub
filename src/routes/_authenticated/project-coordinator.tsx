@@ -1210,9 +1210,15 @@ function ProjectsStatusSection() {
                     </label>
                     <Select
                       value={meta.status}
-                      onValueChange={(v) =>
-                        updateStatus(s.id, v as ProjectStatus)
-                      }
+                      onValueChange={(v) => {
+                        if (v === "complete" && !openingReady) {
+                          toast.error(
+                            "Approve both Opening Essentials videos before marking complete.",
+                          );
+                          return;
+                        }
+                        updateStatus(s.id, v as ProjectStatus);
+                      }}
                     >
                       <SelectTrigger id={`${s.id}-status`} className="w-40">
                         <SelectValue />
@@ -1220,7 +1226,9 @@ function ProjectsStatusSection() {
                       <SelectContent>
                         <SelectItem value="started">Started</SelectItem>
                         <SelectItem value="ongoing">Ongoing</SelectItem>
-                        <SelectItem value="complete">Complete</SelectItem>
+                        <SelectItem value="complete" disabled={!openingReady}>
+                          Complete
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
