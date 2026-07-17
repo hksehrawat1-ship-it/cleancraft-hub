@@ -1132,20 +1132,44 @@ function ProjectsStatusSection() {
               : meta.status === "ongoing"
                 ? "bg-sky-500/15 text-sky-700 dark:text-sky-400"
                 : "bg-amber-500/15 text-amber-700 dark:text-amber-400";
+          const isOpen = !!expanded[s.id];
           return (
-            <Card key={s.id}>
+            <Card key={s.id} id={`project-card-${s.id}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
-                  <div className="min-w-0">
-                    <CardTitle className="text-base">{s.name}</CardTitle>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Partner: {s.partnerName} · {s.partnerPhone}
+                  <button
+                    type="button"
+                    onClick={() => toggleExpanded(s.id)}
+                    className="flex items-start gap-2 min-w-0 text-left hover:text-primary transition-colors"
+                    aria-expanded={isOpen}
+                    aria-label={isOpen ? "Collapse project" : "Expand project"}
+                  >
+                    {isOpen ? (
+                      <ChevronDown className="w-4 h-4 mt-1 shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 mt-1 shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <CardTitle className="text-base">{s.name}</CardTitle>
+                      <div className="text-xs text-muted-foreground mt-0.5">
+                        Partner: {s.partnerName} · {s.partnerPhone}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        PM: {pm?.name ?? "Unassigned"}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      PM: {pm?.name ?? "Unassigned"}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </button>
+                  <div className="flex items-center gap-2 flex-1 justify-end min-w-[200px]">
+                    {!isOpen && (
+                      <div className="flex-1 max-w-[220px] hidden sm:block">
+                        <div className="h-2 rounded-full bg-muted overflow-hidden">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
                     <Badge className={cn("capitalize border-transparent", statusTone)}>
                       {meta.status}
                     </Badge>
@@ -1154,12 +1178,15 @@ function ProjectsStatusSection() {
                     </Badge>
                   </div>
                 </div>
-                <div className="h-1.5 rounded-full bg-muted overflow-hidden mt-2">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
+                {isOpen && (
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden mt-2">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                   <div className="space-y-1">
                     <label
