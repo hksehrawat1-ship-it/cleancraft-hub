@@ -1079,6 +1079,32 @@ function ProjectsStatusSection() {
         </Card>
       </div>
 
+      {stores.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Jump to project:</span>
+          <div className="min-w-[240px]">
+            <Select onValueChange={jumpTo}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Select a project…" />
+              </SelectTrigger>
+              <SelectContent>
+                {stores.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" variant="outline" onClick={expandAll}>
+            Expand all
+          </Button>
+          <Button size="sm" variant="outline" onClick={collapseAll}>
+            Collapse all
+          </Button>
+        </div>
+      )}
+
       <div className="space-y-3">
         {stores.length === 0 && (
           <Card>
@@ -1087,6 +1113,7 @@ function ProjectsStatusSection() {
             </CardContent>
           </Card>
         )}
+
         {stores.map((s) => {
           const pm = PROJECT_MANAGERS.find((p) => p.id === s.pmId);
           const storeChecks = taskState[s.id] ?? {};
