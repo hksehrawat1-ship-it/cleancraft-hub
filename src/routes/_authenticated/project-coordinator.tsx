@@ -21,6 +21,8 @@ import {
   ClipboardList,
   Plus,
   Trash2,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -31,10 +33,13 @@ export const Route = createFileRoute("/_authenticated/project-coordinator")({
 });
 
 const MENU = [
+  { key: "roles", label: "Roles & Responsibility", icon: ShieldCheck },
+  { key: "projects-status", label: "Projects Status", icon: ClipboardList },
   { key: "stores", label: "Stores", icon: Store },
   { key: "mind-task", label: "Mind & Task", icon: Brain },
   { key: "delegate", label: "Delegate", icon: UserPlus },
   { key: "resource", label: "Resource", icon: Package },
+  { key: "sops", label: "SOPs", icon: FileText },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ] as const;
 
@@ -78,7 +83,7 @@ type Task = {
 type MindItem = { id: string; text: string; done: boolean };
 
 function ProjectCoordinatorDashboard() {
-  const [active, setActive] = useState<MenuKey>("stores");
+  const [active, setActive] = useState<MenuKey>("roles");
   const [displayName, setDisplayName] = useState("Project Coordinator");
   const [editingName, setEditingName] = useState(false);
 
@@ -150,10 +155,13 @@ function ProjectCoordinatorDashboard() {
           ))}
         </div>
 
+        {active === "roles" && <RolesSection />}
+        {active === "projects-status" && <ProjectsStatusSection />}
         {active === "stores" && <StoresSection />}
         {active === "mind-task" && <MindTaskSection />}
         {active === "delegate" && <DelegateSection />}
         {active === "resource" && <ResourceSection />}
+        {active === "sops" && <SopsSection />}
         {active === "performance" && <PerformanceSection />}
       </div>
     </div>
@@ -640,3 +648,134 @@ function PerformanceSection() {
     </div>
   );
 }
+
+const RESPONSIBILITIES = [
+  "Own end-to-end store setup from booking to opening.",
+  "Assign stores to project managers and re-balance workload.",
+  "Track project pipeline stages and unblock delays.",
+  "Coordinate between franchise partner, civil, machine and training teams.",
+  "Maintain SOP compliance and documentation for every store.",
+  "Report weekly progress and delays to leadership.",
+];
+
+function RolesSection() {
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        icon={ShieldCheck}
+        title="Roles & Responsibility"
+        subtitle="What the Project Coordinator owns day-to-day."
+      />
+      <Card>
+        <CardContent className="p-0 divide-y">
+          {RESPONSIBILITIES.map((r, i) => (
+            <div key={i} className="flex items-start gap-3 p-3">
+              <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center shrink-0">
+                {i + 1}
+              </div>
+              <div className="text-sm">{r}</div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function ProjectsStatusSection() {
+  const [stores, setStores] = useState<StoreRow[]>(() => {
+    if (typeof window === "undefined") return STORES_SEED;
+    try {
+      const raw = window.localStorage.getItem(STORES_LS_KEY);
+      return raw ? (JSON.parse(raw) as StoreRow[]) : STORES_SEED;
+    } catch {
+      return STORES_SEED;
+    }
+  });
+  // keep in sync if user switches tabs after edits elsewhere
+  void setStores;
+
+  const stageCounts = stores.reduce<Record<string, number>>((acc, s) => {
+    acc[s.stage] = (acc[s.stage] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        icon={ClipboardList}
+        title="Projects Status"
+        subtitle="Live status of every store project under your coordination."
+      />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {Object.entries(stageCounts).map(([stage, count]) => (
+          <Card key={stage}>
+            <CardContent className="p-3">
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {stage}
+              </div>
+              <div className="text-xl font-semibold tabular-nums mt-1">{count}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardContent className="p-0 divide-y">
+          {stores.length === 0 && (
+            <div className="p-4 text-xs text-muted-foreground">
+              No stores yet. Add stores from the Stores section.
+            </div>
+          )}
+          {stores.map((s) => {
+            const pm = PROJECT_MANAGERS.find((p) => p.id === s.pmId);
+            return (
+              <div key={s.id} className="p-4 flex items-start justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <div className="font-medium">{s.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    Partner: {s.partnerName} · {s.partnerPhone}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    PM: {pm?.name ?? "Unassigned"}
+                  </div>
+                </div>
+                <Badge variant="secondary">{s.stage}</Badge>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function SopsSection() {
+  const sops = [
+    { name: "Site Approval SOP", type: "PDF" },
+    { name: "Design Approval SOP", type: "PDF" },
+    { name: "Civil Work SOP", type: "Doc" },
+    { name: "Machine Installation SOP", type: "Doc" },
+    { name: "Training & Handover SOP", type: "PDF" },
+    { name: "Store Opening Checklist", type: "Sheet" },
+  ];
+  return (
+    <div className="space-y-4">
+      <SectionHeader
+        icon={FileText}
+        title="SOPs"
+        subtitle="Standard operating procedures for every project stage."
+      />
+      <Card>
+        <CardContent className="p-0 divide-y">
+          {sops.map((s) => (
+            <div key={s.name} className="flex items-center justify-between p-3">
+              <div className="text-sm font-medium">{s.name}</div>
+              <Badge variant="outline">{s.type}</Badge>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
