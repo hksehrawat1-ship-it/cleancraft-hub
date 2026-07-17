@@ -1324,7 +1324,9 @@ function ProjectsStatusSection() {
                   )}
                 </div>
               </CardContent>
+              )}
             </Card>
+
           );
         })}
       </div>
