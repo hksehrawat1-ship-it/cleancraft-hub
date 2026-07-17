@@ -1019,6 +1019,24 @@ function ProjectsStatusSection() {
     return m.status === "complete" && (m.completedAt ?? "").startsWith(thisMonth);
   }).length;
 
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const toggleExpanded = (id: string) =>
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  const expandAll = () =>
+    setExpanded(Object.fromEntries(stores.map((s) => [s.id, true])));
+  const collapseAll = () => setExpanded({});
+  const jumpTo = (id: string) => {
+    setExpanded((prev) => ({ ...prev, [id]: true }));
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => {
+        document
+          .getElementById(`project-card-${id}`)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  };
+
+
 
   return (
     <div className="space-y-4">
