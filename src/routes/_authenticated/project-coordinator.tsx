@@ -1073,6 +1073,12 @@ function ProjectsStatusSection() {
           const completed = Object.values(storeChecks).filter(Boolean).length;
           const pct = totalItems ? Math.round((completed / totalItems) * 100) : 0;
           const meta = getMeta(s.id);
+          const openingGroup = TASK_GROUPS.find(
+            (g) => g.key === OPENING_ESSENTIALS_KEY,
+          )!;
+          const openingReady = openingGroup.items.every(
+            (item) => !!storeChecks[`${OPENING_ESSENTIALS_KEY}:${item}`],
+          );
           const statusTone =
             meta.status === "complete"
               ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
