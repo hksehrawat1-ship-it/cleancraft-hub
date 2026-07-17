@@ -1240,8 +1240,12 @@ function ProjectsStatusSection() {
                   store until both Opening Essentials videos (Section F) are
                   approved.
                 </div>
+                </>
+                )}
               </CardHeader>
+              {isOpen && (
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
                 {TASK_GROUPS.map((group) => (
                   <div key={group.key} className="space-y-2">
                     <div className="text-sm font-semibold">{group.title}</div>
