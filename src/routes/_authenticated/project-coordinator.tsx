@@ -1141,11 +1141,28 @@ function ProjectsStatusSection() {
                       id={`${s.id}-open`}
                       type="date"
                       value={meta.openingDate}
-                      onChange={(e) =>
-                        updateMeta(s.id, { openingDate: e.target.value })
+                      disabled={!openingReady}
+                      title={
+                        !openingReady
+                          ? "Tick both Opening Essentials videos first"
+                          : undefined
                       }
+                      onChange={(e) => {
+                        if (!openingReady) {
+                          toast.error(
+                            "Approve both Opening Essentials videos before setting the opening date.",
+                          );
+                          return;
+                        }
+                        updateMeta(s.id, { openingDate: e.target.value });
+                      }}
                     />
                   </div>
+                </div>
+                <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-300">
+                  <span className="font-semibold">Remarks:</span> You cannot open a
+                  store until both Opening Essentials videos (Section F) are
+                  approved.
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
