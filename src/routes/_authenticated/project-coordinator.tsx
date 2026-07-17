@@ -615,16 +615,32 @@ function DelegateSection() {
 
 type ResourceFile = { name: string; url: string; mime: string } | null;
 
-const RESOURCE_SLOTS = [
-  { id: "fea", label: "Franchise Engagement Agreement (FEA)" },
-  { id: "fa", label: "Franchise Agreement" },
-  { id: "ma", label: "Manpower Agreement" },
-  { id: "sa-en", label: "Shop Agreement — English" },
-  { id: "sa-hi", label: "Shop Agreement — Hindi" },
-] as const;
+const RESOURCE_CATEGORIES: { id: string; label: string; slots: { id: string; label: string }[] }[] = [
+  {
+    id: "pre-opening",
+    label: "Pre-Opening Documents",
+    slots: [
+      { id: "fea", label: "Franchise Engagement Agreement (FEA)" },
+      { id: "fa", label: "Franchise Agreement" },
+      { id: "ma", label: "Manpower Agreement" },
+    ],
+  },
+  {
+    id: "shop-agreement",
+    label: "Shop Agreement",
+    slots: [
+      { id: "sa-en", label: "English" },
+      { id: "sa-hi", label: "Hindi" },
+    ],
+  },
+];
 
 function ResourceSection() {
   const [files, setFiles] = useState<Record<string, ResourceFile>>({});
+  const [open, setOpen] = useState<Record<string, boolean>>({
+    "pre-opening": true,
+    "shop-agreement": true,
+  });
 
   function onUpload(id: string, file: File) {
     const url = URL.createObjectURL(file);
@@ -654,19 +670,41 @@ function ResourceSection() {
         title="Resource"
         subtitle="Upload and share the master agreements."
       />
-      <Card>
-        <CardContent className="p-0 divide-y">
-          {RESOURCE_SLOTS.map((slot) => (
-            <ResourceRow
-              key={slot.id}
-              label={slot.label}
-              file={files[slot.id] ?? null}
-              onUpload={(f) => onUpload(slot.id, f)}
-              onDelete={() => onDelete(slot.id)}
-            />
-          ))}
-        </CardContent>
-      </Card>
+      {RESOURCE_CATEGORIES.map((cat) => {
+        const isOpen = open[cat.id] ?? false;
+        return (
+          <Card key={cat.id}>
+            <button
+              type="button"
+              onClick={() => setOpen((p) => ({ ...p, [cat.id]: !isOpen }))}
+              className="w-full flex items-center justify-between p-4 text-left"
+            >
+              <div className="flex items-center gap-2">
+                {isOpen ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+                <span className="font-medium">{cat.label}</span>
+              </div>
+              <Badge variant="outline">{cat.slots.length}</Badge>
+            </button>
+            {isOpen && (
+              <CardContent className="p-0 border-t divide-y">
+                {cat.slots.map((slot) => (
+                  <ResourceRow
+                    key={slot.id}
+                    label={slot.label}
+                    file={files[slot.id] ?? null}
+                    onUpload={(f) => onUpload(slot.id, f)}
+                    onDelete={() => onDelete(slot.id)}
+                  />
+                ))}
+              </CardContent>
+            )}
+          </Card>
+        );
+      })}
     </div>
   );
 }
