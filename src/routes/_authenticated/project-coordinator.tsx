@@ -1334,28 +1334,247 @@ function ProjectsStatusSection() {
   );
 }
 
+const SOP_SECTIONS: { title: string; note?: string; items: string[] }[] = [
+  {
+    title: "No Surprise Rule",
+    note: "If any delay, payment issue, machine issue, manpower issue, vendor issue, or opening risk is identified, it must be reported immediately and not after the launch date is affected.",
+    items: [],
+  },
+  {
+    title: "Golden Rule",
+    note: "\u201CEvery active project must have a next action, responsible person, and target completion date.\u201D",
+    items: [],
+  },
+  {
+    title: "Work Source",
+    items: [
+      "Franchise Handover from Sales Team",
+      "Accounts Department",
+      "Project Manager Updates",
+      "Logistics Team Updates",
+      "Institute Head Updates",
+      "Launch & Training Team Updates",
+      "CRM Dashboard",
+    ],
+  },
+  {
+    title: "Daily Opening Checklist",
+    items: [
+      "Check CRM project dashboard",
+      "Check all active projects",
+      "Check delayed projects",
+      "Check today\u2019s follow-ups",
+      "Check pending payments",
+      "Check machine dispatch status",
+      "Check upcoming launch schedule",
+      "Review project priorities",
+    ],
+  },
+  {
+    title: "Daily Task Checklist",
+    items: [
+      "Receive new franchise handover",
+      "Create project in CRM",
+      "Verify payment status",
+      "Verify agreement status",
+      "Assign Project Manager",
+      "Assign target launch date",
+      "Coordinate with Accounts Department",
+      "Coordinate with Logistics Team",
+      "Coordinate with Institute Head",
+      "Coordinate with Launch Team",
+      "Follow up on all pending milestones",
+      "Update project status in CRM",
+      "Update expected opening date",
+      "Escalate delays immediately",
+    ],
+  },
+  {
+    title: "Project Milestone Checklist",
+    items: [
+      "Location approved",
+      "Layout approved",
+      "Civil work started",
+      "Civil work completed",
+      "Branding completed",
+      "Machine payment received",
+      "Machine dispatched",
+      "Machine installed",
+      "Trial completed",
+      "Manpower arranged",
+      "Training scheduled",
+      "Launch scheduled",
+      "Store opened",
+      "RM handover completed",
+    ],
+  },
+  {
+    title: "If Work Is Blocked",
+    items: [
+      "Update blocker in CRM",
+      "Identify responsible department",
+      "Inform COO",
+      "Mention expected impact",
+      "Mention revised timeline",
+      "Follow up daily until resolved",
+    ],
+  },
+  {
+    title: "After Completing Work",
+    items: [
+      "Update CRM",
+      "Update milestone status",
+      "Inform concerned departments",
+      "Inform franchise partner if required",
+      "Schedule next milestone",
+      "Start next project activity",
+    ],
+  },
+  {
+    title: "If No Task Is Available",
+    note: "Never sit idle without informing the reporting manager.",
+    items: [
+      "Review delayed projects",
+      "Review upcoming openings",
+      "Audit CRM records",
+      "Verify project documentation",
+      "Follow up on pending issues",
+      "Ask for next assignment",
+    ],
+  },
+  {
+    title: "Daily Closing Checklist",
+    items: [
+      "CRM updated",
+      "All project milestones updated",
+      "Delays escalated",
+      "Tomorrow\u2019s priorities prepared",
+      "Pending issues documented",
+      "Reporting manager informed",
+    ],
+  },
+  {
+    title: "Completion Reporting \u2014 Primary Reporting",
+    items: ["COO"],
+  },
+  {
+    title: "Coordination",
+    items: [
+      "Sales Team",
+      "Accounts Department",
+      "Project Manager",
+      "Logistics Team",
+      "Institute Head",
+      "Launch Team",
+      "RM Team",
+    ],
+  },
+  {
+    title: "Weekly Checklist",
+    items: [
+      "Review all active projects",
+      "Review delayed projects",
+      "Review upcoming openings",
+      "Review pending payments",
+      "Submit weekly project report",
+    ],
+  },
+  {
+    title: "Monthly Checklist",
+    items: [
+      "Review store openings completed",
+      "Review average launch timeline",
+      "Review delay reasons",
+      "Review department coordination issues",
+      "Submit monthly project report",
+    ],
+  },
+];
+
+function buildSopPlainText() {
+  let out = "Project Coordinator \u2014 Tasks & Activities\n\n";
+  for (const s of SOP_SECTIONS) {
+    out += `${s.title}\n`;
+    if (s.note) out += `${s.note}\n`;
+    for (const it of s.items) out += `- [ ] ${it}\n`;
+    out += "\n";
+  }
+  return out;
+}
+
 function SopsSection() {
-  const sops = [
-    { name: "Site Approval SOP", type: "PDF" },
-    { name: "Design Approval SOP", type: "PDF" },
-    { name: "Civil Work SOP", type: "Doc" },
-    { name: "Machine Installation SOP", type: "Doc" },
-    { name: "Training & Handover SOP", type: "PDF" },
-    { name: "Store Opening Checklist", type: "Sheet" },
-  ];
+  const fileUrl = sopDocAsset.url;
+  const fileName = "T_A_Project_Coordinator.docx";
+
+  const handleDownload = () => {
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  const handleEmail = () => {
+    const subject = encodeURIComponent("Project Coordinator \u2014 Tasks & Activities");
+    const body = encodeURIComponent(buildSopPlainText());
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  const handleWhatsApp = () => {
+    const absoluteUrl =
+      typeof window !== "undefined" ? new URL(fileUrl, window.location.origin).toString() : fileUrl;
+    const text = encodeURIComponent(
+      `Project Coordinator \u2014 Tasks & Activities\n\nDocument: ${absoluteUrl}`,
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="space-y-4">
       <SectionHeader
         icon={FileText}
         title="SOPs"
-        subtitle="Standard operating procedures for every project stage."
+        subtitle="Project Coordinator \u2014 tasks, activities and reporting checklists."
       />
+
       <Card>
-        <CardContent className="p-0 divide-y">
-          {sops.map((s) => (
-            <div key={s.name} className="flex items-center justify-between p-3">
-              <div className="text-sm font-medium">{s.name}</div>
-              <Badge variant="outline">{s.type}</Badge>
+        <CardHeader className="pb-2 flex flex-row items-center justify-between gap-2 flex-wrap">
+          <div>
+            <CardTitle className="text-base">Tasks & Activities</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              Share this SOP with your team.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" onClick={handleDownload}>
+              <Download className="w-4 h-4 mr-1.5" /> Download
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleEmail}>
+              <Mail className="w-4 h-4 mr-1.5" /> Email
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleWhatsApp}>
+              <MessageCircle className="w-4 h-4 mr-1.5" /> WhatsApp
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {SOP_SECTIONS.map((s) => (
+            <div key={s.title} className="border rounded-md p-3">
+              <div className="text-sm font-semibold">{s.title}</div>
+              {s.note && (
+                <p className="text-xs text-muted-foreground mt-1">{s.note}</p>
+              )}
+              {s.items.length > 0 && (
+                <ul className="mt-2 space-y-1">
+                  {s.items.map((it) => (
+                    <li key={it} className="flex items-start gap-2 text-sm">
+                      <span className="mt-0.5 inline-block w-3.5 h-3.5 border rounded-sm shrink-0" />
+                      <span>{it}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           ))}
         </CardContent>
