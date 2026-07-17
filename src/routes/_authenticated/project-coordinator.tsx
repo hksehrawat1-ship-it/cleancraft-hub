@@ -64,7 +64,7 @@ type StoreRow = {
 };
 
 const STORES_SEED: StoreRow[] = [
-  { id: "s1", name: "Sector 14 — Gurugram", partnerName: "Amit Singh", partnerPhone: "+91 98100 11122", stage: "Civil Work", pmId: "pm-1" },
+  { id: "s1", name: "Sector 14 — Gurugram", partnerName: "Amit Singh", partnerPhone: "+91 98100 11122", stage: "Site Approved", pmId: "pm-1" },
   { id: "s2", name: "Andheri West — Mumbai", partnerName: "Neha Joshi", partnerPhone: "+91 98200 22233", stage: "Machine Installed", pmId: "pm-2" },
   { id: "s3", name: "Koramangala — Bengaluru", partnerName: "Kiran Rao", partnerPhone: "+91 98450 33344", stage: "Design Approved", pmId: "pm-3" },
   { id: "s4", name: "Salt Lake — Kolkata", partnerName: "Debashish Sen", partnerPhone: "+91 98300 44455", stage: "Site Approved", pmId: "pm-4" },
@@ -869,11 +869,30 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
 ];
 
 const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
+const PC_META_LS_KEY = "pc.project-meta.v1";
+
+type ProjectStatus = "started" | "ongoing" | "complete";
+type ProjectMeta = {
+  startDate: string;
+  openingDate: string;
+  status: ProjectStatus;
+  completedAt: string | null;
+};
 
 function loadTaskState(): Record<string, Record<string, boolean>> {
   if (typeof window === "undefined") return {};
   try {
     const raw = window.localStorage.getItem(PC_TASKS_LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function loadMetaState(): Record<string, ProjectMeta> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(PC_META_LS_KEY);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -913,12 +932,59 @@ function ProjectsStatusSection() {
     persist(next);
   };
 
+  const [metaState, setMetaState] =
+    useState<Record<string, ProjectMeta>>(loadMetaState);
+
+  const persistMeta = (next: Record<string, ProjectMeta>) => {
+    setMetaState(next);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(PC_META_LS_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  const getMeta = (storeId: string): ProjectMeta =>
+    metaState[storeId] ?? {
+      startDate: "",
+      openingDate: "",
+      status: "started",
+      completedAt: null,
+    };
+
+  const updateMeta = (storeId: string, patch: Partial<ProjectMeta>) => {
+    const current = getMeta(storeId);
+    persistMeta({ ...metaState, [storeId]: { ...current, ...patch } });
+  };
+
+  const updateStatus = (storeId: string, status: ProjectStatus) => {
+    const current = getMeta(storeId);
+    const completedAt =
+      status === "complete"
+        ? current.completedAt ?? new Date().toISOString()
+        : null;
+    persistMeta({
+      ...metaState,
+      [storeId]: { ...current, status, completedAt },
+    });
+  };
+
   const totalItems = TASK_GROUPS.reduce((n, g) => n + g.items.length, 0);
 
   // KPIs
-  const inProcess = stores.filter((s) => s.stage !== "Store Opened").length;
-  const openedThisMonth = stores.filter((s) => s.stage === "Store Opened").length;
   const totalProjects = stores.length;
+  const completedCount = stores.filter(
+    (s) => getMeta(s.id).status === "complete",
+  ).length;
+  const inProcess = totalProjects - completedCount;
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const openedThisMonth = stores.filter((s) => {
+    const m = getMeta(s.id);
+    return m.status === "complete" && (m.completedAt ?? "").startsWith(thisMonth);
+  }).length;
+
 
   return (
     <div className="space-y-4">
@@ -974,6 +1040,13 @@ function ProjectsStatusSection() {
           const storeChecks = taskState[s.id] ?? {};
           const completed = Object.values(storeChecks).filter(Boolean).length;
           const pct = totalItems ? Math.round((completed / totalItems) * 100) : 0;
+          const meta = getMeta(s.id);
+          const statusTone =
+            meta.status === "complete"
+              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+              : meta.status === "ongoing"
+                ? "bg-sky-500/15 text-sky-700 dark:text-sky-400"
+                : "bg-amber-500/15 text-amber-700 dark:text-amber-400";
           return (
             <Card key={s.id}>
               <CardHeader className="pb-2">
@@ -988,7 +1061,9 @@ function ProjectsStatusSection() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{s.stage}</Badge>
+                    <Badge className={cn("capitalize border-transparent", statusTone)}>
+                      {meta.status}
+                    </Badge>
                     <Badge variant="outline" className="tabular-nums">
                       {completed}/{totalItems} · {pct}%
                     </Badge>
@@ -999,6 +1074,40 @@ function ProjectsStatusSection() {
                     className="h-full bg-primary rounded-full transition-all"
                     style={{ width: `${pct}%` }}
                   />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div className="space-y-1">
+                    <label
+                      htmlFor={`${s.id}-start`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Starting Date
+                    </label>
+                    <Input
+                      id={`${s.id}-start`}
+                      type="date"
+                      value={meta.startDate}
+                      onChange={(e) =>
+                        updateMeta(s.id, { startDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label
+                      htmlFor={`${s.id}-open`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Opening Date
+                    </label>
+                    <Input
+                      id={`${s.id}-open`}
+                      type="date"
+                      value={meta.openingDate}
+                      onChange={(e) =>
+                        updateMeta(s.id, { openingDate: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1036,6 +1145,39 @@ function ProjectsStatusSection() {
                     </ul>
                   </div>
                 ))}
+                <div className="md:col-span-3 border-t pt-3 flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor={`${s.id}-status`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Status
+                    </label>
+                    <Select
+                      value={meta.status}
+                      onValueChange={(v) =>
+                        updateStatus(s.id, v as ProjectStatus)
+                      }
+                    >
+                      <SelectTrigger id={`${s.id}-status`} className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="started">Started</SelectItem>
+                        <SelectItem value="ongoing">Ongoing</SelectItem>
+                        <SelectItem value="complete">Complete</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {meta.status === "complete" && meta.completedAt && (
+                    <div className="text-xs text-muted-foreground">
+                      Completed:{" "}
+                      <span className="font-medium text-foreground">
+                        {formatDateTime(meta.completedAt)}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
