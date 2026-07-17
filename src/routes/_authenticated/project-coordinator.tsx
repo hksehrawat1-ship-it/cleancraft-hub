@@ -83,6 +83,21 @@ type Task = {
 
 type MindItem = { id: string; text: string; done: boolean };
 
+function formatDateInput(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateTime(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleString("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
 function ProjectCoordinatorDashboard() {
   const [active, setActive] = useState<MenuKey>("roles");
   const [displayName, setDisplayName] = useState("Project Coordinator");
