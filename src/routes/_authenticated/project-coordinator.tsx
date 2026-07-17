@@ -1040,6 +1040,13 @@ function ProjectsStatusSection() {
           const storeChecks = taskState[s.id] ?? {};
           const completed = Object.values(storeChecks).filter(Boolean).length;
           const pct = totalItems ? Math.round((completed / totalItems) * 100) : 0;
+          const meta = getMeta(s.id);
+          const statusTone =
+            meta.status === "complete"
+              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+              : meta.status === "ongoing"
+                ? "bg-sky-500/15 text-sky-700 dark:text-sky-400"
+                : "bg-amber-500/15 text-amber-700 dark:text-amber-400";
           return (
             <Card key={s.id}>
               <CardHeader className="pb-2">
@@ -1054,7 +1061,9 @@ function ProjectsStatusSection() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary">{s.stage}</Badge>
+                    <Badge className={cn("capitalize border-transparent", statusTone)}>
+                      {meta.status}
+                    </Badge>
                     <Badge variant="outline" className="tabular-nums">
                       {completed}/{totalItems} · {pct}%
                     </Badge>
@@ -1065,6 +1074,40 @@ function ProjectsStatusSection() {
                     className="h-full bg-primary rounded-full transition-all"
                     style={{ width: `${pct}%` }}
                   />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                  <div className="space-y-1">
+                    <label
+                      htmlFor={`${s.id}-start`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Starting Date
+                    </label>
+                    <Input
+                      id={`${s.id}-start`}
+                      type="date"
+                      value={meta.startDate}
+                      onChange={(e) =>
+                        updateMeta(s.id, { startDate: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label
+                      htmlFor={`${s.id}-open`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Opening Date
+                    </label>
+                    <Input
+                      id={`${s.id}-open`}
+                      type="date"
+                      value={meta.openingDate}
+                      onChange={(e) =>
+                        updateMeta(s.id, { openingDate: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1102,6 +1145,39 @@ function ProjectsStatusSection() {
                     </ul>
                   </div>
                 ))}
+                <div className="md:col-span-3 border-t pt-3 flex flex-wrap items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <label
+                      htmlFor={`${s.id}-status`}
+                      className="text-[11px] uppercase tracking-wide text-muted-foreground"
+                    >
+                      Status
+                    </label>
+                    <Select
+                      value={meta.status}
+                      onValueChange={(v) =>
+                        updateStatus(s.id, v as ProjectStatus)
+                      }
+                    >
+                      <SelectTrigger id={`${s.id}-status`} className="w-40">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="started">Started</SelectItem>
+                        <SelectItem value="ongoing">Ongoing</SelectItem>
+                        <SelectItem value="complete">Complete</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {meta.status === "complete" && meta.completedAt && (
+                    <div className="text-xs text-muted-foreground">
+                      Completed:{" "}
+                      <span className="font-medium text-foreground">
+                        {formatDateTime(meta.completedAt)}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
