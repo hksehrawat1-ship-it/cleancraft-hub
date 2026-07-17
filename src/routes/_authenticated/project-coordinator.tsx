@@ -83,7 +83,7 @@ type Task = {
 type MindItem = { id: string; text: string; done: boolean };
 
 function ProjectCoordinatorDashboard() {
-  const [active, setActive] = useState<MenuKey>("stores");
+  const [active, setActive] = useState<MenuKey>("roles");
   const [displayName, setDisplayName] = useState("Project Coordinator");
   const [editingName, setEditingName] = useState(false);
 
