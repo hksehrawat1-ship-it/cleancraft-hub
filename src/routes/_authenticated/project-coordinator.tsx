@@ -888,7 +888,17 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
       "Manpower Accommodation Material",
     ],
   },
+  {
+    key: "opening-essentials",
+    title: "F. Opening Essentials",
+    items: [
+      "Approval Video of the Manpower Room",
+      "Approval Video of Store (Pre-Opening)",
+    ],
+  },
 ];
+
+const OPENING_ESSENTIALS_KEY = "opening-essentials";
 
 const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
 const PC_META_LS_KEY = "pc.project-meta.v1";
@@ -1063,6 +1073,12 @@ function ProjectsStatusSection() {
           const completed = Object.values(storeChecks).filter(Boolean).length;
           const pct = totalItems ? Math.round((completed / totalItems) * 100) : 0;
           const meta = getMeta(s.id);
+          const openingGroup = TASK_GROUPS.find(
+            (g) => g.key === OPENING_ESSENTIALS_KEY,
+          )!;
+          const openingReady = openingGroup.items.every(
+            (item) => !!storeChecks[`${OPENING_ESSENTIALS_KEY}:${item}`],
+          );
           const statusTone =
             meta.status === "complete"
               ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
@@ -1125,11 +1141,28 @@ function ProjectsStatusSection() {
                       id={`${s.id}-open`}
                       type="date"
                       value={meta.openingDate}
-                      onChange={(e) =>
-                        updateMeta(s.id, { openingDate: e.target.value })
+                      disabled={!openingReady}
+                      title={
+                        !openingReady
+                          ? "Tick both Opening Essentials videos first"
+                          : undefined
                       }
+                      onChange={(e) => {
+                        if (!openingReady) {
+                          toast.error(
+                            "Approve both Opening Essentials videos before setting the opening date.",
+                          );
+                          return;
+                        }
+                        updateMeta(s.id, { openingDate: e.target.value });
+                      }}
                     />
                   </div>
+                </div>
+                <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-300">
+                  <span className="font-semibold">Remarks:</span> You cannot open a
+                  store until both Opening Essentials videos (Section F) are
+                  approved.
                 </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1177,9 +1210,15 @@ function ProjectsStatusSection() {
                     </label>
                     <Select
                       value={meta.status}
-                      onValueChange={(v) =>
-                        updateStatus(s.id, v as ProjectStatus)
-                      }
+                      onValueChange={(v) => {
+                        if (v === "complete" && !openingReady) {
+                          toast.error(
+                            "Approve both Opening Essentials videos before marking complete.",
+                          );
+                          return;
+                        }
+                        updateStatus(s.id, v as ProjectStatus);
+                      }}
                     >
                       <SelectTrigger id={`${s.id}-status`} className="w-40">
                         <SelectValue />
@@ -1187,7 +1226,9 @@ function ProjectsStatusSection() {
                       <SelectContent>
                         <SelectItem value="started">Started</SelectItem>
                         <SelectItem value="ongoing">Ongoing</SelectItem>
-                        <SelectItem value="complete">Complete</SelectItem>
+                        <SelectItem value="complete" disabled={!openingReady}>
+                          Complete
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
