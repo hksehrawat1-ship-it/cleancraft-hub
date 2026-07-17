@@ -809,6 +809,38 @@ function ResourceRow({
   );
 }
 
+const SUMMARY_LS_KEY = "pc.project-summaries.v1";
+const SUMMARY_CATEGORIES = [
+  "What went well",
+  "Improvements",
+  "Reason for delay",
+] as const;
+type SummaryCategory = (typeof SUMMARY_CATEGORIES)[number];
+type ProjectSummary = {
+  category: SummaryCategory;
+  remark: string;
+  createdAt: string;
+};
+
+function loadSummaries(): Record<string, ProjectSummary[]> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(SUMMARY_LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveSummaries(next: Record<string, ProjectSummary[]>) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SUMMARY_LS_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
+}
+
 function PerformanceSection() {
   const stats = [
     { label: "Stores Coordinated", value: 12 },
@@ -816,6 +848,30 @@ function PerformanceSection() {
     { label: "On-time Completion", value: "82%" },
     { label: "Delayed", value: 3 },
   ];
+
+  const [stores] = useState<StoreRow[]>(() => {
+    if (typeof window === "undefined") return STORES_SEED;
+    try {
+      const raw = window.localStorage.getItem(STORES_LS_KEY);
+      return raw ? (JSON.parse(raw) as StoreRow[]) : STORES_SEED;
+    } catch {
+      return STORES_SEED;
+    }
+  });
+  const [metaState] = useState<Record<string, ProjectMeta>>(loadMetaState);
+  const [summaries, setSummaries] =
+    useState<Record<string, ProjectSummary[]>>(loadSummaries);
+
+  const submitRemark = (storeId: string, entry: ProjectSummary) => {
+    const next = {
+      ...summaries,
+      [storeId]: [...(summaries[storeId] ?? []), entry],
+    };
+    setSummaries(next);
+    saveSummaries(next);
+    toast.success("Remark saved");
+  };
+
   return (
     <div className="space-y-4">
       <SectionHeader
@@ -837,9 +893,154 @@ function PerformanceSection() {
           </Card>
         ))}
       </div>
+
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">Project Summaries</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Add remarks per store — categorised by what went well, improvements,
+            or reason for delay.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {stores.length === 0 && (
+            <div className="text-sm text-muted-foreground">No stores yet.</div>
+          )}
+          {stores.map((s) => {
+            const meta = metaState[s.id];
+            const entries = summaries[s.id] ?? [];
+            return (
+              <StoreSummaryRow
+                key={s.id}
+                store={s}
+                completed={meta?.status === "complete"}
+                completedAt={meta?.completedAt ?? null}
+                entries={entries}
+                onSubmit={(entry) => submitRemark(s.id, entry)}
+              />
+            );
+          })}
+        </CardContent>
+      </Card>
     </div>
   );
 }
+
+function StoreSummaryRow({
+  store,
+  completed,
+  completedAt,
+  entries,
+  onSubmit,
+}: {
+  store: StoreRow;
+  completed: boolean;
+  completedAt: string | null;
+  entries: ProjectSummary[];
+  onSubmit: (entry: ProjectSummary) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [category, setCategory] = useState<SummaryCategory | "">("");
+  const [remark, setRemark] = useState("");
+
+  const submit = () => {
+    if (!category) return toast.error("Select a category");
+    if (!remark.trim()) return toast.error("Add a remark");
+    onSubmit({
+      category: category as SummaryCategory,
+      remark: remark.trim(),
+      createdAt: new Date().toISOString(),
+    });
+    setCategory("");
+    setRemark("");
+  };
+
+  return (
+    <div className="border rounded-md">
+      <button
+        className="w-full flex items-center justify-between px-3 py-2 text-left"
+        onClick={() => setOpen((o) => !o)}
+      >
+        <div className="flex items-center gap-2">
+          {open ? (
+            <ChevronDown className="w-4 h-4" />
+          ) : (
+            <ChevronRight className="w-4 h-4" />
+          )}
+          <span className="font-medium text-sm">{store.name}</span>
+          {completed && (
+            <Badge variant="outline" className="text-[10px]">
+              Completed
+            </Badge>
+          )}
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {entries.length} remark{entries.length === 1 ? "" : "s"}
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 space-y-3 border-t">
+          <div className="grid grid-cols-1 md:grid-cols-[220px_1fr_auto] gap-2 pt-3">
+            <Select
+              value={category}
+              onValueChange={(v) => setCategory(v as SummaryCategory)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                {SUMMARY_CATEGORIES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Textarea
+              rows={2}
+              placeholder="Write your remark…"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+            />
+            <Button onClick={submit} className="md:self-start">
+              Submit
+            </Button>
+          </div>
+          {entries.length > 0 && (
+            <div className="space-y-1.5">
+              {entries
+                .slice()
+                .reverse()
+                .map((e, i) => (
+                  <div
+                    key={i}
+                    className="text-xs border rounded-md p-2 bg-muted/30"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Badge variant="secondary" className="text-[10px]">
+                        {e.category}
+                      </Badge>
+                      <span className="text-muted-foreground">
+                        {formatDateTime(e.createdAt)}
+                      </span>
+                    </div>
+                    <div className="mt-1 whitespace-pre-wrap">{e.remark}</div>
+                  </div>
+                ))}
+            </div>
+          )}
+          {completed && completedAt && entries.length === 0 && (
+            <div className="text-xs text-amber-600">
+              Project completed on {formatDateTime(completedAt)} — please submit
+              a summary.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 const ROLE_SECTIONS: { title: string; items: string[]; ordered?: boolean; note?: string }[] = [
   {
