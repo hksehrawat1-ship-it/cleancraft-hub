@@ -869,11 +869,30 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
 ];
 
 const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
+const PC_META_LS_KEY = "pc.project-meta.v1";
+
+type ProjectStatus = "started" | "ongoing" | "complete";
+type ProjectMeta = {
+  startDate: string;
+  openingDate: string;
+  status: ProjectStatus;
+  completedAt: string | null;
+};
 
 function loadTaskState(): Record<string, Record<string, boolean>> {
   if (typeof window === "undefined") return {};
   try {
     const raw = window.localStorage.getItem(PC_TASKS_LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function loadMetaState(): Record<string, ProjectMeta> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(PC_META_LS_KEY);
     return raw ? JSON.parse(raw) : {};
   } catch {
     return {};
@@ -913,12 +932,59 @@ function ProjectsStatusSection() {
     persist(next);
   };
 
+  const [metaState, setMetaState] =
+    useState<Record<string, ProjectMeta>>(loadMetaState);
+
+  const persistMeta = (next: Record<string, ProjectMeta>) => {
+    setMetaState(next);
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem(PC_META_LS_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  const getMeta = (storeId: string): ProjectMeta =>
+    metaState[storeId] ?? {
+      startDate: "",
+      openingDate: "",
+      status: "started",
+      completedAt: null,
+    };
+
+  const updateMeta = (storeId: string, patch: Partial<ProjectMeta>) => {
+    const current = getMeta(storeId);
+    persistMeta({ ...metaState, [storeId]: { ...current, ...patch } });
+  };
+
+  const updateStatus = (storeId: string, status: ProjectStatus) => {
+    const current = getMeta(storeId);
+    const completedAt =
+      status === "complete"
+        ? current.completedAt ?? new Date().toISOString()
+        : null;
+    persistMeta({
+      ...metaState,
+      [storeId]: { ...current, status, completedAt },
+    });
+  };
+
   const totalItems = TASK_GROUPS.reduce((n, g) => n + g.items.length, 0);
 
   // KPIs
-  const inProcess = stores.filter((s) => s.stage !== "Store Opened").length;
-  const openedThisMonth = stores.filter((s) => s.stage === "Store Opened").length;
   const totalProjects = stores.length;
+  const completedCount = stores.filter(
+    (s) => getMeta(s.id).status === "complete",
+  ).length;
+  const inProcess = totalProjects - completedCount;
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const openedThisMonth = stores.filter((s) => {
+    const m = getMeta(s.id);
+    return m.status === "complete" && (m.completedAt ?? "").startsWith(thisMonth);
+  }).length;
+
 
   return (
     <div className="space-y-4">
