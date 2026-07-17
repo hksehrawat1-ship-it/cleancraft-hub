@@ -48,12 +48,23 @@ const PROJECT_MANAGERS = [
   { id: "pm-4", name: "Sneha Patel" },
 ];
 
-const STORES_SEED = [
-  { id: "s1", name: "Sector 14 — Gurugram", stage: "Civil Work", pm: "pm-1" },
-  { id: "s2", name: "Andheri West — Mumbai", stage: "Machine Installed", pm: "pm-2" },
-  { id: "s3", name: "Koramangala — Bengaluru", stage: "Design Approved", pm: "pm-3" },
-  { id: "s4", name: "Salt Lake — Kolkata", stage: "Site Approved", pm: "pm-4" },
+type StoreRow = {
+  id: string;
+  name: string;
+  partnerName: string;
+  partnerPhone: string;
+  stage: string;
+  pmId: string | null;
+};
+
+const STORES_SEED: StoreRow[] = [
+  { id: "s1", name: "Sector 14 — Gurugram", partnerName: "Amit Singh", partnerPhone: "+91 98100 11122", stage: "Civil Work", pmId: "pm-1" },
+  { id: "s2", name: "Andheri West — Mumbai", partnerName: "Neha Joshi", partnerPhone: "+91 98200 22233", stage: "Machine Installed", pmId: "pm-2" },
+  { id: "s3", name: "Koramangala — Bengaluru", partnerName: "Kiran Rao", partnerPhone: "+91 98450 33344", stage: "Design Approved", pmId: "pm-3" },
+  { id: "s4", name: "Salt Lake — Kolkata", partnerName: "Debashish Sen", partnerPhone: "+91 98300 44455", stage: "Site Approved", pmId: "pm-4" },
 ];
+
+const STORES_LS_KEY = "cc-pc-stores-v1";
 
 type Task = {
   id: string;
@@ -166,29 +177,186 @@ function SectionHeader({ icon: Icon, title, subtitle }: {
 }
 
 function StoresSection() {
+  const [stores, setStores] = useState<StoreRow[]>(() => {
+    if (typeof window === "undefined") return STORES_SEED;
+    try {
+      const raw = window.localStorage.getItem(STORES_LS_KEY);
+      return raw ? (JSON.parse(raw) as StoreRow[]) : STORES_SEED;
+    } catch {
+      return STORES_SEED;
+    }
+  });
+  const [name, setName] = useState("");
+  const [partnerName, setPartnerName] = useState("");
+  const [partnerPhone, setPartnerPhone] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  function persist(next: StoreRow[]) {
+    setStores(next);
+    try {
+      window.localStorage.setItem(STORES_LS_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  }
+
+  function createStore() {
+    if (!name.trim()) return toast.error("Store name is required");
+    if (!partnerName.trim()) return toast.error("Franchise partner name is required");
+    if (!partnerPhone.trim()) return toast.error("Franchise partner phone is required");
+    const row: StoreRow = {
+      id: crypto.randomUUID(),
+      name: name.trim(),
+      partnerName: partnerName.trim(),
+      partnerPhone: partnerPhone.trim(),
+      stage: "Bookings Received",
+      pmId: null,
+    };
+    persist([row, ...stores]);
+    setName("");
+    setPartnerName("");
+    setPartnerPhone("");
+    setCreating(false);
+    toast.success("Store created");
+  }
+
+  function assignPm(storeId: string, pmId: string) {
+    const store = stores.find((s) => s.id === storeId);
+    if (!store) return;
+    const prevPm = store.pmId;
+    const nextPm = pmId === "unassigned" ? null : pmId;
+    persist(stores.map((s) => (s.id === storeId ? { ...s, pmId: nextPm } : s)));
+    const pmName = PROJECT_MANAGERS.find((p) => p.id === nextPm)?.name ?? "Unassigned";
+    if (prevPm && nextPm && prevPm !== nextPm) {
+      toast.success(`Store transferred to ${pmName}`);
+    } else if (nextPm) {
+      toast.success(`Store assigned to ${pmName}`);
+    } else {
+      toast.success("Store unassigned");
+    }
+  }
+
+  function removeStore(id: string) {
+    persist(stores.filter((s) => s.id !== id));
+    toast.success("Store removed");
+  }
+
   return (
     <div className="space-y-4">
-      <SectionHeader
-        icon={Store}
-        title="Stores"
-        subtitle="Stores under coordination and their current stage."
-      />
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <SectionHeader
+          icon={Store}
+          title="Stores"
+          subtitle="Create stores, assign them to a project manager, and transfer at any time."
+        />
+        <Button onClick={() => setCreating((v) => !v)} variant={creating ? "outline" : "default"}>
+          <Plus className="w-4 h-4 mr-1" />
+          {creating ? "Cancel" : "New store"}
+        </Button>
+      </div>
+
+      {creating && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">New store</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <label className="text-xs font-medium">Store name / location</label>
+              <Input
+                className="mt-1"
+                placeholder="e.g. Sector 21 — Noida"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="grid md:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium">Franchise partner name</label>
+                <Input
+                  className="mt-1"
+                  placeholder="Full name"
+                  value={partnerName}
+                  onChange={(e) => setPartnerName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium">Franchise partner phone</label>
+                <Input
+                  className="mt-1"
+                  type="tel"
+                  placeholder="+91 …"
+                  value={partnerPhone}
+                  onChange={(e) => setPartnerPhone(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={createStore}>Create store</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardContent className="p-0 divide-y">
-          {STORES_SEED.map((s) => {
-            const pm = PROJECT_MANAGERS.find((p) => p.id === s.pm);
+          {stores.length === 0 && (
+            <div className="p-4 text-xs text-muted-foreground">
+              No stores yet — click "New store" to add one.
+            </div>
+          )}
+          {stores.map((s) => {
+            const pm = PROJECT_MANAGERS.find((p) => p.id === s.pmId);
             return (
-              <div
-                key={s.id}
-                className="flex items-center justify-between p-4 flex-wrap gap-2"
-              >
-                <div className="min-w-0">
-                  <div className="font-medium">{s.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    PM: {pm?.name ?? "Unassigned"}
+              <div key={s.id} className="p-4 space-y-3">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div className="min-w-0">
+                    <div className="font-medium">{s.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Partner: {s.partnerName} · {s.partnerPhone}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary">{s.stage}</Badge>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => removeStore(s.id)}
+                      aria-label="Remove store"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
-                <Badge variant="secondary">{s.stage}</Badge>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-xs text-muted-foreground">
+                    {s.pmId ? "Assigned PM" : "Assign PM"}:
+                  </span>
+                  <div className="min-w-[220px]">
+                    <Select
+                      value={s.pmId ?? "unassigned"}
+                      onValueChange={(v) => assignPm(s.id, v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a project manager" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {PROJECT_MANAGERS.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {pm && (
+                    <span className="text-xs text-muted-foreground">
+                      Currently with <span className="font-medium">{pm.name}</span> — change the
+                      selection to transfer.
+                    </span>
+                  )}
+                </div>
               </div>
             );
           })}
