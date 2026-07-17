@@ -917,13 +917,7 @@ function ProjectsStatusSection() {
 
   // KPIs
   const inProcess = stores.filter((s) => s.stage !== "Store Opened").length;
-  const now = new Date();
-  const openedThisMonth = stores.filter((s) => {
-    if (s.stage !== "Store Opened") return false;
-    if (!s.openedAt) return false;
-    const d = new Date(s.openedAt);
-    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-  }).length;
+  const openedThisMonth = stores.filter((s) => s.stage === "Store Opened").length;
   const totalProjects = stores.length;
 
   return (
