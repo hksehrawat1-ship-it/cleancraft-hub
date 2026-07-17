@@ -24,6 +24,8 @@ import {
   Trash2,
   ShieldCheck,
   FileText,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
