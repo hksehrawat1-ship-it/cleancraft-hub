@@ -155,10 +155,13 @@ function ProjectCoordinatorDashboard() {
           ))}
         </div>
 
+        {active === "roles" && <RolesSection />}
+        {active === "projects-status" && <ProjectsStatusSection />}
         {active === "stores" && <StoresSection />}
         {active === "mind-task" && <MindTaskSection />}
         {active === "delegate" && <DelegateSection />}
         {active === "resource" && <ResourceSection />}
+        {active === "sops" && <SopsSection />}
         {active === "performance" && <PerformanceSection />}
       </div>
     </div>
