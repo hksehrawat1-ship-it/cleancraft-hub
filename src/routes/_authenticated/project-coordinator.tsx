@@ -462,7 +462,7 @@ function MindTaskSection() {
 function DelegateSection() {
   const [pmId, setPmId] = useState<string>("");
   const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [dueDate, setDueDate] = useState(() => formatDateInput(new Date()));
   const [notes, setNotes] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -477,10 +477,11 @@ function DelegateSection() {
       dueDate,
       notes: notes.trim(),
       status: "assigned",
+      assignedAt: new Date().toISOString(),
     };
     setTasks((prev) => [task, ...prev]);
     setTitle("");
-    setDueDate("");
+    setDueDate(formatDateInput(new Date()));
     setNotes("");
     toast.success(`Task assigned to ${pm?.name}`);
   }
