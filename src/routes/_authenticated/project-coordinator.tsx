@@ -888,7 +888,17 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
       "Manpower Accommodation Material",
     ],
   },
+  {
+    key: "opening-essentials",
+    title: "F. Opening Essentials",
+    items: [
+      "Approval Video of the Manpower Room",
+      "Approval Video of Store (Pre-Opening)",
+    ],
+  },
 ];
+
+const OPENING_ESSENTIALS_KEY = "opening-essentials";
 
 const PC_TASKS_LS_KEY = "pc.project-tasks.v1";
 const PC_META_LS_KEY = "pc.project-meta.v1";
