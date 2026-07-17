@@ -592,6 +592,7 @@ function DelegateSection() {
                     <div className="text-xs text-muted-foreground">
                       Assigned to <span className="font-medium">{pm?.name}</span>
                       {t.dueDate && <> • Due {t.dueDate}</>}
+                      <> • {formatDateTime(t.assignedAt)}</>
                     </div>
                     {t.notes && <div className="text-sm">{t.notes}</div>}
                   </div>
