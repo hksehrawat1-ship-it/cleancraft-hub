@@ -613,31 +613,152 @@ function DelegateSection() {
   );
 }
 
+type ResourceFile = { name: string; url: string; mime: string } | null;
+
+const RESOURCE_SLOTS = [
+  { id: "fea", label: "Franchise Engagement Agreement (FEA)" },
+  { id: "fa", label: "Franchise Agreement" },
+  { id: "ma", label: "Manpower Agreement" },
+  { id: "sa-en", label: "Shop Agreement — English" },
+  { id: "sa-hi", label: "Shop Agreement — Hindi" },
+] as const;
+
 function ResourceSection() {
-  const resources = [
-    { name: "Standard Store Layout — Double Machine", type: "PDF" },
-    { name: "Civil Work SOP", type: "Doc" },
-    { name: "Machine Installation Checklist", type: "Doc" },
-    { name: "Vendor Contact Sheet", type: "Sheet" },
-    { name: "Brand Guidelines", type: "PDF" },
-  ];
+  const [files, setFiles] = useState<Record<string, ResourceFile>>({});
+
+  function onUpload(id: string, file: File) {
+    const url = URL.createObjectURL(file);
+    setFiles((prev) => {
+      const old = prev[id];
+      if (old) URL.revokeObjectURL(old.url);
+      return { ...prev, [id]: { name: file.name, url, mime: file.type } };
+    });
+    toast.success("Uploaded");
+  }
+
+  function onDelete(id: string) {
+    setFiles((prev) => {
+      const old = prev[id];
+      if (old) URL.revokeObjectURL(old.url);
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    toast.success("Deleted");
+  }
+
   return (
     <div className="space-y-4">
       <SectionHeader
         icon={Package}
         title="Resource"
-        subtitle="Documents, SOPs and reference material."
+        subtitle="Upload and share the master agreements."
       />
       <Card>
         <CardContent className="p-0 divide-y">
-          {resources.map((r) => (
-            <div key={r.name} className="flex items-center justify-between p-3">
-              <div className="text-sm font-medium">{r.name}</div>
-              <Badge variant="outline">{r.type}</Badge>
-            </div>
+          {RESOURCE_SLOTS.map((slot) => (
+            <ResourceRow
+              key={slot.id}
+              label={slot.label}
+              file={files[slot.id] ?? null}
+              onUpload={(f) => onUpload(slot.id, f)}
+              onDelete={() => onDelete(slot.id)}
+            />
           ))}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function ResourceRow({
+  label,
+  file,
+  onUpload,
+  onDelete,
+}: {
+  label: string;
+  file: ResourceFile;
+  onUpload: (f: File) => void;
+  onDelete: () => void;
+}) {
+  const inputId = `res-${label.replace(/\s+/g, "-")}`;
+
+  function download() {
+    if (!file) return;
+    const a = document.createElement("a");
+    a.href = file.url;
+    a.download = file.name;
+    a.click();
+  }
+
+  function shareEmail() {
+    const subject = encodeURIComponent(label);
+    const body = encodeURIComponent(
+      file
+        ? `Please find the ${label} attached (download from: ${window.location.origin}${file.url}).`
+        : `Requesting the ${label}.`,
+    );
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  }
+
+  function shareWhatsapp() {
+    const msg = encodeURIComponent(
+      file ? `${label}: ${window.location.origin}${file.url}` : `${label}`,
+    );
+    window.open(`https://wa.me/?text=${msg}`, "_blank");
+  }
+
+  return (
+    <div className="p-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className="text-sm font-medium">{label}</div>
+        <div className="text-xs text-muted-foreground truncate">
+          {file ? file.name : "No file uploaded"}
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          id={inputId}
+          type="file"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) onUpload(f);
+            e.target.value = "";
+          }}
+        />
+        {file ? (
+          <>
+            <Button size="sm" variant="outline" onClick={() => window.open(file.url, "_blank")}>
+              View
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => document.getElementById(inputId)?.click()}
+            >
+              Update
+            </Button>
+            <Button size="sm" variant="outline" onClick={download}>
+              <Download className="w-3.5 h-3.5 mr-1" /> Download
+            </Button>
+            <Button size="sm" variant="outline" onClick={shareEmail}>
+              <Mail className="w-3.5 h-3.5 mr-1" /> Email
+            </Button>
+            <Button size="sm" variant="outline" onClick={shareWhatsapp}>
+              <MessageCircle className="w-3.5 h-3.5 mr-1" /> WhatsApp
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onDelete}>
+              <Trash2 className="w-3.5 h-3.5 text-red-500" />
+            </Button>
+          </>
+        ) : (
+          <Button size="sm" onClick={() => document.getElementById(inputId)?.click()}>
+            <Plus className="w-3.5 h-3.5 mr-1" /> Upload
+          </Button>
+        )}
+      </div>
     </div>
   );
 }
