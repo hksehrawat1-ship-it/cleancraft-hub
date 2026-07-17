@@ -649,13 +649,130 @@ function PerformanceSection() {
   );
 }
 
-const RESPONSIBILITIES = [
-  "Own end-to-end store setup from booking to opening.",
-  "Assign stores to project managers and re-balance workload.",
-  "Track project pipeline stages and unblock delays.",
-  "Coordinate between franchise partner, civil, machine and training teams.",
-  "Maintain SOP compliance and documentation for every store.",
-  "Report weekly progress and delays to leadership.",
+const ROLE_SECTIONS: { title: string; items: string[]; ordered?: boolean; note?: string }[] = [
+  {
+    title: "Role Definition",
+    items: [
+      "Responsible for ensuring smooth transition of a franchise partner from booking stage to store opening by coordinating all departments, tracking timelines, resolving bottlenecks, and maintaining project progress.",
+    ],
+  },
+  {
+    title: "Trigger Point",
+    ordered: true,
+    items: [
+      "Sales Handover Form Submitted",
+      "Booking Amount Received",
+      "Franchise WhatsApp Group Created",
+    ],
+    note: "First Action: Call franchise partner within 30 minutes of handover.",
+  },
+  {
+    title: "Responsibility Deliverable",
+    items: [
+      "A. Sales to Operations Handover",
+      "B. Project Planning",
+      "C. Department Coordination",
+      "D. Timeline Management",
+      "E. Store Launch Readiness",
+    ],
+  },
+  {
+    title: "Tasks & Activities",
+    ordered: true,
+    items: [
+      "Call Franchise when WhatsApp group is created and introduce.",
+      "Send documents specimen on mail on the same day.",
+      "Assign Project Manager.",
+      "Plan visit of Project Manager.",
+      "Help all the departments involved in project completion.",
+      "Explain Clean Craft process, timeline, responsibilities, and expectations clearly to the franchise partner.",
+      "Coordinate agreement signing and payment completion with Accounts.",
+      "Coordinate with institute for manpower.",
+      "Schedule opening date and coordinate with all departments.",
+    ],
+  },
+  {
+    title: "Completion Matrix",
+    items: [
+      "Infra: Civil, plumbing, carpenter, branding, paint work complete.",
+      "Technical: machine installed, trial run complete, software live.",
+      "Trained staff & trainer reached.",
+      "Opening done.",
+      "Agreement signed & CRM updated.",
+      "R.M. introduced.",
+    ],
+  },
+  {
+    title: "KRA",
+    items: [
+      "Deliver all assigned stores within approved timeline and quality standards.",
+      "Average launch timeline ≤ 20 days.",
+      "95% projects delivered within timeline.",
+    ],
+  },
+  {
+    title: "KPI — Daily",
+    items: [
+      "Active projects monitored.",
+      "Follow-ups completed.",
+      "Delays escalated.",
+      "Tracker updated.",
+    ],
+  },
+  {
+    title: "KPI — Weekly",
+    items: ["Projects on schedule.", "Pending issues resolved."],
+  },
+  {
+    title: "KPI — Monthly",
+    items: [
+      "Number of store openings.",
+      "Average project completion days.",
+      "Delayed projects %.",
+      "Franchise satisfaction score.",
+    ],
+  },
+  {
+    title: "What NOT to do",
+    items: [
+      "Give answers to franchise questions which are not part of the project.",
+      "Commit discounts.",
+      "Bypass Project Manager and directly assign work to vendors without approval.",
+      "Modify agreements.",
+      "Discuss profitability.",
+      "Handle sales negotiations.",
+      "Promise launch date without confirming with concerned department.",
+      "Ignore delay beyond 24 hours.",
+      "Start work without payment confirmation.",
+      "Make commitments not recorded in handover form.",
+    ],
+  },
+  {
+    title: "Escalation Matrix",
+    items: [
+      "A. Payment Issue",
+      "B. Location Approval Delay",
+      "C. Vendor Delay",
+      "D. Machine Dispatch Delay",
+      "E. Civil Work Delay",
+      "F. Branding Delay",
+      "G. Franchise Partner Conflict",
+      "H. Special Support Request",
+    ],
+  },
+  {
+    title: "A Successful Project Coordinator",
+    ordered: true,
+    items: [
+      "Prevents delays.",
+      "Tracks every project daily.",
+      "Coordinates all departments.",
+      "Communicates proactively.",
+      "Solves bottlenecks quickly.",
+      "Delivers stores on time.",
+    ],
+    note: "A successful Project Coordinator does NOT do everyone's work — he ensures everyone's work gets completed on time.",
+  },
 ];
 
 function RolesSection() {
@@ -664,20 +781,39 @@ function RolesSection() {
       <SectionHeader
         icon={ShieldCheck}
         title="Roles & Responsibility"
-        subtitle="What the Project Coordinator owns day-to-day."
+        subtitle="Project Coordinator at Clean Craft — full role charter."
       />
-      <Card>
-        <CardContent className="p-0 divide-y">
-          {RESPONSIBILITIES.map((r, i) => (
-            <div key={i} className="flex items-start gap-3 p-3">
-              <div className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center shrink-0">
-                {i + 1}
-              </div>
-              <div className="text-sm">{r}</div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+      <div className="grid md:grid-cols-2 gap-4">
+        {ROLE_SECTIONS.map((sec) => (
+          <Card key={sec.title}>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm uppercase tracking-wide text-muted-foreground">
+                {sec.title}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {sec.ordered ? (
+                <ol className="list-decimal pl-5 space-y-1 text-sm">
+                  {sec.items.map((it, i) => (
+                    <li key={i}>{it}</li>
+                  ))}
+                </ol>
+              ) : (
+                <ul className="list-disc pl-5 space-y-1 text-sm">
+                  {sec.items.map((it, i) => (
+                    <li key={i}>{it}</li>
+                  ))}
+                </ul>
+              )}
+              {sec.note && (
+                <div className="text-xs italic text-primary/90 bg-primary/5 border border-primary/20 rounded-md px-3 py-2">
+                  {sec.note}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
