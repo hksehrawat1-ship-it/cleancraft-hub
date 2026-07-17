@@ -21,6 +21,8 @@ import {
   ClipboardList,
   Plus,
   Trash2,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -31,10 +33,13 @@ export const Route = createFileRoute("/_authenticated/project-coordinator")({
 });
 
 const MENU = [
+  { key: "roles", label: "Roles & Responsibility", icon: ShieldCheck },
+  { key: "projects-status", label: "Projects Status", icon: ClipboardList },
   { key: "stores", label: "Stores", icon: Store },
   { key: "mind-task", label: "Mind & Task", icon: Brain },
   { key: "delegate", label: "Delegate", icon: UserPlus },
   { key: "resource", label: "Resource", icon: Package },
+  { key: "sops", label: "SOPs", icon: FileText },
   { key: "performance", label: "Performance", icon: TrendingUp },
 ] as const;
 
