@@ -1747,13 +1747,13 @@ function ProjectsStatusSection() {
                       disabled={!openingReady}
                       title={
                         !openingReady
-                          ? "Tick both Opening Essentials videos first"
+                          ? "Tick all Opening Essentials (Section F) first"
                           : undefined
                       }
                       onChange={(e) => {
                         if (!openingReady) {
                           toast.error(
-                            "Approve both Opening Essentials videos before setting the opening date.",
+                            "Tick all Opening Essentials (Section F) before setting the opening date.",
                           );
                           return;
                         }
@@ -1764,8 +1764,7 @@ function ProjectsStatusSection() {
                 </div>
                 <div className="mt-2 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-300">
                   <span className="font-semibold">Remarks:</span> You cannot open a
-                  store until both Opening Essentials videos (Section F) are
-                  approved.
+                  store until all Opening Essentials (Section F) are ticked.
                 </div>
                 </>
                 )}
@@ -1820,7 +1819,7 @@ function ProjectsStatusSection() {
                       onValueChange={(v) => {
                         if (v === "complete" && !openingReady) {
                           toast.error(
-                            "Approve both Opening Essentials videos before marking complete.",
+                            "Tick all Opening Essentials (Section F) before marking complete.",
                           );
                           return;
                         }
