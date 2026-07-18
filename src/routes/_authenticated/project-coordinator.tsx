@@ -1420,6 +1420,7 @@ const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
     items: [
       "Approval Video of the Manpower Room",
       "Approval Video of Store (Pre-Opening)",
+      "Manpower Hiring Advert.",
     ],
   },
 ];
