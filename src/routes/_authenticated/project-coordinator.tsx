@@ -793,6 +793,38 @@ const RESOURCE_CATEGORIES: { id: string; label: string; slots: { id: string; lab
       { id: "sa-hi", label: "Hindi" },
     ],
   },
+  {
+    id: "franchise-bundle",
+    label: "Franchise Bundle",
+    slots: [
+      { id: "fb-fm", label: "A. Franchise Manual" },
+      { id: "fb-sim", label: "B. Store In-charge Manual" },
+      { id: "fb-rm", label: "C. Rider Manual" },
+      { id: "fb-pm", label: "D. Presman Manual" },
+      { id: "fb-dcm", label: "E. Dry Cleaning Master Manual" },
+    ],
+  },
+  {
+    id: "role-clarity",
+    label: "Role Clarity Sheet",
+    slots: [
+      { id: "rc-si", label: "A. Store In-charge Role Sheet" },
+      { id: "rc-r", label: "B. Rider Role Sheet" },
+      { id: "rc-p", label: "C. Presman Role Sheet" },
+      { id: "rc-dcm", label: "D. Dry Cleaning Master Role Sheet" },
+    ],
+  },
+  {
+    id: "other-essential",
+    label: "Other Essential Papers",
+    slots: [
+      { id: "oe-offer", label: "Offer Letter" },
+      { id: "oe-appointment", label: "Appointment Letter" },
+      { id: "oe-consent", label: "Letter of Consent" },
+      { id: "oe-satisfaction", label: "Letter of Satisfaction" },
+      { id: "oe-apology", label: "Apology Letter" },
+    ],
+  },
 ];
 
 function ResourceSection() {
@@ -800,6 +832,9 @@ function ResourceSection() {
   const [open, setOpen] = useState<Record<string, boolean>>({
     "pre-opening": true,
     "shop-agreement": true,
+    "franchise-bundle": true,
+    "role-clarity": true,
+    "other-essential": true,
   });
 
   function onUpload(id: string, file: File) {
