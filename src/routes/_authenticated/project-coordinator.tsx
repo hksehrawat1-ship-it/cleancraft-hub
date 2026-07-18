@@ -832,6 +832,9 @@ function ResourceSection() {
   const [open, setOpen] = useState<Record<string, boolean>>({
     "pre-opening": true,
     "shop-agreement": true,
+    "franchise-bundle": true,
+    "role-clarity": true,
+    "other-essential": true,
   });
 
   function onUpload(id: string, file: File) {
