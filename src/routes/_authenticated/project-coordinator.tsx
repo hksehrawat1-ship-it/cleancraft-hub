@@ -1819,7 +1819,7 @@ function ProjectsStatusSection() {
                       onValueChange={(v) => {
                         if (v === "complete" && !openingReady) {
                           toast.error(
-                            "Approve both Opening Essentials videos before marking complete.",
+                            "Tick all Opening Essentials (Section F) before marking complete.",
                           );
                           return;
                         }
