@@ -49,8 +49,8 @@ export const Route = createFileRoute("/_authenticated/project-coordinator")({
 
 const MENU = [
   { key: "roles", label: "Roles & Responsibility", icon: ShieldCheck },
-  { key: "projects-status", label: "Projects Status", icon: ClipboardList },
   { key: "stores", label: "Stores", icon: Store },
+  { key: "projects-status", label: "Projects Status", icon: ClipboardList },
   { key: "mind-task", label: "Mind & Task", icon: Brain },
   { key: "delegate", label: "Delegate", icon: UserPlus },
   { key: "resource", label: "Resource", icon: Package },
