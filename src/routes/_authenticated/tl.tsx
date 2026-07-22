@@ -309,18 +309,28 @@ function TLDashboard() {
               <div className="border rounded-md divide-y">
                 {tasks.map((t) => (
                   <div key={t.id} className="p-3 flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className={`text-sm font-medium ${t.done ? "line-through text-muted-foreground" : ""}`}>
                         {t.text[lang]}
                       </div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">
+                      <div className="text-[11px] text-muted-foreground">
                         {T.assignedBy[lang]}: {t.assignedBy} · {T.due[lang]}: {t.due}
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {lang === "en" ? "Assigned" : "सौंपा गया"}: <span className="tabular-nums text-foreground">{fmtDT(t.assignedAt)}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <CheckCircle2 className={`w-3 h-3 ${t.done ? "text-emerald-600" : ""}`} />
+                          {lang === "en" ? "Completed" : "पूर्ण"}: <span className="tabular-nums text-foreground">{fmtDT(t.completedAt)}</span>
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Badge variant={t.done ? "default" : "secondary"}>{t.done ? T.done[lang] : T.pending[lang]}</Badge>
                       <Button size="sm" variant={t.done ? "outline" : "default"}
-                        onClick={() => setTasks((prev) => prev.map((p) => (p.id === t.id ? { ...p, done: !p.done } : p)))}>
+                        onClick={() => setTasks((prev) => prev.map((p) => (p.id === t.id ? { ...p, done: !p.done, completedAt: !p.done ? new Date().toISOString() : undefined } : p)))}>
                         {t.done ? T.reopen[lang] : T.markDone[lang]}
                       </Button>
                     </div>
