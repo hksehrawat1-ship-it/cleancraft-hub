@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedVideoEditorRouteImport } from './routes/_authenticated/video-editor'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
+import { Route as AuthenticatedTlRouteImport } from './routes/_authenticated/tl'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedSalesCmsRouteImport } from './routes/_authenticated/sales-cms'
@@ -62,6 +63,11 @@ const AuthenticatedVideoEditorRoute =
 const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTlRoute = AuthenticatedTlRouteImport.update({
+  id: '/tl',
+  path: '/tl',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/tl': typeof AuthenticatedTlRoute
   '/users': typeof AuthenticatedUsersRoute
   '/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/tl': typeof AuthenticatedTlRoute
   '/users': typeof AuthenticatedUsersRoute
   '/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/_authenticated/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/tl': typeof AuthenticatedTlRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/sales-cms'
     | '/stores'
     | '/tasks'
+    | '/tl'
     | '/users'
     | '/video-editor'
     | '/.mcp/invoke-tool/$tool'
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/sales-cms'
     | '/stores'
     | '/tasks'
+    | '/tl'
     | '/users'
     | '/video-editor'
     | '/.mcp/invoke-tool/$tool'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales-cms'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
+    | '/_authenticated/tl'
     | '/_authenticated/users'
     | '/_authenticated/video-editor'
     | '/.mcp/invoke-tool/$tool'
@@ -368,6 +380,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tl': {
+      id: '/_authenticated/tl'
+      path: '/tl'
+      fullPath: '/tl'
+      preLoaderRoute: typeof AuthenticatedTlRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tasks': {
@@ -514,6 +533,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSalesCmsRoute: typeof AuthenticatedSalesCmsRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedTlRoute: typeof AuthenticatedTlRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedVideoEditorRoute: typeof AuthenticatedVideoEditorRoute
   AuthenticatedLeadsIdRoute: typeof AuthenticatedLeadsIdRoute
@@ -534,6 +554,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSalesCmsRoute: AuthenticatedSalesCmsRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedTlRoute: AuthenticatedTlRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedVideoEditorRoute: AuthenticatedVideoEditorRoute,
   AuthenticatedLeadsIdRoute: AuthenticatedLeadsIdRoute,
