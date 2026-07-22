@@ -181,9 +181,7 @@ function TLDashboard() {
         {active === "roles" && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">{tr("nav" as any, lang) /* unused */}
-                {T.nav.roles[lang]}
-              </CardTitle>
+              <CardTitle className="text-base">{T.nav.roles[lang]}</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 list-disc pl-5 text-sm">
