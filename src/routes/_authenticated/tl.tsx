@@ -133,15 +133,20 @@ type CentreTask = {
   id: string;
   text: { en: string; hi: string };
   assignedBy: string;
+  assignedAt: string; // ISO
   due: string;
   done: boolean;
+  completedAt?: string; // ISO
 };
 const SEED_TASKS: CentreTask[] = [
-  { id: "t1", text: { en: "Deploy 2 trained manpower to Jaipur store", hi: "जयपुर स्टोर पर 2 प्रशिक्षित स्टाफ तैनात करें" }, assignedBy: "T&M Centre — Ms. Kavita", due: "Today", done: false },
-  { id: "t2", text: { en: "Conduct Owner training refresh — Indore", hi: "मालिक प्रशिक्षण रिफ्रेश करें — इंदौर" }, assignedBy: "T&M Centre — Mr. Sanjay", due: "Tomorrow", done: false },
-  { id: "t3", text: { en: "Submit Lucknow launch attendance sheet", hi: "लखनऊ लॉन्च उपस्थिति पत्रक जमा करें" }, assignedBy: "T&M Centre — Ms. Kavita", due: "Yesterday", done: true },
-  { id: "t4", text: { en: "POS module walkthrough — Pune 2 (pre-launch)", hi: "POS मॉड्यूल वॉकथ्रू — पुणे 2 (लॉन्च-पूर्व)" }, assignedBy: "T&M Centre — Mr. Sanjay", due: "In 2 days", done: false },
+  { id: "t1", text: { en: "Deploy 2 trained manpower to Jaipur store", hi: "जयपुर स्टोर पर 2 प्रशिक्षित स्टाफ तैनात करें" }, assignedBy: "T&M Centre — Ms. Kavita", assignedAt: "2026-07-22T09:15:00", due: "Today", done: false },
+  { id: "t2", text: { en: "Conduct Owner training refresh — Indore", hi: "मालिक प्रशिक्षण रिफ्रेश करें — इंदौर" }, assignedBy: "T&M Centre — Mr. Sanjay", assignedAt: "2026-07-21T17:40:00", due: "Tomorrow", done: false },
+  { id: "t3", text: { en: "Submit Lucknow launch attendance sheet", hi: "लखनऊ लॉन्च उपस्थिति पत्रक जमा करें" }, assignedBy: "T&M Centre — Ms. Kavita", assignedAt: "2026-07-20T10:00:00", due: "Yesterday", done: true, completedAt: "2026-07-21T18:12:00" },
+  { id: "t4", text: { en: "POS module walkthrough — Pune 2 (pre-launch)", hi: "POS मॉड्यूल वॉकथ्रू — पुणे 2 (लॉन्च-पूर्व)" }, assignedBy: "T&M Centre — Mr. Sanjay", assignedAt: "2026-07-22T08:00:00", due: "In 2 days", done: false },
 ];
+
+const fmtDT = (iso?: string) =>
+  iso ? new Date(iso).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "—";
 
 type ExpenseEntry = {
   id: string;
@@ -304,18 +309,28 @@ function TLDashboard() {
               <div className="border rounded-md divide-y">
                 {tasks.map((t) => (
                   <div key={t.id} className="p-3 flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className={`text-sm font-medium ${t.done ? "line-through text-muted-foreground" : ""}`}>
                         {t.text[lang]}
                       </div>
-                      <div className="text-[11px] text-muted-foreground mt-0.5">
+                      <div className="text-[11px] text-muted-foreground">
                         {T.assignedBy[lang]}: {t.assignedBy} · {T.due[lang]}: {t.due}
+                      </div>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <Clock className="w-3 h-3" />
+                          {lang === "en" ? "Assigned" : "सौंपा गया"}: <span className="tabular-nums text-foreground">{fmtDT(t.assignedAt)}</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-muted-foreground">
+                          <CheckCircle2 className={`w-3 h-3 ${t.done ? "text-emerald-600" : ""}`} />
+                          {lang === "en" ? "Completed" : "पूर्ण"}: <span className="tabular-nums text-foreground">{fmtDT(t.completedAt)}</span>
+                        </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <Badge variant={t.done ? "default" : "secondary"}>{t.done ? T.done[lang] : T.pending[lang]}</Badge>
                       <Button size="sm" variant={t.done ? "outline" : "default"}
-                        onClick={() => setTasks((prev) => prev.map((p) => (p.id === t.id ? { ...p, done: !p.done } : p)))}>
+                        onClick={() => setTasks((prev) => prev.map((p) => (p.id === t.id ? { ...p, done: !p.done, completedAt: !p.done ? new Date().toISOString() : undefined } : p)))}>
                         {t.done ? T.reopen[lang] : T.markDone[lang]}
                       </Button>
                     </div>
