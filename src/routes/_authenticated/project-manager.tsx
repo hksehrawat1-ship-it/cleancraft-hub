@@ -901,6 +901,9 @@ function StageBlock({
                 <span className="text-sm truncate">
                   {index}.{idx + 1} {it.label}
                 </span>
+                {it.important && (
+                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">Important</Badge>
+                )}
               </label>
               {it.done && it.at && (
                 <span className="text-[11px] text-emerald-600 tabular-nums shrink-0">{it.at}</span>
