@@ -70,6 +70,7 @@ type SubStage = {
   label: string;
   items: CheckItem[];
   submitted?: boolean;
+  remark?: string;
 };
 
 type Store = {
