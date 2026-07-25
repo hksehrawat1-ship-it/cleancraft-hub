@@ -70,6 +70,7 @@ type SubStage = {
   label: string;
   items: CheckItem[];
   submitted?: boolean;
+  remark?: string;
 };
 
 type Store = {
@@ -120,6 +121,7 @@ const defaultInfra = (): SubStage => ({
 const defaultElectric = (): SubStage => ({
   id: "electric",
   label: "Electric Task",
+  remark: "From the pole to the shop, 10 mm copper wire and from the main Board, parallel wiring of 6 mm copper wire is compulsory.",
   items: [
     mkItem("el-load", "Load sanction approved"),
     mkItem("el-wiring", "Internal wiring complete"),
@@ -891,6 +893,12 @@ function StageBlock({
       </button>
       {open && (
         <div className="px-3 pb-3 space-y-2">
+          {stage.remark && (
+            <div className="flex items-start gap-2 rounded-md border border-amber-500/30 bg-amber-500/10 p-2 text-sm text-amber-700 dark:text-amber-300">
+              <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{stage.remark}</span>
+            </div>
+          )}
           {stage.items.map((it, idx) => (
             <div
               key={it.id}
