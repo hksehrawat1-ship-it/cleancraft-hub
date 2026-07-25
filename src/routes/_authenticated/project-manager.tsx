@@ -63,7 +63,7 @@ export const Route = createFileRoute("/_authenticated/project-manager")({
 });
 
 // ---------- Types ----------
-type CheckItem = { id: string; label: string; done: boolean; at?: string };
+type CheckItem = { id: string; label: string; done: boolean; at?: string; important?: boolean };
 
 type SubStage = {
   id: string;
