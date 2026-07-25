@@ -126,6 +126,7 @@ const defaultElectric = (): SubStage => ({
     mkItem("el-panel", "Main panel installed"),
     mkItem("el-lights", "Lights & fixtures installed"),
     mkItem("el-meter", "Meter connection active"),
+    mkItem("el-servo", "Servo Installed", true),
   ],
 });
 
