@@ -98,7 +98,7 @@ type Store = {
 // ---------- Defaults ----------
 const nowStamp = () => new Date().toLocaleString();
 
-const mkItem = (id: string, label: string): CheckItem => ({ id, label, done: false });
+const mkItem = (id: string, label: string, important = false): CheckItem => ({ id, label, done: false, important });
 
 const defaultShopApproval = (): SubStage => ({
   id: "shop-approval",
