@@ -63,7 +63,7 @@ export const Route = createFileRoute("/_authenticated/project-manager")({
 });
 
 // ---------- Types ----------
-type CheckItem = { id: string; label: string; done: boolean; at?: string };
+type CheckItem = { id: string; label: string; done: boolean; at?: string; important?: boolean };
 
 type SubStage = {
   id: string;
@@ -98,7 +98,7 @@ type Store = {
 // ---------- Defaults ----------
 const nowStamp = () => new Date().toLocaleString();
 
-const mkItem = (id: string, label: string): CheckItem => ({ id, label, done: false });
+const mkItem = (id: string, label: string, important = false): CheckItem => ({ id, label, done: false, important });
 
 const defaultShopApproval = (): SubStage => ({
   id: "shop-approval",
@@ -126,6 +126,7 @@ const defaultElectric = (): SubStage => ({
     mkItem("el-panel", "Main panel installed"),
     mkItem("el-lights", "Lights & fixtures installed"),
     mkItem("el-meter", "Meter connection active"),
+    mkItem("el-servo", "Servo Installed", true),
   ],
 });
 
@@ -900,6 +901,9 @@ function StageBlock({
                 <span className="text-sm truncate">
                   {index}.{idx + 1} {it.label}
                 </span>
+                {it.important && (
+                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">Important</Badge>
+                )}
               </label>
               {it.done && it.at && (
                 <span className="text-[11px] text-emerald-600 tabular-nums shrink-0">{it.at}</span>
