@@ -993,6 +993,8 @@ const emptyShopApproval = (): ShopApprovalState => ({
   modelDouble: false,
   modelSingle: false,
   modelCustomise: false,
+  dryer: "",
+  wash: "",
   shopArea: "",
   locPrime: false,
   locMarket: false,
