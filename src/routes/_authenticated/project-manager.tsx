@@ -964,6 +964,8 @@ type ShopApprovalState = {
   modelDouble: boolean;
   modelSingle: boolean;
   modelCustomise: boolean;
+  dryer: string;
+  wash: string;
   shopArea: string;
   locPrime: boolean;
   locMarket: boolean;
@@ -991,6 +993,8 @@ const emptyShopApproval = (): ShopApprovalState => ({
   modelDouble: false,
   modelSingle: false,
   modelCustomise: false,
+  dryer: "",
+  wash: "",
   shopArea: "",
   locPrime: false,
   locMarket: false,
@@ -1028,11 +1032,13 @@ function ShopApprovalForm({
     setF((p) => ({ ...p, [k]: v }));
 
   const modelOk = f.modelDouble || f.modelSingle || f.modelCustomise;
+  const customiseOk = !f.modelCustomise || (f.dryer.trim() !== "" && f.wash.trim() !== "");
   const locOk = f.locPrime || f.locMarket || f.locSide || f.locOther.trim().length > 0;
   const posOk = f.posGround || f.posFirst;
   const phaseOk = f.singlePhase || f.threePhase;
   const allDone =
     modelOk &&
+    customiseOk &&
     f.shopArea.trim() !== "" &&
     locOk &&
     posOk &&
@@ -1125,13 +1131,35 @@ function ShopApprovalForm({
       {open && (
         <div className="px-3 pb-3 space-y-4">
           {/* 1. Type of Model */}
-          <div className="border rounded-md p-3 bg-background space-y-2">
+          <div className="border rounded-md p-3 bg-background space-y-3">
             <div className="text-sm font-medium">1. Type of Model</div>
             <div className="flex flex-wrap gap-4">
               <CB label="A. Double machine" checked={f.modelDouble} onChange={(v) => set("modelDouble", v)} disabled={dis} />
               <CB label="B. Single machine" checked={f.modelSingle} onChange={(v) => set("modelSingle", v)} disabled={dis} />
               <CB label="C. Customise" checked={f.modelCustomise} onChange={(v) => set("modelCustomise", v)} disabled={dis} />
             </div>
+            {f.modelCustomise && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Dryer</Label>
+                  <Input
+                    placeholder="Dryer: ......................"
+                    value={f.dryer}
+                    onChange={(e) => set("dryer", e.target.value)}
+                    disabled={dis}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Wash</Label>
+                  <Input
+                    placeholder="Wash: ......................"
+                    value={f.wash}
+                    onChange={(e) => set("wash", e.target.value)}
+                    disabled={dis}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 2. Shop area */}
