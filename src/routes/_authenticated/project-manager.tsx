@@ -964,6 +964,8 @@ type ShopApprovalState = {
   modelDouble: boolean;
   modelSingle: boolean;
   modelCustomise: boolean;
+  dryer: string;
+  wash: string;
   shopArea: string;
   locPrime: boolean;
   locMarket: boolean;
