@@ -127,10 +127,26 @@ const defaultElectric = (): SubStage => ({
   items: [
     mkItem("el-load", "Load sanction approved"),
     mkItem("el-wiring", "Internal wiring complete"),
-    mkItem("el-panel", "Main panel installed"),
+    mkItem("el-earthing", "Earthing done"),
+    mkItem("el-mccb", "MCCB installed"),
     mkItem("el-lights", "Lights & fixtures installed"),
-    mkItem("el-meter", "Meter connection active"),
+    mkItem("el-3phase", "Three-phase meter connection active"),
     mkItem("el-servo", "Servo Installed", true),
+    mkItem("el-mcb-a", "A. LG 10 kg Dryer MCB"),
+    mkItem("el-mcb-b", "B. LG 10 kg Washer MCB"),
+    mkItem("el-mcb-c", "C. LG 15 kg Dryer MCB"),
+    mkItem("el-mcb-d", "D. LG 15 kg Washer MCB"),
+    mkItem("el-mcb-e", "E. Other Washer MCB"),
+    mkItem("el-mcb-f", "F. Other Dryer MCB"),
+    mkItem("el-mcb-g", "G. Spotting Table MCB"),
+    mkItem("el-mcb-h", "H. Press 1 MCB"),
+    mkItem("el-mcb-i", "I. Press 2 MCB"),
+    mkItem("el-mcb-j", "J. Boiler MCB"),
+    mkItem("el-mcb-k", "K. Sign Board Connection"),
+    mkItem("el-mcb-l", "L. Counter Connections"),
+    mkItem("el-mcb-m", "M. Camera Connection Front"),
+    mkItem("el-mcb-n", "N. Camera Connection Back"),
+    mkItem("el-mcb-o", "O. Servo Connection"),
   ],
 });
 
@@ -926,7 +942,7 @@ function StageBlock({
               )}
             </div>
           ))}
-          <div className="flex justify-end pt-1">
+          <div className="flex justify-end items-center gap-2 pt-1">
             <Button
               size="sm"
               onClick={onSubmit}
@@ -935,6 +951,7 @@ function StageBlock({
             >
               {stage.submitted ? "Submitted" : "Submit"}
             </Button>
+            {stage.id === "electric" && <ElectricSpecsDialog />}
           </div>
         </div>
       )}
@@ -1547,6 +1564,75 @@ function ExpenseAddRow({
         <Plus className="w-4 h-4 mr-1" /> Add
       </Button>
     </div>
+  );
+}
+
+function ElectricSpecsDialog() {
+  const specs: { group: string; rows: [string, string][] }[] = [
+    {
+      group: "Wiring",
+      rows: [
+        ["Pole → Shop", "10 mm² copper wire"],
+        ["Main Board (parallel)", "6 mm² copper wire"],
+        ["MCB mounting height", "3.5 ft from floor"],
+        ["Earthing", "Dedicated earth pit, < 1 Ω resistance"],
+      ],
+    },
+    {
+      group: "MCB Ratings (recommended)",
+      rows: [
+        ["LG 10 kg Dryer / Washer", "16 A, C-curve"],
+        ["LG 15 kg Dryer / Washer", "20 A, C-curve"],
+        ["Other Washer / Dryer", "16–20 A, C-curve"],
+        ["Spotting Table", "10 A"],
+        ["Press 1 / Press 2", "16 A each"],
+        ["Boiler", "25 A, C-curve"],
+        ["Sign Board", "6 A"],
+        ["Counter Connections", "6 A"],
+        ["Camera Front / Back", "6 A each"],
+        ["Servo Connection", "32 A, dedicated"],
+      ],
+    },
+    {
+      group: "Supply",
+      rows: [
+        ["Connection type", "Three-phase, 4-wire"],
+        ["Sanctioned load", "As per store design (min. 15 kW)"],
+        ["Servo stabilizer", "Mandatory, sized to sanctioned load"],
+      ],
+    },
+  ];
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline">View Specifications</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Electrical Specifications</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {specs.map((s) => (
+            <div key={s.group}>
+              <div className="text-sm font-semibold mb-1">{s.group}</div>
+              <div className="border rounded-md overflow-hidden">
+                {s.rows.map(([k, v], i) => (
+                  <div
+                    key={k}
+                    className={`grid grid-cols-2 gap-2 px-3 py-2 text-sm ${
+                      i % 2 ? "bg-muted/30" : ""
+                    }`}
+                  >
+                    <div className="text-muted-foreground">{k}</div>
+                    <div className="font-medium">{v}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
