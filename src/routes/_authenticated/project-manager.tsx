@@ -901,6 +901,12 @@ function StageBlock({
               <span>{stage.remark}</span>
             </div>
           )}
+          {stage.note && (
+            <div className="flex items-start gap-2 rounded-md border border-sky-500/30 bg-sky-500/10 p-2 text-sm text-sky-700 dark:text-sky-300">
+              <Info className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{stage.note}</span>
+            </div>
+          )}
           {stage.items.map((it, idx) => (
             <div
               key={it.id}
