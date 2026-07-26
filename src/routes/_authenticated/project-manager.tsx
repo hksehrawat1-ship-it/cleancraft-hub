@@ -46,7 +46,7 @@ import {
   AlertTriangle,
   Phone,
   User as UserIcon,
-
+  Info,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
