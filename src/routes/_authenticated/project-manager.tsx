@@ -1596,68 +1596,197 @@ function ExpenseAddRow({
 }
 
 function ElectricSpecsDialog() {
-  const specs: { group: string; rows: [string, string][] }[] = [
+  const specs = [
     {
-      group: "Wiring",
-      rows: [
-        ["Pole → Shop", "10 mm² copper wire"],
-        ["Main Board (parallel)", "6 mm² copper wire"],
-        ["MCB mounting height", "3.5 ft from floor"],
-        ["Earthing", "Dedicated earth pit, < 1 Ω resistance"],
-      ],
+      sno: "1",
+      machine: "LG 10 kg Gas/Electric Dryer - Electric",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
     },
     {
-      group: "MCB Ratings (recommended)",
-      rows: [
-        ["LG 10 kg Dryer / Washer", "16 A, C-curve"],
-        ["LG 15 kg Dryer / Washer", "20 A, C-curve"],
-        ["Other Washer / Dryer", "16–20 A, C-curve"],
-        ["Spotting Table", "10 A"],
-        ["Press 1 / Press 2", "16 A each"],
-        ["Boiler", "25 A, C-curve"],
-        ["Sign Board", "6 A"],
-        ["Counter Connections", "6 A"],
-        ["Camera Front / Back", "6 A each"],
-        ["Servo Connection", "32 A, dedicated"],
-      ],
+      sno: "2",
+      machine: "LG 10 Kg Washer",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
     },
     {
-      group: "Supply",
-      rows: [
-        ["Connection type", "Three-phase, 4-wire"],
-        ["Sanctioned load", "As per store design (min. 15 kW)"],
-        ["Servo stabilizer", "Mandatory, sized to sanctioned load"],
-      ],
+      sno: "3",
+      machine: "LG 15 Kg Gas/Electric Dryer",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
+    },
+    {
+      sno: "4",
+      machine: "LG 15 Kg Washer",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
+    },
+    {
+      sno: "",
+      machine: "Domus 11 kg Electric Dryer",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
+    },
+    {
+      sno: "",
+      machine: "Domus 11 kg Washer",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 2 Pol",
+      remark: "SPN (Single phase neutral)",
+    },
+    {
+      sno: "5",
+      machine: "Press table",
+      wire: "4mm",
+      qty: "2",
+      specification: "16 AMP 2 Pol",
+      remark: "SPN (Single phase neutral)",
+    },
+    {
+      sno: "6",
+      machine: "Boiler",
+      wire: "6mm",
+      qty: "1",
+      specification: "32 Amp 4 Pol",
+      remark: "TPN (Three phase neutral)",
+    },
+    {
+      sno: "7",
+      machine: "Spotting table",
+      wire: "",
+      qty: "1",
+      specification: "20 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "8",
+      machine: "Sign Board",
+      wire: "",
+      qty: "1",
+      specification: "16 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "9",
+      machine: "Computer",
+      wire: "",
+      qty: "1",
+      specification: "6 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "10",
+      machine: "Printer",
+      wire: "",
+      qty: "1",
+      specification: "6 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "11",
+      machine: "Wifi",
+      wire: "",
+      qty: "1",
+      specification: "6 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "12",
+      machine: "Camera",
+      wire: "",
+      qty: "1",
+      specification: "6 Amp",
+      remark: "Socket",
+    },
+    {
+      sno: "13",
+      machine: "SERVO",
+      wire: "",
+      qty: "1",
+      specification: "10 Kw",
+      remark: "Only for Stacker",
+    },
+    {
+      sno: "14",
+      machine: "Earthing",
+      wire: "",
+      qty: "",
+      specification: "Compulsory",
+      remark: "Chemical or Copper salt",
+    },
+    {
+      sno: "15",
+      machine: "MCCB or RCCB",
+      wire: "",
+      qty: "",
+      specification: "100 AMP",
+      remark: "Main line",
     },
   ];
+
+  const notes = [
+    "From the pole to the shop, 10 mm copper wire and from the main board, parallel wiring of 6 mm copper wire is compulsory.",
+    "Height of MCB should be 3.5 ft from floor.",
+    "Earthing: Dedicated earth pit with < 1 Ω resistance.",
+    "Servo stabilizer is mandatory and sized to sanctioned load.",
+  ];
+
   return (
     <Dialog>
       <DialogTrigger asChild>
         <Button size="sm" variant="outline">View Specifications</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Electrical Specifications</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          {specs.map((s) => (
-            <div key={s.group}>
-              <div className="text-sm font-semibold mb-1">{s.group}</div>
-              <div className="border rounded-md overflow-hidden">
-                {s.rows.map(([k, v], i) => (
-                  <div
-                    key={k}
-                    className={`grid grid-cols-2 gap-2 px-3 py-2 text-sm ${
-                      i % 2 ? "bg-muted/30" : ""
-                    }`}
-                  >
-                    <div className="text-muted-foreground">{k}</div>
-                    <div className="font-medium">{v}</div>
-                  </div>
+          <div className="border rounded-md overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/60">
+                <tr>
+                  <th className="px-2 py-2 text-left font-semibold w-12">S.no</th>
+                  <th className="px-2 py-2 text-left font-semibold">Machine</th>
+                  <th className="px-2 py-2 text-left font-semibold w-20">Wire</th>
+                  <th className="px-2 py-2 text-left font-semibold w-20">Qty</th>
+                  <th className="px-2 py-2 text-left font-semibold">Specification</th>
+                  <th className="px-2 py-2 text-left font-semibold">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specs.map((row, i) => (
+                  <tr key={i} className={i % 2 ? "bg-muted/20" : ""}>
+                    <td className="px-2 py-2 align-top text-muted-foreground">{row.sno}</td>
+                    <td className="px-2 py-2 align-top font-medium">{row.machine}</td>
+                    <td className="px-2 py-2 align-top">{row.wire}</td>
+                    <td className="px-2 py-2 align-top">{row.qty}</td>
+                    <td className="px-2 py-2 align-top">{row.specification}</td>
+                    <td className="px-2 py-2 align-top text-muted-foreground">{row.remark}</td>
+                  </tr>
                 ))}
-              </div>
-            </div>
-          ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-sm font-semibold">Important Notes</div>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              {notes.map((note, i) => (
+                <li key={i}>{note}</li>
+              ))}
+            </ul>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
