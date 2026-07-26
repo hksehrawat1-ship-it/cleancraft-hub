@@ -942,7 +942,7 @@ function StageBlock({
               )}
             </div>
           ))}
-          <div className="flex justify-end pt-1">
+          <div className="flex justify-end items-center gap-2 pt-1">
             <Button
               size="sm"
               onClick={onSubmit}
@@ -951,6 +951,7 @@ function StageBlock({
             >
               {stage.submitted ? "Submitted" : "Submit"}
             </Button>
+            {stage.id === "electric" && <ElectricSpecsDialog />}
           </div>
         </div>
       )}
