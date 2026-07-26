@@ -931,7 +931,7 @@ function StageBlock({
               <label className="flex items-center gap-2 cursor-pointer min-w-0">
                 <Checkbox checked={it.done} onCheckedChange={() => onToggleItem(it.id)} />
                 <span className="text-sm truncate">
-                  {index}.{idx + 1} {it.label}
+                  {/^[A-Z]\./.test(it.label) ? it.label : `${index}.${idx + 1} ${it.label}`}
                 </span>
                 {it.important && (
                   <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">Important</Badge>
