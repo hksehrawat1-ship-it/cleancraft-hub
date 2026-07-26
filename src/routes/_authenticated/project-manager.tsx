@@ -1032,11 +1032,13 @@ function ShopApprovalForm({
     setF((p) => ({ ...p, [k]: v }));
 
   const modelOk = f.modelDouble || f.modelSingle || f.modelCustomise;
+  const customiseOk = !f.modelCustomise || (f.dryer.trim() !== "" && f.wash.trim() !== "");
   const locOk = f.locPrime || f.locMarket || f.locSide || f.locOther.trim().length > 0;
   const posOk = f.posGround || f.posFirst;
   const phaseOk = f.singlePhase || f.threePhase;
   const allDone =
     modelOk &&
+    customiseOk &&
     f.shopArea.trim() !== "" &&
     locOk &&
     posOk &&
