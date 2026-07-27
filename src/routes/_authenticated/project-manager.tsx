@@ -1038,6 +1038,7 @@ function ShopApprovalForm({
   const posOk = f.posGround || f.posFirst;
   const phaseOk = f.singlePhase || f.threePhase;
   const allDone =
+    f.designApproved &&
     modelOk &&
     customiseOk &&
     f.shopArea.trim() !== "" &&
