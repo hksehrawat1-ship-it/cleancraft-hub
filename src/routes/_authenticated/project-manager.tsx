@@ -89,6 +89,7 @@ type Store = {
   electric: SubStage;
   plumber: SubStage;
   carpenter: SubStage;
+  otherEssentials: SubStage;
   painter: SubStage;
   // Simple checkboxes
   machineOrder: CheckItem;
