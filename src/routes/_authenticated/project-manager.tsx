@@ -1814,3 +1814,68 @@ function ElectricSpecsDialog() {
   );
 }
 
+
+function PlumberSpecsDialog() {
+  const specs = [
+    { item: "Main inlet pipe", spec: "1 inch PVC/CPVC", remark: "From municipal / bore supply" },
+    { item: "Overhead tank", spec: "1000–2000 L", remark: "Sintex / equivalent, on roof with pressure head" },
+    { item: "Pressure pump", spec: "0.5–1 HP", remark: "Install if inlet pressure is low" },
+    { item: "Water filter (inlet)", spec: "Sediment + carbon", remark: "On main inlet before distribution" },
+    { item: "R.O for Boiler", spec: "50–100 LPH", remark: "Mandatory — hard water damages boiler" },
+    { item: "Geyser", spec: "15–25 L, 2 kW", remark: "Install if hot water is required" },
+    { item: "LG Washer 15 kg", spec: "2 water points (Hot/Cold), ¾ inch", remark: "Both points near machine location" },
+    { item: "LG Washer 10 kg", spec: "2 water points (Hot/Cold), ¾ inch", remark: "Both points near machine location" },
+    { item: "LG Dryer 10 kg", spec: "Duct 4 inch dia", remark: "Shortest exhaust path outside" },
+    { item: "LG Dryer 15 kg", spec: "Duct 6 inch dia", remark: "Shortest exhaust path outside" },
+    { item: "Boiler", spec: "Water point + R.O feed", remark: "Dedicated line from R.O output" },
+    { item: "Drainage", spec: "4 inch PVC with slope", remark: "Trap + gully; flush test before submit" },
+  ];
+
+  const notes = [
+    "All water points must be tested for leaks under pressure before wall closing.",
+    "R.O for boiler is mandatory — do not skip even if inlet water looks clean.",
+    "Dryer ducts must exit outside the shop; no internal venting.",
+    "Drainage slope minimum 1:100; ensure no back-flow.",
+  ];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline">View Specifications</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Plumbing Specifications</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="border rounded-md overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/60">
+                <tr>
+                  <th className="px-2 py-2 text-left font-semibold">Item</th>
+                  <th className="px-2 py-2 text-left font-semibold">Specification</th>
+                  <th className="px-2 py-2 text-left font-semibold">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {specs.map((row, i) => (
+                  <tr key={i} className={i % 2 ? "bg-muted/20" : ""}>
+                    <td className="px-2 py-2 align-top font-medium">{row.item}</td>
+                    <td className="px-2 py-2 align-top">{row.spec}</td>
+                    <td className="px-2 py-2 align-top text-muted-foreground">{row.remark}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="space-y-2">
+            <div className="text-sm font-semibold">Important Notes</div>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
+              {notes.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
