@@ -959,6 +959,7 @@ function StageBlock({
               {stage.submitted ? "Submitted" : "Submit"}
             </Button>
             {stage.id === "electric" && <ElectricSpecsDialog />}
+            {stage.id === "plumber" && <PlumberSpecsDialog />}
           </div>
         </div>
       )}
