@@ -154,10 +154,17 @@ const defaultPlumber = (): SubStage => ({
   id: "plumber",
   label: "Plumber Task",
   items: [
-    mkItem("pl-inlet", "Water inlet line laid"),
-    mkItem("pl-drain", "Drainage line laid"),
+    mkItem("pl-drain", "Drainage checked for functionality"),
     mkItem("pl-tank", "Overhead tank installed"),
-    mkItem("pl-fittings", "Sanitary fittings installed"),
+    mkItem("pl-pump", "Pressure pump installed if required"),
+    mkItem("pl-filter", "Water filter installed on main inlet pipe"),
+    mkItem("pl-ro", "R.O installed for Boiler"),
+    mkItem("pl-a-geyser", "a. Geyser installed if required"),
+    mkItem("pl-b-lg15", "b. 2 Point for LG Washer 15 kg"),
+    mkItem("pl-c-lg10", "C. 2 Point for LG Washer 10 kg"),
+    mkItem("pl-d-duct10", "D. Duct for LG Dryer 10 kg"),
+    mkItem("pl-e-duct15", "E. Duct for LG Dryer 15 kg"),
+    mkItem("pl-f-boiler", "F. Point for Boiler"),
   ],
 });
 
