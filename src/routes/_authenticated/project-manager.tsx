@@ -991,6 +991,7 @@ type ShopApprovalState = {
 };
 
 const emptyShopApproval = (): ShopApprovalState => ({
+  designApproved: false,
   modelDouble: false,
   modelSingle: false,
   modelCustomise: false,
@@ -1038,6 +1039,7 @@ function ShopApprovalForm({
   const posOk = f.posGround || f.posFirst;
   const phaseOk = f.singlePhase || f.threePhase;
   const allDone =
+    f.designApproved &&
     modelOk &&
     customiseOk &&
     f.shopArea.trim() !== "" &&
@@ -1161,6 +1163,16 @@ function ShopApprovalForm({
                 </div>
               </div>
             )}
+          </div>
+
+          {/* D. 2D Design Approval */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <CB
+              label="D. 2D Design Approved and Submitted on WhatsApp"
+              checked={f.designApproved}
+              onChange={(v) => set("designApproved", v)}
+              disabled={dis}
+            />
           </div>
 
           {/* 2. Shop area */}
