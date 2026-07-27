@@ -222,6 +222,7 @@ const makeStore = (
   electric: defaultElectric(),
   plumber: defaultPlumber(),
   carpenter: defaultCarpenter(),
+  otherEssentials: defaultOtherEssentials(),
   painter: defaultPainter(),
   machineOrder: mkItem("machine-order", "Machine order"),
   engineerAligned: mkItem("engineer-aligned", "Engineer aligned"),
