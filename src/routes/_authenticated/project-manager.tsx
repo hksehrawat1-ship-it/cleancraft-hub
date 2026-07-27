@@ -180,6 +180,20 @@ const defaultCarpenter = (): SubStage => ({
   ],
 });
 
+const defaultOtherEssentials = (): SubStage => ({
+  id: "other-essentials",
+  label: "Other Essentials Task",
+  items: [
+    mkItem("oe-signage", "Signage / Sign board installed"),
+    mkItem("oe-cctv", "CCTV cameras installed & tested"),
+    mkItem("oe-wifi", "Wi-Fi / Internet connection active"),
+    mkItem("oe-pos", "POS system & printer installed"),
+    mkItem("oe-firesafety", "Fire extinguisher & first-aid kit placed"),
+    mkItem("oe-housekeeping", "Housekeeping & cleaning essentials"),
+    mkItem("oe-furniture", "Furniture placed as per layout"),
+  ],
+});
+
 const defaultPainter = (): SubStage => ({
   id: "painter",
   label: "Painter Task",
