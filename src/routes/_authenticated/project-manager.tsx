@@ -991,6 +991,7 @@ type ShopApprovalState = {
 };
 
 const emptyShopApproval = (): ShopApprovalState => ({
+  designApproved: false,
   modelDouble: false,
   modelSingle: false,
   modelCustomise: false,
