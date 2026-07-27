@@ -248,6 +248,7 @@ function storeProgress(store: Store) {
     store.electric,
     store.plumber,
     store.carpenter,
+    store.otherEssentials,
     store.painter,
   ];
   const subTotal = stages.reduce((a, s) => a + s.items.length, 0);
@@ -565,17 +566,25 @@ function ProjectManagerDashboard() {
             onSubmit={() => submitStage("carpenter")}
           />
 
-          {/* 6. Painter */}
+          {/* 6. Other Essentials */}
           <StageBlock
             index="6"
+            stage={selected.otherEssentials}
+            onToggleItem={(id) => toggleSubItem("otherEssentials", id)}
+            onSubmit={() => submitStage("otherEssentials")}
+          />
+
+          {/* 7. Painter */}
+          <StageBlock
+            index="7"
             stage={selected.painter}
             onToggleItem={(id) => toggleSubItem("painter", id)}
             onSubmit={() => submitStage("painter")}
           />
 
-          {/* 7. Machine order */}
+          {/* 8. Machine order */}
           <SimpleCheckRow
-            label="7. Machine order"
+            label="8. Machine order"
             item={selected.machineOrder}
             onToggle={() => toggleSimple("machineOrder")}
           />
