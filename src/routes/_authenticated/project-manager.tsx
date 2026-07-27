@@ -961,6 +961,7 @@ function StageBlock({
 
 // ---------- Shop Approval Form ----------
 type ShopApprovalState = {
+  designApproved: boolean;
   modelDouble: boolean;
   modelSingle: boolean;
   modelCustomise: boolean;
