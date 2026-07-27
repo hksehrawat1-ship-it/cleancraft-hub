@@ -1165,6 +1165,16 @@ function ShopApprovalForm({
             )}
           </div>
 
+          {/* D. 2D Design Approval */}
+          <div className="border rounded-md p-3 bg-background space-y-2">
+            <CB
+              label="D. 2D Design Approved and Submitted on WhatsApp"
+              checked={f.designApproved}
+              onChange={(v) => set("designApproved", v)}
+              disabled={dis}
+            />
+          </div>
+
           {/* 2. Shop area */}
           <div className="border rounded-md p-3 bg-background space-y-2">
             <Label className="text-sm font-medium">2. Shop area</Label>
