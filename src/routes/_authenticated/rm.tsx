@@ -489,7 +489,9 @@ function StoresSection() {
 /* -------------------- CRM -------------------- */
 type Ticket = {
   id: string;
+  storeCode?: string;
   store: string;
+  owner?: string;
   department: string;
   problem: string;
   customProblem?: string;
@@ -498,6 +500,30 @@ type Ticket = {
   raised: string;
   remark?: string;
 };
+
+// 20 Jaipur stores with pre-assigned codes and owners for quick pick.
+const JAIPUR_STORES: { code: string; name: string; owner: string }[] = [
+  { code: "CC-JPR-01", name: "CC Jaipur - Malviya Nagar", owner: "Rohit Sharma" },
+  { code: "CC-JPR-02", name: "CC Jaipur - Vaishali Nagar", owner: "Neha Verma" },
+  { code: "CC-JPR-03", name: "CC Jaipur - Mansarovar", owner: "Amit Singh" },
+  { code: "CC-JPR-04", name: "CC Jaipur - C-Scheme", owner: "Priya Patel" },
+  { code: "CC-JPR-05", name: "CC Jaipur - Raja Park", owner: "Vikas Rao" },
+  { code: "CC-JPR-06", name: "CC Jaipur - Jagatpura", owner: "Deepa Nair" },
+  { code: "CC-JPR-07", name: "CC Jaipur - Tonk Road", owner: "Arjun Mehta" },
+  { code: "CC-JPR-08", name: "CC Jaipur - Sodala", owner: "Kavya Iyer" },
+  { code: "CC-JPR-09", name: "CC Jaipur - Sanganer", owner: "Sanjay Gupta" },
+  { code: "CC-JPR-10", name: "CC Jaipur - Pratap Nagar", owner: "Ritu Malhotra" },
+  { code: "CC-JPR-11", name: "CC Jaipur - Gopalpura", owner: "Karan Kapoor" },
+  { code: "CC-JPR-12", name: "CC Jaipur - Sirsi Road", owner: "Sneha Joshi" },
+  { code: "CC-JPR-13", name: "CC Jaipur - Jhotwara", owner: "Vivek Bansal" },
+  { code: "CC-JPR-14", name: "CC Jaipur - Vidhyadhar Nagar", owner: "Anjali Desai" },
+  { code: "CC-JPR-15", name: "CC Jaipur - Murlipura", owner: "Rahul Khanna" },
+  { code: "CC-JPR-16", name: "CC Jaipur - Ajmer Road", owner: "Pooja Reddy" },
+  { code: "CC-JPR-17", name: "CC Jaipur - Jawahar Nagar", owner: "Manish Chawla" },
+  { code: "CC-JPR-18", name: "CC Jaipur - Bani Park", owner: "Tanya Bhat" },
+  { code: "CC-JPR-19", name: "CC Jaipur - Civil Lines", owner: "Nikhil Sinha" },
+  { code: "CC-JPR-20", name: "CC Jaipur - Sitapura", owner: "Isha Menon" },
+];
 
 const DEPARTMENTS = [
   "Engineer",
