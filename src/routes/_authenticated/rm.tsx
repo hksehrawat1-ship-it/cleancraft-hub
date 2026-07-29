@@ -208,17 +208,102 @@ type StoreRow = {
   health: number;
   sales: "up" | "stable" | "down";
   openIssues: number;
+  critical: number; // urgent flags
   lastVisit: string;
+  flags: string[]; // e.g. "Machine down", "Manpower short"
 };
 
-const STORES: StoreRow[] = [
-  { name: "CC Jaipur", city: "Jaipur", owner: "Rohit Sharma", phone: "98111-22001", health: 92, sales: "up", openIssues: 1, lastVisit: "2 days ago" },
-  { name: "CC Indore", city: "Indore", owner: "Neha Verma", phone: "98111-22002", health: 88, sales: "up", openIssues: 2, lastVisit: "4 days ago" },
-  { name: "CC Lucknow", city: "Lucknow", owner: "Amit Singh", phone: "98111-22003", health: 74, sales: "stable", openIssues: 3, lastVisit: "1 week ago" },
-  { name: "CC Surat", city: "Surat", owner: "Priya Patel", phone: "98111-22004", health: 61, sales: "down", openIssues: 5, lastVisit: "2 weeks ago" },
-  { name: "CC Nagpur", city: "Nagpur", owner: "Vikas Rao", phone: "98111-22005", health: 83, sales: "stable", openIssues: 1, lastVisit: "3 days ago" },
-  { name: "CC Kanpur", city: "Kanpur", owner: "Deepa Nair", phone: "98111-22006", health: 55, sales: "down", openIssues: 6, lastVisit: "3 weeks ago" },
+const CITY_POOL = [
+  "Jaipur", "Indore", "Lucknow", "Surat", "Nagpur", "Kanpur", "Pune", "Bhopal",
+  "Patna", "Ranchi", "Agra", "Varanasi", "Meerut", "Jodhpur", "Raipur", "Amritsar",
+  "Vadodara", "Ludhiana", "Faridabad", "Ghaziabad", "Noida", "Gurugram", "Thane", "Nashik",
+  "Aurangabad", "Coimbatore", "Kochi", "Vizag", "Mysuru", "Mangalore", "Guwahati", "Siliguri",
+  "Dehradun", "Shimla", "Chandigarh", "Ambala", "Rohtak", "Panipat", "Karnal", "Sonipat",
+  "Bareilly", "Moradabad", "Aligarh", "Gorakhpur", "Jamshedpur", "Dhanbad", "Cuttack", "Bhubaneswar",
+  "Trivandrum", "Madurai",
 ];
+const OWNER_POOL = [
+  "Rohit Sharma", "Neha Verma", "Amit Singh", "Priya Patel", "Vikas Rao", "Deepa Nair",
+  "Arjun Mehta", "Kavya Iyer", "Sanjay Gupta", "Ritu Malhotra", "Karan Kapoor", "Sneha Joshi",
+  "Vivek Bansal", "Anjali Desai", "Rahul Khanna", "Pooja Reddy", "Manish Chawla", "Tanya Bhat",
+  "Nikhil Sinha", "Isha Menon",
+];
+const FLAG_POOL = [
+  "Machine breakdown",
+  "Manpower short",
+  "Marketing inactive",
+  "Owner unhappy",
+  "POS issue",
+  "Low sales",
+  "Complaint pending",
+];
+
+// Deterministic PRNG so 50 stores are stable across renders
+function mulberry32(seed: number) {
+  return function () {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const STORES: StoreRow[] = (() => {
+  const rand = mulberry32(20260729);
+  const out: StoreRow[] = [];
+  for (let i = 0; i < 50; i++) {
+    const city = CITY_POOL[i % CITY_POOL.length];
+    const owner = OWNER_POOL[Math.floor(rand() * OWNER_POOL.length)];
+    const health = Math.floor(35 + rand() * 65); // 35-99
+    const salesRoll = rand();
+    const sales: StoreRow["sales"] = health < 60 ? (salesRoll < 0.75 ? "down" : "stable") : health < 80 ? (salesRoll < 0.5 ? "stable" : salesRoll < 0.85 ? "up" : "down") : salesRoll < 0.7 ? "up" : "stable";
+    const openIssues = Math.max(0, Math.round((100 - health) / 12 + rand() * 3));
+    const critical = health < 55 ? 1 + Math.floor(rand() * 3) : health < 70 ? Math.floor(rand() * 2) : 0;
+    const flagCount = Math.min(FLAG_POOL.length, critical + (openIssues > 3 ? 1 : 0));
+    const flags: string[] = [];
+    const pool = [...FLAG_POOL];
+    for (let f = 0; f < flagCount; f++) {
+      const idx = Math.floor(rand() * pool.length);
+      flags.push(pool.splice(idx, 1)[0]);
+    }
+    const lastVisitDays = Math.floor(rand() * 30);
+    const lastVisit = lastVisitDays === 0 ? "Today" : lastVisitDays === 1 ? "Yesterday" : lastVisitDays < 7 ? `${lastVisitDays} days ago` : lastVisitDays < 14 ? "1 week ago" : lastVisitDays < 21 ? "2 weeks ago" : lastVisitDays < 28 ? "3 weeks ago" : "1 month ago";
+    out.push({
+      name: `CC ${city}${i >= CITY_POOL.length ? " 2" : ""}`,
+      city,
+      owner,
+      phone: `98${String(100 + i).padStart(3, "0")}-${String(10000 + Math.floor(rand() * 89999))}`,
+      health,
+      sales,
+      openIssues,
+      critical,
+      lastVisit,
+      flags,
+    });
+  }
+  return out;
+})();
+
+type Severity = "critical" | "warning" | "watch" | "healthy";
+function severity(s: StoreRow): Severity {
+  if (s.health < 60 || s.critical > 0 || s.openIssues >= 5) return "critical";
+  if (s.health < 75 || s.openIssues >= 3 || s.sales === "down") return "warning";
+  if (s.health < 85) return "watch";
+  return "healthy";
+}
+
+// Composite priority score — higher = more urgent
+function priorityScore(s: StoreRow) {
+  const salesWeight = s.sales === "down" ? 20 : s.sales === "stable" ? 5 : 0;
+  return (100 - s.health) * 2 + s.critical * 25 + s.openIssues * 4 + salesWeight;
+}
+
+const SEV_META: Record<Severity, { label: string; ring: string; dot: string; bg: string; text: string }> = {
+  critical: { label: "Critical", ring: "border-red-500/60", dot: "bg-red-500", bg: "bg-red-500/5", text: "text-red-600" },
+  warning: { label: "Warning", ring: "border-amber-500/60", dot: "bg-amber-500", bg: "bg-amber-500/5", text: "text-amber-600" },
+  watch: { label: "Watch", ring: "border-sky-500/60", dot: "bg-sky-500", bg: "bg-sky-500/5", text: "text-sky-600" },
+  healthy: { label: "Healthy", ring: "border-emerald-500/50", dot: "bg-emerald-500", bg: "bg-emerald-500/5", text: "text-emerald-600" },
+};
 
 function healthTint(v: number) {
   if (v >= 85) return "text-emerald-600";
@@ -229,67 +314,173 @@ function healthTint(v: number) {
 
 function StoresSection() {
   const [q, setQ] = useState("");
-  const filtered = STORES.filter(
-    (s) =>
+  const [sev, setSev] = useState<"all" | Severity>("all");
+
+  const counts = STORES.reduce(
+    (acc, s) => {
+      acc[severity(s)]++;
+      return acc;
+    },
+    { critical: 0, warning: 0, watch: 0, healthy: 0 } as Record<Severity, number>,
+  );
+
+  const filtered = STORES.filter((s) => {
+    const matchQ =
       s.name.toLowerCase().includes(q.toLowerCase()) ||
       s.city.toLowerCase().includes(q.toLowerCase()) ||
-      s.owner.toLowerCase().includes(q.toLowerCase()),
-  );
+      s.owner.toLowerCase().includes(q.toLowerCase());
+    const matchSev = sev === "all" || severity(s) === sev;
+    return matchQ && matchSev;
+  }).sort((a, b) => priorityScore(b) - priorityScore(a));
+
+  const filters: { key: "all" | Severity; label: string; count: number; cls: string }[] = [
+    { key: "all", label: "All", count: STORES.length, cls: "border-border" },
+    { key: "critical", label: "Critical", count: counts.critical, cls: "border-red-500/50 text-red-600" },
+    { key: "warning", label: "Warning", count: counts.warning, cls: "border-amber-500/50 text-amber-600" },
+    { key: "watch", label: "Watch", count: counts.watch, cls: "border-sky-500/50 text-sky-600" },
+    { key: "healthy", label: "Healthy", count: counts.healthy, cls: "border-emerald-500/50 text-emerald-600" },
+  ];
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Stores Status</h1>
-        <p className="text-sm text-muted-foreground">Health snapshot of every store you manage.</p>
+      <div className="flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Stores Status</h1>
+          <p className="text-sm text-muted-foreground">
+            {STORES.length} stores under your portfolio — sorted by urgency (most critical first).
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-red-500" /> Critical</div>
+          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500" /> Warning</div>
+          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-sky-500" /> Watch</div>
+          <div className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> Healthy</div>
+        </div>
       </div>
 
-      <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search store, city, owner" className="pl-9" />
+      {/* KPI strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {(["critical", "warning", "watch", "healthy"] as Severity[]).map((k) => (
+          <button
+            key={k}
+            onClick={() => setSev(sev === k ? "all" : k)}
+            className={`rounded-lg border p-3 text-left transition ${SEV_META[k].bg} ${SEV_META[k].ring} ${sev === k ? "ring-2 ring-offset-1 ring-primary/40" : ""}`}
+          >
+            <div className={`text-xs font-medium ${SEV_META[k].text}`}>{SEV_META[k].label}</div>
+            <div className="text-2xl font-bold tabular-nums mt-1">{counts[k]}</div>
+            <div className="text-[11px] text-muted-foreground">stores</div>
+          </button>
+        ))}
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        {filtered.map((s) => (
-          <Card key={s.name}>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-semibold">{s.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {s.city} • Owner: {s.owner}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[220px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search store, city, owner" className="pl-9" />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {filters.map((f) => (
+            <button
+              key={f.key}
+              onClick={() => setSev(f.key)}
+              className={`px-2.5 py-1 rounded-full border text-xs transition ${f.cls} ${sev === f.key ? "bg-muted font-semibold" : "hover:bg-muted/50"}`}
+            >
+              {f.label} · {f.count}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="text-xs text-muted-foreground">
+        Showing {filtered.length} of {STORES.length} — high priority first.
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {filtered.map((s) => {
+          const sv = severity(s);
+          const meta = SEV_META[sv];
+          return (
+            <div
+              key={s.name}
+              className={`relative rounded-lg border ${meta.ring} ${meta.bg} p-3 space-y-2 hover:shadow-md transition-shadow`}
+            >
+              <span className={`absolute top-0 left-0 h-full w-1 rounded-l-lg ${meta.dot}`} />
+              <div className="flex items-start justify-between gap-2 pl-1">
+                <div className="min-w-0">
+                  <div className="font-semibold text-sm truncate">{s.name}</div>
+                  <div className="text-[11px] text-muted-foreground truncate">
+                    {s.city} • {s.owner}
                   </div>
                 </div>
-                <div className={`text-2xl font-bold tabular-nums ${healthTint(s.health)}`}>{s.health}</div>
+                <div className={`text-xl font-bold tabular-nums ${healthTint(s.health)}`}>{s.health}</div>
               </div>
-              <Progress value={s.health} />
-              <div className="flex flex-wrap gap-2 text-xs">
-                <Badge variant="outline" className="gap-1">
-                  <Phone className="h-3 w-3" />
-                  {s.phone}
+              <Progress value={s.health} className="h-1.5" />
+              <div className="flex flex-wrap items-center gap-1.5 text-[11px] pl-1">
+                <Badge variant="outline" className={`px-1.5 py-0 h-5 ${meta.text} ${meta.ring}`}>
+                  {meta.label}
                 </Badge>
+                {s.critical > 0 && (
+                  <Badge variant="outline" className="px-1.5 py-0 h-5 gap-1 text-red-600 border-red-500/50">
+                    <AlertTriangle className="h-3 w-3" />
+                    {s.critical} urgent
+                  </Badge>
+                )}
                 <Badge
                   variant="outline"
-                  className={
+                  className={`px-1.5 py-0 h-5 ${
                     s.sales === "up"
                       ? "text-emerald-600 border-emerald-500/40"
                       : s.sales === "down"
                         ? "text-red-600 border-red-500/40"
                         : "text-sky-600 border-sky-500/40"
-                  }
+                  }`}
                 >
-                  Sales {s.sales}
+                  {s.sales === "up" ? "↑" : s.sales === "down" ? "↓" : "→"} {s.sales}
                 </Badge>
-                <Badge
-                  variant="outline"
-                  className={s.openIssues > 3 ? "text-red-600 border-red-500/40" : ""}
-                >
-                  {s.openIssues} open issues
+                <Badge variant="outline" className={`px-1.5 py-0 h-5 ${s.openIssues > 3 ? "text-red-600 border-red-500/40" : ""}`}>
+                  {s.openIssues} issues
                 </Badge>
-                <Badge variant="outline">Last visit: {s.lastVisit}</Badge>
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              {s.flags.length > 0 && (
+                <div className="flex flex-wrap gap-1 pl-1">
+                  {s.flags.slice(0, 3).map((f) => (
+                    <span key={f} className="text-[10px] px-1.5 py-0.5 rounded bg-background border border-border/60 text-muted-foreground">
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-between pl-1 pt-1 border-t border-border/50">
+                <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> {s.lastVisit}
+                </div>
+                <div className="flex items-center gap-1">
+                  <a
+                    href={`tel:${s.phone}`}
+                    className="w-6 h-6 rounded flex items-center justify-center hover:bg-background border border-transparent hover:border-border"
+                    title={`Call ${s.owner}`}
+                  >
+                    <Phone className="h-3 w-3" />
+                  </a>
+                  <a
+                    href={`https://wa.me/91${s.phone.replace(/\D/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-6 h-6 rounded flex items-center justify-center hover:bg-background border border-transparent hover:border-border"
+                    title="WhatsApp"
+                  >
+                    <MessageSquare className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && (
+          <div className="col-span-full text-center py-10 text-sm text-muted-foreground border border-dashed rounded-lg">
+            No stores match your filter.
+          </div>
+        )}
       </div>
     </div>
   );
