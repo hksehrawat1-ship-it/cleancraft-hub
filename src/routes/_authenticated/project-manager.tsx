@@ -978,17 +978,24 @@ function StageBlock({
           {stage.items.map((it, idx) => (
             <div
               key={it.id}
-              className="flex items-center justify-between gap-3 border rounded-md p-2 bg-background"
+              className="flex items-start justify-between gap-3 border rounded-md p-2 bg-background"
             >
-              <label className="flex items-center gap-2 cursor-pointer min-w-0">
-                <Checkbox checked={it.done} onCheckedChange={() => onToggleItem(it.id)} />
-                <span className="text-sm truncate">
-                  {/^[A-Za-z]\./.test(it.label) ? it.label : `${index}.${idx + 1} ${it.label}`}
-                </span>
-                {it.important && (
-                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">Important</Badge>
+              <div className="min-w-0 flex-1">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Checkbox checked={it.done} onCheckedChange={() => onToggleItem(it.id)} />
+                  <span className="text-sm truncate">
+                    {/^[A-Za-z]\./.test(it.label) ? it.label : `${index}.${idx + 1} ${it.label}`}
+                  </span>
+                  {it.important && (
+                    <Badge variant="destructive" className="text-[10px] px-1.5 py-0 shrink-0">Important</Badge>
+                  )}
+                </label>
+                {it.note && (
+                  <div className="mt-1.5 ml-6 text-xs text-muted-foreground bg-muted/40 rounded px-2 py-1">
+                    {it.note}
+                  </div>
                 )}
-              </label>
+              </div>
               {it.done && it.at && (
                 <span className="text-[11px] text-emerald-600 tabular-nums shrink-0">{it.at}</span>
               )}
