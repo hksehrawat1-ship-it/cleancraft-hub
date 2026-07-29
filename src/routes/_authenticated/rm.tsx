@@ -788,7 +788,7 @@ function CRMSection() {
           <Card key={t.id}>
             <CardContent className="p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs text-muted-foreground">{t.id}</span>
                     <Badge variant="outline">
@@ -806,7 +806,28 @@ function CRMSection() {
                   {t.remark && (
                     <div className="mt-1 text-xs text-muted-foreground italic">Remark: {t.remark}</div>
                   )}
-                  <div className="mt-1 text-[11px] text-muted-foreground flex items-center gap-1">
+                  <div className="mt-2 space-y-1.5">
+                    <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> Current Status / Progress
+                    </label>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Update current status or progress..."
+                        defaultValue={t.progress || ""}
+                        onBlur={(e) => {
+                          const value = e.target.value.trim();
+                          if (value !== (t.progress || "")) {
+                            setTickets((prev) =>
+                              prev.map((ticket) => (ticket.id === t.id ? { ...ticket, progress: value } : ticket)),
+                            );
+                            toast.success(`Status updated for ${t.id}`);
+                          }
+                        }}
+                        className="text-sm"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-2 text-[11px] text-muted-foreground flex items-center gap-1">
                     <Clock className="h-3 w-3" /> {t.raised}
                   </div>
                 </div>
