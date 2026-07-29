@@ -1439,7 +1439,7 @@ function OnboardStoreSection() {
   const [showManual, setShowManual] = useState(false);
   const [q, setQ] = useState("");
   const [form, setForm] = useState<Partial<OnboardedStore>>({});
-  const fileRef = useState<HTMLInputElement | null>(null);
+  
 
   useEffect(() => {
     const list = loadStores();
