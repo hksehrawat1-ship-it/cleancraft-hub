@@ -178,7 +178,7 @@ const defaultCarpenter = (): SubStage => ({
   items: [
     mkItem("cp-counter", "Reception counter built"),
     mkItem("cp-storage", "Storage cabinets built"),
-    mkItem("cp-partition", "Partitions installed"),
+    { id: "cp-partition", label: "Partitions installed", done: false, note: "A. 15kg stacker Size: L-81\", W-30.5', D-31\" • B. 10kg Stacker Size: L-77', W-27.5', D-30\" • C. 10kg Domas SIZE: L-82\" W-27.5\" D-31\"" },
     mkItem("cp-doors", "Doors & frames fitted"),
   ],
 });
