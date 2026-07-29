@@ -1046,6 +1046,34 @@ function ResourcesSection() {
           </Card>
         ))}
       </div>
+
+      {catalog.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Problem Catalog</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              New problem types raised via CRM tickets. Assign a category to formalise them.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {catalog.map((c) => (
+              <div
+                key={c.ticket}
+                className="flex items-center justify-between border rounded-md p-3 bg-muted/20"
+              >
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{c.name}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    From {c.ticket} · {new Date(c.addedAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <Badge variant="outline">Uncategorised</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }
