@@ -594,19 +594,27 @@ function ProjectManagerDashboard() {
             onSubmit={() => submitStage("painter")}
           />
 
-          {/* 8. Machine order */}
+          {/* 8. Branding */}
+          <StageBlock
+            index="8"
+            stage={selected.branding}
+            onToggleItem={(id) => toggleSubItem("branding", id)}
+            onSubmit={() => submitStage("branding")}
+          />
+
+          {/* 9. Machine order */}
           <SimpleCheckRow
-            label="8. Machine order"
+            label="9. Machine order"
             item={selected.machineOrder}
             onToggle={() => toggleSimple("machineOrder")}
           />
 
 
-          {/* 9. Opening tentative date */}
+          {/* 10. Opening tentative date */}
           <div className="border rounded-lg p-3 bg-muted/10 flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-2">
               <CalendarIcon className="w-4 h-4 text-primary" />
-              <div className="font-medium">9. Opening tentative date</div>
+              <div className="font-medium">10. Opening tentative date</div>
             </div>
             <Popover>
               <PopoverTrigger asChild>
