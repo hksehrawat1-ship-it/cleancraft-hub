@@ -540,7 +540,8 @@ const PROBLEMS = [
   { code: "E", label: "Graphic and Design" },
   { code: "F", label: "Agreements" },
   { code: "G", label: "Owner" },
-  { code: "H", label: "Other" },
+  { code: "H", label: "Logistics & Supply Chain" },
+  { code: "I", label: "Others" },
 ] as const;
 
 const CATALOG_KEY = "rm-problem-catalog";
