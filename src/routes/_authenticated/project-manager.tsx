@@ -155,6 +155,7 @@ const defaultElectric = (): SubStage => ({
 const defaultPlumber = (): SubStage => ({
   id: "plumber",
   label: "Plumber Task",
+  remark: "Height of Water connection should be 2 Ft. from Ground.",
   items: [
     mkItem("pl-drain", "Drainage checked for functionality"),
     mkItem("pl-tank", "Overhead tank installed"),
