@@ -34,7 +34,9 @@ import {
   Upload,
   Search,
   ChevronRight,
+  FileDown,
 } from "lucide-react";
+import rmRolesPdf from "@/assets/rm-roles.pdf.asset.json";
 
 export const Route = createFileRoute("/_authenticated/rm")({
   head: () => ({
@@ -124,6 +126,13 @@ function RolesSection() {
     "Flag red-alert stores to CEO with proposed action plan",
     "Drive month-on-month sales growth across the assigned cluster",
   ];
+  const shareWa = () =>
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(
+        `RM Roles & Responsibilities: ${window.location.origin}${rmRolesPdf.url}`,
+      )}`,
+      "_blank",
+    );
   return (
     <div className="space-y-4">
       <div>
@@ -131,7 +140,51 @@ function RolesSection() {
         <p className="text-sm text-muted-foreground">Your charter as a Relationship Manager.</p>
       </div>
       <Card>
-        <CardContent className="p-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="h-4 w-4 text-primary" /> Official Role Document
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border rounded-md p-3 bg-muted/20">
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">
+                CRM Retention Executive — Clean Craft
+              </div>
+              <div className="text-xs text-muted-foreground">
+                RM.pdf · {(rmRolesPdf.size / 1024).toFixed(0)} KB
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild size="sm" variant="outline">
+                <a href={rmRolesPdf.url} target="_blank" rel="noreferrer">
+                  <FileText className="h-4 w-4 mr-1" /> View
+                </a>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href={rmRolesPdf.url} download="RM-Roles.pdf">
+                  <FileDown className="h-4 w-4 mr-1" /> Download
+                </a>
+              </Button>
+              <Button size="sm" variant="outline" onClick={shareWa}>
+                <MessageSquare className="h-4 w-4 mr-1" /> WhatsApp
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-md overflow-hidden border">
+            <iframe
+              src={rmRolesPdf.url}
+              title="RM Roles & Responsibilities"
+              className="w-full h-[520px] bg-background"
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Quick Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
           <ul className="space-y-3">
             {items.map((t, i) => (
               <li key={i} className="flex gap-3 text-sm">
