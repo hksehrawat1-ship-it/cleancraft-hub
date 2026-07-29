@@ -261,6 +261,7 @@ function storeProgress(store: Store) {
     store.carpenter,
     store.otherEssentials,
     store.painter,
+    store.branding,
   ];
   const subTotal = stages.reduce((a, s) => a + s.items.length, 0);
   const subDone = stages.reduce((a, s) => a + s.items.filter((i) => i.done).length, 0);
