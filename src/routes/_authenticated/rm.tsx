@@ -489,7 +489,9 @@ function StoresSection() {
 /* -------------------- CRM -------------------- */
 type Ticket = {
   id: string;
+  storeCode?: string;
   store: string;
+  owner?: string;
   department: string;
   problem: string;
   customProblem?: string;
@@ -498,6 +500,30 @@ type Ticket = {
   raised: string;
   remark?: string;
 };
+
+// 20 Jaipur stores with pre-assigned codes and owners for quick pick.
+const JAIPUR_STORES: { code: string; name: string; owner: string }[] = [
+  { code: "CC-JPR-01", name: "CC Jaipur - Malviya Nagar", owner: "Rohit Sharma" },
+  { code: "CC-JPR-02", name: "CC Jaipur - Vaishali Nagar", owner: "Neha Verma" },
+  { code: "CC-JPR-03", name: "CC Jaipur - Mansarovar", owner: "Amit Singh" },
+  { code: "CC-JPR-04", name: "CC Jaipur - C-Scheme", owner: "Priya Patel" },
+  { code: "CC-JPR-05", name: "CC Jaipur - Raja Park", owner: "Vikas Rao" },
+  { code: "CC-JPR-06", name: "CC Jaipur - Jagatpura", owner: "Deepa Nair" },
+  { code: "CC-JPR-07", name: "CC Jaipur - Tonk Road", owner: "Arjun Mehta" },
+  { code: "CC-JPR-08", name: "CC Jaipur - Sodala", owner: "Kavya Iyer" },
+  { code: "CC-JPR-09", name: "CC Jaipur - Sanganer", owner: "Sanjay Gupta" },
+  { code: "CC-JPR-10", name: "CC Jaipur - Pratap Nagar", owner: "Ritu Malhotra" },
+  { code: "CC-JPR-11", name: "CC Jaipur - Gopalpura", owner: "Karan Kapoor" },
+  { code: "CC-JPR-12", name: "CC Jaipur - Sirsi Road", owner: "Sneha Joshi" },
+  { code: "CC-JPR-13", name: "CC Jaipur - Jhotwara", owner: "Vivek Bansal" },
+  { code: "CC-JPR-14", name: "CC Jaipur - Vidhyadhar Nagar", owner: "Anjali Desai" },
+  { code: "CC-JPR-15", name: "CC Jaipur - Murlipura", owner: "Rahul Khanna" },
+  { code: "CC-JPR-16", name: "CC Jaipur - Ajmer Road", owner: "Pooja Reddy" },
+  { code: "CC-JPR-17", name: "CC Jaipur - Jawahar Nagar", owner: "Manish Chawla" },
+  { code: "CC-JPR-18", name: "CC Jaipur - Bani Park", owner: "Tanya Bhat" },
+  { code: "CC-JPR-19", name: "CC Jaipur - Civil Lines", owner: "Nikhil Sinha" },
+  { code: "CC-JPR-20", name: "CC Jaipur - Sitapura", owner: "Isha Menon" },
+];
 
 const DEPARTMENTS = [
   "Engineer",
@@ -527,12 +553,28 @@ function CRMSection() {
     { id: "T-1044", store: "CC Indore", department: "Other", problem: "Owner", summary: "Franchise reconciliation query", status: "open", raised: "Yesterday" },
   ]);
   const [newForm, setNewForm] = useState({
+    storeCode: "",
     store: "",
+    owner: "",
     department: "Engineer" as string,
     problem: "Machine" as string,
     customProblem: "",
     summary: "",
   });
+
+  // Auto-fill store name + owner when a known code is entered, and vice-versa.
+  const applyStoreLookup = (patch: Partial<typeof newForm>) => {
+    const next = { ...newForm, ...patch };
+    const byCode = JAIPUR_STORES.find((s) => s.code.toLowerCase() === next.storeCode.trim().toLowerCase());
+    const byName = JAIPUR_STORES.find((s) => s.name.toLowerCase() === next.store.trim().toLowerCase());
+    const match = byCode || byName;
+    if (match) {
+      if (!next.store) next.store = match.name;
+      if (!next.owner) next.owner = match.owner;
+      if (!next.storeCode) next.storeCode = match.code;
+    }
+    setNewForm(next);
+  };
 
   const kpis = {
     open: tickets.filter((t) => t.status === "open").length,
@@ -560,7 +602,9 @@ function CRMSection() {
     setTickets((prev) => [
       {
         id,
+        storeCode: newForm.storeCode.trim() || undefined,
         store: newForm.store,
+        owner: newForm.owner.trim() || undefined,
         department: newForm.department,
         problem: newForm.problem,
         customProblem: isOtherProblem ? newForm.customProblem : undefined,
@@ -587,7 +631,7 @@ function CRMSection() {
       }
     }
 
-    setNewForm({ store: "", department: "Engineer", problem: "Machine", customProblem: "", summary: "" });
+    setNewForm({ storeCode: "", store: "", owner: "", department: "Engineer", problem: "Machine", customProblem: "", summary: "" });
     toast.success("Ticket logged");
   };
 
@@ -629,13 +673,51 @@ function CRMSection() {
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Store</label>
+            <label className="text-xs font-medium text-muted-foreground">Store Code</label>
             <Input
-              placeholder="e.g. CC Jaipur"
-              value={newForm.store}
-              onChange={(e) => setNewForm({ ...newForm, store: e.target.value })}
+              list="rm-store-codes"
+              placeholder="e.g. CC-JPR-01"
+              value={newForm.storeCode}
+              onChange={(e) => applyStoreLookup({ storeCode: e.target.value })}
             />
+            <datalist id="rm-store-codes">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.code} value={s.code}>{`${s.name} — ${s.owner}`}</option>
+              ))}
+            </datalist>
+            <p className="text-[10px] text-muted-foreground">20 Jaipur codes pre-assigned. Pick from the list or type a new one.</p>
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Store Name</label>
+            <Input
+              list="rm-store-names"
+              placeholder="e.g. CC Jaipur - Malviya Nagar"
+              value={newForm.store}
+              onChange={(e) => applyStoreLookup({ store: e.target.value })}
+            />
+            <datalist id="rm-store-names">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.name} value={s.name}>{`${s.code} — ${s.owner}`}</option>
+              ))}
+            </datalist>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Owner Name</label>
+            <Input
+              list="rm-store-owners"
+              placeholder="e.g. Rohit Sharma"
+              value={newForm.owner}
+              onChange={(e) => setNewForm({ ...newForm, owner: e.target.value })}
+            />
+            <datalist id="rm-store-owners">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.owner} value={s.owner}>{`${s.code} — ${s.name}`}</option>
+              ))}
+            </datalist>
+          </div>
+
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Assign to Department</label>
@@ -714,7 +796,9 @@ function CRMSection() {
                     <Badge variant="secondary" className="text-[10px]">
                       → {t.department}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{t.store}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t.storeCode ? `${t.storeCode} · ` : ""}{t.store}{t.owner ? ` · ${t.owner}` : ""}
+                    </span>
                   </div>
                   <div className="mt-1 text-sm">{t.summary}</div>
                   {t.remark && (
