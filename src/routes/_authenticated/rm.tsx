@@ -34,7 +34,9 @@ import {
   Upload,
   Search,
   ChevronRight,
+  FileDown,
 } from "lucide-react";
+import rmRolesPdf from "@/assets/rm-roles.pdf.asset.json";
 
 export const Route = createFileRoute("/_authenticated/rm")({
   head: () => ({
@@ -124,6 +126,13 @@ function RolesSection() {
     "Flag red-alert stores to CEO with proposed action plan",
     "Drive month-on-month sales growth across the assigned cluster",
   ];
+  const shareWa = () =>
+    window.open(
+      `https://wa.me/?text=${encodeURIComponent(
+        `RM Roles & Responsibilities: ${window.location.origin}${rmRolesPdf.url}`,
+      )}`,
+      "_blank",
+    );
   return (
     <div className="space-y-4">
       <div>
@@ -131,7 +140,51 @@ function RolesSection() {
         <p className="text-sm text-muted-foreground">Your charter as a Relationship Manager.</p>
       </div>
       <Card>
-        <CardContent className="p-6">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <FileText className="h-4 w-4 text-primary" /> Official Role Document
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border rounded-md p-3 bg-muted/20">
+            <div className="min-w-0">
+              <div className="text-sm font-medium truncate">
+                CRM Retention Executive — Clean Craft
+              </div>
+              <div className="text-xs text-muted-foreground">
+                RM.pdf · {(rmRolesPdf.size / 1024).toFixed(0)} KB
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild size="sm" variant="outline">
+                <a href={rmRolesPdf.url} target="_blank" rel="noreferrer">
+                  <FileText className="h-4 w-4 mr-1" /> View
+                </a>
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <a href={rmRolesPdf.url} download="RM-Roles.pdf">
+                  <FileDown className="h-4 w-4 mr-1" /> Download
+                </a>
+              </Button>
+              <Button size="sm" variant="outline" onClick={shareWa}>
+                <MessageSquare className="h-4 w-4 mr-1" /> WhatsApp
+              </Button>
+            </div>
+          </div>
+          <div className="rounded-md overflow-hidden border">
+            <iframe
+              src={rmRolesPdf.url}
+              title="RM Roles & Responsibilities"
+              className="w-full h-[520px] bg-background"
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Quick Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
           <ul className="space-y-3">
             {items.map((t, i) => (
               <li key={i} className="flex gap-3 text-sm">
@@ -688,10 +741,107 @@ function ResourcesSection() {
 /* -------------------- SOPs -------------------- */
 function SOPsSection() {
   const sops = [
-    { id: "s1", title: "Weekly Store Health Check", steps: ["Pull weekly sales", "Review complaint log", "Call owner for feedback", "Update health score", "Share summary with CEO"] },
-    { id: "s2", title: "Complaint Resolution SOP", steps: ["Log ticket within 1 hr", "Categorize & assign", "Update owner every 24 hrs", "Close ticket with proof", "Capture root cause"] },
-    { id: "s3", title: "Monthly Business Review", steps: ["Prepare MBR deck", "Share agenda 24 hrs prior", "Conduct call/visit", "Sign off next-month plan", "Log commitments"] },
-    { id: "s4", title: "Red-Alert Escalation", steps: ["Confirm trigger (sales -35% / machine 3d / owner unhappy)", "Draft alert note", "Notify CEO within 2 hrs", "Assign action owner", "Follow up daily till closed"] },
+    {
+      id: "s0",
+      title: "Role Definition & Trigger",
+      steps: [
+        "Role: Maintain franchise partner relationships, resolve operational issues, coordinate support between departments, monitor store performance, and ensure timely assistance post-launch",
+        "Trigger Point: Store opening completed and officially handed over by the Launch & Training Team",
+        "Update the CRM after every interaction",
+      ],
+    },
+    {
+      id: "s1",
+      title: "Responsibility Deliverables",
+      steps: [
+        "A. Customer Retention",
+        "B. Repeat Order Generation",
+        "C. WhatsApp Campaign Execution",
+        "D. Membership & Offer Promotion",
+        "E. Customer Reactivation",
+        "F. Google Review Generation",
+        "G. Machine service coordination",
+        "H. Manpower availability",
+        "I. Marketing coordination with Performance team",
+      ],
+    },
+    {
+      id: "s2",
+      title: "Daily / Weekly / Monthly Checklist",
+      steps: [
+        "Daily: Franchise calls completed, open tickets reviewed, complaints resolved, follow-ups completed",
+        "Weekly: Store reviews conducted, issues closed, escalations resolved",
+        "Monthly: Franchise satisfaction score, ticket closure %, complaint resolution time, store retention %, Google rating improvement, revenue growth of assigned stores",
+        "Welcome call completed → Store marketing plan shared → Issues tracked → Departments coordinated → Monthly review completed → Franchise feedback recorded → CRM updated",
+      ],
+    },
+    {
+      id: "s3",
+      title: "Handover Matrix",
+      steps: [
+        "Coordinate with CRM Retention Team",
+        "Coordinate with BTL Team",
+        "Coordinate with Performance Marketing Team",
+        "Coordinate with Supply Chain & Logistics",
+        "Coordinate with Accounts",
+        "Coordinate with Tech Team",
+        "Coordinate with Management",
+        "Ensure timely support and issue resolution end-to-end",
+      ],
+    },
+    {
+      id: "s4",
+      title: "KRA — Key Result Areas",
+      steps: [
+        "Maintain franchise satisfaction",
+        "Ensure timely issue resolution",
+        "Improve store performance",
+        "Reduce franchise complaints",
+        "Improve franchise retention",
+        "Support long-term store growth",
+      ],
+    },
+    {
+      id: "s5",
+      title: "What NOT To Do",
+      steps: [
+        "Do not promise discounts",
+        "Do not modify agreements",
+        "Do not commit additional manpower beyond policy",
+        "Do not discuss legal matters",
+        "Do not discuss franchise resale or transfer",
+        "Do not ignore complaints or delay escalation",
+        "Do not make commitments without approval",
+        "Do not handle technical issues yourself — coordinate with the concerned department",
+      ],
+    },
+    {
+      id: "s6",
+      title: "Escalation Matrix",
+      steps: [
+        "Franchise partner threatens closure",
+        "Legal dispute",
+        "Repeated customer complaints",
+        "Serious machine breakdown",
+        "Store revenue decline for multiple months",
+        "Franchise partner dissatisfaction",
+        "Social media reputation issue",
+        "Manpower crisis affecting operations",
+      ],
+    },
+    {
+      id: "s7",
+      title: "Successful RM Principles",
+      steps: [
+        "Own the problem",
+        "Coordinate the right department",
+        "Ensure timely resolution",
+        "Build trust with franchise partners",
+        "Support store growth",
+        "Protect franchise relationships",
+        'Outcome: Every partner should feel — "Whenever I need help, Clean Craft responds quickly and stands with me to solve the problem."',
+      ],
+    },
   ];
   return (
     <div className="space-y-4">
