@@ -586,20 +586,20 @@ function ProjectManagerDashboard() {
             onSubmit={() => submitStage("otherEssentials")}
           />
 
-          {/* 7. Painter */}
+          {/* 7. Branding */}
           <StageBlock
             index="7"
-            stage={selected.painter}
-            onToggleItem={(id) => toggleSubItem("painter", id)}
-            onSubmit={() => submitStage("painter")}
-          />
-
-          {/* 8. Branding */}
-          <StageBlock
-            index="8"
             stage={selected.branding}
             onToggleItem={(id) => toggleSubItem("branding", id)}
             onSubmit={() => submitStage("branding")}
+          />
+
+          {/* 8. Painter */}
+          <StageBlock
+            index="8"
+            stage={selected.painter}
+            onToggleItem={(id) => toggleSubItem("painter", id)}
+            onSubmit={() => submitStage("painter")}
           />
 
           {/* 9. Machine order */}
