@@ -187,24 +187,31 @@ const defaultOtherEssentials = (): SubStage => ({
   id: "other-essentials",
   label: "Other Essentials Task",
   items: [
-    mkItem("oe-signage", "Signage / Sign board installed"),
-    mkItem("oe-cctv", "CCTV cameras installed & tested"),
-    mkItem("oe-wifi", "Wi-Fi / Internet connection active"),
-    mkItem("oe-pos", "POS system & printer installed"),
-    mkItem("oe-firesafety", "Fire extinguisher & first-aid kit placed"),
-    mkItem("oe-housekeeping", "Housekeeping & cleaning essentials"),
-    mkItem("oe-furniture", "Furniture placed as per layout"),
+    mkItem("oe-rod", "Steel hanging rod installed"),
+    mkItem("oe-exhaust", "Back/Front Exhaust installed"),
   ],
 });
 
 const defaultPainter = (): SubStage => ({
   id: "painter",
   label: "Painter Task",
+  remark:
+    "White Colour Code: L 143 Asian • Back: Actual Black • Grey: K296 Asian",
   items: [
-    mkItem("pt-primer", "Primer coat applied"),
-    mkItem("pt-base", "Base coat applied"),
-    mkItem("pt-final", "Final coat applied"),
-    mkItem("pt-branding", "Brand colors & wall graphics"),
+    mkItem("pt-shutter", "Shutter painted"),
+    mkItem("pt-wall", "Wall painted"),
+  ],
+});
+
+const defaultBranding = (): SubStage => ({
+  id: "branding",
+  label: "Branding",
+  items: [
+    mkItem("br-banner", "A. Banner Installed"),
+    mkItem("br-counter-wall", "B. Counter wall branding"),
+    mkItem("br-counter-opp", "C. Counter Opposite wall branding"),
+    mkItem("br-glass", "D. Glass Branding"),
+    mkItem("br-partition", "E. Partition Wall Branding"),
   ],
 });
 
