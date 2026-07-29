@@ -1013,6 +1013,7 @@ function StageBlock({
             </Button>
             {stage.id === "electric" && <ElectricSpecsDialog />}
             {stage.id === "plumber" && <PlumberSpecsDialog />}
+            {stage.id === "carpenter" && <CarpenterSpecsDialog />}
           </div>
         </div>
       )}
@@ -1968,6 +1969,63 @@ function PlumberSpecsDialog() {
               {notes.map((n, i) => <li key={i}>{n}</li>)}
             </ul>
           </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+import receptionCounterSpec from "@/assets/reception-counter-spec.png.asset.json";
+
+function CarpenterSpecsDialog() {
+  const shareOnWhatsApp = () => {
+    const text = encodeURIComponent(
+      [
+        "*Carpenter Specifications — Reception Counter*",
+        "",
+        "Overall Size (L x D x H): 60\" x 48\" x 42\"",
+        "Main Counter Height: 42\" | Worktop Height: 30\" | Worktop Depth: 24\"",
+        "Transaction Shelf: 9\" depth, 12\" height",
+        "Cabinet Shelf: 6\" depth, 20\" height | Toe Kick: 3\"",
+        "",
+        "Material: 18mm Plywood; Laminate finish (White + Black)",
+        "Edge Banding: 1mm PVC | Front Panel: Black Gloss Laminate",
+        "",
+        "Notes: Internal corners edge-banded. Grommet hole for cable management.",
+        "Plumbing: Cold water inlet at bottom left (if required).",
+        "Tolerance ± 0.5 inch.",
+        "",
+        `Drawing: ${window.location.origin}${receptionCounterSpec.url}`,
+      ].join("\n")
+    );
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline">View Specifications</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Carpenter Specifications — Reception Counter</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button size="sm" onClick={shareOnWhatsApp} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              <MessageCircle className="w-4 h-4 mr-1.5" /> Share on WhatsApp
+            </Button>
+          </div>
+          <div className="border rounded-md overflow-hidden bg-white">
+            <img
+              src={receptionCounterSpec.url}
+              alt="Reception Counter Specifications"
+              className="w-full h-auto"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">
+            All dimensions are in inches. Tolerance ± 0.5 inch. Verify on site before fabrication.
+          </p>
         </div>
       </DialogContent>
     </Dialog>
