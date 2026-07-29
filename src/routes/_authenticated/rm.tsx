@@ -36,7 +36,7 @@ import {
   ChevronRight,
   FileDown,
 } from "lucide-react";
-import rmRolesPdf from "@/assets/rm-roles.pdf.asset.json";
+import rmRolesPdf from "@/assets/rm-2-roles.pdf.asset.json";
 
 export const Route = createFileRoute("/_authenticated/rm")({
   head: () => ({
