@@ -673,13 +673,51 @@ function CRMSection() {
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Store</label>
+            <label className="text-xs font-medium text-muted-foreground">Store Code</label>
             <Input
-              placeholder="e.g. CC Jaipur"
-              value={newForm.store}
-              onChange={(e) => setNewForm({ ...newForm, store: e.target.value })}
+              list="rm-store-codes"
+              placeholder="e.g. CC-JPR-01"
+              value={newForm.storeCode}
+              onChange={(e) => applyStoreLookup({ storeCode: e.target.value })}
             />
+            <datalist id="rm-store-codes">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.code} value={s.code}>{`${s.name} — ${s.owner}`}</option>
+              ))}
+            </datalist>
+            <p className="text-[10px] text-muted-foreground">20 Jaipur codes pre-assigned. Pick from the list or type a new one.</p>
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Store Name</label>
+            <Input
+              list="rm-store-names"
+              placeholder="e.g. CC Jaipur - Malviya Nagar"
+              value={newForm.store}
+              onChange={(e) => applyStoreLookup({ store: e.target.value })}
+            />
+            <datalist id="rm-store-names">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.name} value={s.name}>{`${s.code} — ${s.owner}`}</option>
+              ))}
+            </datalist>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Owner Name</label>
+            <Input
+              list="rm-store-owners"
+              placeholder="e.g. Rohit Sharma"
+              value={newForm.owner}
+              onChange={(e) => setNewForm({ ...newForm, owner: e.target.value })}
+            />
+            <datalist id="rm-store-owners">
+              {JAIPUR_STORES.map((s) => (
+                <option key={s.owner} value={s.owner}>{`${s.code} — ${s.name}`}</option>
+              ))}
+            </datalist>
+          </div>
+
 
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Assign to Department</label>
