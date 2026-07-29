@@ -721,22 +721,6 @@ function CRMSection() {
 
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Assign to Department</label>
-            <Select value={newForm.department} onValueChange={(v) => setNewForm({ ...newForm, department: v })}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {DEPARTMENTS.map((d) => (
-                  <SelectItem key={d} value={d}>
-                    {d}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Problem/Query</label>
             <Select value={newForm.problem} onValueChange={(v) => setNewForm({ ...newForm, problem: v })}>
               <SelectTrigger>
@@ -746,6 +730,22 @@ function CRMSection() {
                 {PROBLEMS.map((p) => (
                   <SelectItem key={p.label} value={p.label}>
                     {p.code}. {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Assign to Department</label>
+            <Select value={newForm.department} onValueChange={(v) => setNewForm({ ...newForm, department: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DEPARTMENTS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
                   </SelectItem>
                 ))}
               </SelectContent>
