@@ -1657,7 +1657,6 @@ function OnboardStoreSection() {
           </CardHeader>
           <CardContent>
             <Input
-              ref={(el) => (fileRef[1](el), undefined)}
               type="file"
               accept=".xlsx,.xls"
               onChange={(e) => {
