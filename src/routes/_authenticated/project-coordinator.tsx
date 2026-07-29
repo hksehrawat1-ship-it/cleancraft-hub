@@ -1400,6 +1400,11 @@ function RolesSection() {
 
 const TASK_GROUPS: { key: string; title: string; items: string[] }[] = [
   {
+    key: "layout",
+    title: "Layout",
+    items: ["2D layout submitted", "2D Layout approved"],
+  },
+  {
     key: "agreements",
     title: "A. Agreements",
     items: [
