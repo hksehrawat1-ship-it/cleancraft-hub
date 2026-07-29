@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -490,21 +490,49 @@ function StoresSection() {
 type Ticket = {
   id: string;
   store: string;
-  category: string;
+  department: string;
+  problem: string;
+  customProblem?: string;
   summary: string;
   status: "open" | "in_progress" | "resolved";
   raised: string;
   remark?: string;
 };
 
+const DEPARTMENTS = [
+  "Engineer",
+  "Performance Marketing Executive",
+  "Training & Manpower Centre",
+  "Other",
+] as const;
+
+const PROBLEMS = [
+  { code: "A", label: "Machine" },
+  { code: "B", label: "Manpower" },
+  { code: "C", label: "Marketing" },
+  { code: "D", label: "POS" },
+  { code: "E", label: "Graphic and Design" },
+  { code: "F", label: "Agreements" },
+  { code: "G", label: "Owner" },
+  { code: "H", label: "Other" },
+] as const;
+
+const CATALOG_KEY = "rm-problem-catalog";
+
 function CRMSection() {
   const [tickets, setTickets] = useState<Ticket[]>([
-    { id: "T-1041", store: "CC Surat", category: "Machine", summary: "Dryer 15kg not heating", status: "in_progress", raised: "Today, 10:12" },
-    { id: "T-1042", store: "CC Kanpur", category: "Manpower", summary: "Rider absent, need backup", status: "open", raised: "Today, 09:30" },
-    { id: "T-1043", store: "CC Lucknow", category: "POS", summary: "Bill printer paper jam", status: "resolved", raised: "Yesterday", remark: "Guided owner over call" },
-    { id: "T-1044", store: "CC Indore", category: "Owner", summary: "Franchise reconciliation query", status: "open", raised: "Yesterday" },
+    { id: "T-1041", store: "CC Surat", department: "Engineer", problem: "Machine", summary: "Dryer 15kg not heating", status: "in_progress", raised: "Today, 10:12" },
+    { id: "T-1042", store: "CC Kanpur", department: "Training & Manpower Centre", problem: "Manpower", summary: "Rider absent, need backup", status: "open", raised: "Today, 09:30" },
+    { id: "T-1043", store: "CC Lucknow", department: "Engineer", problem: "POS", summary: "Bill printer paper jam", status: "resolved", raised: "Yesterday", remark: "Guided owner over call" },
+    { id: "T-1044", store: "CC Indore", department: "Other", problem: "Owner", summary: "Franchise reconciliation query", status: "open", raised: "Yesterday" },
   ]);
-  const [newForm, setNewForm] = useState({ store: "", category: "Machine", summary: "" });
+  const [newForm, setNewForm] = useState({
+    store: "",
+    department: "Engineer" as string,
+    problem: "Machine" as string,
+    customProblem: "",
+    summary: "",
+  });
 
   const kpis = {
     open: tickets.filter((t) => t.status === "open").length,
@@ -522,12 +550,44 @@ function CRMSection() {
       toast.error("Store and summary are required");
       return;
     }
+    const isOtherProblem = newForm.problem === "Other";
+    if (isOtherProblem && !newForm.customProblem.trim()) {
+      toast.error("Describe the new problem so we can catalogue it");
+      return;
+    }
+
     const id = `T-${1050 + tickets.length}`;
     setTickets((prev) => [
-      { id, ...newForm, status: "open", raised: "Just now" },
+      {
+        id,
+        store: newForm.store,
+        department: newForm.department,
+        problem: newForm.problem,
+        customProblem: isOtherProblem ? newForm.customProblem : undefined,
+        summary: newForm.summary,
+        status: "open",
+        raised: "Just now",
+      },
       ...prev,
     ]);
-    setNewForm({ store: "", category: "Machine", summary: "" });
+
+    if (isOtherProblem) {
+      try {
+        const existing: { name: string; addedAt: string; ticket: string }[] = JSON.parse(
+          localStorage.getItem(CATALOG_KEY) || "[]",
+        );
+        const name = newForm.customProblem.trim();
+        if (!existing.some((e) => e.name.toLowerCase() === name.toLowerCase())) {
+          existing.unshift({ name, addedAt: new Date().toISOString(), ticket: id });
+          localStorage.setItem(CATALOG_KEY, JSON.stringify(existing));
+          toast.success("New problem catalogued in Resources");
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    setNewForm({ store: "", department: "Engineer", problem: "Machine", customProblem: "", summary: "" });
     toast.success("Ticket logged");
   };
 
@@ -535,7 +595,9 @@ function CRMSection() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">CRM</h1>
-        <p className="text-sm text-muted-foreground">Complaint & request tracking across your stores.</p>
+        <p className="text-sm text-muted-foreground">
+          Raise tickets to departments. New problem types are auto-catalogued in Resources.
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -565,33 +627,75 @@ function CRMSection() {
             <Plus className="h-4 w-4" /> Log New Ticket
           </CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-4">
-          <Input
-            placeholder="Store"
-            value={newForm.store}
-            onChange={(e) => setNewForm({ ...newForm, store: e.target.value })}
-          />
-          <Select value={newForm.category} onValueChange={(v) => setNewForm({ ...newForm, category: v })}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {["Machine", "Manpower", "POS", "Owner", "Marketing", "Other"].map((c) => (
-                <SelectItem key={c} value={c}>
-                  {c}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Input
-            className="sm:col-span-2"
-            placeholder="Summary"
-            value={newForm.summary}
-            onChange={(e) => setNewForm({ ...newForm, summary: e.target.value })}
-          />
-          <Button onClick={addTicket} className="sm:col-span-4 w-fit">
-            Add Ticket
-          </Button>
+        <CardContent className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Store</label>
+            <Input
+              placeholder="e.g. CC Jaipur"
+              value={newForm.store}
+              onChange={(e) => setNewForm({ ...newForm, store: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Assign to Department</label>
+            <Select value={newForm.department} onValueChange={(v) => setNewForm({ ...newForm, department: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DEPARTMENTS.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground">Problem</label>
+            <Select value={newForm.problem} onValueChange={(v) => setNewForm({ ...newForm, problem: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROBLEMS.map((p) => (
+                  <SelectItem key={p.label} value={p.label}>
+                    {p.code}. {p.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {newForm.problem === "Other" && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">
+                New Problem (auto-catalogued in Resources)
+              </label>
+              <Input
+                placeholder="Name the new problem type"
+                value={newForm.customProblem}
+                onChange={(e) => setNewForm({ ...newForm, customProblem: e.target.value })}
+              />
+            </div>
+          )}
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <label className="text-xs font-medium text-muted-foreground">Summary</label>
+            <Input
+              placeholder="Describe the issue"
+              value={newForm.summary}
+              onChange={(e) => setNewForm({ ...newForm, summary: e.target.value })}
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <Button onClick={addTicket} className="w-fit">
+              Raise Ticket
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -603,7 +707,13 @@ function CRMSection() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs text-muted-foreground">{t.id}</span>
-                    <Badge variant="outline">{t.category}</Badge>
+                    <Badge variant="outline">
+                      {t.problem}
+                      {t.customProblem ? `: ${t.customProblem}` : ""}
+                    </Badge>
+                    <Badge variant="secondary" className="text-[10px]">
+                      → {t.department}
+                    </Badge>
                     <span className="text-xs text-muted-foreground">{t.store}</span>
                   </div>
                   <div className="mt-1 text-sm">{t.summary}</div>
@@ -647,6 +757,7 @@ function CRMSection() {
     </div>
   );
 }
+
 
 /* -------------------- Mind & Task -------------------- */
 type Task = { id: string; title: string; due: string; done: boolean; note?: string };
@@ -870,6 +981,16 @@ function ResourcesSection() {
     { id: "r3", name: "Complaint SLA Guide.pdf", category: "Playbooks" },
     { id: "r4", name: "Machine Troubleshooting Quick Sheet.pdf", category: "Reference" },
   ]);
+  const [catalog, setCatalog] = useState<{ name: string; addedAt: string; ticket: string }[]>([]);
+
+  useEffect(() => {
+    try {
+      setCatalog(JSON.parse(localStorage.getItem("rm-problem-catalog") || "[]"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -925,6 +1046,34 @@ function ResourcesSection() {
           </Card>
         ))}
       </div>
+
+      {catalog.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Problem Catalog</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              New problem types raised via CRM tickets. Assign a category to formalise them.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {catalog.map((c) => (
+              <div
+                key={c.ticket}
+                className="flex items-center justify-between border rounded-md p-3 bg-muted/20"
+              >
+                <div className="min-w-0">
+                  <div className="text-sm font-medium truncate">{c.name}</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    From {c.ticket} · {new Date(c.addedAt).toLocaleDateString()}
+                  </div>
+                </div>
+                <Badge variant="outline">Uncategorised</Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
     </div>
   );
 }
