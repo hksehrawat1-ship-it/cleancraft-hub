@@ -602,7 +602,9 @@ function CRMSection() {
     setTickets((prev) => [
       {
         id,
+        storeCode: newForm.storeCode.trim() || undefined,
         store: newForm.store,
+        owner: newForm.owner.trim() || undefined,
         department: newForm.department,
         problem: newForm.problem,
         customProblem: isOtherProblem ? newForm.customProblem : undefined,
@@ -629,7 +631,7 @@ function CRMSection() {
       }
     }
 
-    setNewForm({ store: "", department: "Engineer", problem: "Machine", customProblem: "", summary: "" });
+    setNewForm({ storeCode: "", store: "", owner: "", department: "Engineer", problem: "Machine", customProblem: "", summary: "" });
     toast.success("Ticket logged");
   };
 
