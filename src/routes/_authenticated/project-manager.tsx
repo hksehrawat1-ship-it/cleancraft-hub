@@ -118,7 +118,7 @@ const defaultInfra = (): SubStage => ({
     mkItem("in-cable", "10 mm cable from pole to shop"),
     mkItem("in-glass", "Glass work"),
     mkItem("in-tile", "Tile work"),
-    mkItem("in-exhaust", "Exhaust work"),
+    mkItem("in-exhaust", "Ducting"),
   ],
 });
 
