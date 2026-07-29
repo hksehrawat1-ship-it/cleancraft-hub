@@ -127,7 +127,7 @@ const defaultElectric = (): SubStage => ({
   remark: "From the pole to the shop, 10 mm copper wire and from the main Board, parallel wiring of 6 mm copper wire is compulsory.",
   note: "Height of MCB should be 3.5 ft from floor.",
   items: [
-    mkItem("el-load", "Load sanction approved"),
+    mkItem("el-load", "13 Kw Load sanction approved"),
     mkItem("el-wiring", "Internal wiring complete"),
     mkItem("el-earthing", "Earthing done"),
     mkItem("el-mccb", "MCCB installed"),
