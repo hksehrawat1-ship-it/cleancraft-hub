@@ -92,6 +92,7 @@ type Store = {
   carpenter: SubStage;
   otherEssentials: SubStage;
   painter: SubStage;
+  branding: SubStage;
   // Simple checkboxes
   machineOrder: CheckItem;
   engineerAligned: CheckItem;
