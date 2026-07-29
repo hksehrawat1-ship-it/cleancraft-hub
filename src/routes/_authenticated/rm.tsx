@@ -110,6 +110,7 @@ function RMDashboard() {
 
       <main className="flex-1 p-6 overflow-auto">
         {active === "roles" && <RolesSection />}
+        {active === "onboard" && <OnboardStoreSection />}
         {active === "stores" && <StoresSection />}
         {active === "crm" && <CRMSection />}
         {active === "mind" && <MindSection />}
