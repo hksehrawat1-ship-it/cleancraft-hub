@@ -540,7 +540,8 @@ const PROBLEMS = [
   { code: "E", label: "Graphic and Design" },
   { code: "F", label: "Agreements" },
   { code: "G", label: "Owner" },
-  { code: "H", label: "Other" },
+  { code: "H", label: "Logistics & Supply Chain" },
+  { code: "I", label: "Others" },
 ] as const;
 
 const CATALOG_KEY = "rm-problem-catalog";
@@ -592,7 +593,7 @@ function CRMSection() {
       toast.error("Store and summary are required");
       return;
     }
-    const isOtherProblem = newForm.problem === "Other";
+    const isOtherProblem = newForm.problem === "Others";
     if (isOtherProblem && !newForm.customProblem.trim()) {
       toast.error("Describe the new problem so we can catalogue it");
       return;
@@ -736,7 +737,7 @@ function CRMSection() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Problem</label>
+            <label className="text-xs font-medium text-muted-foreground">Problem/Query</label>
             <Select value={newForm.problem} onValueChange={(v) => setNewForm({ ...newForm, problem: v })}>
               <SelectTrigger>
                 <SelectValue />
@@ -751,7 +752,7 @@ function CRMSection() {
             </Select>
           </div>
 
-          {newForm.problem === "Other" && (
+          {newForm.problem === "Others" && (
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-muted-foreground">
                 New Problem (auto-catalogued in Resources)
