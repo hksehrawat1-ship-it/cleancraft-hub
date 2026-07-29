@@ -796,7 +796,9 @@ function CRMSection() {
                     <Badge variant="secondary" className="text-[10px]">
                       → {t.department}
                     </Badge>
-                    <span className="text-xs text-muted-foreground">{t.store}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {t.storeCode ? `${t.storeCode} · ` : ""}{t.store}{t.owner ? ` · ${t.owner}` : ""}
+                    </span>
                   </div>
                   <div className="mt-1 text-sm">{t.summary}</div>
                   {t.remark && (
