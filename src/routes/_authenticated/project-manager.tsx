@@ -1013,6 +1013,7 @@ function StageBlock({
             </Button>
             {stage.id === "electric" && <ElectricSpecsDialog />}
             {stage.id === "plumber" && <PlumberSpecsDialog />}
+            {stage.id === "carpenter" && <CarpenterSpecsDialog />}
           </div>
         </div>
       )}
