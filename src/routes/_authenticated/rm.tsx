@@ -981,6 +981,16 @@ function ResourcesSection() {
     { id: "r3", name: "Complaint SLA Guide.pdf", category: "Playbooks" },
     { id: "r4", name: "Machine Troubleshooting Quick Sheet.pdf", category: "Reference" },
   ]);
+  const [catalog, setCatalog] = useState<{ name: string; addedAt: string; ticket: string }[]>([]);
+
+  useEffect(() => {
+    try {
+      setCatalog(JSON.parse(localStorage.getItem("rm-problem-catalog") || "[]"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
 
   const onUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
