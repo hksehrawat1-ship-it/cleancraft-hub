@@ -553,12 +553,28 @@ function CRMSection() {
     { id: "T-1044", store: "CC Indore", department: "Other", problem: "Owner", summary: "Franchise reconciliation query", status: "open", raised: "Yesterday" },
   ]);
   const [newForm, setNewForm] = useState({
+    storeCode: "",
     store: "",
+    owner: "",
     department: "Engineer" as string,
     problem: "Machine" as string,
     customProblem: "",
     summary: "",
   });
+
+  // Auto-fill store name + owner when a known code is entered, and vice-versa.
+  const applyStoreLookup = (patch: Partial<typeof newForm>) => {
+    const next = { ...newForm, ...patch };
+    const byCode = JAIPUR_STORES.find((s) => s.code.toLowerCase() === next.storeCode.trim().toLowerCase());
+    const byName = JAIPUR_STORES.find((s) => s.name.toLowerCase() === next.store.trim().toLowerCase());
+    const match = byCode || byName;
+    if (match) {
+      if (!next.store) next.store = match.name;
+      if (!next.owner) next.owner = match.owner;
+      if (!next.storeCode) next.storeCode = match.code;
+    }
+    setNewForm(next);
+  };
 
   const kpis = {
     open: tickets.filter((t) => t.status === "open").length,
