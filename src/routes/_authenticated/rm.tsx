@@ -499,6 +499,7 @@ type Ticket = {
   status: "open" | "in_progress" | "resolved";
   raised: string;
   remark?: string;
+  progress?: string;
 };
 
 // 20 Jaipur stores with pre-assigned codes and owners for quick pick.
