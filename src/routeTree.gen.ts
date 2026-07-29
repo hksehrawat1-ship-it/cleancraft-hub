@@ -19,6 +19,7 @@ import { Route as AuthenticatedTlRouteImport } from './routes/_authenticated/tl'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedSalesCmsRouteImport } from './routes/_authenticated/sales-cms'
+import { Route as AuthenticatedRmRouteImport } from './routes/_authenticated/rm'
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as AuthenticatedProjectManagerRouteImport } from './routes/_authenticated/project-manager'
 import { Route as AuthenticatedProjectCoordinatorRouteImport } from './routes/_authenticated/project-coordinator'
@@ -83,6 +84,11 @@ const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
 const AuthenticatedSalesCmsRoute = AuthenticatedSalesCmsRouteImport.update({
   id: '/sales-cms',
   path: '/sales-cms',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRmRoute = AuthenticatedRmRouteImport.update({
+  id: '/rm',
+  path: '/rm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProjectsRoute = AuthenticatedProjectsRouteImport.update({
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/projects': typeof AuthenticatedProjectsRoute
+  '/rm': typeof AuthenticatedRmRoute
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
   '/project-manager': typeof AuthenticatedProjectManagerRoute
   '/projects': typeof AuthenticatedProjectsRoute
+  '/rm': typeof AuthenticatedRmRoute
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -237,6 +245,7 @@ export interface FileRoutesById {
   '/_authenticated/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
   '/_authenticated/project-manager': typeof AuthenticatedProjectManagerRoute
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
+  '/_authenticated/rm': typeof AuthenticatedRmRoute
   '/_authenticated/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
@@ -265,6 +274,7 @@ export interface FileRouteTypes {
     | '/project-coordinator'
     | '/project-manager'
     | '/projects'
+    | '/rm'
     | '/sales-cms'
     | '/stores'
     | '/tasks'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/project-coordinator'
     | '/project-manager'
     | '/projects'
+    | '/rm'
     | '/sales-cms'
     | '/stores'
     | '/tasks'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/_authenticated/project-coordinator'
     | '/_authenticated/project-manager'
     | '/_authenticated/projects'
+    | '/_authenticated/rm'
     | '/_authenticated/sales-cms'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
@@ -408,6 +420,13 @@ declare module '@tanstack/react-router' {
       path: '/sales-cms'
       fullPath: '/sales-cms'
       preLoaderRoute: typeof AuthenticatedSalesCmsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/rm': {
+      id: '/_authenticated/rm'
+      path: '/rm'
+      fullPath: '/rm'
+      preLoaderRoute: typeof AuthenticatedRmRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/projects': {
@@ -530,6 +549,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectCoordinatorRoute: typeof AuthenticatedProjectCoordinatorRoute
   AuthenticatedProjectManagerRoute: typeof AuthenticatedProjectManagerRoute
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
+  AuthenticatedRmRoute: typeof AuthenticatedRmRoute
   AuthenticatedSalesCmsRoute: typeof AuthenticatedSalesCmsRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
@@ -551,6 +571,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectCoordinatorRoute: AuthenticatedProjectCoordinatorRoute,
   AuthenticatedProjectManagerRoute: AuthenticatedProjectManagerRoute,
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
+  AuthenticatedRmRoute: AuthenticatedRmRoute,
   AuthenticatedSalesCmsRoute: AuthenticatedSalesCmsRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
