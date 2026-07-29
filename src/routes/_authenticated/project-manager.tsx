@@ -169,6 +169,7 @@ const defaultPlumber = (): SubStage => ({
     mkItem("pl-d-duct10", "D. Duct for LG Dryer 10 kg"),
     mkItem("pl-e-duct15", "E. Duct for LG Dryer 15 kg"),
     mkItem("pl-f-boiler", "F. Point for Boiler"),
+    { id: "pl-g-drain", label: "G. Draing for Washer Installed", done: false, note: "Drain Point should be 2ft away from the Wahers" },
   ],
 });
 
