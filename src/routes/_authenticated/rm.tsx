@@ -55,6 +55,7 @@ export const Route = createFileRoute("/_authenticated/rm")({
 
 type SectionKey =
   | "roles"
+  | "onboard"
   | "stores"
   | "crm"
   | "mind"
@@ -65,6 +66,7 @@ type SectionKey =
 
 const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "roles", label: "Roles & Responsibilities", icon: UserCircle2 },
+  { key: "onboard", label: "On-board Store", icon: Building2 },
   { key: "stores", label: "Stores Status", icon: Store },
   { key: "crm", label: "CRM", icon: Headphones },
   { key: "mind", label: "Mind & Task", icon: Brain },
