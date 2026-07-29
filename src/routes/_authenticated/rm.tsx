@@ -35,12 +35,7 @@ import {
   Search,
   ChevronRight,
   FileDown,
-  Building2,
-  FileSpreadsheet,
-  Copy,
-  Trash2,
 } from "lucide-react";
-import * as XLSX from "xlsx";
 import rmRolesPdf from "@/assets/rm-2-roles.pdf.asset.json";
 
 export const Route = createFileRoute("/_authenticated/rm")({
@@ -55,7 +50,6 @@ export const Route = createFileRoute("/_authenticated/rm")({
 
 type SectionKey =
   | "roles"
-  | "onboard"
   | "stores"
   | "crm"
   | "mind"
@@ -66,7 +60,6 @@ type SectionKey =
 
 const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "roles", label: "Roles & Responsibilities", icon: UserCircle2 },
-  { key: "onboard", label: "On-board Store", icon: Building2 },
   { key: "stores", label: "Stores Status", icon: Store },
   { key: "crm", label: "CRM", icon: Headphones },
   { key: "mind", label: "Mind & Task", icon: Brain },
@@ -110,7 +103,6 @@ function RMDashboard() {
 
       <main className="flex-1 p-6 overflow-auto">
         {active === "roles" && <RolesSection />}
-        {active === "onboard" && <OnboardStoreSection />}
         {active === "stores" && <StoresSection />}
         {active === "crm" && <CRMSection />}
         {active === "mind" && <MindSection />}
