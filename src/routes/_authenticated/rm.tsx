@@ -1704,7 +1704,7 @@ function OnboardStoreSection() {
               ["inchargeName", "Store Incharge Name"],
               ["inchargeMobile", "Incharge Mobile"],
               ["gmail", "Gmail ID"],
-              ["softwareUser", "Fabklean Software User"],
+              ["softwareUser", "POS user ID"],
             ].map(([k, label, type]) => (
               <div key={k as string}>
                 <label className="text-xs text-muted-foreground">{label}</label>
