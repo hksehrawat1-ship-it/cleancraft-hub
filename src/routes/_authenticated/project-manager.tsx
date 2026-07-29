@@ -208,7 +208,7 @@ const defaultBranding = (): SubStage => ({
   id: "branding",
   label: "Branding",
   items: [
-    mkItem("br-banner", "A. Banner Installed"),
+    mkItem("br-signboard", "A. Sign Board installed"),
     mkItem("br-counter-wall", "B. Counter wall branding"),
     mkItem("br-counter-opp", "C. Counter Opposite wall branding"),
     mkItem("br-glass", "D. Glass Branding"),
