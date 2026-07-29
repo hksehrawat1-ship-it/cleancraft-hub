@@ -234,6 +234,7 @@ const makeStore = (
   carpenter: defaultCarpenter(),
   otherEssentials: defaultOtherEssentials(),
   painter: defaultPainter(),
+  branding: defaultBranding(),
   machineOrder: mkItem("machine-order", "Machine order"),
   engineerAligned: mkItem("engineer-aligned", "Engineer aligned"),
 });
