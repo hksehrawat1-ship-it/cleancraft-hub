@@ -126,7 +126,7 @@ const defaultElectric = (): SubStage => ({
   id: "electric",
   label: "Electric Task",
   remark: "From the pole to the shop, 10 mm copper wire and from the main Board, parallel wiring of 6 mm copper wire is compulsory.",
-  note: "Height of MCB should be 3.5 ft from floor.",
+  note: "Height of MCB should be 4 ft from floor.",
   items: [
     mkItem("el-load", "13 Kw Load sanction approved"),
     mkItem("el-wiring", "Internal wiring complete"),
@@ -1810,7 +1810,7 @@ function ElectricSpecsDialog() {
 
   const notes = [
     "From the pole to the shop, 10 mm copper wire and from the main board, parallel wiring of 6 mm copper wire is compulsory.",
-    "Height of MCB should be 3.5 ft from floor.",
+    "Height of MCB should be 4 ft from floor.",
     "Earthing: Dedicated earth pit with < 1 Ω resistance.",
     "Servo stabilizer is mandatory and sized to sanctioned load.",
   ];
