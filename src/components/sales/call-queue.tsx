@@ -567,6 +567,7 @@ function CallWorkspace({
   const needsDateTime = outcome === "Call Later";
 
   function submit() {
+    if (!lead) return;
     if (!outcome) { toast.error("Select a call outcome before saving."); return; }
     if (connected && !notes.trim()) { toast.error("Connected calls must include notes."); return; }
     if (outcome === "Not Interested" && !lostReason) { toast.error("Select a reason before marking the lead Lost."); return; }
