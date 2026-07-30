@@ -139,9 +139,9 @@ export function SalesDashboard({ salespersonName }: { salespersonName: string })
         ))}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid gap-6 2xl:grid-cols-3">
         {/* Next best actions */}
-        <Card className="xl:col-span-2">
+        <Card className="2xl:col-span-2">
           <CardContent className="p-4 sm:p-5">
             <SectionHead title="Next Best Actions" subtitle="Five most urgent leads right now" />
             <div className="mt-3 space-y-2">
@@ -209,9 +209,9 @@ export function SalesDashboard({ salespersonName }: { salespersonName: string })
         </Card>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid gap-6 2xl:grid-cols-3">
         {/* Pipeline */}
-        <Card className="xl:col-span-2">
+        <Card className="2xl:col-span-2">
           <CardContent className="p-4 sm:p-5">
             <SectionHead title="Sales Pipeline Summary" subtitle="Lead count and value by stage" />
             <div className="mt-3 space-y-3">
