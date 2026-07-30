@@ -63,7 +63,7 @@ import { SalesPipeline } from "@/components/sales/pipeline";
 import { Meetings } from "@/components/sales/meetings";
 import { LeadDialog, classificationVariant, type Lead } from "./leads";
 
-export const Route = createFileRoute("/_authenticated/my-sales")({
+export const Route = createFileRoute("/_authenticated/sales-executive")({
   head: () => ({ meta: [{ title: "Franchise Sales Operating Dashboard — Clean Craft OS" }] }),
   component: SalesOpsDashboard,
 });
