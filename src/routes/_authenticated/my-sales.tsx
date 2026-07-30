@@ -60,6 +60,7 @@ import { MyLeads } from "@/components/sales/my-leads";
 import { PriorityCallQueue } from "@/components/sales/call-queue";
 import { FollowupsReminders } from "@/components/sales/followups";
 import { SalesPipeline } from "@/components/sales/pipeline";
+import { Meetings } from "@/components/sales/meetings";
 import { LeadDialog, classificationVariant, type Lead } from "./leads";
 
 export const Route = createFileRoute("/_authenticated/my-sales")({
