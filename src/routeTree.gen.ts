@@ -20,7 +20,6 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
-import { Route as AuthenticatedMySalesRouteImport } from './routes/_authenticated/my-sales'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
 import { Route as AuthenticatedProjectCoordinatorRouteImport } from './routes/_authenticated/project-coordinator'
@@ -28,6 +27,7 @@ import { Route as AuthenticatedProjectManagerRouteImport } from './routes/_authe
 import { Route as AuthenticatedProjectsRouteImport } from './routes/_authenticated/projects'
 import { Route as AuthenticatedRmRouteImport } from './routes/_authenticated/rm'
 import { Route as AuthenticatedSalesCmsRouteImport } from './routes/_authenticated/sales-cms'
+import { Route as AuthenticatedSalesExecutiveRouteImport } from './routes/_authenticated/sales-executive'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTlRouteImport } from './routes/_authenticated/tl'
@@ -92,11 +92,6 @@ const AuthenticatedMasterRoute = AuthenticatedMasterRouteImport.update({
   path: '/master',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMySalesRoute = AuthenticatedMySalesRouteImport.update({
-  id: '/my-sales',
-  path: '/my-sales',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
@@ -134,6 +129,12 @@ const AuthenticatedSalesCmsRoute = AuthenticatedSalesCmsRouteImport.update({
   path: '/sales-cms',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSalesExecutiveRoute =
+  AuthenticatedSalesExecutiveRouteImport.update({
+    id: '/sales-executive',
+    path: '/sales-executive',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
   id: '/stores',
   path: '/stores',
@@ -183,7 +184,6 @@ export interface FileRoutesByFullPath {
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
-  '/my-sales': typeof AuthenticatedMySalesRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -191,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/projects': typeof AuthenticatedProjectsRoute
   '/rm': typeof AuthenticatedRmRoute
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
+  '/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/tl': typeof AuthenticatedTlRoute
@@ -210,7 +211,6 @@ export interface FileRoutesByTo {
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
-  '/my-sales': typeof AuthenticatedMySalesRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -218,6 +218,7 @@ export interface FileRoutesByTo {
   '/projects': typeof AuthenticatedProjectsRoute
   '/rm': typeof AuthenticatedRmRoute
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
+  '/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/tl': typeof AuthenticatedTlRoute
@@ -239,7 +240,6 @@ export interface FileRoutesById {
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
-  '/_authenticated/my-sales': typeof AuthenticatedMySalesRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pme': typeof AuthenticatedPmeRoute
   '/_authenticated/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -247,6 +247,7 @@ export interface FileRoutesById {
   '/_authenticated/projects': typeof AuthenticatedProjectsRoute
   '/_authenticated/rm': typeof AuthenticatedRmRoute
   '/_authenticated/sales-cms': typeof AuthenticatedSalesCmsRoute
+  '/_authenticated/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/tl': typeof AuthenticatedTlRoute
@@ -268,7 +269,6 @@ export interface FileRouteTypes {
     | '/hr-head'
     | '/leads'
     | '/master'
-    | '/my-sales'
     | '/payments'
     | '/pme'
     | '/project-coordinator'
@@ -276,6 +276,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/rm'
     | '/sales-cms'
+    | '/sales-executive'
     | '/stores'
     | '/tasks'
     | '/tl'
@@ -295,7 +296,6 @@ export interface FileRouteTypes {
     | '/hr-head'
     | '/leads'
     | '/master'
-    | '/my-sales'
     | '/payments'
     | '/pme'
     | '/project-coordinator'
@@ -303,6 +303,7 @@ export interface FileRouteTypes {
     | '/projects'
     | '/rm'
     | '/sales-cms'
+    | '/sales-executive'
     | '/stores'
     | '/tasks'
     | '/tl'
@@ -323,7 +324,6 @@ export interface FileRouteTypes {
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
     | '/_authenticated/master'
-    | '/_authenticated/my-sales'
     | '/_authenticated/payments'
     | '/_authenticated/pme'
     | '/_authenticated/project-coordinator'
@@ -331,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/projects'
     | '/_authenticated/rm'
     | '/_authenticated/sales-cms'
+    | '/_authenticated/sales-executive'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
     | '/_authenticated/tl'
@@ -429,13 +430,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMasterRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/my-sales': {
-      id: '/_authenticated/my-sales'
-      path: '/my-sales'
-      fullPath: '/my-sales'
-      preLoaderRoute: typeof AuthenticatedMySalesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/payments': {
       id: '/_authenticated/payments'
       path: '/payments'
@@ -483,6 +477,13 @@ declare module '@tanstack/react-router' {
       path: '/sales-cms'
       fullPath: '/sales-cms'
       preLoaderRoute: typeof AuthenticatedSalesCmsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/sales-executive': {
+      id: '/_authenticated/sales-executive'
+      path: '/sales-executive'
+      fullPath: '/sales-executive'
+      preLoaderRoute: typeof AuthenticatedSalesExecutiveRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/stores': {
@@ -543,7 +544,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
-  AuthenticatedMySalesRoute: typeof AuthenticatedMySalesRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
   AuthenticatedProjectCoordinatorRoute: typeof AuthenticatedProjectCoordinatorRoute
@@ -551,6 +551,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjectsRoute: typeof AuthenticatedProjectsRoute
   AuthenticatedRmRoute: typeof AuthenticatedRmRoute
   AuthenticatedSalesCmsRoute: typeof AuthenticatedSalesCmsRoute
+  AuthenticatedSalesExecutiveRoute: typeof AuthenticatedSalesExecutiveRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedTlRoute: typeof AuthenticatedTlRoute
@@ -565,7 +566,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
-  AuthenticatedMySalesRoute: AuthenticatedMySalesRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPmeRoute: AuthenticatedPmeRoute,
   AuthenticatedProjectCoordinatorRoute: AuthenticatedProjectCoordinatorRoute,
@@ -573,6 +573,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjectsRoute: AuthenticatedProjectsRoute,
   AuthenticatedRmRoute: AuthenticatedRmRoute,
   AuthenticatedSalesCmsRoute: AuthenticatedSalesCmsRoute,
+  AuthenticatedSalesExecutiveRoute: AuthenticatedSalesExecutiveRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedTlRoute: AuthenticatedTlRoute,

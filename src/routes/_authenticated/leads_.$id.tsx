@@ -78,7 +78,7 @@ function LeadDetailsPage() {
     <div className="space-y-6 max-w-5xl mx-auto">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Link to="/my-sales"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> Back</Button></Link>
+          <Link to="/sales-executive"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-1" /> Back</Button></Link>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">{lead.name}</h1>
             <p className="text-sm text-muted-foreground">
