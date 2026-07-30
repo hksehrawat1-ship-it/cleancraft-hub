@@ -98,11 +98,17 @@ export function SalesExecCeoView() {
   if (!person) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <UserCheck className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold">Sales Executives</h2>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-primary" />
+            <h2 className="text-lg font-semibold">Sales Executives</h2>
+          </div>
+          <Link to="/sales-executive">
+            <Button size="sm" variant="outline">Open Sales Executive Dashboard</Button>
+          </Link>
         </div>
         <p className="text-sm text-muted-foreground">Select a salesperson to view their dashboard.</p>
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {PEOPLE.map((p) => (
             <button
