@@ -52,15 +52,15 @@ const MENU: MenuItem[] = [
   { type: "item", key: "followups", label: "Follow-ups & Reminders", icon: CalendarClock },
   { type: "item", key: "pipeline", label: "Sales Pipeline", icon: TrendingUp },
   { type: "item", key: "meetings", label: "Meetings", icon: Video },
-  { type: "item", key: "notes", label: "Mind and task", icon: StickyNote },
+  { type: "item", key: "notes", label: "Notes & Tasks", icon: StickyNote },
   {
     type: "group",
     key: "resource",
-    label: "Resource",
+    label: "Resources",
     icon: Library,
     children: [
       { key: "knowledge", label: "Knowledge Centre", icon: BookOpen },
-      { key: "questions", label: "Questions Bank", icon: HelpCircle },
+      { key: "questions", label: "Question Bank", icon: HelpCircle },
       { key: "audio", label: "Audio Library", icon: Headphones },
     ],
   },
