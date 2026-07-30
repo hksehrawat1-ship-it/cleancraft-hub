@@ -539,10 +539,12 @@ const PROBLEMS = [
   { code: "C", label: "Marketing" },
   { code: "D", label: "POS" },
   { code: "E", label: "Graphic and Design" },
-  { code: "F", label: "Agreements" },
+  { code: "F", label: "Agreement/Docs" },
   { code: "G", label: "Owner" },
   { code: "H", label: "Logistics & Supply Chain" },
-  { code: "I", label: "Others" },
+  { code: "I", label: "Customer care" },
+  { code: "J", label: "Learning" },
+  { code: "K", label: "Others" },
 ] as const;
 
 const CATALOG_KEY = "rm-problem-catalog";
