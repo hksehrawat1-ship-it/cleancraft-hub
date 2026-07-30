@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { SalesDashboard } from "@/components/sales/sales-dashboard";
 import { MyLeads } from "@/components/sales/my-leads";
 import { PriorityCallQueue } from "@/components/sales/call-queue";
+import { FollowupsReminders } from "@/components/sales/followups";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -718,30 +719,8 @@ function CompletionBar({ row }: { row: SheetRow }) {
   );
 }
 
-function FollowupsView({ leads, profiles, onSaved }: ViewProps) {
-  const today = todayISO();
-  const in14 = addDaysISO(14);
-  const due = leads.filter((l) => l.followup_date === today);
-  const overdue = leads.filter((l) => l.followup_date && l.followup_date < today && !isTerminal(l.lead_stage));
-  const upcoming = leads.filter((l) => l.followup_date && l.followup_date > today && l.followup_date <= in14);
-  const completed = leads.filter((l) => isTerminal(l.lead_stage) && l.followup_date && l.followup_date <= today);
-
-  return (
-    <Section title="Follow-ups">
-      <Tabs defaultValue="due">
-        <TabsList>
-          <TabsTrigger value="due">Due Today ({due.length})</TabsTrigger>
-          <TabsTrigger value="overdue">Overdue ({overdue.length})</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming ({upcoming.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="due" className="mt-3"><LeadTable leads={due} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="overdue" className="mt-3"><LeadTable leads={overdue} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="upcoming" className="mt-3"><LeadTable leads={upcoming} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="completed" className="mt-3"><LeadTable leads={completed} profiles={profiles} onSaved={onSaved} /></TabsContent>
-      </Tabs>
-    </Section>
-  );
+function FollowupsView(_props: ViewProps) {
+  return <FollowupsReminders />;
 }
 
 function MeetingsView({ leads, profiles, onSaved }: ViewProps) {
