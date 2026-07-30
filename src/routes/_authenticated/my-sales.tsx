@@ -60,6 +60,7 @@ import { MyLeads } from "@/components/sales/my-leads";
 import { PriorityCallQueue } from "@/components/sales/call-queue";
 import { FollowupsReminders } from "@/components/sales/followups";
 import { SalesPipeline } from "@/components/sales/pipeline";
+import { Meetings } from "@/components/sales/meetings";
 import { LeadDialog, classificationVariant, type Lead } from "./leads";
 
 export const Route = createFileRoute("/_authenticated/my-sales")({
@@ -920,63 +921,10 @@ function FollowupsView(_props: ViewProps) {
   return <FollowupsReminders />;
 }
 
-function MeetingsView({ leads, profiles, onSaved }: ViewProps) {
-  const today = todayISO();
-  const scheduled = leads.filter((l) => l.meeting_date && l.meeting_date >= today);
-  const completed = leads.filter(
-    (l) =>
-      l.lead_stage === "Meeting Done" ||
-      [
-        "Engagement Letter Pending",
-        "Booking Received",
-        "Handover Completed",
-        "Handover Done",
-      ].includes(l.lead_stage),
-  );
-  const missed = leads.filter(
-    (l) =>
-      l.meeting_date &&
-      l.meeting_date < today &&
-      l.lead_stage !== "Meeting Done" &&
-      !isTerminal(l.lead_stage),
-  );
-
-  return (
-    <Section title="Meetings">
-      <Tabs defaultValue="scheduled">
-        <TabsList>
-          <TabsTrigger value="scheduled">Scheduled ({scheduled.length})</TabsTrigger>
-          <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
-          <TabsTrigger value="missed">Missed ({missed.length})</TabsTrigger>
-        </TabsList>
-        <TabsContent value="scheduled" className="mt-3">
-          <LeadTable
-            leads={scheduled}
-            profiles={profiles}
-            onSaved={onSaved}
-            columns={["name", "phone", "meeting", "meet_link", "stage", "actions"]}
-          />
-        </TabsContent>
-        <TabsContent value="completed" className="mt-3">
-          <LeadTable
-            leads={completed}
-            profiles={profiles}
-            onSaved={onSaved}
-            columns={["name", "phone", "meeting", "stage", "actions"]}
-          />
-        </TabsContent>
-        <TabsContent value="missed" className="mt-3">
-          <LeadTable
-            leads={missed}
-            profiles={profiles}
-            onSaved={onSaved}
-            columns={["name", "phone", "meeting", "stage", "actions"]}
-          />
-        </TabsContent>
-      </Tabs>
-    </Section>
-  );
+function MeetingsView(_props: ViewProps) {
+  return <Meetings />;
 }
+
 
 function ProposalsView({ leads, profiles, onSaved }: ViewProps) {
   const notSent = leads.filter(
