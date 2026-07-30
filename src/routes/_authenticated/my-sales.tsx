@@ -7,26 +7,60 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Phone, MessageCircle, ExternalLink, Pencil,
-  LayoutDashboard, Users, CalendarClock, Video,
-  PackageCheck, BookOpen, HelpCircle, Headphones, TrendingUp, Search, ClipboardList, Save, X,
-  Target, Clock, DollarSign, Trophy, Activity, MessageSquare,
-  StickyNote, Pin, PinOff, Plus, Trash2, CheckSquare, Square, ChevronDown, ChevronRight, Library } from "lucide-react";
+import {
+  Phone,
+  MessageCircle,
+  ExternalLink,
+  Pencil,
+  LayoutDashboard,
+  Users,
+  CalendarClock,
+  Video,
+  PackageCheck,
+  BookOpen,
+  HelpCircle,
+  Headphones,
+  TrendingUp,
+  Search,
+  ClipboardList,
+  Save,
+  X,
+  Target,
+  Clock,
+  DollarSign,
+  Trophy,
+  Activity,
+  MessageSquare,
+  StickyNote,
+  Pin,
+  PinOff,
+  Plus,
+  Trash2,
+  CheckSquare,
+  Square,
+  ChevronDown,
+  ChevronRight,
+  Library,
+} from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SalesDashboard } from "@/components/sales/sales-dashboard";
 import { MyLeads } from "@/components/sales/my-leads";
 import { PriorityCallQueue } from "@/components/sales/call-queue";
 import { FollowupsReminders } from "@/components/sales/followups";
 import { SalesPipeline } from "@/components/sales/pipeline";
-import {
-  LeadDialog, classificationVariant, type Lead,
-} from "./leads";
+import { LeadDialog, classificationVariant, type Lead } from "./leads";
 
 export const Route = createFileRoute("/_authenticated/my-sales")({
   head: () => ({ meta: [{ title: "Franchise Sales Operating Dashboard — Clean Craft OS" }] }),
@@ -34,20 +68,43 @@ export const Route = createFileRoute("/_authenticated/my-sales")({
 });
 
 const PIPELINE_STAGES = [
-  "New Lead", "Contacted", "Qualified", "Proposal Sent", "Follow-up",
-  "Meeting Done", "Engagement Letter Pending", "Booking Received", "Handover Completed",
+  "New Lead",
+  "Contacted",
+  "Qualified",
+  "Proposal Sent",
+  "Follow-up",
+  "Meeting Done",
+  "Engagement Letter Pending",
+  "Booking Received",
+  "Handover Completed",
 ];
 
 const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as const;
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "roles" | "dashboard" | "leads" | "priorityCallQueue" | "followups" | "pipeline" | "meetings"
-  | "notes" | "knowledge" | "questions" | "audio" | "performance";
+  | "roles"
+  | "dashboard"
+  | "leads"
+  | "priorityCallQueue"
+  | "followups"
+  | "pipeline"
+  | "meetings"
+  | "notes"
+  | "knowledge"
+  | "questions"
+  | "audio"
+  | "performance";
 
 type MenuItem =
   | { type: "item"; key: ViewKey; label: string; icon: any }
-  | { type: "group"; key: "resource"; label: string; icon: any; children: { key: ViewKey; label: string; icon: any }[] };
+  | {
+      type: "group";
+      key: "resource";
+      label: string;
+      icon: any;
+      children: { key: ViewKey; label: string; icon: any }[];
+    };
 
 const MENU: MenuItem[] = [
   { type: "item", key: "roles", label: "Roles and Responsibilities", icon: ClipboardList },
@@ -72,11 +129,24 @@ const MENU: MenuItem[] = [
   { type: "item", key: "performance", label: "Performance", icon: Trophy },
 ];
 
-function todayISO() { return new Date().toISOString().slice(0, 10); }
-function startOfMonthISO() { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10); }
-function addDaysISO(days: number) { const d = new Date(); d.setDate(d.getDate() + days); return d.toISOString().slice(0, 10); }
-function isTerminal(stage: string) { return stage === "Lost" || stage === "Handover Completed" || stage === "Handover Done"; }
-function isHandoverDone(stage: string) { return stage === "Handover Completed" || stage === "Handover Done"; }
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+function startOfMonthISO() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString().slice(0, 10);
+}
+function addDaysISO(days: number) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+function isTerminal(stage: string) {
+  return stage === "Lost" || stage === "Handover Completed" || stage === "Handover Done";
+}
+function isHandoverDone(stage: string) {
+  return stage === "Handover Completed" || stage === "Handover Done";
+}
 
 function SalesOpsDashboard() {
   const qc = useQueryClient();
@@ -89,7 +159,9 @@ function SalesOpsDashboard() {
     queryKey: ["my-leads", user?.id],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("leads").select("*").eq("assigned_to", user!.id)
+        .from("leads")
+        .select("*")
+        .eq("assigned_to", user!.id)
         .order("followup_date", { ascending: true, nullsFirst: false });
       if (error) throw error;
       return data as Lead[];
@@ -99,13 +171,18 @@ function SalesOpsDashboard() {
   const { data: profiles = [] } = useQuery({
     queryKey: ["profiles-min"],
     queryFn: async () => {
-      const { data, error } = await (supabase as any).from("profiles").select("id, full_name").order("full_name");
+      const { data, error } = await (supabase as any)
+        .from("profiles")
+        .select("id, full_name")
+        .order("full_name");
       if (error) throw error;
       return data as { id: string; full_name: string }[];
     },
   });
 
-  function refresh() { qc.invalidateQueries({ queryKey: ["my-leads"] }); }
+  function refresh() {
+    qc.invalidateQueries({ queryKey: ["my-leads"] });
+  }
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -131,12 +208,22 @@ function SalesOpsDashboard() {
                           onClick={() => setResourceOpen((s) => !s)}
                           className={cn(
                             "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all text-left",
-                            groupActive ? "text-[#2563EB]" : "text-slate-700 hover:bg-slate-50"
+                            groupActive ? "text-[#2563EB]" : "text-slate-700 hover:bg-slate-50",
                           )}
                         >
-                          <Icon className={cn("w-5 h-5 shrink-0", groupActive ? "text-[#2563EB]" : "text-slate-500")} />
+                          <Icon
+                            className={cn(
+                              "w-5 h-5 shrink-0",
+                              groupActive ? "text-[#2563EB]" : "text-slate-500",
+                            )}
+                          />
                           <span className="flex-1">{m.label}</span>
-                          <ChevronDown className={cn("w-4 h-4 shrink-0 transition-transform", resourceOpen ? "" : "-rotate-90")} />
+                          <ChevronDown
+                            className={cn(
+                              "w-4 h-4 shrink-0 transition-transform",
+                              resourceOpen ? "" : "-rotate-90",
+                            )}
+                          />
                         </button>
                         {resourceOpen && (
                           <div className="ml-4 pl-4 border-l-2 border-slate-100 space-y-1">
@@ -151,10 +238,15 @@ function SalesOpsDashboard() {
                                     "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all text-left",
                                     cActive
                                       ? "bg-[#2563EB] text-white shadow-sm"
-                                      : "text-slate-700 hover:bg-slate-50"
+                                      : "text-slate-700 hover:bg-slate-50",
                                   )}
                                 >
-                                  <CIcon className={cn("w-4 h-4 shrink-0", cActive ? "text-white" : "text-slate-500")} />
+                                  <CIcon
+                                    className={cn(
+                                      "w-4 h-4 shrink-0",
+                                      cActive ? "text-white" : "text-slate-500",
+                                    )}
+                                  />
                                   <span className="flex-1">{c.label}</span>
                                 </button>
                               );
@@ -174,10 +266,12 @@ function SalesOpsDashboard() {
                         "flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all text-left whitespace-nowrap",
                         active
                           ? "bg-[#2563EB] text-white shadow-sm"
-                          : "text-slate-700 hover:bg-slate-50"
+                          : "text-slate-700 hover:bg-slate-50",
                       )}
                     >
-                      <Icon className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")} />
+                      <Icon
+                        className={cn("w-5 h-5 shrink-0", active ? "text-white" : "text-slate-500")}
+                      />
                       <span className="flex-1">{m.label}</span>
                     </button>
                   );
@@ -200,22 +294,42 @@ function SalesOpsDashboard() {
   );
 }
 
-function ViewRouter({ view, leads, profiles, onSaved }: {
-  view: ViewKey; leads: Lead[]; profiles: { id: string; full_name: string }[]; onSaved: () => void;
+function ViewRouter({
+  view,
+  leads,
+  profiles,
+  onSaved,
+}: {
+  view: ViewKey;
+  leads: Lead[];
+  profiles: { id: string; full_name: string }[];
+  onSaved: () => void;
 }) {
   switch (view) {
-    case "dashboard": return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "roles": return <RolesView />;
-    case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "priorityCallQueue": return <PriorityCallQueueView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "pipeline": return <SalesPipelineView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "notes": return <NotesView profiles={profiles} />;
-    case "knowledge": return <KnowledgeCenterView />;
-    case "questions": return <QuestionBankView />;
-    case "audio": return <AudioLibraryView />;
-    case "performance": return <PerformanceView leads={leads} profiles={profiles} />;
+    case "dashboard":
+      return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "roles":
+      return <RolesView />;
+    case "leads":
+      return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "priorityCallQueue":
+      return <PriorityCallQueueView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "followups":
+      return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "pipeline":
+      return <SalesPipelineView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "meetings":
+      return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "notes":
+      return <NotesView profiles={profiles} />;
+    case "knowledge":
+      return <KnowledgeCenterView />;
+    case "questions":
+      return <QuestionBankView />;
+    case "audio":
+      return <AudioLibraryView />;
+    case "performance":
+      return <PerformanceView leads={leads} profiles={profiles} />;
   }
 }
 
@@ -269,11 +383,17 @@ type SheetRow = {
 function emptyRow(): SheetRow {
   return {
     id: crypto.randomUUID(),
-    name: "", phone: "", temp: "",
-    proposalSent: false, explCompleted: false,
-    finalMeetKind: "", finalMeetStore: "",
-    eaSent: false, bookingReceived: false,
-    followupAt: "", handedOver: false,
+    name: "",
+    phone: "",
+    temp: "",
+    proposalSent: false,
+    explCompleted: false,
+    finalMeetKind: "",
+    finalMeetStore: "",
+    eaSent: false,
+    bookingReceived: false,
+    followupAt: "",
+    handedOver: false,
   };
 }
 
@@ -286,11 +406,21 @@ function loadRows(): SheetRow[] {
     if (!raw) return [emptyRow()];
     const arr = JSON.parse(raw);
     return Array.isArray(arr) && arr.length ? arr : [emptyRow()];
-  } catch { return [emptyRow()]; }
+  } catch {
+    return [emptyRow()];
+  }
 }
 
 function isStarted(r: SheetRow) {
-  return !!(r.temp || r.proposalSent || r.explCompleted || r.finalMeetKind || r.eaSent || r.bookingReceived || r.followupAt);
+  return !!(
+    r.temp ||
+    r.proposalSent ||
+    r.explCompleted ||
+    r.finalMeetKind ||
+    r.eaSent ||
+    r.bookingReceived ||
+    r.followupAt
+  );
 }
 
 function completionSteps(r: SheetRow) {
@@ -298,7 +428,10 @@ function completionSteps(r: SheetRow) {
     { label: "Lead Temp.", done: !!r.temp },
     { label: "Proposal Sent", done: r.proposalSent },
     { label: "Expl. Completed", done: r.explCompleted },
-    { label: "Final Meet", done: !!r.finalMeetKind && (r.finalMeetKind === "Google Meet" || !!r.finalMeetStore) },
+    {
+      label: "Final Meet",
+      done: !!r.finalMeetKind && (r.finalMeetKind === "Google Meet" || !!r.finalMeetStore),
+    },
     { label: "EA Sent via Email", done: r.eaSent },
     { label: "Booking Amount Received", done: r.bookingReceived },
     { label: "Follow-up Scheduled", done: !!r.followupAt },
@@ -323,14 +456,19 @@ function LeadTrackerSheet() {
 
   function persist(next: SheetRow[]) {
     setRows(next);
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {}
   }
 
   function update(id: string, patch: Partial<SheetRow>) {
     persist(rows.map((r) => (r.id === id ? { ...r, ...patch } : r)));
   }
 
-  function addRow() { persist([...rows, emptyRow()]); setSelectedId(null); }
+  function addRow() {
+    persist([...rows, emptyRow()]);
+    setSelectedId(null);
+  }
   function removeRow(id: string) {
     const next = rows.filter((r) => r.id !== id);
     persist(next.length ? next : [emptyRow()]);
@@ -397,8 +535,12 @@ function LeadTrackerSheet() {
                           onClick={(e) => e.stopPropagation()}
                           onChange={(e) => update(r.id, { name: e.target.value })}
                           placeholder="Name"
-                          className={cn("w-40 bg-transparent outline-none px-1 py-1 rounded",
-                            frozen ? "cursor-not-allowed" : "focus:bg-white focus:ring-1 focus:ring-blue-300")}
+                          className={cn(
+                            "w-40 bg-transparent outline-none px-1 py-1 rounded",
+                            frozen
+                              ? "cursor-not-allowed"
+                              : "focus:bg-white focus:ring-1 focus:ring-blue-300",
+                          )}
                         />
                       </td>
                       <td>
@@ -409,8 +551,12 @@ function LeadTrackerSheet() {
                           onChange={(e) => update(r.id, { phone: e.target.value })}
                           placeholder="Phone"
                           inputMode="tel"
-                          className={cn("w-36 bg-transparent outline-none px-1 py-1 rounded",
-                            frozen ? "cursor-not-allowed" : "focus:bg-white focus:ring-1 focus:ring-blue-300")}
+                          className={cn(
+                            "w-36 bg-transparent outline-none px-1 py-1 rounded",
+                            frozen
+                              ? "cursor-not-allowed"
+                              : "focus:bg-white focus:ring-1 focus:ring-blue-300",
+                          )}
                         />
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
@@ -418,26 +564,44 @@ function LeadTrackerSheet() {
                           value={r.temp}
                           onChange={(e) => update(r.id, { temp: e.target.value as Temp | "" })}
                           disabled={!r.name || !r.phone}
-                          className={cn("rounded border px-2 py-1 text-xs",
-                            r.temp ? TEMP_COLORS[r.temp as Temp] : "bg-white")}
+                          className={cn(
+                            "rounded border px-2 py-1 text-xs",
+                            r.temp ? TEMP_COLORS[r.temp as Temp] : "bg-white",
+                          )}
                         >
                           <option value="">—</option>
-                          {TEMPS.map((t) => <option key={t} value={t}>{t}</option>)}
+                          {TEMPS.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" checked={r.proposalSent}
-                          onChange={(e) => update(r.id, { proposalSent: e.target.checked })} />
+                        <input
+                          type="checkbox"
+                          checked={r.proposalSent}
+                          onChange={(e) => update(r.id, { proposalSent: e.target.checked })}
+                        />
                       </td>
                       <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" checked={r.explCompleted}
-                          onChange={(e) => update(r.id, { explCompleted: e.target.checked })} />
+                        <input
+                          type="checkbox"
+                          checked={r.explCompleted}
+                          onChange={(e) => update(r.id, { explCompleted: e.target.checked })}
+                        />
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-1">
                           <select
                             value={r.finalMeetKind}
-                            onChange={(e) => update(r.id, { finalMeetKind: e.target.value as FinalMeetKind, finalMeetStore: e.target.value === "Store Visit" ? r.finalMeetStore : "" })}
+                            onChange={(e) =>
+                              update(r.id, {
+                                finalMeetKind: e.target.value as FinalMeetKind,
+                                finalMeetStore:
+                                  e.target.value === "Store Visit" ? r.finalMeetStore : "",
+                              })
+                            }
                             className="rounded border px-2 py-1 text-xs bg-white"
                           >
                             <option value="">—</option>
@@ -455,25 +619,41 @@ function LeadTrackerSheet() {
                         </div>
                       </td>
                       <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" checked={r.eaSent}
-                          onChange={(e) => update(r.id, { eaSent: e.target.checked })} />
+                        <input
+                          type="checkbox"
+                          checked={r.eaSent}
+                          onChange={(e) => update(r.id, { eaSent: e.target.checked })}
+                        />
                       </td>
                       <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" checked={r.bookingReceived}
-                          onChange={(e) => update(r.id, { bookingReceived: e.target.checked })} />
+                        <input
+                          type="checkbox"
+                          checked={r.bookingReceived}
+                          onChange={(e) => update(r.id, { bookingReceived: e.target.checked })}
+                        />
                       </td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <input
                           type="datetime-local"
                           value={r.followupAt}
                           onChange={(e) => update(r.id, { followupAt: e.target.value })}
-                          className={cn("rounded border px-2 py-1 text-xs",
-                            fuDue ? "bg-emerald-100 border-emerald-300 text-emerald-800 font-medium" : "bg-white")}
+                          className={cn(
+                            "rounded border px-2 py-1 text-xs",
+                            fuDue
+                              ? "bg-emerald-100 border-emerald-300 text-emerald-800 font-medium"
+                              : "bg-white",
+                          )}
                         />
                       </td>
                       <td className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-red-600"
-                          onClick={() => removeRow(r.id)}>Del</Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2 text-xs text-red-600"
+                          onClick={() => removeRow(r.id)}
+                        >
+                          Del
+                        </Button>
                       </td>
                     </tr>
                   );
@@ -484,7 +664,9 @@ function LeadTrackerSheet() {
         </Card>
 
         <div className="flex items-center justify-between gap-3 mt-3">
-          <Button onClick={addRow} variant="outline" size="sm">+ Add New Lead</Button>
+          <Button onClick={addRow} variant="outline" size="sm">
+            + Add New Lead
+          </Button>
           <Button
             disabled={!selected || selected.handedOver || !selected.bookingReceived}
             className="bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -526,7 +708,10 @@ type HandoverPayload = {
 };
 
 function HandoverForm({
-  lead, leads, onSubmit, onCancel,
+  lead,
+  leads,
+  onSubmit,
+  onCancel,
 }: {
   lead: SheetRow;
   leads: SheetRow[];
@@ -560,10 +745,12 @@ function HandoverForm({
       return;
     }
     if (form.offer === "Other" && !form.offerOther.trim()) {
-      alert("Please specify the offer."); return;
+      alert("Please specify the offer.");
+      return;
     }
     if (form.model === "Other" && !form.modelOther.trim()) {
-      alert("Please specify the model."); return;
+      alert("Please specify the model.");
+      return;
     }
     onSubmit(form);
   }
@@ -573,52 +760,91 @@ function HandoverForm({
   return (
     <Card className="mt-4 border-emerald-200">
       <CardContent className="p-4 space-y-3">
-        <div className="text-sm font-semibold text-emerald-800">Handover Form — Submit to Account Department</div>
+        <div className="text-sm font-semibold text-emerald-800">
+          Handover Form — Submit to Account Department
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Name (from lead)</label>
-            <input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} />
+            <input
+              className={inputCls}
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+            />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Phone (from leads)</label>
-            <input className={inputCls} list="ho-phones" value={form.phone} onChange={(e) => set("phone", e.target.value)} inputMode="tel" />
+            <input
+              className={inputCls}
+              list="ho-phones"
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              inputMode="tel"
+            />
             <datalist id="ho-phones">
-              {phoneSuggestions.map((p) => <option key={p} value={p} />)}
+              {phoneSuggestions.map((p) => (
+                <option key={p} value={p} />
+              ))}
             </datalist>
           </div>
           <div>
             <label className="text-xs text-muted-foreground">City</label>
-            <input className={inputCls} value={form.city} onChange={(e) => set("city", e.target.value)} />
+            <input
+              className={inputCls}
+              value={form.city}
+              onChange={(e) => set("city", e.target.value)}
+            />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Pincode</label>
-            <input className={inputCls} value={form.pincode} onChange={(e) => set("pincode", e.target.value)} inputMode="numeric" />
+            <input
+              className={inputCls}
+              value={form.pincode}
+              onChange={(e) => set("pincode", e.target.value)}
+              inputMode="numeric"
+            />
           </div>
 
           <div>
             <label className="text-xs text-muted-foreground">Offer</label>
-            <select className={inputCls} value={form.offer} onChange={(e) => set("offer", e.target.value as OfferKind | "")}>
+            <select
+              className={inputCls}
+              value={form.offer}
+              onChange={(e) => set("offer", e.target.value as OfferKind | "")}
+            >
               <option value="">— Select —</option>
               <option value="Transportation Free">Transportation Free</option>
               <option value="Pappy Wash Free">Pappy Wash Free</option>
               <option value="Other">Other</option>
             </select>
             {form.offer === "Other" && (
-              <input className={cn(inputCls, "mt-2")} placeholder="Specify offer" value={form.offerOther}
-                onChange={(e) => set("offerOther", e.target.value)} />
+              <input
+                className={cn(inputCls, "mt-2")}
+                placeholder="Specify offer"
+                value={form.offerOther}
+                onChange={(e) => set("offerOther", e.target.value)}
+              />
             )}
           </div>
 
           <div>
             <label className="text-xs text-muted-foreground">Discount</label>
-            <input className={inputCls} placeholder="e.g. ₹25,000 or 10%" value={form.discount}
-              onChange={(e) => set("discount", e.target.value)} />
+            <input
+              className={inputCls}
+              placeholder="e.g. ₹25,000 or 10%"
+              value={form.discount}
+              onChange={(e) => set("discount", e.target.value)}
+            />
           </div>
 
           <div className="sm:col-span-2">
             <label className="text-xs text-muted-foreground">Model</label>
-            <select className={inputCls} value={form.model} onChange={(e) => set("model", e.target.value as ModelKind | "")}>
+            <select
+              className={inputCls}
+              value={form.model}
+              onChange={(e) => set("model", e.target.value as ModelKind | "")}
+            >
               <option value="">— Select —</option>
               <option value="Single Machine">Single Machine</option>
               <option value="Double Machine">Double Machine</option>
@@ -626,15 +852,25 @@ function HandoverForm({
               <option value="Other">Other</option>
             </select>
             {form.model === "Other" && (
-              <input className={cn(inputCls, "mt-2")} placeholder="Specify model" value={form.modelOther}
-                onChange={(e) => set("modelOther", e.target.value)} />
+              <input
+                className={cn(inputCls, "mt-2")}
+                placeholder="Specify model"
+                value={form.modelOther}
+                onChange={(e) => set("modelOther", e.target.value)}
+              />
             )}
           </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-1">
-          <Button size="sm" variant="outline" onClick={onCancel}>Cancel</Button>
-          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={submit}>
+          <Button size="sm" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={submit}
+          >
             Submit to Account Department
           </Button>
         </div>
@@ -652,7 +888,8 @@ function CompletionBar({ row }: { row: SheetRow }) {
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="text-sm font-medium">
-            {row.name || "Unnamed lead"} — Completion: <span className="text-emerald-700">{done}/7</span>
+            {row.name || "Unnamed lead"} — Completion:{" "}
+            <span className="text-emerald-700">{done}/7</span>
           </div>
           <div className="text-xs text-muted-foreground">{pct}%</div>
         </div>
@@ -661,10 +898,15 @@ function CompletionBar({ row }: { row: SheetRow }) {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 mt-3">
           {steps.map((s, i) => (
-            <div key={i} className={cn(
-              "text-[11px] px-2 py-1 rounded border text-center",
-              s.done ? "bg-emerald-50 border-emerald-200 text-emerald-700" : "bg-muted/40 border-muted text-muted-foreground",
-            )}>
+            <div
+              key={i}
+              className={cn(
+                "text-[11px] px-2 py-1 rounded border text-center",
+                s.done
+                  ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                  : "bg-muted/40 border-muted text-muted-foreground",
+              )}
+            >
               {i + 1}. {s.label} {s.done ? "✓" : ""}
             </div>
           ))}
@@ -681,8 +923,23 @@ function FollowupsView(_props: ViewProps) {
 function MeetingsView({ leads, profiles, onSaved }: ViewProps) {
   const today = todayISO();
   const scheduled = leads.filter((l) => l.meeting_date && l.meeting_date >= today);
-  const completed = leads.filter((l) => l.lead_stage === "Meeting Done" || ["Engagement Letter Pending", "Booking Received", "Handover Completed", "Handover Done"].includes(l.lead_stage));
-  const missed = leads.filter((l) => l.meeting_date && l.meeting_date < today && l.lead_stage !== "Meeting Done" && !isTerminal(l.lead_stage));
+  const completed = leads.filter(
+    (l) =>
+      l.lead_stage === "Meeting Done" ||
+      [
+        "Engagement Letter Pending",
+        "Booking Received",
+        "Handover Completed",
+        "Handover Done",
+      ].includes(l.lead_stage),
+  );
+  const missed = leads.filter(
+    (l) =>
+      l.meeting_date &&
+      l.meeting_date < today &&
+      l.lead_stage !== "Meeting Done" &&
+      !isTerminal(l.lead_stage),
+  );
 
   return (
     <Section title="Meetings">
@@ -692,19 +949,54 @@ function MeetingsView({ leads, profiles, onSaved }: ViewProps) {
           <TabsTrigger value="completed">Completed ({completed.length})</TabsTrigger>
           <TabsTrigger value="missed">Missed ({missed.length})</TabsTrigger>
         </TabsList>
-        <TabsContent value="scheduled" className="mt-3"><LeadTable leads={scheduled} profiles={profiles} onSaved={onSaved} columns={["name","phone","meeting","meet_link","stage","actions"]} /></TabsContent>
-        <TabsContent value="completed" className="mt-3"><LeadTable leads={completed} profiles={profiles} onSaved={onSaved} columns={["name","phone","meeting","stage","actions"]} /></TabsContent>
-        <TabsContent value="missed" className="mt-3"><LeadTable leads={missed} profiles={profiles} onSaved={onSaved} columns={["name","phone","meeting","stage","actions"]} /></TabsContent>
+        <TabsContent value="scheduled" className="mt-3">
+          <LeadTable
+            leads={scheduled}
+            profiles={profiles}
+            onSaved={onSaved}
+            columns={["name", "phone", "meeting", "meet_link", "stage", "actions"]}
+          />
+        </TabsContent>
+        <TabsContent value="completed" className="mt-3">
+          <LeadTable
+            leads={completed}
+            profiles={profiles}
+            onSaved={onSaved}
+            columns={["name", "phone", "meeting", "stage", "actions"]}
+          />
+        </TabsContent>
+        <TabsContent value="missed" className="mt-3">
+          <LeadTable
+            leads={missed}
+            profiles={profiles}
+            onSaved={onSaved}
+            columns={["name", "phone", "meeting", "stage", "actions"]}
+          />
+        </TabsContent>
       </Tabs>
     </Section>
   );
 }
 
 function ProposalsView({ leads, profiles, onSaved }: ViewProps) {
-  const notSent = leads.filter((l) => !l.proposal_sent_date && ["Qualified", "Contacted", "New Lead", "Follow-up"].includes(l.lead_stage));
+  const notSent = leads.filter(
+    (l) =>
+      !l.proposal_sent_date &&
+      ["Qualified", "Contacted", "New Lead", "Follow-up"].includes(l.lead_stage),
+  );
   const sent = leads.filter((l) => !!l.proposal_sent_date);
   const viewed = leads.filter((l) => !!l.proposal_sent_date && l.lead_stage === "Follow-up");
-  const pending = leads.filter((l) => !!l.proposal_sent_date && !isTerminal(l.lead_stage) && !["Engagement Letter Pending","Booking Received","Handover Completed","Handover Done"].includes(l.lead_stage));
+  const pending = leads.filter(
+    (l) =>
+      !!l.proposal_sent_date &&
+      !isTerminal(l.lead_stage) &&
+      ![
+        "Engagement Letter Pending",
+        "Booking Received",
+        "Handover Completed",
+        "Handover Done",
+      ].includes(l.lead_stage),
+  );
 
   return (
     <Section title="Proposals">
@@ -715,19 +1007,33 @@ function ProposalsView({ leads, profiles, onSaved }: ViewProps) {
           <TabsTrigger value="viewed">Viewed ({viewed.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending Decision ({pending.length})</TabsTrigger>
         </TabsList>
-        <TabsContent value="not_sent" className="mt-3"><LeadTable leads={notSent} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="sent" className="mt-3"><LeadTable leads={sent} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="viewed" className="mt-3"><LeadTable leads={viewed} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="pending" className="mt-3"><LeadTable leads={pending} profiles={profiles} onSaved={onSaved} /></TabsContent>
+        <TabsContent value="not_sent" className="mt-3">
+          <LeadTable leads={notSent} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="sent" className="mt-3">
+          <LeadTable leads={sent} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="viewed" className="mt-3">
+          <LeadTable leads={viewed} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="pending" className="mt-3">
+          <LeadTable leads={pending} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
       </Tabs>
     </Section>
   );
 }
 
 function EngagementView({ leads, profiles, onSaved }: ViewProps) {
-  const pending = leads.filter((l) => l.lead_stage === "Engagement Letter Pending" && !l.engagement_letter_sent_date);
+  const pending = leads.filter(
+    (l) => l.lead_stage === "Engagement Letter Pending" && !l.engagement_letter_sent_date,
+  );
   const sent = leads.filter((l) => !!l.engagement_letter_sent_date);
-  const feePending = leads.filter((l) => l.engagement_letter_fee_status === "Pending" || l.engagement_letter_fee_status === "Partially Received");
+  const feePending = leads.filter(
+    (l) =>
+      l.engagement_letter_fee_status === "Pending" ||
+      l.engagement_letter_fee_status === "Partially Received",
+  );
   const feeReceived = leads.filter((l) => l.engagement_letter_fee_status === "Received");
 
   return (
@@ -739,10 +1045,18 @@ function EngagementView({ leads, profiles, onSaved }: ViewProps) {
           <TabsTrigger value="fee_pending">Fee Pending ({feePending.length})</TabsTrigger>
           <TabsTrigger value="fee_received">Fee Received ({feeReceived.length})</TabsTrigger>
         </TabsList>
-        <TabsContent value="pending" className="mt-3"><LeadTable leads={pending} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="sent" className="mt-3"><LeadTable leads={sent} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="fee_pending" className="mt-3"><LeadTable leads={feePending} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="fee_received" className="mt-3"><LeadTable leads={feeReceived} profiles={profiles} onSaved={onSaved} /></TabsContent>
+        <TabsContent value="pending" className="mt-3">
+          <LeadTable leads={pending} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="sent" className="mt-3">
+          <LeadTable leads={sent} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="fee_pending" className="mt-3">
+          <LeadTable leads={feePending} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="fee_received" className="mt-3">
+          <LeadTable leads={feeReceived} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
       </Tabs>
     </Section>
   );
@@ -750,8 +1064,12 @@ function EngagementView({ leads, profiles, onSaved }: ViewProps) {
 
 function BookingsView({ leads, profiles, onSaved }: ViewProps) {
   const monthStart = startOfMonthISO();
-  const newBookings = leads.filter((l) => (l.booking_date && l.booking_date >= monthStart) || (l.lead_stage === "Booking Received"));
-  const handoverPending = leads.filter((l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage));
+  const newBookings = leads.filter(
+    (l) => (l.booking_date && l.booking_date >= monthStart) || l.lead_stage === "Booking Received",
+  );
+  const handoverPending = leads.filter(
+    (l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage),
+  );
   const handoverDone = leads.filter((l) => isHandoverDone(l.lead_stage));
 
   return (
@@ -759,12 +1077,20 @@ function BookingsView({ leads, profiles, onSaved }: ViewProps) {
       <Tabs defaultValue="new">
         <TabsList>
           <TabsTrigger value="new">New Bookings ({newBookings.length})</TabsTrigger>
-          <TabsTrigger value="handover_pending">Handover Pending ({handoverPending.length})</TabsTrigger>
+          <TabsTrigger value="handover_pending">
+            Handover Pending ({handoverPending.length})
+          </TabsTrigger>
           <TabsTrigger value="handover_done">Handover Complete ({handoverDone.length})</TabsTrigger>
         </TabsList>
-        <TabsContent value="new" className="mt-3"><LeadTable leads={newBookings} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="handover_pending" className="mt-3"><LeadTable leads={handoverPending} profiles={profiles} onSaved={onSaved} /></TabsContent>
-        <TabsContent value="handover_done" className="mt-3"><LeadTable leads={handoverDone} profiles={profiles} onSaved={onSaved} /></TabsContent>
+        <TabsContent value="new" className="mt-3">
+          <LeadTable leads={newBookings} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="handover_pending" className="mt-3">
+          <LeadTable leads={handoverPending} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
+        <TabsContent value="handover_done" className="mt-3">
+          <LeadTable leads={handoverDone} profiles={profiles} onSaved={onSaved} />
+        </TabsContent>
       </Tabs>
     </Section>
   );
@@ -779,54 +1105,97 @@ function LostView({ leads, profiles, onSaved }: ViewProps) {
       <Section title="Lost Leads Summary">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <Stat label="Total Lost" value={lost.length} tone="text-red-600" />
-          <Stat label="Lost Value" value={`₹${totalValue.toLocaleString("en-IN")}`} tone="text-red-600" />
-          <Stat label="Most Common Stage" value={mostCommon(lost.map((l) => l.lead_stage)) ?? "—"} />
+          <Stat
+            label="Lost Value"
+            value={`₹${totalValue.toLocaleString("en-IN")}`}
+            tone="text-red-600"
+          />
+          <Stat
+            label="Most Common Stage"
+            value={mostCommon(lost.map((l) => l.lead_stage)) ?? "—"}
+          />
         </div>
       </Section>
       <Section title="Lost Leads">
-        <Card><CardContent className="p-0 overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-left">
-              <tr><Th>Name</Th><Th>City</Th><Th>Lost Reason</Th><Th>Lost Stage</Th><Th>Lost Value</Th><Th></Th></tr>
-            </thead>
-            <tbody>
-              {lost.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">No lost leads.</td></tr>}
-              {lost.map((l) => (
-                <tr key={l.id} className="border-t hover:bg-muted/30">
-                  <td className="px-4 py-3 font-medium">{l.name}</td>
-                  <td className="px-4 py-3">{l.city ?? "—"}</td>
-                  <td className="px-4 py-3">{(l as any).lost_reason ?? "—"}</td>
-                  <td className="px-4 py-3"><Badge variant="outline">{(l as any).lost_stage ?? l.lead_stage}</Badge></td>
-                  <td className="px-4 py-3">₹{(Number(l.engagement_letter_fee_amount) || 0).toLocaleString("en-IN")}</td>
-                  <td className="px-4 py-3 text-right">
-                    <Link to="/leads/$id" params={{ id: l.id }}>
-                      <Button size="sm" variant="ghost"><ExternalLink className="w-4 h-4" /></Button>
-                    </Link>
-                    <LeadDialog lead={l} profiles={profiles} onSaved={onSaved}>
-                      <Button size="sm" variant="ghost"><Pencil className="w-4 h-4" /></Button>
-                    </LeadDialog>
-                  </td>
+        <Card>
+          <CardContent className="p-0 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-left">
+                <tr>
+                  <Th>Name</Th>
+                  <Th>City</Th>
+                  <Th>Lost Reason</Th>
+                  <Th>Lost Stage</Th>
+                  <Th>Lost Value</Th>
+                  <Th></Th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </CardContent></Card>
+              </thead>
+              <tbody>
+                {lost.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                      No lost leads.
+                    </td>
+                  </tr>
+                )}
+                {lost.map((l) => (
+                  <tr key={l.id} className="border-t hover:bg-muted/30">
+                    <td className="px-4 py-3 font-medium">{l.name}</td>
+                    <td className="px-4 py-3">{l.city ?? "—"}</td>
+                    <td className="px-4 py-3">{(l as any).lost_reason ?? "—"}</td>
+                    <td className="px-4 py-3">
+                      <Badge variant="outline">{(l as any).lost_stage ?? l.lead_stage}</Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      ₹{(Number(l.engagement_letter_fee_amount) || 0).toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <Link to="/leads/$id" params={{ id: l.id }}>
+                        <Button size="sm" variant="ghost">
+                          <ExternalLink className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      <LeadDialog lead={l} profiles={profiles} onSaved={onSaved}>
+                        <Button size="sm" variant="ghost">
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                      </LeadDialog>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       </Section>
     </div>
   );
 }
 
 function HandoverView({ leads, profiles, onSaved }: ViewProps) {
-  const handoverPending = leads.filter((l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage));
+  const handoverPending = leads.filter(
+    (l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage),
+  );
   const handoverDone = leads.filter((l) => isHandoverDone(l.lead_stage));
-  const sumAmt = (arr: Lead[]) => arr.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
+  const sumAmt = (arr: Lead[]) =>
+    arr.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
 
   return (
     <div className="space-y-6">
       <Section title="Hand Over to Account Department">
         <div className="grid grid-cols-2 gap-3">
-          <BookingStat label="Pending Handover" count={handoverPending.length} value={sumAmt(handoverPending)} tone="text-orange-600" />
-          <BookingStat label="Handover Complete" count={handoverDone.length} value={sumAmt(handoverDone)} tone="text-emerald-600" />
+          <BookingStat
+            label="Pending Handover"
+            count={handoverPending.length}
+            value={sumAmt(handoverPending)}
+            tone="text-orange-600"
+          />
+          <BookingStat
+            label="Handover Complete"
+            count={handoverDone.length}
+            value={sumAmt(handoverDone)}
+            tone="text-emerald-600"
+          />
         </div>
       </Section>
       <Section title="Pending Handover">
@@ -850,16 +1219,30 @@ type ViewProps = {
 function mostCommon(arr: string[]): string | null {
   if (!arr.length) return null;
   const counts: Record<string, number> = {};
-  arr.forEach((s) => { counts[s] = (counts[s] || 0) + 1; });
+  arr.forEach((s) => {
+    counts[s] = (counts[s] || 0) + 1;
+  });
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
 }
 
-function Section({ title, children, subtitle, right }: { title: string; children: React.ReactNode; subtitle?: string; right?: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  subtitle,
+  right,
+}: {
+  title: string;
+  children: React.ReactNode;
+  subtitle?: string;
+  right?: React.ReactNode;
+}) {
   return (
     <section>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {title}
+          </h2>
           {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
         </div>
         {right}
@@ -869,7 +1252,17 @@ function Section({ title, children, subtitle, right }: { title: string; children
   );
 }
 
-function Stat({ label, value, tone, sub }: { label: string; value: number | string; tone?: string; sub?: string }) {
+function Stat({
+  label,
+  value,
+  tone,
+  sub,
+}: {
+  label: string;
+  value: number | string;
+  tone?: string;
+  sub?: string;
+}) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -881,7 +1274,17 @@ function Stat({ label, value, tone, sub }: { label: string; value: number | stri
   );
 }
 
-function BookingStat({ label, count, value, tone }: { label: string; count: number; value: number; tone?: string }) {
+function BookingStat({
+  label,
+  count,
+  value,
+  tone,
+}: {
+  label: string;
+  count: number;
+  value: number;
+  tone?: string;
+}) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -893,13 +1296,25 @@ function BookingStat({ label, count, value, tone }: { label: string; count: numb
   );
 }
 
-function FilterChip({ active, onClick, children, className }: { active: boolean; onClick: () => void; children: React.ReactNode; className?: string }) {
+function FilterChip({
+  active,
+  onClick,
+  children,
+  className,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <button
       onClick={onClick}
       className={cn(
         "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
-        active ? "bg-primary text-primary-foreground border-primary" : `bg-card hover:bg-muted ${className ?? ""}`,
+        active
+          ? "bg-primary text-primary-foreground border-primary"
+          : `bg-card hover:bg-muted ${className ?? ""}`,
       )}
     >
       {children}
@@ -907,15 +1322,38 @@ function FilterChip({ active, onClick, children, className }: { active: boolean;
   );
 }
 
-type Col = "name" | "phone" | "city" | "stage" | "next" | "followup" | "meeting" | "meet_link" | "actions";
+type Col =
+  | "name"
+  | "phone"
+  | "city"
+  | "stage"
+  | "next"
+  | "followup"
+  | "meeting"
+  | "meet_link"
+  | "actions";
 
-function LeadTable({ leads, profiles, onSaved, columns }: {
-  leads: Lead[]; profiles: { id: string; full_name: string }[]; onSaved: () => void; columns?: Col[];
+function LeadTable({
+  leads,
+  profiles,
+  onSaved,
+  columns,
+}: {
+  leads: Lead[];
+  profiles: { id: string; full_name: string }[];
+  onSaved: () => void;
+  columns?: Col[];
 }) {
   const cols: Col[] = columns ?? ["name", "phone", "city", "stage", "next", "followup", "actions"];
   const today = todayISO();
   if (leads.length === 0) {
-    return <Card><CardContent className="p-6 text-sm text-muted-foreground text-center">Nothing here.</CardContent></Card>;
+    return (
+      <Card>
+        <CardContent className="p-6 text-sm text-muted-foreground text-center">
+          Nothing here.
+        </CardContent>
+      </Card>
+    );
   }
   return (
     <Card>
@@ -923,66 +1361,134 @@ function LeadTable({ leads, profiles, onSaved, columns }: {
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left">
             <tr>
-              {cols.map((c) => <Th key={c}>{headerLabel(c)}</Th>)}
+              {cols.map((c) => (
+                <Th key={c}>{headerLabel(c)}</Th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {leads.map((l) => {
-              const overdue = l.followup_date && l.followup_date < today && !isTerminal(l.lead_stage);
+              const overdue =
+                l.followup_date && l.followup_date < today && !isTerminal(l.lead_stage);
               const dueToday = l.followup_date === today;
               return (
                 <tr key={l.id} className="border-t hover:bg-muted/30">
                   {cols.map((c) => {
                     switch (c) {
-                      case "name": return (
-                        <td key={c} className="px-4 py-3 font-medium">
-                          {l.name}
-                          {l.lead_classification && (
-                            <Badge variant="outline" className={`ml-2 ${classificationVariant(l.lead_classification)}`}>{l.lead_classification}</Badge>
-                          )}
-                        </td>
-                      );
-                      case "phone": return <td key={c} className="px-4 py-3">{l.phone ?? "—"}</td>;
-                      case "city": return <td key={c} className="px-4 py-3">{l.city ?? "—"}</td>;
-                      case "stage": return <td key={c} className="px-4 py-3"><Badge variant="outline">{l.lead_stage}</Badge></td>;
-                      case "next": return <td key={c} className="px-4 py-3">{l.next_action ?? "—"}</td>;
-                      case "followup": return (
-                        <td key={c} className="px-4 py-3">
-                          {l.followup_date ? (
-                            <span className={overdue ? "text-red-600 font-medium" : dueToday ? "text-blue-600 font-medium" : ""}>
-                              {l.followup_date}
-                            </span>
-                          ) : "—"}
-                        </td>
-                      );
-                      case "meeting": return <td key={c} className="px-4 py-3">{l.meeting_date ?? "—"}</td>;
-                      case "meet_link": return (
-                        <td key={c} className="px-4 py-3">
-                          {(l as any).meeting_link ? (
-                            <a href={(l as any).meeting_link} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline inline-flex items-center gap-1">
-                              <Video className="w-3.5 h-3.5" /> Join
-                            </a>
-                          ) : "—"}
-                        </td>
-                      );
-                      case "actions": return (
-                        <td key={c} className="px-4 py-3 text-right whitespace-nowrap">
-                          {l.phone && (
-                            <a href={`tel:${l.phone}`}><Button size="sm" variant="ghost"><Phone className="w-4 h-4" /></Button></a>
-                          )}
-                          {l.phone && (
-                            <a href={`https://wa.me/${l.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                              <Button size="sm" variant="ghost" className="text-emerald-700"><MessageCircle className="w-4 h-4" /></Button>
-                            </a>
-                          )}
-                          <Link to="/leads/$id" params={{ id: l.id }}>
-                            <Button size="sm" variant="ghost"><ExternalLink className="w-4 h-4" /></Button>
-                          </Link>
-                          <LeadDialog lead={l} profiles={profiles} onSaved={onSaved}>
-                            <Button size="sm" variant="ghost"><Pencil className="w-4 h-4" /></Button>
-                          </LeadDialog>
-                        </td>
-                      );
+                      case "name":
+                        return (
+                          <td key={c} className="px-4 py-3 font-medium">
+                            {l.name}
+                            {l.lead_classification && (
+                              <Badge
+                                variant="outline"
+                                className={`ml-2 ${classificationVariant(l.lead_classification)}`}
+                              >
+                                {l.lead_classification}
+                              </Badge>
+                            )}
+                          </td>
+                        );
+                      case "phone":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {l.phone ?? "—"}
+                          </td>
+                        );
+                      case "city":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {l.city ?? "—"}
+                          </td>
+                        );
+                      case "stage":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            <Badge variant="outline">{l.lead_stage}</Badge>
+                          </td>
+                        );
+                      case "next":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {l.next_action ?? "—"}
+                          </td>
+                        );
+                      case "followup":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {l.followup_date ? (
+                              <span
+                                className={
+                                  overdue
+                                    ? "text-red-600 font-medium"
+                                    : dueToday
+                                      ? "text-blue-600 font-medium"
+                                      : ""
+                                }
+                              >
+                                {l.followup_date}
+                              </span>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                        );
+                      case "meeting":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {l.meeting_date ?? "—"}
+                          </td>
+                        );
+                      case "meet_link":
+                        return (
+                          <td key={c} className="px-4 py-3">
+                            {(l as any).meeting_link ? (
+                              <a
+                                href={(l as any).meeting_link}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 hover:underline inline-flex items-center gap-1"
+                              >
+                                <Video className="w-3.5 h-3.5" /> Join
+                              </a>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                        );
+                      case "actions":
+                        return (
+                          <td key={c} className="px-4 py-3 text-right whitespace-nowrap">
+                            {l.phone && (
+                              <a href={`tel:${l.phone}`}>
+                                <Button size="sm" variant="ghost">
+                                  <Phone className="w-4 h-4" />
+                                </Button>
+                              </a>
+                            )}
+                            {l.phone && (
+                              <a
+                                href={`https://wa.me/${l.phone.replace(/\D/g, "")}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <Button size="sm" variant="ghost" className="text-emerald-700">
+                                  <MessageCircle className="w-4 h-4" />
+                                </Button>
+                              </a>
+                            )}
+                            <Link to="/leads/$id" params={{ id: l.id }}>
+                              <Button size="sm" variant="ghost">
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                            <LeadDialog lead={l} profiles={profiles} onSaved={onSaved}>
+                              <Button size="sm" variant="ghost">
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            </LeadDialog>
+                          </td>
+                        );
                     }
                   })}
                 </tr>
@@ -997,15 +1503,24 @@ function LeadTable({ leads, profiles, onSaved, columns }: {
 
 function headerLabel(c: Col): string {
   switch (c) {
-    case "name": return "Name";
-    case "phone": return "Mobile";
-    case "city": return "City";
-    case "stage": return "Stage";
-    case "next": return "Next Action";
-    case "followup": return "Follow-up";
-    case "meeting": return "Meeting";
-    case "meet_link": return "Meet Link";
-    case "actions": return "";
+    case "name":
+      return "Name";
+    case "phone":
+      return "Mobile";
+    case "city":
+      return "City";
+    case "stage":
+      return "Stage";
+    case "next":
+      return "Next Action";
+    case "followup":
+      return "Follow-up";
+    case "meeting":
+      return "Meeting";
+    case "meet_link":
+      return "Meet Link";
+    case "actions":
+      return "";
   }
 }
 
@@ -1051,7 +1566,10 @@ function KnowledgeCenterView() {
 
 const SAMPLE_QA: { q: string; a: string }[] = [
   { q: "Royalty", a: "Royalty is 6% of monthly gross revenue, billed monthly in arrears." },
-  { q: "Territory", a: "Exclusive territory of 3 km radius around the store location, protected for 5 years." },
+  {
+    q: "Territory",
+    a: "Exclusive territory of 3 km radius around the store location, protected for 5 years.",
+  },
   { q: "Manpower", a: "Typical store needs 4–6 staff: 1 manager, 2–3 operators, 1–2 delivery." },
   { q: "ROI", a: "Average payback period is 18–24 months at standard footfall assumptions." },
 ];
@@ -1105,9 +1623,13 @@ function QuestionBankView() {
               <Input placeholder="Type your question…" />
               <div className="flex gap-2">
                 <Button size="sm">Send to Sales Head</Button>
-                <Button size="sm" variant="ghost" onClick={() => setSubmitOpen(false)}>Cancel</Button>
+                <Button size="sm" variant="ghost" onClick={() => setSubmitOpen(false)}>
+                  Cancel
+                </Button>
               </div>
-              <div className="text-xs text-muted-foreground">Approved answers will appear in the bank.</div>
+              <div className="text-xs text-muted-foreground">
+                Approved answers will appear in the bank.
+              </div>
             </CardContent>
           </Card>
         )}
@@ -1137,14 +1659,18 @@ function AudioLibraryView() {
                 </div>
                 <div className="min-w-0">
                   <div className="font-semibold">{c.title}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{c.count} recording{c.count === 1 ? "" : "s"}</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {c.count} recording{c.count === 1 ? "" : "s"}
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground mt-3">New salespeople learn here. Upload best calls to share with the team.</p>
+      <p className="text-xs text-muted-foreground mt-3">
+        New salespeople learn here. Upload best calls to share with the team.
+      </p>
     </Section>
   );
 }
@@ -1152,12 +1678,12 @@ function AudioLibraryView() {
 /* ============== Performance (weekly dashboard) ============== */
 
 const PERF_TARGETS = {
-  winRate: 25,                 // %
-  pipelineCoverage: 3,         // x of monthly quota
-  responseWithin1h: 80,        // %
-  responseWithin24h: 95,       // %
-  monthlyClosures: 5,          // KRA
-  avgDealSize: 250000,         // ₹
+  winRate: 25, // %
+  pipelineCoverage: 3, // x of monthly quota
+  responseWithin1h: 80, // %
+  responseWithin24h: 95, // %
+  monthlyClosures: 5, // KRA
+  avgDealSize: 250000, // ₹
 };
 
 const PERF_FEEDBACK_KEY = "ccos.sales-perf-feedback.v1";
@@ -1166,10 +1692,18 @@ type FeedbackNote = { id: string; rep: string; author: string; body: string; cre
 
 function loadFeedback(): FeedbackNote[] {
   if (typeof window === "undefined") return [];
-  try { return JSON.parse(window.localStorage.getItem(PERF_FEEDBACK_KEY) || "[]"); } catch { return []; }
+  try {
+    return JSON.parse(window.localStorage.getItem(PERF_FEEDBACK_KEY) || "[]");
+  } catch {
+    return [];
+  }
 }
 function saveFeedback(notes: FeedbackNote[]) {
-  try { window.localStorage.setItem(PERF_FEEDBACK_KEY, JSON.stringify(notes)); } catch { /* noop */ }
+  try {
+    window.localStorage.setItem(PERF_FEEDBACK_KEY, JSON.stringify(notes));
+  } catch {
+    /* noop */
+  }
 }
 
 function startOfWeekISO(offsetWeeks = 0) {
@@ -1180,7 +1714,13 @@ function startOfWeekISO(offsetWeeks = 0) {
   return d.toISOString().slice(0, 10);
 }
 
-function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: string; full_name: string }[] }) {
+function PerformanceView({
+  leads,
+  profiles,
+}: {
+  leads: Lead[];
+  profiles: { id: string; full_name: string }[];
+}) {
   const { user, isLeadership } = useAuth();
 
   // CEO/COO/Sales VP see team-wide data; salesperson sees their own.
@@ -1211,30 +1751,46 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
   const metrics = useMemo(() => {
     const total = scoped.length;
     const contacted = scoped.filter((l) => l.lead_stage !== "New Lead").length;
-    const qualified = scoped.filter((l) => !["New Lead", "Contacted", "Lost"].includes(l.lead_stage)).length;
+    const qualified = scoped.filter(
+      (l) => !["New Lead", "Contacted", "Lost"].includes(l.lead_stage),
+    ).length;
     const won = scoped.filter((l) => isHandoverDone(l.lead_stage));
     const wonExcludingNoise = scoped.filter(
-      (l) => isHandoverDone(l.lead_stage) && l.lead_classification !== "Dangerous" && l.lead_classification !== "Time Waster",
+      (l) =>
+        isHandoverDone(l.lead_stage) &&
+        l.lead_classification !== "Dangerous" &&
+        l.lead_classification !== "Time Waster",
     );
     const qualifiedExcludingNoise = scoped.filter(
-      (l) => !["New Lead", "Contacted", "Lost"].includes(l.lead_stage)
-        && l.lead_classification !== "Dangerous" && l.lead_classification !== "Time Waster",
+      (l) =>
+        !["New Lead", "Contacted", "Lost"].includes(l.lead_stage) &&
+        l.lead_classification !== "Dangerous" &&
+        l.lead_classification !== "Time Waster",
     ).length;
 
     const winRate = qualified ? Math.round((won.length / qualified) * 100) : 0;
-    const adjustedWinRate = qualifiedExcludingNoise ? Math.round((wonExcludingNoise.length / qualifiedExcludingNoise) * 100) : 0;
+    const adjustedWinRate = qualifiedExcludingNoise
+      ? Math.round((wonExcludingNoise.length / qualifiedExcludingNoise) * 100)
+      : 0;
 
     // Stage breakdown
     const stageCounts: Record<string, number> = {};
-    PIPELINE_STAGES.forEach((s) => { stageCounts[s] = scoped.filter((l) => l.lead_stage === s).length; });
+    PIPELINE_STAGES.forEach((s) => {
+      stageCounts[s] = scoped.filter((l) => l.lead_stage === s).length;
+    });
     const lost = scoped.filter((l) => l.lead_stage === "Lost").length;
 
     // Drop-off: % of total leads that exited (Lost) vs reached each stage
     const dropOff = PIPELINE_STAGES.map((stage, i) => {
-      const reached = scoped.filter((l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i || isHandoverDone(l.lead_stage)).length;
-      const next = i < PIPELINE_STAGES.length - 1
-        ? scoped.filter((l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i + 1 || isHandoverDone(l.lead_stage)).length
-        : reached;
+      const reached = scoped.filter(
+        (l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i || isHandoverDone(l.lead_stage),
+      ).length;
+      const next =
+        i < PIPELINE_STAGES.length - 1
+          ? scoped.filter(
+              (l) => PIPELINE_STAGES.indexOf(l.lead_stage) >= i + 1 || isHandoverDone(l.lead_stage),
+            ).length
+          : reached;
       const dropPct = reached ? Math.round(((reached - next) / reached) * 100) : 0;
       return { stage, reached, dropPct };
     });
@@ -1248,17 +1804,30 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
         if (b > a) respMs.push(b - a);
       }
     });
-    const avgRespHrs = respMs.length ? Math.round(respMs.reduce((s, n) => s + n, 0) / respMs.length / 3600000) : 0;
-    const within1h = respMs.length ? Math.round((respMs.filter((m) => m <= 3600000).length / respMs.length) * 100) : 0;
-    const within24h = respMs.length ? Math.round((respMs.filter((m) => m <= 86400000).length / respMs.length) * 100) : 0;
+    const avgRespHrs = respMs.length
+      ? Math.round(respMs.reduce((s, n) => s + n, 0) / respMs.length / 3600000)
+      : 0;
+    const within1h = respMs.length
+      ? Math.round((respMs.filter((m) => m <= 3600000).length / respMs.length) * 100)
+      : 0;
+    const within24h = respMs.length
+      ? Math.round((respMs.filter((m) => m <= 86400000).length / respMs.length) * 100)
+      : 0;
 
     // Average deal size
-    const dealValues = won.map((l) => Number(l.engagement_letter_fee_amount) || 0).filter((n) => n > 0);
-    const avgDeal = dealValues.length ? Math.round(dealValues.reduce((s, n) => s + n, 0) / dealValues.length) : 0;
+    const dealValues = won
+      .map((l) => Number(l.engagement_letter_fee_amount) || 0)
+      .filter((n) => n > 0);
+    const avgDeal = dealValues.length
+      ? Math.round(dealValues.reduce((s, n) => s + n, 0) / dealValues.length)
+      : 0;
 
     // Pipeline coverage — open pipeline value vs monthly quota (KRA: 5 * avg deal target)
     const openLeads = scoped.filter((l) => !isTerminal(l.lead_stage) && l.lead_stage !== "Lost");
-    const openValue = openLeads.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || PERF_TARGETS.avgDealSize), 0);
+    const openValue = openLeads.reduce(
+      (s, l) => s + (Number(l.engagement_letter_fee_amount) || PERF_TARGETS.avgDealSize),
+      0,
+    );
     const monthlyQuota = PERF_TARGETS.monthlyClosures * PERF_TARGETS.avgDealSize;
     const coverage = monthlyQuota ? +(openValue / monthlyQuota).toFixed(1) : 0;
 
@@ -1266,38 +1835,82 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
     const cycleDays: number[] = [];
     scoped.forEach((l) => {
       if (l.converted_to_franchise_at) {
-        const d = (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000;
+        const d =
+          (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) /
+          86400000;
         if (d >= 0) cycleDays.push(d);
       }
     });
-    const avgCycle = cycleDays.length ? Math.round(cycleDays.reduce((s, n) => s + n, 0) / cycleDays.length) : 0;
+    const avgCycle = cycleDays.length
+      ? Math.round(cycleDays.reduce((s, n) => s + n, 0) / cycleDays.length)
+      : 0;
 
     // Activity: contacted / followups scheduled / meetings done this week
-    const calls = scoped.filter((l) => l.lead_stage !== "New Lead" && l.created_at.slice(0, 10) >= weekStart).length;
-    const followupsWk = scoped.filter((l) => l.followup_date && l.followup_date >= weekStart).length;
+    const calls = scoped.filter(
+      (l) => l.lead_stage !== "New Lead" && l.created_at.slice(0, 10) >= weekStart,
+    ).length;
+    const followupsWk = scoped.filter(
+      (l) => l.followup_date && l.followup_date >= weekStart,
+    ).length;
     const meetingsWk = scoped.filter((l) => l.meeting_date && l.meeting_date >= weekStart).length;
-    const proposalsWk = scoped.filter((l) => l.proposal_sent_date && l.proposal_sent_date >= weekStart).length;
+    const proposalsWk = scoped.filter(
+      (l) => l.proposal_sent_date && l.proposal_sent_date >= weekStart,
+    ).length;
 
     // Weekly revenue & growth — engagement letter fee received this week vs last week
-    const revWeek = scoped.filter((l) => l.engagement_letter_fee_received_date && l.engagement_letter_fee_received_date >= weekStart)
+    const revWeek = scoped
+      .filter(
+        (l) =>
+          l.engagement_letter_fee_received_date &&
+          l.engagement_letter_fee_received_date >= weekStart,
+      )
       .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const revPrev = scoped.filter((l) => l.engagement_letter_fee_received_date
-      && l.engagement_letter_fee_received_date >= prevWeekStart
-      && l.engagement_letter_fee_received_date < weekStart)
+    const revPrev = scoped
+      .filter(
+        (l) =>
+          l.engagement_letter_fee_received_date &&
+          l.engagement_letter_fee_received_date >= prevWeekStart &&
+          l.engagement_letter_fee_received_date < weekStart,
+      )
       .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const growth = revPrev ? Math.round(((revWeek - revPrev) / revPrev) * 100) : (revWeek ? 100 : 0);
+    const growth = revPrev ? Math.round(((revWeek - revPrev) / revPrev) * 100) : revWeek ? 100 : 0;
 
     // Additional revenue (placeholder — upsell flag not in schema yet)
-    const upsell = scoped.filter((l) => (l.remarks || "").toLowerCase().includes("upsell")
-      || (l.remarks || "").toLowerCase().includes("repeat")).length;
+    const upsell = scoped.filter(
+      (l) =>
+        (l.remarks || "").toLowerCase().includes("upsell") ||
+        (l.remarks || "").toLowerCase().includes("repeat"),
+    ).length;
 
     return {
-      total, contacted, qualified, won, wonExcludingNoise, lost,
-      winRate, adjustedWinRate, stageCounts, dropOff,
-      avgRespHrs, within1h, within24h,
-      avgDeal, dealValues, openLeads, openValue, monthlyQuota, coverage,
-      avgCycle, calls, followupsWk, meetingsWk, proposalsWk,
-      revWeek, revPrev, growth, upsell,
+      total,
+      contacted,
+      qualified,
+      won,
+      wonExcludingNoise,
+      lost,
+      winRate,
+      adjustedWinRate,
+      stageCounts,
+      dropOff,
+      avgRespHrs,
+      within1h,
+      within24h,
+      avgDeal,
+      dealValues,
+      openLeads,
+      openValue,
+      monthlyQuota,
+      coverage,
+      avgCycle,
+      calls,
+      followupsWk,
+      meetingsWk,
+      proposalsWk,
+      revWeek,
+      revPrev,
+      growth,
+      upsell,
     };
   }, [scoped, weekStart, prevWeekStart]);
 
@@ -1309,7 +1922,9 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
   const repKey = isLeadership ? (repFilter === "all" ? "team" : repFilter) : (user?.id ?? "me");
   const [notes, setNotes] = useState<FeedbackNote[]>(() => loadFeedback());
   const [draft, setDraft] = useState("");
-  const repNotes = notes.filter((n) => n.rep === repKey).sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const repNotes = notes
+    .filter((n) => n.rep === repKey)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
   const canCoach = isLeadership;
 
   const addNote = () => {
@@ -1322,28 +1937,43 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
       created_at: new Date().toISOString(),
     };
     const all = [next, ...notes];
-    setNotes(all); saveFeedback(all); setDraft("");
+    setNotes(all);
+    saveFeedback(all);
+    setDraft("");
     toast.success("Coaching note saved");
   };
 
-  const repLabel = repFilter === "all" ? "Whole team" : (profiles.find((p) => p.id === repFilter)?.full_name ?? "Rep");
+  const repLabel =
+    repFilter === "all"
+      ? "Whole team"
+      : (profiles.find((p) => p.id === repFilter)?.full_name ?? "Rep");
 
   return (
     <div className="space-y-8">
       <Section
         title="Weekly Performance"
-        subtitle={isLeadership ? `Viewing: ${repLabel} — week of ${weekStart}` : `Week of ${weekStart}`}
-        right={isLeadership ? (
-          <div className="w-56">
-            <Select value={repFilter} onValueChange={setRepFilter}>
-              <SelectTrigger><SelectValue placeholder="Filter by rep" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Whole team</SelectItem>
-                {profiles.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-        ) : null}
+        subtitle={
+          isLeadership ? `Viewing: ${repLabel} — week of ${weekStart}` : `Week of ${weekStart}`
+        }
+        right={
+          isLeadership ? (
+            <div className="w-56">
+              <Select value={repFilter} onValueChange={setRepFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by rep" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Whole team</SelectItem>
+                  {profiles.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.full_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null
+        }
       >
         {/* A. Lead pipeline statistics */}
         <MetricBlock
@@ -1353,12 +1983,35 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Funnel by stage. Adjusted win rate excludes Dangerous / Time Waster leads."
         >
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <ClickStat label="Leads assigned" value={metrics.total} onClick={() => openDrill("All assigned leads", scoped)} />
-            <ClickStat label="Contacted" value={metrics.contacted} onClick={() => openDrill("Contacted leads", scoped.filter((l) => l.lead_stage !== "New Lead"))} />
-            <ClickStat label="Won (handover)" value={metrics.won.length} tone="text-emerald-700"
-              onClick={() => openDrill("Won deals", metrics.won)} />
-            <TargetStat label="Win rate" value={`${metrics.winRate}%`} target={PERF_TARGETS.winRate} actual={metrics.winRate}
-              sub={`Adjusted: ${metrics.adjustedWinRate}%`} onClick={() => openDrill("Won deals (closed opportunities)", metrics.won)} />
+            <ClickStat
+              label="Leads assigned"
+              value={metrics.total}
+              onClick={() => openDrill("All assigned leads", scoped)}
+            />
+            <ClickStat
+              label="Contacted"
+              value={metrics.contacted}
+              onClick={() =>
+                openDrill(
+                  "Contacted leads",
+                  scoped.filter((l) => l.lead_stage !== "New Lead"),
+                )
+              }
+            />
+            <ClickStat
+              label="Won (handover)"
+              value={metrics.won.length}
+              tone="text-emerald-700"
+              onClick={() => openDrill("Won deals", metrics.won)}
+            />
+            <TargetStat
+              label="Win rate"
+              value={`${metrics.winRate}%`}
+              target={PERF_TARGETS.winRate}
+              actual={metrics.winRate}
+              sub={`Adjusted: ${metrics.adjustedWinRate}%`}
+              onClick={() => openDrill("Won deals (closed opportunities)", metrics.won)}
+            />
           </div>
           <div className="mt-4">
             <div className="text-xs text-muted-foreground mb-2">Stage breakdown</div>
@@ -1367,11 +2020,23 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
                 const c = metrics.stageCounts[s] || 0;
                 const pct = metrics.total ? (c / metrics.total) * 100 : 0;
                 return (
-                  <button key={s} className="w-full text-left group" onClick={() => openDrill(`Stage: ${s}`, scoped.filter((l) => l.lead_stage === s))}>
+                  <button
+                    key={s}
+                    className="w-full text-left group"
+                    onClick={() =>
+                      openDrill(
+                        `Stage: ${s}`,
+                        scoped.filter((l) => l.lead_stage === s),
+                      )
+                    }
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-44 text-xs text-slate-600 truncate">{s}</div>
                       <div className="flex-1 h-2 rounded-full bg-slate-100 overflow-hidden">
-                        <div className="h-full bg-[#2563EB] group-hover:opacity-80 transition" style={{ width: `${pct}%` }} />
+                        <div
+                          className="h-full bg-[#2563EB] group-hover:opacity-80 transition"
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                       <div className="w-10 text-right text-xs tabular-nums">{c}</div>
                     </div>
@@ -1391,11 +2056,21 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
             {metrics.dropOff.map((d) => (
-              <button key={d.stage} className="text-left rounded-lg border p-3 hover:bg-slate-50"
-                onClick={() => openDrill(`Stuck at: ${d.stage}`, scoped.filter((l) => l.lead_stage === d.stage))}>
+              <button
+                key={d.stage}
+                className="text-left rounded-lg border p-3 hover:bg-slate-50"
+                onClick={() =>
+                  openDrill(
+                    `Stuck at: ${d.stage}`,
+                    scoped.filter((l) => l.lead_stage === d.stage),
+                  )
+                }
+              >
                 <div className="text-xs font-medium text-slate-700">{d.stage}</div>
                 <div className="text-lg font-semibold mt-0.5">{d.dropPct}%</div>
-                <div className="text-[11px] text-muted-foreground">drop-off · {d.reached} reached</div>
+                <div className="text-[11px] text-muted-foreground">
+                  drop-off · {d.reached} reached
+                </div>
               </button>
             ))}
           </div>
@@ -1410,8 +2085,18 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Stat label="Avg response" value={`${metrics.avgRespHrs} hrs`} />
-            <TargetStat label="Within 1 hour" value={`${metrics.within1h}%`} target={PERF_TARGETS.responseWithin1h} actual={metrics.within1h} />
-            <TargetStat label="Within 24 hours" value={`${metrics.within24h}%`} target={PERF_TARGETS.responseWithin24h} actual={metrics.within24h} />
+            <TargetStat
+              label="Within 1 hour"
+              value={`${metrics.within1h}%`}
+              target={PERF_TARGETS.responseWithin1h}
+              actual={metrics.within1h}
+            />
+            <TargetStat
+              label="Within 24 hours"
+              value={`${metrics.within24h}%`}
+              target={PERF_TARGETS.responseWithin24h}
+              actual={metrics.within24h}
+            />
           </div>
         </MetricBlock>
 
@@ -1423,13 +2108,24 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Average engagement-letter fee across won deals."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <TargetStat label="Avg deal" value={`₹${metrics.avgDeal.toLocaleString("en-IN")}`}
-              target={PERF_TARGETS.avgDealSize} actual={metrics.avgDeal}
+            <TargetStat
+              label="Avg deal"
+              value={`₹${metrics.avgDeal.toLocaleString("en-IN")}`}
+              target={PERF_TARGETS.avgDealSize}
+              actual={metrics.avgDeal}
               sub={`Target ₹${PERF_TARGETS.avgDealSize.toLocaleString("en-IN")}`}
-              onClick={() => openDrill("Won deals (by value)", metrics.won)} />
-            <ClickStat label="Deals counted" value={metrics.dealValues.length} onClick={() => openDrill("Won deals", metrics.won)} />
-            <Stat label="Total won value"
-              value={`₹${metrics.dealValues.reduce((s, n) => s + n, 0).toLocaleString("en-IN")}`} tone="text-emerald-700" />
+              onClick={() => openDrill("Won deals (by value)", metrics.won)}
+            />
+            <ClickStat
+              label="Deals counted"
+              value={metrics.dealValues.length}
+              onClick={() => openDrill("Won deals", metrics.won)}
+            />
+            <Stat
+              label="Total won value"
+              value={`₹${metrics.dealValues.reduce((s, n) => s + n, 0).toLocaleString("en-IN")}`}
+              tone="text-emerald-700"
+            />
           </div>
         </MetricBlock>
 
@@ -1441,11 +2137,29 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Click into the metric to see all closed opportunities and their notes."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <TargetStat label="Win rate" value={`${metrics.winRate}%`} target={PERF_TARGETS.winRate} actual={metrics.winRate}
-              onClick={() => openDrill("Closed opportunities", metrics.won)} />
-            <Stat label="Adjusted win rate" value={`${metrics.adjustedWinRate}%`} sub="excl. dangerous / time-waster" />
-            <ClickStat label="Lost" value={metrics.lost} tone="text-red-600"
-              onClick={() => openDrill("Lost leads", scoped.filter((l) => l.lead_stage === "Lost"))} />
+            <TargetStat
+              label="Win rate"
+              value={`${metrics.winRate}%`}
+              target={PERF_TARGETS.winRate}
+              actual={metrics.winRate}
+              onClick={() => openDrill("Closed opportunities", metrics.won)}
+            />
+            <Stat
+              label="Adjusted win rate"
+              value={`${metrics.adjustedWinRate}%`}
+              sub="excl. dangerous / time-waster"
+            />
+            <ClickStat
+              label="Lost"
+              value={metrics.lost}
+              tone="text-red-600"
+              onClick={() =>
+                openDrill(
+                  "Lost leads",
+                  scoped.filter((l) => l.lead_stage === "Lost"),
+                )
+              }
+            />
           </div>
         </MetricBlock>
 
@@ -1457,14 +2171,24 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Open pipeline value ÷ monthly quota. Coloured against target."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <TargetStat label="Coverage" value={`${metrics.coverage}×`} target={PERF_TARGETS.pipelineCoverage} actual={metrics.coverage}
+            <TargetStat
+              label="Coverage"
+              value={`${metrics.coverage}×`}
+              target={PERF_TARGETS.pipelineCoverage}
+              actual={metrics.coverage}
               sub={`Target ${PERF_TARGETS.pipelineCoverage}× quota`}
-              onClick={() => openDrill("Open pipeline", metrics.openLeads)} />
-            <ClickStat label="Open pipeline value"
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
+            />
+            <ClickStat
+              label="Open pipeline value"
               value={`₹${metrics.openValue.toLocaleString("en-IN")}`}
-              onClick={() => openDrill("Open pipeline", metrics.openLeads)} />
-            <Stat label="Monthly quota" value={`₹${metrics.monthlyQuota.toLocaleString("en-IN")}`}
-              sub={`${PERF_TARGETS.monthlyClosures} closures × avg deal`} />
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
+            />
+            <Stat
+              label="Monthly quota"
+              value={`₹${metrics.monthlyQuota.toLocaleString("en-IN")}`}
+              sub={`${PERF_TARGETS.monthlyClosures} closures × avg deal`}
+            />
           </div>
         </MetricBlock>
 
@@ -1477,19 +2201,59 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <Stat label="Avg cycle" value={`${metrics.avgCycle} days`} />
-            <ClickStat label="Closed in <30 days"
-              value={metrics.won.filter((l) => l.converted_to_franchise_at
-                && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 <= 30).length}
-              onClick={() => openDrill("Fast closures (<30 days)",
-                metrics.won.filter((l) => l.converted_to_franchise_at
-                  && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 <= 30))} />
-            <ClickStat label="Closed >60 days"
-              value={metrics.won.filter((l) => l.converted_to_franchise_at
-                && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 > 60).length}
+            <ClickStat
+              label="Closed in <30 days"
+              value={
+                metrics.won.filter(
+                  (l) =>
+                    l.converted_to_franchise_at &&
+                    (new Date(l.converted_to_franchise_at).getTime() -
+                      new Date(l.created_at).getTime()) /
+                      86400000 <=
+                      30,
+                ).length
+              }
+              onClick={() =>
+                openDrill(
+                  "Fast closures (<30 days)",
+                  metrics.won.filter(
+                    (l) =>
+                      l.converted_to_franchise_at &&
+                      (new Date(l.converted_to_franchise_at).getTime() -
+                        new Date(l.created_at).getTime()) /
+                        86400000 <=
+                        30,
+                  ),
+                )
+              }
+            />
+            <ClickStat
+              label="Closed >60 days"
+              value={
+                metrics.won.filter(
+                  (l) =>
+                    l.converted_to_franchise_at &&
+                    (new Date(l.converted_to_franchise_at).getTime() -
+                      new Date(l.created_at).getTime()) /
+                      86400000 >
+                      60,
+                ).length
+              }
               tone="text-orange-600"
-              onClick={() => openDrill("Slow closures (>60 days)",
-                metrics.won.filter((l) => l.converted_to_franchise_at
-                  && (new Date(l.converted_to_franchise_at).getTime() - new Date(l.created_at).getTime()) / 86400000 > 60))} />
+              onClick={() =>
+                openDrill(
+                  "Slow closures (>60 days)",
+                  metrics.won.filter(
+                    (l) =>
+                      l.converted_to_franchise_at &&
+                      (new Date(l.converted_to_franchise_at).getTime() -
+                        new Date(l.created_at).getTime()) /
+                        86400000 >
+                        60,
+                  ),
+                )
+              }
+            />
           </div>
         </MetricBlock>
 
@@ -1516,11 +2280,17 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Total engagement-letter fee received this week vs last week."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Stat label="This week" value={`₹${metrics.revWeek.toLocaleString("en-IN")}`} tone="text-emerald-700" />
+            <Stat
+              label="This week"
+              value={`₹${metrics.revWeek.toLocaleString("en-IN")}`}
+              tone="text-emerald-700"
+            />
             <Stat label="Last week" value={`₹${metrics.revPrev.toLocaleString("en-IN")}`} />
-            <Stat label="Growth"
+            <Stat
+              label="Growth"
               value={`${metrics.growth >= 0 ? "+" : ""}${metrics.growth}%`}
-              tone={metrics.growth >= 0 ? "text-emerald-700" : "text-red-600"} />
+              tone={metrics.growth >= 0 ? "text-emerald-700" : "text-red-600"}
+            />
           </div>
         </MetricBlock>
 
@@ -1532,9 +2302,16 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
           impl="Counts leads tagged 'upsell' or 'repeat' in remarks."
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <ClickStat label="Upsell / repeat leads" value={metrics.upsell}
-              onClick={() => openDrill("Upsell / repeat opportunities",
-                scoped.filter((l) => (l.remarks || "").toLowerCase().match(/upsell|repeat/)))} />
+            <ClickStat
+              label="Upsell / repeat leads"
+              value={metrics.upsell}
+              onClick={() =>
+                openDrill(
+                  "Upsell / repeat opportunities",
+                  scoped.filter((l) => (l.remarks || "").toLowerCase().match(/upsell|repeat/)),
+                )
+              }
+            />
             <Stat label="Note" value="Tag remarks with 'upsell' or 'repeat' to track here." />
           </div>
         </MetricBlock>
@@ -1543,16 +2320,22 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
       {/* Sales VP feedback / coaching */}
       <Section
         title="Coaching notes"
-        subtitle={canCoach
-          ? `Leave feedback for ${repLabel} based on the metrics above.`
-          : "Feedback from your Sales VP based on the metrics above."}
+        subtitle={
+          canCoach
+            ? `Leave feedback for ${repLabel} based on the metrics above.`
+            : "Feedback from your Sales VP based on the metrics above."
+        }
       >
         <Card>
           <CardContent className="p-4 space-y-3">
             {canCoach && (
               <div className="space-y-2">
-                <Textarea value={draft} onChange={(e) => setDraft(e.target.value)}
-                  placeholder="Coaching note (e.g., 'Lift response time under 1hr — currently 35%.')" rows={3} />
+                <Textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Coaching note (e.g., 'Lift response time under 1hr — currently 35%.')"
+                  rows={3}
+                />
                 <div className="flex justify-end">
                   <Button onClick={addNote} disabled={!draft.trim()}>
                     <MessageSquare className="w-4 h-4 mr-2" /> Post note
@@ -1563,44 +2346,70 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
             <div className="space-y-2">
               {repNotes.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No coaching notes yet.</p>
-              ) : repNotes.map((n) => (
-                <div key={n.id} className="rounded-lg border p-3 bg-slate-50">
-                  <div className="text-xs text-muted-foreground flex justify-between">
-                    <span>{n.author}</span>
-                    <span>{new Date(n.created_at).toLocaleString()}</span>
+              ) : (
+                repNotes.map((n) => (
+                  <div key={n.id} className="rounded-lg border p-3 bg-slate-50">
+                    <div className="text-xs text-muted-foreground flex justify-between">
+                      <span>{n.author}</span>
+                      <span>{new Date(n.created_at).toLocaleString()}</span>
+                    </div>
+                    <div className="text-sm mt-1 whitespace-pre-wrap">{n.body}</div>
                   </div>
-                  <div className="text-sm mt-1 whitespace-pre-wrap">{n.body}</div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
       </Section>
 
       {/* Drill-down dialog */}
-      <Dialog open={!!drill} onOpenChange={(o) => { if (!o) setDrill(null); }}>
+      <Dialog
+        open={!!drill}
+        onOpenChange={(o) => {
+          if (!o) setDrill(null);
+        }}
+      >
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>{drill?.title} ({drill?.leads.length})</DialogTitle></DialogHeader>
+          <DialogHeader>
+            <DialogTitle>
+              {drill?.title} ({drill?.leads.length})
+            </DialogTitle>
+          </DialogHeader>
           <div className="space-y-2">
-            {!drill?.leads.length && <p className="text-sm text-muted-foreground">No leads in this slice.</p>}
+            {!drill?.leads.length && (
+              <p className="text-sm text-muted-foreground">No leads in this slice.</p>
+            )}
             {drill?.leads.map((l) => (
-              <Link key={l.id} to="/leads/$id" params={{ id: l.id }}
-                className="block rounded-lg border p-3 hover:bg-slate-50">
+              <Link
+                key={l.id}
+                to="/leads/$id"
+                params={{ id: l.id }}
+                className="block rounded-lg border p-3 hover:bg-slate-50"
+              >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="font-medium truncate">{l.name}</div>
                     <div className="text-xs text-muted-foreground truncate">
                       {l.city ?? "—"} · {l.phone ?? "—"} · {l.lead_stage}
                     </div>
-                    {l.remarks && <div className="text-xs text-slate-600 mt-1 line-clamp-2">{l.remarks}</div>}
+                    {l.remarks && (
+                      <div className="text-xs text-slate-600 mt-1 line-clamp-2">{l.remarks}</div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {l.lead_classification && (
-                      <Badge variant="outline" className={classificationVariant(l.lead_classification)}>{l.lead_classification}</Badge>
+                      <Badge
+                        variant="outline"
+                        className={classificationVariant(l.lead_classification)}
+                      >
+                        {l.lead_classification}
+                      </Badge>
                     )}
-                    {l.engagement_letter_fee_amount
-                      ? <div className="text-sm tabular-nums">₹{Number(l.engagement_letter_fee_amount).toLocaleString("en-IN")}</div>
-                      : null}
+                    {l.engagement_letter_fee_amount ? (
+                      <div className="text-sm tabular-nums">
+                        ₹{Number(l.engagement_letter_fee_amount).toLocaleString("en-IN")}
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </Link>
@@ -1612,8 +2421,18 @@ function PerformanceView({ leads, profiles }: { leads: Lead[]; profiles: { id: s
   );
 }
 
-function MetricBlock({ icon: Icon, name, why, impl, children }: {
-  icon: any; name: string; why: string; impl: string; children: React.ReactNode;
+function MetricBlock({
+  icon: Icon,
+  name,
+  why,
+  impl,
+  children,
+}: {
+  icon: any;
+  name: string;
+  why: string;
+  impl: string;
+  children: React.ReactNode;
 }) {
   return (
     <Card className="mb-4">
@@ -1624,8 +2443,14 @@ function MetricBlock({ icon: Icon, name, why, impl, children }: {
           </div>
           <div className="min-w-0">
             <div className="font-semibold text-slate-900">{name}</div>
-            <div className="text-xs text-muted-foreground mt-0.5"><span className="font-medium text-slate-600">Why it matters: </span>{why}</div>
-            <div className="text-xs text-muted-foreground mt-0.5"><span className="font-medium text-slate-600">Implementation: </span>{impl}</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              <span className="font-medium text-slate-600">Why it matters: </span>
+              {why}
+            </div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              <span className="font-medium text-slate-600">Implementation: </span>
+              {impl}
+            </div>
           </div>
         </div>
         {children}
@@ -1634,7 +2459,19 @@ function MetricBlock({ icon: Icon, name, why, impl, children }: {
   );
 }
 
-function ClickStat({ label, value, tone, sub, onClick }: { label: string; value: number | string; tone?: string; sub?: string; onClick?: () => void }) {
+function ClickStat({
+  label,
+  value,
+  tone,
+  sub,
+  onClick,
+}: {
+  label: string;
+  value: number | string;
+  tone?: string;
+  sub?: string;
+  onClick?: () => void;
+}) {
   return (
     <button onClick={onClick} className="text-left">
       <Card className="hover:border-[#2563EB] transition">
@@ -1648,8 +2485,20 @@ function ClickStat({ label, value, tone, sub, onClick }: { label: string; value:
   );
 }
 
-function TargetStat({ label, value, target, actual, sub, onClick }: {
-  label: string; value: string | number; target: number; actual: number; sub?: string; onClick?: () => void;
+function TargetStat({
+  label,
+  value,
+  target,
+  actual,
+  sub,
+  onClick,
+}: {
+  label: string;
+  value: string | number;
+  target: number;
+  actual: number;
+  sub?: string;
+  onClick?: () => void;
 }) {
   const pct = target ? Math.min(100, Math.round((actual / target) * 100)) : 0;
   const meets = actual >= target;
@@ -1659,13 +2508,24 @@ function TargetStat({ label, value, target, actual, sub, onClick }: {
         <CardContent className="p-4 space-y-2">
           <div className="flex items-center justify-between">
             <div className="text-xs text-muted-foreground">{label}</div>
-            <Badge variant="outline" className={meets ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-orange-50 text-orange-700 border-orange-200"}>
+            <Badge
+              variant="outline"
+              className={
+                meets
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  : "bg-orange-50 text-orange-700 border-orange-200"
+              }
+            >
               {meets ? "On target" : "Below target"}
             </Badge>
           </div>
           <div className={`text-2xl font-semibold ${meets ? "text-emerald-700" : ""}`}>{value}</div>
           <Progress value={pct} className="h-1.5" />
-          <div className="text-[11px] text-muted-foreground">Target: {target}{typeof value === "string" && value.includes("%") ? "%" : ""}{sub ? ` · ${sub}` : ""}</div>
+          <div className="text-[11px] text-muted-foreground">
+            Target: {target}
+            {typeof value === "string" && value.includes("%") ? "%" : ""}
+            {sub ? ` · ${sub}` : ""}
+          </div>
         </CardContent>
       </Card>
     </button>
@@ -1748,10 +2608,14 @@ function RolesView() {
     setDraft(JSON.parse(JSON.stringify(content)));
     setEditing(true);
   }
-  function cancel() { setEditing(false); }
+  function cancel() {
+    setEditing(false);
+  }
   function save() {
     setContent(draft);
-    try { window.localStorage.setItem(ROLES_STORAGE_KEY, JSON.stringify(draft)); } catch {}
+    try {
+      window.localStorage.setItem(ROLES_STORAGE_KEY, JSON.stringify(draft));
+    } catch {}
     setEditing(false);
     toast.success("Roles & Responsibilities updated");
   }
@@ -1764,17 +2628,27 @@ function RolesView() {
       title="Roles & Responsibilities"
       subtitle={isLeadership ? "Editable by CEO/Leadership" : "Read-only — contact CEO for changes"}
       right={
-        isLeadership && (
-          editing ? (
-            <div className="flex gap-2">
-              <Button size="sm" variant="outline" onClick={resetDefaults}>Reset</Button>
-              <Button size="sm" variant="ghost" onClick={cancel}><X className="w-4 h-4 mr-1" />Cancel</Button>
-              <Button size="sm" onClick={save}><Save className="w-4 h-4 mr-1" />Save</Button>
-            </div>
-          ) : (
-            <Button size="sm" variant="outline" onClick={startEdit}><Pencil className="w-4 h-4 mr-1" />Edit</Button>
-          )
-        )
+        isLeadership &&
+        (editing ? (
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={resetDefaults}>
+              Reset
+            </Button>
+            <Button size="sm" variant="ghost" onClick={cancel}>
+              <X className="w-4 h-4 mr-1" />
+              Cancel
+            </Button>
+            <Button size="sm" onClick={save}>
+              <Save className="w-4 h-4 mr-1" />
+              Save
+            </Button>
+          </div>
+        ) : (
+          <Button size="sm" variant="outline" onClick={startEdit}>
+            <Pencil className="w-4 h-4 mr-1" />
+            Edit
+          </Button>
+        ))
       }
     >
       <Card className="border rounded-2xl">
@@ -1815,7 +2689,9 @@ function RolesView() {
             </>
           ) : (
             <>
-              <h2 className="text-xl font-semibold text-slate-900 border-b pb-3">{content.title}</h2>
+              <h2 className="text-xl font-semibold text-slate-900 border-b pb-3">
+                {content.title}
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-x-6 gap-y-5">
                 {content.sections.map((s, i) => (
                   <div key={i} className="contents">
@@ -1858,8 +2734,12 @@ const NOTE_COLORS: { key: string; bg: string; ring: string; label: string }[] = 
   { key: "purple", bg: "bg-violet-50", ring: "ring-violet-200", label: "Purple" },
   { key: "orange", bg: "bg-orange-50", ring: "ring-orange-200", label: "Orange" },
 ];
-function noteColor(k: string) { return NOTE_COLORS.find((c) => c.key === k) ?? NOTE_COLORS[0]; }
-function uid() { return Math.random().toString(36).slice(2, 10); }
+function noteColor(k: string) {
+  return NOTE_COLORS.find((c) => c.key === k) ?? NOTE_COLORS[0];
+}
+function uid() {
+  return Math.random().toString(36).slice(2, 10);
+}
 
 function NotesView({ profiles }: { profiles: { id: string; full_name: string }[] }) {
   const { user, isLeadership } = useAuth();
@@ -1871,7 +2751,8 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
     enabled: !!user?.id,
     queryFn: async () => {
       const { data, error } = await (supabase as any)
-        .from("sales_notes").select("*")
+        .from("sales_notes")
+        .select("*")
         .order("pinned", { ascending: false })
         .order("updated_at", { ascending: false });
       if (error) throw error;
@@ -1889,7 +2770,9 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
         qc.invalidateQueries({ queryKey: ["sales-notes"] });
       })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [qc]);
 
   const profMap = useMemo(() => {
@@ -1901,10 +2784,11 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
     if (!term) return notes;
-    return notes.filter((n) =>
-      (n.title || "").toLowerCase().includes(term) ||
-      (n.content || "").toLowerCase().includes(term) ||
-      n.checklist.some((c) => c.text.toLowerCase().includes(term))
+    return notes.filter(
+      (n) =>
+        (n.title || "").toLowerCase().includes(term) ||
+        (n.content || "").toLowerCase().includes(term) ||
+        n.checklist.some((c) => c.text.toLowerCase().includes(term)),
     );
   }, [notes, q]);
 
@@ -1922,19 +2806,28 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
       checklist: partial.checklist ?? [],
     };
     const { error } = await (supabase as any).from("sales_notes").insert(payload);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["sales-notes"] });
   }
 
   async function updateNote(id: string, patch: Partial<SalesNote>) {
     const { error } = await (supabase as any).from("sales_notes").update(patch).eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["sales-notes"] });
   }
 
   async function deleteNote(id: string) {
     const { error } = await (supabase as any).from("sales_notes").delete().eq("id", id);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     qc.invalidateQueries({ queryKey: ["sales-notes"] });
   }
 
@@ -1947,7 +2840,9 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
           </h2>
           <p className="text-xs text-muted-foreground">
             Shared notes board for Sales VP &amp; CEO — pin ideas, jot tasks, collaborate live.
-            {isLeadership ? " You can see and edit everyone's notes." : " You see your own notes; leadership can see and reply."}
+            {isLeadership
+              ? " You can see and edit everyone's notes."
+              : " You see your own notes; leadership can see and reply."}
           </p>
         </div>
         <div className="relative w-full max-w-sm">
@@ -1973,16 +2868,30 @@ function NotesView({ profiles }: { profiles: { id: string; full_name: string }[]
         <>
           {pinned.length > 0 && (
             <div className="space-y-2">
-              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Pinned</div>
-              <NotesGrid notes={pinned} authorOf={(id) => profMap.get(id) || "Unknown"} onUpdate={updateNote} onDelete={deleteNote} />
+              <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                Pinned
+              </div>
+              <NotesGrid
+                notes={pinned}
+                authorOf={(id) => profMap.get(id) || "Unknown"}
+                onUpdate={updateNote}
+                onDelete={deleteNote}
+              />
             </div>
           )}
           {others.length > 0 && (
             <div className="space-y-2">
               {pinned.length > 0 && (
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Others</div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  Others
+                </div>
               )}
-              <NotesGrid notes={others} authorOf={(id) => profMap.get(id) || "Unknown"} onUpdate={updateNote} onDelete={deleteNote} />
+              <NotesGrid
+                notes={others}
+                authorOf={(id) => profMap.get(id) || "Unknown"}
+                onUpdate={updateNote}
+                onDelete={deleteNote}
+              />
             </div>
           )}
         </>
@@ -2002,17 +2911,26 @@ function NoteComposer({ onCreate }: { onCreate: (n: Partial<SalesNote>) => Promi
   const c = noteColor(color);
 
   function reset() {
-    setTitle(""); setContent(""); setChecklist([]); setColor("default"); setPinned(false);
-    setMode("note"); setExpanded(false);
+    setTitle("");
+    setContent("");
+    setChecklist([]);
+    setColor("default");
+    setPinned(false);
+    setMode("note");
+    setExpanded(false);
   }
   async function save() {
     const hasContent = title.trim() || content.trim() || checklist.some((i) => i.text.trim());
-    if (!hasContent) { reset(); return; }
+    if (!hasContent) {
+      reset();
+      return;
+    }
     await onCreate({
       title: title.trim() || null,
       content: content.trim() || null,
       checklist: checklist.filter((i) => i.text.trim()),
-      color, pinned,
+      color,
+      pinned,
     });
     reset();
   }
@@ -2041,7 +2959,11 @@ function NoteComposer({ onCreate }: { onCreate: (n: Partial<SalesNote>) => Promi
                 className="p-1.5 rounded hover:bg-black/5"
                 title={pinned ? "Unpin" : "Pin"}
               >
-                {pinned ? <Pin className="w-4 h-4 text-amber-600" /> : <PinOff className="w-4 h-4 text-muted-foreground" />}
+                {pinned ? (
+                  <Pin className="w-4 h-4 text-amber-600" />
+                ) : (
+                  <PinOff className="w-4 h-4 text-muted-foreground" />
+                )}
               </button>
             </div>
 
@@ -2059,18 +2981,33 @@ function NoteComposer({ onCreate }: { onCreate: (n: Partial<SalesNote>) => Promi
             <div className="flex items-center justify-between gap-2 pt-1 flex-wrap">
               <div className="flex items-center gap-1">
                 <Button
-                  type="button" size="sm" variant={mode === "note" ? "secondary" : "ghost"}
-                  onClick={() => setMode("note")} className="h-7"
-                >Note</Button>
-                <Button
-                  type="button" size="sm" variant={mode === "task" ? "secondary" : "ghost"}
-                  onClick={() => { setMode("task"); if (checklist.length === 0) setChecklist([{ id: uid(), text: "", done: false }]); }}
+                  type="button"
+                  size="sm"
+                  variant={mode === "note" ? "secondary" : "ghost"}
+                  onClick={() => setMode("note")}
                   className="h-7"
-                >Tasks</Button>
+                >
+                  Note
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={mode === "task" ? "secondary" : "ghost"}
+                  onClick={() => {
+                    setMode("task");
+                    if (checklist.length === 0)
+                      setChecklist([{ id: uid(), text: "", done: false }]);
+                  }}
+                  className="h-7"
+                >
+                  Tasks
+                </Button>
                 <ColorPicker value={color} onChange={setColor} />
               </div>
               <div className="flex items-center gap-1">
-                <Button type="button" size="sm" variant="ghost" onClick={reset}>Cancel</Button>
+                <Button type="button" size="sm" variant="ghost" onClick={reset}>
+                  Cancel
+                </Button>
                 <Button type="button" size="sm" onClick={save}>
                   <Save className="w-4 h-4 mr-1" /> Save
                 </Button>
@@ -2094,7 +3031,7 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (k: string)
           className={cn(
             "w-5 h-5 rounded-full border transition",
             c.bg,
-            value === c.key ? "ring-2 ring-offset-1 ring-slate-700" : "border-slate-300"
+            value === c.key ? "ring-2 ring-offset-1 ring-slate-700" : "border-slate-300",
           )}
         />
       ))}
@@ -2102,12 +3039,22 @@ function ColorPicker({ value, onChange }: { value: string; onChange: (k: string)
   );
 }
 
-function ChecklistEditor({ items, onChange }: { items: ChecklistItem[]; onChange: (next: ChecklistItem[]) => void }) {
+function ChecklistEditor({
+  items,
+  onChange,
+}: {
+  items: ChecklistItem[];
+  onChange: (next: ChecklistItem[]) => void;
+}) {
   function update(id: string, patch: Partial<ChecklistItem>) {
     onChange(items.map((i) => (i.id === id ? { ...i, ...patch } : i)));
   }
-  function remove(id: string) { onChange(items.filter((i) => i.id !== id)); }
-  function add() { onChange([...items, { id: uid(), text: "", done: false }]); }
+  function remove(id: string) {
+    onChange(items.filter((i) => i.id !== id));
+  }
+  function add() {
+    onChange([...items, { id: uid(), text: "", done: false }]);
+  }
 
   const active = items.filter((i) => !i.done);
   const done = items.filter((i) => i.done);
@@ -2166,7 +3113,12 @@ function ChecklistEditor({ items, onChange }: { items: ChecklistItem[]; onChange
   );
 }
 
-function NotesGrid({ notes, authorOf, onUpdate, onDelete }: {
+function NotesGrid({
+  notes,
+  authorOf,
+  onUpdate,
+  onDelete,
+}: {
   notes: SalesNote[];
   authorOf: (id: string) => string;
   onUpdate: (id: string, patch: Partial<SalesNote>) => Promise<void>;
@@ -2175,13 +3127,24 @@ function NotesGrid({ notes, authorOf, onUpdate, onDelete }: {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
       {notes.map((n) => (
-        <NoteCard key={n.id} note={n} author={authorOf(n.created_by)} onUpdate={onUpdate} onDelete={onDelete} />
+        <NoteCard
+          key={n.id}
+          note={n}
+          author={authorOf(n.created_by)}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );
 }
 
-function NoteCard({ note, author, onUpdate, onDelete }: {
+function NoteCard({
+  note,
+  author,
+  onUpdate,
+  onDelete,
+}: {
   note: SalesNote;
   author: string;
   onUpdate: (id: string, patch: Partial<SalesNote>) => Promise<void>;
@@ -2190,7 +3153,9 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
   const c = noteColor(note.color);
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<SalesNote>(note);
-  useEffect(() => { setDraft(note); }, [note, open]);
+  useEffect(() => {
+    setDraft(note);
+  }, [note, open]);
 
   function toggleItem(id: string) {
     const next = draft.checklist.map((i) => (i.id === id ? { ...i, done: !i.done } : i));
@@ -2204,7 +3169,11 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
   return (
     <>
       <Card
-        className={cn("rounded-2xl shadow-sm ring-1 cursor-pointer hover:shadow-md transition", c.bg, c.ring)}
+        className={cn(
+          "rounded-2xl shadow-sm ring-1 cursor-pointer hover:shadow-md transition",
+          c.bg,
+          c.ring,
+        )}
         onClick={() => setOpen(true)}
       >
         <CardContent className="p-3 space-y-2">
@@ -2213,31 +3182,47 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
               {note.title || <span className="text-muted-foreground">Untitled</span>}
             </div>
             <button
-              onClick={(e) => { e.stopPropagation(); onUpdate(note.id, { pinned: !note.pinned }); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdate(note.id, { pinned: !note.pinned });
+              }}
               className="p-1 rounded hover:bg-black/5"
               title={note.pinned ? "Unpin" : "Pin"}
             >
-              {note.pinned
-                ? <Pin className="w-4 h-4 text-amber-600" />
-                : <PinOff className="w-4 h-4 text-muted-foreground" />}
+              {note.pinned ? (
+                <Pin className="w-4 h-4 text-amber-600" />
+              ) : (
+                <PinOff className="w-4 h-4 text-muted-foreground" />
+              )}
             </button>
           </div>
 
           {note.content && (
-            <div className="text-sm whitespace-pre-wrap line-clamp-6 text-slate-700">{note.content}</div>
+            <div className="text-sm whitespace-pre-wrap line-clamp-6 text-slate-700">
+              {note.content}
+            </div>
           )}
 
           {total > 0 && (
             <div className="space-y-1">
               {/* Active items */}
-              {note.checklist.filter((i) => !i.done).slice(0, 6).map((i) => (
-                <li key={i.id} className="flex items-center gap-2 text-sm list-none">
-                  <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
-                    <Square className="w-3.5 h-3.5 text-muted-foreground" />
-                  </button>
-                  <span>{i.text || <em className="opacity-50">empty</em>}</span>
-                </li>
-              ))}
+              {note.checklist
+                .filter((i) => !i.done)
+                .slice(0, 6)
+                .map((i) => (
+                  <li key={i.id} className="flex items-center gap-2 text-sm list-none">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleItem(i.id);
+                      }}
+                      className="p-0.5"
+                    >
+                      <Square className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                    <span>{i.text || <em className="opacity-50">empty</em>}</span>
+                  </li>
+                ))}
 
               {/* Completed divider + items */}
               {note.checklist.filter((i) => i.done).length > 0 && (
@@ -2247,19 +3232,33 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
                     <span>Completed</span>
                     <div className="h-px flex-1 bg-slate-200" />
                   </div>
-                  {note.checklist.filter((i) => i.done).slice(0, 6 - note.checklist.filter((i) => !i.done).length).map((i) => (
-                    <li key={i.id} className="flex items-center gap-2 text-sm list-none line-through text-muted-foreground">
-                      <button onClick={(e) => { e.stopPropagation(); toggleItem(i.id); }} className="p-0.5">
-                        <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
-                      </button>
-                      <span>{i.text || <em className="opacity-50">empty</em>}</span>
-                    </li>
-                  ))}
+                  {note.checklist
+                    .filter((i) => i.done)
+                    .slice(0, 6 - note.checklist.filter((i) => !i.done).length)
+                    .map((i) => (
+                      <li
+                        key={i.id}
+                        className="flex items-center gap-2 text-sm list-none line-through text-muted-foreground"
+                      >
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleItem(i.id);
+                          }}
+                          className="p-0.5"
+                        >
+                          <CheckSquare className="w-3.5 h-3.5 text-emerald-600" />
+                        </button>
+                        <span>{i.text || <em className="opacity-50">empty</em>}</span>
+                      </li>
+                    ))}
                 </>
               )}
 
               {note.checklist.length > 6 && (
-                <li className="text-xs text-muted-foreground list-none">+ {note.checklist.length - 6} more…</li>
+                <li className="text-xs text-muted-foreground list-none">
+                  + {note.checklist.length - 6} more…
+                </li>
               )}
             </div>
           )}
@@ -2267,7 +3266,11 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
           <div className="flex items-center justify-between pt-1 text-[11px] text-muted-foreground">
             <span>By {author}</span>
             <span className="flex items-center gap-2">
-              {total > 0 && <Badge variant="secondary" className="text-[10px]">{done}/{total}</Badge>}
+              {total > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  {done}/{total}
+                </Badge>
+              )}
               <span>{new Date(note.updated_at).toLocaleDateString()}</span>
             </span>
           </div>
@@ -2291,7 +3294,11 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
                 onClick={() => setDraft({ ...draft, pinned: !draft.pinned })}
                 className="p-1.5 rounded hover:bg-black/5"
               >
-                {draft.pinned ? <Pin className="w-4 h-4 text-amber-600" /> : <PinOff className="w-4 h-4 text-muted-foreground" />}
+                {draft.pinned ? (
+                  <Pin className="w-4 h-4 text-amber-600" />
+                ) : (
+                  <PinOff className="w-4 h-4 text-muted-foreground" />
+                )}
               </button>
             </div>
 
@@ -2315,11 +3322,20 @@ function NoteCard({ note, author, onUpdate, onDelete }: {
             </div>
 
             <div className="flex items-center justify-between pt-2">
-              <Button variant="ghost" size="sm" onClick={() => { onDelete(note.id); setOpen(false); }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  onDelete(note.id);
+                  setOpen(false);
+                }}
+              >
                 <Trash2 className="w-4 h-4 mr-1 text-red-500" /> Delete
               </Button>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>Close</Button>
+                <Button variant="ghost" size="sm" onClick={() => setOpen(false)}>
+                  Close
+                </Button>
                 <Button
                   size="sm"
                   onClick={async () => {
