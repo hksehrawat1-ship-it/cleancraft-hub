@@ -20,6 +20,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SalesDashboard } from "@/components/sales/sales-dashboard";
+import { MyLeads } from "@/components/sales/my-leads";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -308,7 +309,7 @@ function SalesPipelineView({ leads }: ViewProps) {
 }
 
 function LeadsView(_props: ViewProps) {
-  return <LeadTrackerSheet />;
+  return <MyLeads />;
 }
 
 /* ============== Excel-like Lead Tracker Sheet ============== */
