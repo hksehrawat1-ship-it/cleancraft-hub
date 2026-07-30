@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SalesDashboard } from "@/components/sales/sales-dashboard";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -216,72 +217,8 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
 
 /* ============== Views ============== */
 
-function DashboardView({ leads, profiles, onSaved }: ViewProps) {
-  const today = todayISO();
-  const monthStart = startOfMonthISO();
-  const in7 = addDaysISO(7);
-
-  const m = useMemo(() => {
-    const newToday = leads.filter((l) => l.created_at.slice(0, 10) === today).length;
-    const dueToday = leads.filter((l) => l.followup_date === today).length;
-    const overdue = leads.filter((l) => l.followup_date && l.followup_date < today && !isTerminal(l.lead_stage)).length;
-    const meetingsToday = leads.filter((l) => l.meeting_date === today).length;
-    const hotAction = leads.filter((l) => l.lead_classification === "Hot" && !isTerminal(l.lead_stage)).length;
-    const elFeePending = leads.filter((l) => l.engagement_letter_fee_status === "Pending" || l.engagement_letter_fee_status === "Partially Received").length;
-    const bookingsMonth = leads.filter((l) => (l.booking_date && l.booking_date >= monthStart) || (l.lead_stage === "Booking Received" && l.created_at.slice(0, 10) >= monthStart)).length;
-
-    const qualified = leads.filter((l) => ["Qualified", "Proposal Sent", "Follow-up", "Meeting Done", "Engagement Letter Pending", "Booking Received", "Handover Completed", "Handover Done"].includes(l.lead_stage)).length;
-    const proposalSent = leads.filter((l) => !!l.proposal_sent_date).length;
-    const meetingsDone = leads.filter((l) => l.lead_stage === "Meeting Done" || ["Engagement Letter Pending", "Booking Received", "Handover Completed", "Handover Done"].includes(l.lead_stage)).length;
-    const feesCollected = leads.filter((l) => l.engagement_letter_fee_status === "Received");
-    const bookingsReceived = leads.filter((l) => !!l.booking_date || l.lead_stage === "Booking Received" || isHandoverDone(l.lead_stage)).length;
-    const handoverCount = leads.filter((l) => isHandoverDone(l.lead_stage)).length;
-    const conversion = leads.length ? Math.round((handoverCount / leads.length) * 100) : 0;
-    const sumAmt = (arr: Lead[]) => arr.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-
-    return {
-      newToday, dueToday, overdue, meetingsToday, hotAction, elFeePending, bookingsMonth,
-      kpi: { total: leads.length, qualified, proposalSent, meetingsDone,
-        feesCollected: { count: feesCollected.length, value: sumAmt(feesCollected) },
-        bookingsReceived, conversion, overdue },
-    };
-  }, [leads, today, monthStart]);
-
-  const myFollowups = useMemo(
-    () => leads.filter((l) => l.followup_date && l.followup_date <= in7 && !isTerminal(l.lead_stage))
-      .sort((a, b) => (a.followup_date ?? "9999").localeCompare(b.followup_date ?? "9999")).slice(0, 10),
-    [leads, in7],
-  );
-  const myMeetings = useMemo(
-    () => leads.filter((l) => l.meeting_date && l.meeting_date >= today)
-      .sort((a, b) => (a.meeting_date ?? "9999").localeCompare(b.meeting_date ?? "9999")).slice(0, 10),
-    [leads, today],
-  );
-
-  return (
-    <div className="space-y-8">
-      <Section title="Today's Action Center">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
-          <Stat label="New Leads Today" value={m.newToday} />
-          <Stat label="Follow-ups Due Today" value={m.dueToday} tone="text-blue-600" />
-          <Stat label="Overdue Follow-ups" value={m.overdue} tone="text-red-600" />
-          <Stat label="Meetings Today" value={m.meetingsToday} />
-          <Stat label="Hot Leads Action" value={m.hotAction} tone="text-emerald-600" />
-          <Stat label="EL Fee Pending" value={m.elFeePending} tone="text-orange-600" />
-          <Stat label="Bookings This Month" value={m.bookingsMonth} tone="text-emerald-700" />
-        </div>
-      </Section>
-
-
-      <Section title="My Follow-ups (Next 7 Days)">
-        <LeadTable leads={myFollowups} profiles={profiles} onSaved={onSaved} />
-      </Section>
-
-      <Section title="My Meetings (Upcoming)">
-        <LeadTable leads={myMeetings} profiles={profiles} onSaved={onSaved} columns={["name","phone","meeting","stage","actions"]} />
-      </Section>
-    </div>
-  );
+function DashboardView(_props: ViewProps) {
+  return <SalesDashboard salespersonName="Rahul Mehta" />;
 }
 
 function PriorityCallQueueView({ leads, profiles, onSaved }: ViewProps) {
