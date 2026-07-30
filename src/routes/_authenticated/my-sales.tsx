@@ -11,7 +11,7 @@ import { Phone, MessageCircle, ExternalLink, Pencil,
   LayoutDashboard, Users, CalendarClock, Video,
   PackageCheck, BookOpen, HelpCircle, Headphones, TrendingUp, Search, ClipboardList, Save, X,
   Target, Clock, DollarSign, Trophy, Activity, MessageSquare,
-  StickyNote, Pin, PinOff, Plus, Trash2, CheckSquare, Square } from "lucide-react";
+  StickyNote, Pin, PinOff, Plus, Trash2, CheckSquare, Square, ChevronDown, ChevronRight, Library } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -37,21 +37,34 @@ const CLASSIFICATIONS = ["Hot", "Warm", "Cold", "Dangerous", "Time Waster"] as c
 type Classification = (typeof CLASSIFICATIONS)[number];
 
 type ViewKey =
-  | "dashboard" | "roles" | "leads" | "notes" | "followups" | "meetings" | "bookings"
-  | "knowledge" | "questions" | "audio" | "performance";
+  | "roles" | "dashboard" | "leads" | "priorityCallQueue" | "followups" | "pipeline" | "meetings"
+  | "notes" | "knowledge" | "questions" | "audio" | "performance";
 
-const MENU: { key: ViewKey; label: string; icon: any }[] = [
-  { key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { key: "roles", label: "Roles & Responsibilities", icon: ClipboardList },
-  { key: "leads", label: "Leads", icon: Users },
-  { key: "notes", label: "Mind & Task", icon: StickyNote },
-  { key: "followups", label: "Follow-ups", icon: CalendarClock },
-  { key: "meetings", label: "Meetings", icon: Video },
-  { key: "bookings", label: "Bookings", icon: PackageCheck },
-  { key: "knowledge", label: "Knowledge Center", icon: BookOpen },
-  { key: "questions", label: "Question Bank", icon: HelpCircle },
-  { key: "audio", label: "Audio Library", icon: Headphones },
-  { key: "performance", label: "Performance", icon: TrendingUp },
+type MenuItem =
+  | { type: "item"; key: ViewKey; label: string; icon: any }
+  | { type: "group"; key: "resource"; label: string; icon: any; children: { key: ViewKey; label: string; icon: any }[] };
+
+const MENU: MenuItem[] = [
+  { type: "item", key: "roles", label: "Roles and Responsibilities", icon: ClipboardList },
+  { type: "item", key: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { type: "item", key: "leads", label: "My Leads", icon: Users },
+  { type: "item", key: "priorityCallQueue", label: "Priority Call Queue", icon: Phone },
+  { type: "item", key: "followups", label: "Follow-ups & Reminders", icon: CalendarClock },
+  { type: "item", key: "pipeline", label: "Sales Pipeline", icon: TrendingUp },
+  { type: "item", key: "meetings", label: "Meetings", icon: Video },
+  { type: "item", key: "notes", label: "Mind and task", icon: StickyNote },
+  {
+    type: "group",
+    key: "resource",
+    label: "Resource",
+    icon: Library,
+    children: [
+      { key: "knowledge", label: "Knowledge Centre", icon: BookOpen },
+      { key: "questions", label: "Questions Bank", icon: HelpCircle },
+      { key: "audio", label: "Audio Library", icon: Headphones },
+    ],
+  },
+  { type: "item", key: "performance", label: "Performance", icon: Trophy },
 ];
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -63,7 +76,8 @@ function isHandoverDone(stage: string) { return stage === "Handover Completed" |
 function SalesOpsDashboard() {
   const qc = useQueryClient();
   const { user } = useAuth();
-  const [view, setView] = useState<ViewKey>("dashboard");
+  const [view, setView] = useState<ViewKey>("roles");
+  const [resourceOpen, setResourceOpen] = useState(true);
 
   const { data: leads = [], isLoading } = useQuery({
     enabled: !!user?.id,
@@ -100,8 +114,51 @@ function SalesOpsDashboard() {
         <aside className="md:sticky md:top-4 self-start">
           <Card className="shadow-sm border rounded-2xl">
             <CardContent className="p-3">
-              <nav className="flex md:flex-col gap-1.5 overflow-x-auto">
+              <nav className="flex md:flex-col gap-1 overflow-x-auto">
                 {MENU.map((m) => {
+                  if (m.type === "group") {
+                    const Icon = m.icon;
+                    const groupActive = m.children.some((c) => c.key === view);
+                    return (
+                      <div key={m.key} className="space-y-1">
+                        <button
+                          type="button"
+                          onClick={() => setResourceOpen((s) => !s)}
+                          className={cn(
+                            "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[15px] font-medium transition-all text-left",
+                            groupActive ? "text-[#2563EB]" : "text-slate-700 hover:bg-slate-50"
+                          )}
+                        >
+                          <Icon className={cn("w-5 h-5 shrink-0", groupActive ? "text-[#2563EB]" : "text-slate-500")} />
+                          <span className="flex-1">{m.label}</span>
+                          <ChevronDown className={cn("w-4 h-4 shrink-0 transition-transform", resourceOpen ? "" : "-rotate-90")} />
+                        </button>
+                        {resourceOpen && (
+                          <div className="ml-4 pl-4 border-l-2 border-slate-100 space-y-1">
+                            {m.children.map((c) => {
+                              const CIcon = c.icon;
+                              const cActive = view === c.key;
+                              return (
+                                <button
+                                  key={c.key}
+                                  onClick={() => setView(c.key)}
+                                  className={cn(
+                                    "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-[14px] font-medium transition-all text-left",
+                                    cActive
+                                      ? "bg-[#2563EB] text-white shadow-sm"
+                                      : "text-slate-700 hover:bg-slate-50"
+                                  )}
+                                >
+                                  <CIcon className={cn("w-4 h-4 shrink-0", cActive ? "text-white" : "text-slate-500")} />
+                                  <span className="flex-1">{c.label}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
                   const Icon = m.icon;
                   const active = view === m.key;
                   return (
@@ -145,10 +202,11 @@ function ViewRouter({ view, leads, profiles, onSaved }: {
     case "dashboard": return <DashboardView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "roles": return <RolesView />;
     case "leads": return <LeadsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "notes": return <NotesView profiles={profiles} />;
+    case "priorityCallQueue": return <PriorityCallQueueView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "followups": return <FollowupsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "pipeline": return <SalesPipelineView leads={leads} profiles={profiles} onSaved={onSaved} />;
     case "meetings": return <MeetingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
-    case "bookings": return <BookingsView leads={leads} profiles={profiles} onSaved={onSaved} />;
+    case "notes": return <NotesView profiles={profiles} />;
     case "knowledge": return <KnowledgeCenterView />;
     case "questions": return <QuestionBankView />;
     case "audio": return <AudioLibraryView />;
@@ -221,6 +279,92 @@ function DashboardView({ leads, profiles, onSaved }: ViewProps) {
 
       <Section title="My Meetings (Upcoming)">
         <LeadTable leads={myMeetings} profiles={profiles} onSaved={onSaved} columns={["name","phone","meeting","stage","actions"]} />
+      </Section>
+    </div>
+  );
+}
+
+function PriorityCallQueueView({ leads, profiles, onSaved }: ViewProps) {
+  const today = todayISO();
+  const sorted = useMemo(() => {
+    const tempOrder: Record<string, number> = { Hot: 0, Warm: 1, Cold: 2, Dangerous: 3, "Time Waster": 4 };
+    return [...leads]
+      .filter((l) => !isTerminal(l.lead_stage))
+      .sort((a, b) => {
+        const ta = tempOrder[a.lead_classification ?? ""] ?? 99;
+        const tb = tempOrder[b.lead_classification ?? ""] ?? 99;
+        if (ta !== tb) return ta - tb;
+        return (a.followup_date ?? "9999").localeCompare(b.followup_date ?? "9999");
+      });
+  }, [leads]);
+
+  const overdue = sorted.filter((l) => l.followup_date && l.followup_date < today);
+  const dueToday = sorted.filter((l) => l.followup_date === today);
+  const upcoming = sorted.filter((l) => l.followup_date && l.followup_date > today);
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Stat label="Overdue Calls" value={overdue.length} tone="text-red-600" />
+        <Stat label="Due Today" value={dueToday.length} tone="text-blue-600" />
+        <Stat label="Upcoming" value={upcoming.length} tone="text-emerald-600" />
+      </div>
+      <Section title="Priority Call Queue">
+        {sorted.length === 0 ? (
+          <p className="text-sm text-muted-foreground">No leads in call queue.</p>
+        ) : (
+          <LeadTable leads={sorted} profiles={profiles} onSaved={onSaved} />
+        )}
+      </Section>
+    </div>
+  );
+}
+
+function SalesPipelineView({ leads }: ViewProps) {
+  const counts = useMemo(() => {
+    const map = new Map<string, number>();
+    PIPELINE_STAGES.forEach((s) => map.set(s, 0));
+    leads.forEach((l) => {
+      map.set(l.lead_stage, (map.get(l.lead_stage) || 0) + 1);
+    });
+    return PIPELINE_STAGES.map((s) => ({ stage: s, count: map.get(s) || 0 }));
+  }, [leads]);
+
+  const total = leads.length;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        {counts.map((c) => (
+          <Card key={c.stage}>
+            <CardContent className="p-4">
+              <div className="text-2xl font-bold">{c.count}</div>
+              <div className="text-xs text-muted-foreground mt-1 leading-tight">{c.stage}</div>
+            </CardContent>
+          </Card>
+        ))}
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{total}</div>
+            <div className="text-xs text-muted-foreground mt-1 leading-tight">Total Leads</div>
+          </CardContent>
+        </Card>
+      </div>
+      <Section title="Pipeline by Stage">
+        <div className="space-y-3">
+          {counts.map((c) => (
+            <div key={c.stage} className="flex items-center gap-3">
+              <div className="w-36 text-sm font-medium truncate">{c.stage}</div>
+              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: `${total ? (c.count / total) * 100 : 0}%` }}
+                />
+              </div>
+              <div className="w-8 text-sm tabular-nums text-right">{c.count}</div>
+            </div>
+          ))}
+        </div>
       </Section>
     </div>
   );
