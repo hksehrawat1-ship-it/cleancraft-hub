@@ -23,6 +23,7 @@ import { SalesDashboard } from "@/components/sales/sales-dashboard";
 import { MyLeads } from "@/components/sales/my-leads";
 import { PriorityCallQueue } from "@/components/sales/call-queue";
 import { FollowupsReminders } from "@/components/sales/followups";
+import { SalesPipeline } from "@/components/sales/pipeline";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -228,54 +229,8 @@ function PriorityCallQueueView(_: ViewProps) {
   return <PriorityCallQueue />;
 }
 
-function SalesPipelineView({ leads }: ViewProps) {
-  const counts = useMemo(() => {
-    const map = new Map<string, number>();
-    PIPELINE_STAGES.forEach((s) => map.set(s, 0));
-    leads.forEach((l) => {
-      map.set(l.lead_stage, (map.get(l.lead_stage) || 0) + 1);
-    });
-    return PIPELINE_STAGES.map((s) => ({ stage: s, count: map.get(s) || 0 }));
-  }, [leads]);
-
-  const total = leads.length;
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-        {counts.map((c) => (
-          <Card key={c.stage}>
-            <CardContent className="p-4">
-              <div className="text-2xl font-bold">{c.count}</div>
-              <div className="text-xs text-muted-foreground mt-1 leading-tight">{c.stage}</div>
-            </CardContent>
-          </Card>
-        ))}
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">{total}</div>
-            <div className="text-xs text-muted-foreground mt-1 leading-tight">Total Leads</div>
-          </CardContent>
-        </Card>
-      </div>
-      <Section title="Pipeline by Stage">
-        <div className="space-y-3">
-          {counts.map((c) => (
-            <div key={c.stage} className="flex items-center gap-3">
-              <div className="w-36 text-sm font-medium truncate">{c.stage}</div>
-              <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${total ? (c.count / total) * 100 : 0}%` }}
-                />
-              </div>
-              <div className="w-8 text-sm tabular-nums text-right">{c.count}</div>
-            </div>
-          ))}
-        </div>
-      </Section>
-    </div>
-  );
+function SalesPipelineView(_props: ViewProps) {
+  return <SalesPipeline />;
 }
 
 function LeadsView(_props: ViewProps) {
