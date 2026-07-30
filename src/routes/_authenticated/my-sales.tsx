@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SalesDashboard } from "@/components/sales/sales-dashboard";
 import { MyLeads } from "@/components/sales/my-leads";
+import { PriorityCallQueue } from "@/components/sales/call-queue";
 import {
   LeadDialog, classificationVariant, type Lead,
 } from "./leads";
@@ -222,40 +223,8 @@ function DashboardView(_props: ViewProps) {
   return <SalesDashboard salespersonName="Rahul Mehta" />;
 }
 
-function PriorityCallQueueView({ leads, profiles, onSaved }: ViewProps) {
-  const today = todayISO();
-  const sorted = useMemo(() => {
-    const tempOrder: Record<string, number> = { Hot: 0, Warm: 1, Cold: 2, Dangerous: 3, "Time Waster": 4 };
-    return [...leads]
-      .filter((l) => !isTerminal(l.lead_stage))
-      .sort((a, b) => {
-        const ta = tempOrder[a.lead_classification ?? ""] ?? 99;
-        const tb = tempOrder[b.lead_classification ?? ""] ?? 99;
-        if (ta !== tb) return ta - tb;
-        return (a.followup_date ?? "9999").localeCompare(b.followup_date ?? "9999");
-      });
-  }, [leads]);
-
-  const overdue = sorted.filter((l) => l.followup_date && l.followup_date < today);
-  const dueToday = sorted.filter((l) => l.followup_date === today);
-  const upcoming = sorted.filter((l) => l.followup_date && l.followup_date > today);
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Stat label="Overdue Calls" value={overdue.length} tone="text-red-600" />
-        <Stat label="Due Today" value={dueToday.length} tone="text-blue-600" />
-        <Stat label="Upcoming" value={upcoming.length} tone="text-emerald-600" />
-      </div>
-      <Section title="Priority Call Queue">
-        {sorted.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No leads in call queue.</p>
-        ) : (
-          <LeadTable leads={sorted} profiles={profiles} onSaved={onSaved} />
-        )}
-      </Section>
-    </div>
-  );
+function PriorityCallQueueView(_: ViewProps) {
+  return <PriorityCallQueue />;
 }
 
 function SalesPipelineView({ leads }: ViewProps) {
