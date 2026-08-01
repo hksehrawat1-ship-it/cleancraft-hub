@@ -92,6 +92,11 @@ const now = Date.now();
 const dAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 const dAhead = (d: number) => new Date(now + d * 86400000).toISOString();
 const hAgo = (h: number) => new Date(now - h * 3600000).toISOString();
+/** A date inside the current calendar month, never in the future. */
+const thisMonthDay = (day: number) => {
+  const d = new Date(now);
+  return new Date(d.getFullYear(), d.getMonth(), Math.min(d.getDate(), Math.max(1, day)), 12).toISOString();
+};
 
 const daysSince = (iso: string) => Math.max(0, Math.round((now - new Date(iso).getTime()) / 86400000));
 const hoursSince = (iso: string) => Math.max(0, Math.round((now - new Date(iso).getTime()) / 3600000));
@@ -156,9 +161,9 @@ const SEED: Opportunity[] = [
   mk(16, "Anil Kulkarni", "Nashik", "Maharashtra", "Negotiation", "Priya Verma", 1100000, 75, "High", { qualified: true, proposalAmount: 1100000 }),
   mk(17, "Imran Qureshi", "Lucknow", "Uttar Pradesh", "Payment Pending", "Rahul Mehta", 2500000, 90, "Urgent", { qualified: true, proposalAmount: 2500000, paymentAmount: 250000, paymentDueAt: dAgo(4) }),
   mk(18, "Suresh Pillai", "Coimbatore", "Tamil Nadu", "Payment Pending", "Rahul Mehta", 1400000, 81, "High", { qualified: true, proposalAmount: 1400000, paymentAmount: 140000, paymentDueAt: dAhead(2) }),
-  mk(19, "Pooja Chawla", "Chandigarh", "Punjab", "Won", "Sana Khan", 1600000, 94, "Medium", { qualified: true, wonAmount: 1600000, expectedCloseAt: dAgo(6) }),
-  mk(20, "Ramesh Yadav", "Agra", "Uttar Pradesh", "Won", "Priya Verma", 1250000, 89, "Medium", { qualified: true, wonAmount: 1250000, expectedCloseAt: dAgo(11) }),
-  mk(21, "Bhavna Rathi", "Udaipur", "Rajasthan", "Won", "Rahul Mehta", 2100000, 91, "High", { qualified: true, wonAmount: 2100000, expectedCloseAt: dAgo(2) }),
+  mk(19, "Pooja Chawla", "Chandigarh", "Punjab", "Won", "Sana Khan", 1600000, 94, "Medium", { qualified: true, wonAmount: 1600000, expectedCloseAt: thisMonthDay(4) }),
+  mk(20, "Ramesh Yadav", "Agra", "Uttar Pradesh", "Won", "Priya Verma", 1250000, 89, "Medium", { qualified: true, wonAmount: 1250000, expectedCloseAt: thisMonthDay(9) }),
+  mk(21, "Bhavna Rathi", "Udaipur", "Rajasthan", "Won", "Rahul Mehta", 2100000, 91, "High", { qualified: true, wonAmount: 2100000, expectedCloseAt: thisMonthDay(14) }),
   mk(22, "Deepak Bhatt", "Dehradun", "Uttarakhand", "Lost", "Deepak Nair", 850000, 44, "Low", { lostReason: "Budget constraint" }),
   mk(23, "Sneha Kapoor", "Noida", "Uttar Pradesh", "Lost", "Amit Sharma", 1000000, 51, "Low", { lostReason: "Chose competitor" }),
   mk(24, "Manoj Tiwari", "Varanasi", "Uttar Pradesh", "Qualified", "Priya Verma", 780000, 60, "Medium", { qualified: true, nextAction: null }),
