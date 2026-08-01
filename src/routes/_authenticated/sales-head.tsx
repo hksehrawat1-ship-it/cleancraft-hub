@@ -20,6 +20,7 @@ import { SalesHeadPipelinePage } from "@/components/sales-head/pipeline";
 import { SalesHeadMeetingsPage } from "@/components/sales-head/meetings";
 import { SalesHeadTeamTasksPage } from "@/components/sales-head/team-tasks";
 import { SalesHeadPerformancePage } from "@/components/sales-head/performance";
+import { SalesHeadResourcesPage } from "@/components/sales-head/resources";
 import {
   UserCircle2,
   LayoutDashboard,
