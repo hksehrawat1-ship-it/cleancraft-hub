@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { TeamLeadsPage } from "@/components/sales-head/team-leads";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -119,7 +120,7 @@ function SalesHeadDashboard() {
         <main className="p-4 md:p-6 overflow-auto">
           {active === "roles" && <RolesSection />}
           {active === "dashboard" && <DashboardSection />}
-          {active === "team-leads" && <TeamLeadsSection />}
+          {active === "team-leads" && <TeamLeadsPage />}
           {active === "escalations" && <EscalationsSection />}
           {active === "pipeline" && <PipelineSection />}
           {active === "meetings" && <MeetingsSection />}
@@ -282,135 +283,6 @@ function DashboardSection() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* -------------------- Team Leads -------------------- */
-type Lead = {
-  id: string;
-  name: string;
-  city: string;
-  owner: string;
-  stage: string;
-  quality: "Hot" | "Warm" | "Cold" | "Dangerous";
-  value: string;
-  nextAction: string;
-  due: string;
-  overdue?: boolean;
-};
-
-const LEADS: Lead[] = [
-  { id: "L-1041", name: "Rakesh Sharma", city: "Jaipur", owner: "Rahul", stage: "Proposal Sent", quality: "Hot", value: "₹6.5L", nextAction: "Proposal follow-up call", due: "Today 4:00 PM" },
-  { id: "L-1038", name: "Neha Agarwal", city: "Indore", owner: "Amit", stage: "Meeting Done", quality: "Hot", value: "₹6.5L", nextAction: "Send agreement draft", due: "Yesterday", overdue: true },
-  { id: "L-1032", name: "Sandeep Rao", city: "Pune", owner: "Deepak", stage: "Qualified", quality: "Warm", value: "₹5.0L", nextAction: "Fix showroom visit", due: "Today 6:30 PM" },
-  { id: "L-1029", name: "Imran Qureshi", city: "Lucknow", owner: "Rahul", stage: "EL Fee Pending", quality: "Hot", value: "₹6.5L", nextAction: "Collect EL fee", due: "2 days ago", overdue: true },
-  { id: "L-1024", name: "Priya Menon", city: "Kochi", owner: "Amit", stage: "New Lead", quality: "Cold", value: "₹4.0L", nextAction: "First qualification call", due: "Tomorrow" },
-  { id: "L-1019", name: "Vikram Singh", city: "Surat", owner: "Deepak", stage: "Proposal Sent", quality: "Dangerous", value: "₹5.5L", nextAction: "Re-verify budget", due: "Today 11:00 AM", overdue: true },
-];
-
-const qualityBadge = (q: Lead["quality"]) =>
-  q === "Hot"
-    ? "bg-red-500/15 text-red-500 border-red-500/30"
-    : q === "Warm"
-      ? "bg-orange-500/15 text-orange-500 border-orange-500/30"
-      : q === "Cold"
-        ? "bg-sky-500/15 text-sky-500 border-sky-500/30"
-        : "bg-rose-700/15 text-rose-700 border-rose-700/30";
-
-function TeamLeadsSection() {
-  const [q, setQ] = useState("");
-  const [owner, setOwner] = useState("all");
-  const [quality, setQuality] = useState("all");
-  const [assignTo, setAssignTo] = useState<Record<string, string>>({});
-
-  const rows = useMemo(
-    () =>
-      LEADS.filter(
-        (l) =>
-          (owner === "all" || l.owner === owner) &&
-          (quality === "all" || l.quality === quality) &&
-          (q.trim() === "" ||
-            `${l.name} ${l.city} ${l.id}`.toLowerCase().includes(q.toLowerCase())),
-      ),
-    [q, owner, quality],
-  );
-
-  return (
-    <div className="space-y-4">
-      <SectionHead title="Team Leads" sub="Every lead owned by your team — filter, review and reassign." />
-
-      <Card>
-        <CardContent className="p-4 flex flex-col md:flex-row gap-3">
-          <Input placeholder="Search name, city or lead ID" value={q} onChange={(e) => setQ(e.target.value)} className="md:max-w-xs" />
-          <Select value={owner} onValueChange={setOwner}>
-            <SelectTrigger className="md:w-44"><SelectValue placeholder="Owner" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All owners</SelectItem>
-              <SelectItem value="Rahul">Rahul</SelectItem>
-              <SelectItem value="Amit">Amit</SelectItem>
-              <SelectItem value="Deepak">Deepak</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={quality} onValueChange={setQuality}>
-            <SelectTrigger className="md:w-44"><SelectValue placeholder="Quality" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All quality</SelectItem>
-              <SelectItem value="Hot">Hot</SelectItem>
-              <SelectItem value="Warm">Warm</SelectItem>
-              <SelectItem value="Cold">Cold</SelectItem>
-              <SelectItem value="Dangerous">Dangerous</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
-
-      <div className="grid gap-3">
-        {rows.map((l) => (
-          <Card key={l.id} className={l.overdue ? "border-red-500/40" : undefined}>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <div className="font-semibold">
-                    {l.name} <span className="text-xs text-muted-foreground">· {l.city}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {l.id} · Owner {l.owner} · {l.stage} · {l.value}
-                  </div>
-                </div>
-                <Badge variant="outline" className={qualityBadge(l.quality)}>{l.quality}</Badge>
-              </div>
-              <div className="text-sm flex items-center gap-2">
-                <Clock className={`h-4 w-4 ${l.overdue ? "text-red-500" : "text-muted-foreground"}`} />
-                <span>{l.nextAction}</span>
-                <span className={l.overdue ? "text-red-500 font-medium" : "text-muted-foreground"}>· {l.due}</span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button size="sm" variant="outline" onClick={() => toast.success(`Calling ${l.name}`)}>
-                  <Phone className="h-3.5 w-3.5 mr-1" /> Call
-                </Button>
-                <Select
-                  value={assignTo[l.id] ?? l.owner}
-                  onValueChange={(v) => {
-                    setAssignTo((s) => ({ ...s, [l.id]: v }));
-                    toast.success(`${l.name} reassigned to ${v}`);
-                  }}
-                >
-                  <SelectTrigger className="h-8 w-40 text-xs"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {["Rahul", "Amit", "Deepak", "Self"].map((n) => (
-                      <SelectItem key={n} value={n}>Assign to {n}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        {rows.length === 0 && (
-          <Card><CardContent className="p-6 text-center text-sm text-muted-foreground">No leads match these filters.</CardContent></Card>
-        )}
       </div>
     </div>
   );
