@@ -27,6 +27,7 @@ import {
   Pause,
 } from "lucide-react";
 import { TechSupportDashboard } from "@/components/tech-support/dashboard";
+import { MySupportTickets } from "@/components/tech-support/my-tickets";
 
 export const Route = createFileRoute("/_authenticated/technical-support")({
   head: () => ({
@@ -94,7 +95,7 @@ function TechnicalSupportDashboard() {
 
       <main className="flex-1 p-6 overflow-auto">
         {active === "dashboard" && <TechSupportDashboard />}
-        {active === "tickets" && <TicketsSection />}
+        {active === "tickets" && <MySupportTickets />}
         {active === "priority" && <PriorityQueueSection />}
         {active === "remote" && <RemoteSection />}
         {active === "electrician" && <ElectricianSection />}
@@ -102,60 +103,6 @@ function TechnicalSupportDashboard() {
         {active === "knowledge" && <KnowledgeSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- My Support Tickets ---------------- */
-function TicketsSection() {
-  const tickets = [
-    { id: "#TS-1024", store: "Jaipur", issue: "POS not syncing", status: "Open", priority: "High", time: "10m ago" },
-    { id: "#TS-1023", store: "Indore", issue: "Steam iron low pressure", status: "In Progress", priority: "Medium", time: "32m ago" },
-    { id: "#TS-1022", store: "Lucknow", issue: "Payment gateway error", status: "Resolved", priority: "High", time: "1h ago" },
-    { id: "#TS-1021", store: "Surat", issue: "CCTV offline", status: "Open", priority: "Low", time: "2h ago" },
-    { id: "#TS-1020", store: "Agra", issue: "Generator not auto-starting", status: "Escalated", priority: "High", time: "3h ago" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Support Tickets</h1>
-          <p className="text-sm text-muted-foreground">Tickets assigned to you today.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search tickets..." className="pl-9 w-64" />
-          </div>
-          <Button variant="outline" size="icon">
-            <Filter className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      <Card>
-        <CardContent className="p-0">
-          <div className="divide-y">
-            {tickets.map((t) => (
-              <div key={t.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-3">
-                  <Ticket className="w-4 h-4 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium text-sm">{t.issue}</div>
-                    <div className="text-xs text-muted-foreground">{t.id} · {t.store} · {t.time}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={t.priority === "High" ? "destructive" : t.priority === "Medium" ? "default" : "secondary"}>{t.priority}</Badge>
-                  <Badge variant="outline">{t.status}</Badge>
-                  <Button size="sm" variant="ghost">View</Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
