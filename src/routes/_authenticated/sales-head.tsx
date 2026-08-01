@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { TeamLeadsPage } from "@/components/sales-head/team-leads";
 import { EscalationsPage } from "@/components/sales-head/escalations";
+import { SalesHeadPipelinePage } from "@/components/sales-head/pipeline";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -123,7 +124,7 @@ function SalesHeadDashboard() {
           {active === "dashboard" && <DashboardSection />}
           {active === "team-leads" && <TeamLeadsPage />}
           {active === "escalations" && <EscalationsPage />}
-          {active === "pipeline" && <PipelineSection />}
+          {active === "pipeline" && <SalesHeadPipelinePage />}
           {active === "meetings" && <MeetingsSection />}
           {active === "tasks" && <TasksSection />}
           {active === "performance" && <PerformanceSection />}
@@ -292,60 +293,7 @@ function DashboardSection() {
 /* Priority & Escalations lives in src/components/sales-head/escalations.tsx */
 
 
-/* -------------------- Sales Pipeline -------------------- */
-const STAGES = [
-  { name: "New Lead", count: 42, value: "₹210L", prob: 5 },
-  { name: "Qualified", count: 28, value: "₹150L", prob: 20 },
-  { name: "Proposal Sent", count: 18, value: "₹104L", prob: 40 },
-  { name: "Meeting Done", count: 12, value: "₹72L", prob: 60 },
-  { name: "EL Fee Received", count: 7, value: "₹45L", prob: 85 },
-  { name: "Booked", count: 4, value: "₹26L", prob: 100 },
-];
-
-const LEAKAGE = [
-  { stage: "Qualification", count: 18, pct: "7%" },
-  { stage: "Proposal", count: 52, pct: "29%" },
-  { stage: "Meeting", count: 21, pct: "18%" },
-  { stage: "EL Fee", count: 4, pct: "9%" },
-];
-
-function PipelineSection() {
-  return (
-    <div className="space-y-4">
-      <SectionHead title="Sales Pipeline" sub="Team-wide pipeline by stage with weighted forecast." />
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-        {STAGES.map((s) => (
-          <Card key={s.name}>
-            <CardContent className="p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{s.name}</span>
-                <Badge variant="secondary">{s.prob}%</Badge>
-              </div>
-              <div className="text-2xl font-bold tabular-nums">{s.count}</div>
-              <div className="text-xs text-muted-foreground">Pipeline value {s.value}</div>
-              <Progress value={s.prob} />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader className="pb-3"><CardTitle className="text-base">Stage Leakage</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {LEAKAGE.map((l) => (
-              <div key={l.stage} className="border rounded-md p-3 bg-muted/30">
-                <div className="text-xs text-muted-foreground">{l.stage}</div>
-                <div className="text-2xl font-semibold tabular-nums mt-1">{l.count}</div>
-                <div className="text-xs text-red-500 font-medium">{l.pct} leakage</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+/* Sales Pipeline lives in src/components/sales-head/pipeline.tsx */
 
 /* -------------------- Meetings -------------------- */
 type Meet = { time: string; title: string; who: string; type: string; status: "Confirmed" | "Awaiting" | "Completed" };
