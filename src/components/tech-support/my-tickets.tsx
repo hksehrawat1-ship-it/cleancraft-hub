@@ -157,7 +157,7 @@ const CHECKLIST = [
   "Captured photos / video of fault",
 ];
 
-const SEED: SupportTicket[] = [
+export const SEED: SupportTicket[] = [
   {
     id: "TS-2041",
     priority: "Safety Critical",
