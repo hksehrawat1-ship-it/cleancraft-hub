@@ -1,10 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import {
   LayoutDashboard,
   Ticket,
@@ -14,21 +12,14 @@ import {
   BookOpen,
   TrendingUp,
   Headphones,
-  Phone,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Search,
-  Wrench,
-  CalendarClock,
-  Filter,
-  Play,
-  Pause,
 } from "lucide-react";
 import { TechSupportDashboard } from "@/components/tech-support/dashboard";
 import { MySupportTickets } from "@/components/tech-support/my-tickets";
 import { TechSupportPriorityQueue } from "@/components/tech-support/priority-queue";
 import { RemoteTroubleshooting } from "@/components/tech-support/remote-troubleshooting";
+import { TechSupportFollowUps } from "@/components/tech-support/follow-ups";
+import { TechSupportPerformance } from "@/components/tech-support/performance";
 
 export const Route = createFileRoute("/_authenticated/technical-support")({
   head: () => ({
@@ -97,49 +88,10 @@ function TechnicalSupportDashboard() {
         {active === "tickets" && <MySupportTickets />}
         {active === "priority" && <TechSupportPriorityQueue />}
         {active === "remote" && <RemoteTroubleshooting />}
-        {active === "followups" && <FollowUpsSection />}
+        {active === "followups" && <TechSupportFollowUps />}
         {active === "knowledge" && <KnowledgeSection />}
-        {active === "performance" && <PerformanceSection />}
+        {active === "performance" && <TechSupportPerformance />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Follow-ups & Reminders ---------------- */
-function FollowUpsSection() {
-  const reminders = [
-    { label: "Call Jaipur store for POS update", due: "Today, 2:00 PM", type: "Call" },
-    { label: "Confirm electrician reached Agra", due: "Today, 3:30 PM", type: "Check" },
-    { label: "Follow up on Surat CCTV replacement", due: "Tomorrow, 10:00 AM", type: "Call" },
-    { label: "Update knowledge base — payment retry", due: "Tomorrow, 12:00 PM", type: "Task" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Follow-ups & Reminders</h1>
-        <p className="text-sm text-muted-foreground">Pending callbacks and scheduled checks.</p>
-      </div>
-
-      <div className="grid gap-3">
-        {reminders.map((r, idx) => (
-          <Card key={idx}>
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <CalendarClock className="w-4 h-4 text-muted-foreground" />
-                <div>
-                  <div className="font-medium text-sm">{r.label}</div>
-                  <div className="text-xs text-muted-foreground">{r.due}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{r.type}</Badge>
-                <Button size="sm" variant="outline">Done</Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
     </div>
   );
 }
@@ -179,53 +131,6 @@ function KnowledgeSection() {
           </Card>
         ))}
       </div>
-    </div>
-  );
-}
-
-/* ---------------- Performance ---------------- */
-function PerformanceSection() {
-  const metrics = [
-    { label: "Tickets Resolved", value: 86, target: 100, unit: "" },
-    { label: "Avg Resolution Time", value: 1.4, target: 2.0, unit: " days" },
-    { label: "First Contact Resolution", value: 72, target: 80, unit: "%" },
-    { label: "Customer Satisfaction", value: 4.7, target: 4.5, unit: "/5" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Performance</h1>
-        <p className="text-sm text-muted-foreground">Your support metrics this month.</p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((m) => (
-          <Card key={m.label}>
-            <CardContent className="p-5">
-              <p className="text-sm text-muted-foreground">{m.label}</p>
-              <p className="text-2xl font-semibold mt-1">{m.value}{m.unit}</p>
-              <p className="text-xs text-muted-foreground mt-1">Target: {m.target}{m.unit}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Weekly Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-48 flex items-end gap-2">
-            {[45, 52, 48, 60, 55, 68, 72].map((v, i) => (
-              <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                <div className="w-full bg-primary/80 rounded-t" style={{ height: `${v * 2}px` }} />
-                <span className="text-[10px] text-muted-foreground">{["M", "T", "W", "T", "F", "S", "S"][i]}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
