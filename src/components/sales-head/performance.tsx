@@ -167,9 +167,9 @@ function Metric({ label, value, sub, tip, icon: Icon, tone = "", delta }: {
   return (
     <Card>
       <CardContent className="p-4 space-y-1">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Icon className="h-3.5 w-3.5" />
-          <span className="leading-tight">{label}</span>
+        <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
+          <Icon className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+          <span className="flex-1 leading-tight">{label}</span>
           <MetricInfo tip={tip} />
         </div>
         <div className={cn("text-xl font-bold", toneClass(tone))}>{value}</div>
