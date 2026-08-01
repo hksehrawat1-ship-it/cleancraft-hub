@@ -13,7 +13,7 @@ import { TrainerCeoView } from "@/components/ceo/trainer-view";
 import { RmCeoView } from "@/components/ceo/rm-view";
 import { PerfMktCeoView } from "@/components/ceo/perf-mkt-view";
 import { TrainingCentreCeoView } from "@/components/ceo/training-centre-view";
-import { EngineerCeoView } from "@/components/ceo/engineer-view";
+
 import { TechSupportCeoView } from "@/components/ceo/tech-support-view";
 import { FieldEngineerCeoView } from "@/components/ceo/field-engineer-view";
 import { AccountsCeoView } from "@/components/ceo/accounts-view";
@@ -211,8 +211,6 @@ function MasterDashboard() {
         <PerfMktCeoView />
       ) : selected?.group === "store-success" && selected.item === "training" ? (
         <TrainingCentreCeoView />
-      ) : selected?.group === "tech" && selected.item === "engineer" ? (
-        <EngineerCeoView />
       ) : selected?.group === "tech" && selected.item === "tech-support" ? (
         <TechSupportCeoView />
       ) : selected?.group === "tech" && selected.item === "field-engineer" ? (

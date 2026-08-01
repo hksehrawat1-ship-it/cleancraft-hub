@@ -101,7 +101,6 @@ export const CEO_GROUPS: CeoGroup[] = [
     label: "4. Tech Engine",
     icon: Cpu,
     items: [
-      { key: "engineer", label: "Engineer", icon: Cpu, blurb: "Sprint board, uptime, incidents, release notes." },
       { key: "tech-support", label: "Technical Support", icon: Headphones, blurb: "Ticket queue, response SLAs, issue trends and escalation status." },
       { key: "field-engineer", label: "Field Engineer", icon: HardHat, blurb: "On-site visits, installation progress, field blockers and city-wise coverage." },
     ],
