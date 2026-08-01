@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { TeamLeadsPage } from "@/components/sales-head/team-leads";
 import { EscalationsPage } from "@/components/sales-head/escalations";
 import { SalesHeadPipelinePage } from "@/components/sales-head/pipeline";
+import { SalesHeadMeetingsPage } from "@/components/sales-head/meetings";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -125,7 +126,7 @@ function SalesHeadDashboard() {
           {active === "team-leads" && <TeamLeadsPage />}
           {active === "escalations" && <EscalationsPage />}
           {active === "pipeline" && <SalesHeadPipelinePage />}
-          {active === "meetings" && <MeetingsSection />}
+          {active === "meetings" && <SalesHeadMeetingsPage />}
           {active === "tasks" && <TasksSection />}
           {active === "performance" && <PerformanceSection />}
           {active === "resources" && <ResourcesSection />}
@@ -295,47 +296,7 @@ function DashboardSection() {
 
 /* Sales Pipeline lives in src/components/sales-head/pipeline.tsx */
 
-/* -------------------- Meetings -------------------- */
-type Meet = { time: string; title: string; who: string; type: string; status: "Confirmed" | "Awaiting" | "Completed" };
-
-const MEETINGS: Meet[] = [
-  { time: "Today 10:00 AM", title: "Daily sales huddle", who: "Rahul, Amit, Deepak", type: "Internal", status: "Confirmed" },
-  { time: "Today 1:30 PM", title: "Closure call — Neha Agarwal", who: "Amit + Sales Head", type: "Client", status: "Confirmed" },
-  { time: "Today 5:00 PM", title: "Weekly review — Deepak", who: "Deepak", type: "1-on-1", status: "Awaiting" },
-  { time: "Tomorrow 11:00 AM", title: "Showroom visit — Sandeep Rao", who: "Deepak", type: "Client", status: "Confirmed" },
-  { time: "Yesterday 4:00 PM", title: "Franchise pitch — Rakesh Sharma", who: "Rahul", type: "Client", status: "Completed" },
-];
-
-const meetTone = (s: Meet["status"]) =>
-  s === "Completed"
-    ? "bg-emerald-500/15 text-emerald-600 border-emerald-500/30"
-    : s === "Awaiting"
-      ? "bg-amber-500/15 text-amber-600 border-amber-500/30"
-      : "bg-sky-500/15 text-sky-600 border-sky-500/30";
-
-function MeetingsSection() {
-  return (
-    <div className="space-y-4">
-      <SectionHead title="Meetings" sub="Your calendar plus every client meeting your team is running." />
-      <div className="grid gap-3">
-        {MEETINGS.map((m) => (
-          <Card key={m.title}>
-            <CardContent className="p-4 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div className="font-semibold">{m.title}</div>
-                <div className="text-xs text-muted-foreground">{m.time} · {m.who} · {m.type}</div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={meetTone(m.status)}>{m.status}</Badge>
-                <Button size="sm" variant="outline" onClick={() => toast.success("Meeting notes saved")}>Log outcome</Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
+/* Meetings lives in src/components/sales-head/meetings.tsx */
 
 /* -------------------- Team Tasks -------------------- */
 type Task = { id: string; title: string; owner: string; due: string; status: "Pending" | "Done" };
