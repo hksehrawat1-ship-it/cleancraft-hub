@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { TeamLeadsPage } from "@/components/sales-head/team-leads";
+import { EscalationsPage } from "@/components/sales-head/escalations";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -121,7 +122,7 @@ function SalesHeadDashboard() {
           {active === "roles" && <RolesSection />}
           {active === "dashboard" && <DashboardSection />}
           {active === "team-leads" && <TeamLeadsPage />}
-          {active === "escalations" && <EscalationsSection />}
+          {active === "escalations" && <EscalationsPage />}
           {active === "pipeline" && <PipelineSection />}
           {active === "meetings" && <MeetingsSection />}
           {active === "tasks" && <TasksSection />}
