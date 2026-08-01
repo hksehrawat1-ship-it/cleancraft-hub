@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { TeamLeadsPage } from "@/components/sales-head/team-leads";
+import { EscalationsPage } from "@/components/sales-head/escalations";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -121,7 +122,7 @@ function SalesHeadDashboard() {
           {active === "roles" && <RolesSection />}
           {active === "dashboard" && <DashboardSection />}
           {active === "team-leads" && <TeamLeadsPage />}
-          {active === "escalations" && <EscalationsSection />}
+          {active === "escalations" && <EscalationsPage />}
           {active === "pipeline" && <PipelineSection />}
           {active === "meetings" && <MeetingsSection />}
           {active === "tasks" && <TasksSection />}
@@ -288,65 +289,8 @@ function DashboardSection() {
   );
 }
 
-/* -------------------- Priority & Escalations -------------------- */
-type Esc = { id: string; title: string; lead: string; owner: string; reason: string; age: string; level: "critical" | "high" | "medium" };
+/* Priority & Escalations lives in src/components/sales-head/escalations.tsx */
 
-const ESCALATIONS: Esc[] = [
-  { id: "E-01", title: "EL fee stuck 4 days", lead: "Imran Qureshi (Lucknow)", owner: "Rahul", reason: "Partner asking for payment terms change", age: "4 days", level: "critical" },
-  { id: "E-02", title: "Deal at risk — competitor quote", lead: "Neha Agarwal (Indore)", owner: "Amit", reason: "Competitor offering lower franchise fee", age: "2 days", level: "critical" },
-  { id: "E-03", title: "No response after proposal", lead: "Vikram Singh (Surat)", owner: "Deepak", reason: "5 calls unanswered, budget unverified", age: "6 days", level: "high" },
-  { id: "E-04", title: "Site location objection", lead: "Sandeep Rao (Pune)", owner: "Deepak", reason: "Wants exclusivity for full city", age: "1 day", level: "medium" },
-];
-
-const escTone = (l: Esc["level"]) =>
-  l === "critical" ? "border-red-500/50 bg-red-500/5" : l === "high" ? "border-amber-500/50 bg-amber-500/5" : "border-border";
-
-function EscalationsSection() {
-  const [remarks, setRemarks] = useState<Record<string, string>>({});
-  const [done, setDone] = useState<Record<string, boolean>>({});
-
-  return (
-    <div className="space-y-4">
-      <SectionHead title="Priority & Escalations" sub="Deals that need the Sales Head personally, ranked by risk." />
-      <div className="grid gap-3">
-        {ESCALATIONS.map((e) => (
-          <Card key={e.id} className={escTone(e.level)}>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <div className="font-semibold">{e.title}</div>
-                  <div className="text-xs text-muted-foreground">{e.lead} · Owner {e.owner} · Open {e.age}</div>
-                </div>
-                <Badge variant="outline" className="capitalize">{e.level}</Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">{e.reason}</p>
-              {done[e.id] ? (
-                <div className="flex items-center gap-2 text-sm text-emerald-500">
-                  <CheckCircle2 className="h-4 w-4" /> Action logged
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Textarea
-                    placeholder="Your decision / action plan"
-                    value={remarks[e.id] ?? ""}
-                    onChange={(ev) => setRemarks((s) => ({ ...s, [e.id]: ev.target.value }))}
-                    rows={2}
-                  />
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => { setDone((s) => ({ ...s, [e.id]: true })); toast.success("Escalation resolved"); }}>
-                      Resolve
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => toast.info("Escalated to CEO")}>Escalate to CEO</Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 /* -------------------- Sales Pipeline -------------------- */
 const STAGES = [
