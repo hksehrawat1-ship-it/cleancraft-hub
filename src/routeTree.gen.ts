@@ -31,6 +31,7 @@ import { Route as AuthenticatedSalesExecutiveRouteImport } from './routes/_authe
 import { Route as AuthenticatedSalesHeadRouteImport } from './routes/_authenticated/sales-head'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedTechnicalSupportRouteImport } from './routes/_authenticated/technical-support'
 import { Route as AuthenticatedTlRouteImport } from './routes/_authenticated/tl'
 import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedVideoEditorRouteImport } from './routes/_authenticated/video-editor'
@@ -151,6 +152,12 @@ const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTechnicalSupportRoute =
+  AuthenticatedTechnicalSupportRouteImport.update({
+    id: '/technical-support',
+    path: '/technical-support',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTlRoute = AuthenticatedTlRouteImport.update({
   id: '/tl',
   path: '/tl',
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/sales-head': typeof AuthenticatedSalesHeadRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/technical-support': typeof AuthenticatedTechnicalSupportRoute
   '/tl': typeof AuthenticatedTlRoute
   '/users': typeof AuthenticatedUsersRoute
   '/video-editor': typeof AuthenticatedVideoEditorRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/sales-head': typeof AuthenticatedSalesHeadRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/technical-support': typeof AuthenticatedTechnicalSupportRoute
   '/tl': typeof AuthenticatedTlRoute
   '/users': typeof AuthenticatedUsersRoute
   '/video-editor': typeof AuthenticatedVideoEditorRoute
@@ -259,6 +268,7 @@ export interface FileRoutesById {
   '/_authenticated/sales-head': typeof AuthenticatedSalesHeadRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/technical-support': typeof AuthenticatedTechnicalSupportRoute
   '/_authenticated/tl': typeof AuthenticatedTlRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/video-editor': typeof AuthenticatedVideoEditorRoute
@@ -289,6 +299,7 @@ export interface FileRouteTypes {
     | '/sales-head'
     | '/stores'
     | '/tasks'
+    | '/technical-support'
     | '/tl'
     | '/users'
     | '/video-editor'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/sales-head'
     | '/stores'
     | '/tasks'
+    | '/technical-support'
     | '/tl'
     | '/users'
     | '/video-editor'
@@ -346,6 +358,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales-head'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
+    | '/_authenticated/technical-support'
     | '/_authenticated/tl'
     | '/_authenticated/users'
     | '/_authenticated/video-editor'
@@ -519,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/technical-support': {
+      id: '/_authenticated/technical-support'
+      path: '/technical-support'
+      fullPath: '/technical-support'
+      preLoaderRoute: typeof AuthenticatedTechnicalSupportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tl': {
       id: '/_authenticated/tl'
       path: '/tl'
@@ -574,6 +594,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSalesHeadRoute: typeof AuthenticatedSalesHeadRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedTechnicalSupportRoute: typeof AuthenticatedTechnicalSupportRoute
   AuthenticatedTlRoute: typeof AuthenticatedTlRoute
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedVideoEditorRoute: typeof AuthenticatedVideoEditorRoute
@@ -597,6 +618,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSalesHeadRoute: AuthenticatedSalesHeadRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedTechnicalSupportRoute: AuthenticatedTechnicalSupportRoute,
   AuthenticatedTlRoute: AuthenticatedTlRoute,
   AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedVideoEditorRoute: AuthenticatedVideoEditorRoute,
