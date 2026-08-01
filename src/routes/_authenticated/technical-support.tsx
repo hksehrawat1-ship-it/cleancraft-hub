@@ -29,6 +29,7 @@ import {
 import { TechSupportDashboard } from "@/components/tech-support/dashboard";
 import { MySupportTickets } from "@/components/tech-support/my-tickets";
 import { TechSupportPriorityQueue } from "@/components/tech-support/priority-queue";
+import { RemoteTroubleshooting } from "@/components/tech-support/remote-troubleshooting";
 
 export const Route = createFileRoute("/_authenticated/technical-support")({
   head: () => ({
@@ -98,56 +99,12 @@ function TechnicalSupportDashboard() {
         {active === "dashboard" && <TechSupportDashboard />}
         {active === "tickets" && <MySupportTickets />}
         {active === "priority" && <TechSupportPriorityQueue />}
-        {active === "remote" && <RemoteSection />}
+        {active === "remote" && <RemoteTroubleshooting />}
         {active === "electrician" && <ElectricianSection />}
         {active === "followups" && <FollowUpsSection />}
         {active === "knowledge" && <KnowledgeSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Remote Troubleshooting ---------------- */
-function RemoteSection() {
-  const sessions = [
-    { store: "Jaipur", status: "Live", duration: "12:34" },
-    { store: "Surat", status: "Scheduled", duration: "—" },
-    { store: "Lucknow", status: "Completed", duration: "08:15" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Remote Troubleshooting</h1>
-        <p className="text-sm text-muted-foreground">Live and scheduled remote support sessions.</p>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        {sessions.map((s, idx) => (
-          <Card key={idx}>
-            <CardContent className="p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="font-medium">{s.store}</div>
-                <Badge variant={s.status === "Live" ? "default" : s.status === "Scheduled" ? "secondary" : "outline"}>{s.status}</Badge>
-              </div>
-              <div className="text-sm text-muted-foreground">Duration: {s.duration}</div>
-              <div className="flex gap-2">
-                {s.status === "Live" ? (
-                  <>
-                    <Button size="sm" variant="destructive" className="gap-1"><Pause className="w-3 h-3" /> End</Button>
-                    <Button size="sm" variant="outline">Annotate</Button>
-                  </>
-                ) : s.status === "Scheduled" ? (
-                  <Button size="sm" className="gap-1"><Play className="w-3 h-3" /> Start</Button>
-                ) : (
-                  <Button size="sm" variant="outline">View Notes</Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
     </div>
   );
 }
