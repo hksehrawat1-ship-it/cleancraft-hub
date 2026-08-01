@@ -1,4 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { Briefcase, TrendingDown, Users, Flame, ArrowDown } from "lucide-react";
 
 const funnel = [
