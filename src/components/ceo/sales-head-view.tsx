@@ -36,10 +36,16 @@ const statusDot = (s: "green" | "yellow" | "red") =>
 export function SalesHeadCeoView() {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Briefcase className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold">Sales Head Dashboard</h2>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Briefcase className="w-5 h-5 text-primary" />
+          <h2 className="text-lg font-semibold">Sales Head Dashboard</h2>
+        </div>
+        <Button asChild size="sm">
+          <Link to="/sales-head">Open Sales Head Dashboard</Link>
+        </Button>
       </div>
+
 
       <Card>
         <CardHeader className="pb-3">
