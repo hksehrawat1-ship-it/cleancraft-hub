@@ -10,7 +10,6 @@ import {
   Ticket,
   ListOrdered,
   MonitorPlay,
-  UserCog,
   Bell,
   BookOpen,
   TrendingUp,
@@ -46,7 +45,6 @@ type SectionKey =
   | "tickets"
   | "priority"
   | "remote"
-  | "electrician"
   | "followups"
   | "knowledge"
   | "performance";
@@ -56,7 +54,6 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "tickets", label: "My Support Tickets", icon: Ticket },
   { key: "priority", label: "Priority Queue", icon: ListOrdered },
   { key: "remote", label: "Remote Troubleshooting", icon: MonitorPlay },
-  { key: "electrician", label: "Electrician Coordination", icon: UserCog },
   { key: "followups", label: "Follow-ups & Reminders", icon: Bell },
   { key: "knowledge", label: "Knowledge Centre", icon: BookOpen },
   { key: "performance", label: "Performance", icon: TrendingUp },
@@ -100,52 +97,10 @@ function TechnicalSupportDashboard() {
         {active === "tickets" && <MySupportTickets />}
         {active === "priority" && <TechSupportPriorityQueue />}
         {active === "remote" && <RemoteTroubleshooting />}
-        {active === "electrician" && <ElectricianSection />}
         {active === "followups" && <FollowUpsSection />}
         {active === "knowledge" && <KnowledgeSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Electrician Coordination ---------------- */
-function ElectricianSection() {
-  const requests = [
-    { store: "Agra", issue: "Generator auto-start", electrician: "Ravi Kumar", eta: "20 min", status: "Assigned" },
-    { store: "Indore", issue: "Steam iron wiring", electrician: "Amit Sharma", eta: "45 min", status: "On Site" },
-    { store: "Jaipur", issue: "New machine install", electrician: "Pending", eta: "—", status: "Open" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Electrician Coordination</h1>
-        <p className="text-sm text-muted-foreground">Track on-site electrical support requests.</p>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base flex items-center gap-2"><Wrench className="w-4 h-4" /> Active Requests</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {requests.map((r, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
-              <div>
-                <div className="font-medium text-sm">{r.store}</div>
-                <div className="text-xs text-muted-foreground">{r.issue}</div>
-              </div>
-              <div className="text-right text-sm">
-                <div>{r.electrician}</div>
-                <div className="text-xs text-muted-foreground">ETA {r.eta}</div>
-              </div>
-              <Badge variant={r.status === "On Site" ? "default" : r.status === "Assigned" ? "secondary" : "outline"}>{r.status}</Badge>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Button className="gap-2"><UserCog className="w-4 h-4" /> Raise New Electrician Request</Button>
     </div>
   );
 }
