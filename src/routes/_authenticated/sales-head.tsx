@@ -131,7 +131,7 @@ function SalesHeadDashboard() {
           {active === "meetings" && <SalesHeadMeetingsPage />}
           {active === "tasks" && <SalesHeadTeamTasksPage />}
           {active === "performance" && <SalesHeadPerformancePage />}
-          {active === "resources" && <ResourcesSection />}
+          {active === "resources" && <SalesHeadResourcesPage />}
         </main>
       </div>
     </div>
