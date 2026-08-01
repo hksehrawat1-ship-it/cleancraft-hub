@@ -18,6 +18,7 @@ import { TeamLeadsPage } from "@/components/sales-head/team-leads";
 import { EscalationsPage } from "@/components/sales-head/escalations";
 import { SalesHeadPipelinePage } from "@/components/sales-head/pipeline";
 import { SalesHeadMeetingsPage } from "@/components/sales-head/meetings";
+import { SalesHeadTeamTasksPage } from "@/components/sales-head/team-tasks";
 import {
   UserCircle2,
   LayoutDashboard,
@@ -127,7 +128,7 @@ function SalesHeadDashboard() {
           {active === "escalations" && <EscalationsPage />}
           {active === "pipeline" && <SalesHeadPipelinePage />}
           {active === "meetings" && <SalesHeadMeetingsPage />}
-          {active === "tasks" && <TasksSection />}
+          {active === "tasks" && <SalesHeadTeamTasksPage />}
           {active === "performance" && <PerformanceSection />}
           {active === "resources" && <ResourcesSection />}
         </main>
