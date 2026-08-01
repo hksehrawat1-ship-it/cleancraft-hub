@@ -26,6 +26,7 @@ import {
   Play,
   Pause,
 } from "lucide-react";
+import { TechSupportDashboard } from "@/components/tech-support/dashboard";
 
 export const Route = createFileRoute("/_authenticated/technical-support")({
   head: () => ({
@@ -92,7 +93,7 @@ function TechnicalSupportDashboard() {
       </aside>
 
       <main className="flex-1 p-6 overflow-auto">
-        {active === "dashboard" && <DashboardSection />}
+        {active === "dashboard" && <TechSupportDashboard />}
         {active === "tickets" && <TicketsSection />}
         {active === "priority" && <PriorityQueueSection />}
         {active === "remote" && <RemoteSection />}
