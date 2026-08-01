@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { TechSupportDashboard } from "@/components/tech-support/dashboard";
 import { MySupportTickets } from "@/components/tech-support/my-tickets";
+import { TechSupportPriorityQueue } from "@/components/tech-support/priority-queue";
 
 export const Route = createFileRoute("/_authenticated/technical-support")({
   head: () => ({
@@ -96,58 +97,13 @@ function TechnicalSupportDashboard() {
       <main className="flex-1 p-6 overflow-auto">
         {active === "dashboard" && <TechSupportDashboard />}
         {active === "tickets" && <MySupportTickets />}
-        {active === "priority" && <PriorityQueueSection />}
+        {active === "priority" && <TechSupportPriorityQueue />}
         {active === "remote" && <RemoteSection />}
         {active === "electrician" && <ElectricianSection />}
         {active === "followups" && <FollowUpsSection />}
         {active === "knowledge" && <KnowledgeSection />}
         {active === "performance" && <PerformanceSection />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Priority Queue ---------------- */
-function PriorityQueueSection() {
-  const queue = [
-    { store: "Jaipur", issue: "POS sync failure", sla: "15 min", type: "Remote", wait: "2 min" },
-    { store: "Agra", issue: "Generator auto-start fault", sla: "30 min", type: "Electrician", wait: "5 min" },
-    { store: "Indore", issue: "Steam iron pressure drop", sla: "45 min", type: "On-call", wait: "8 min" },
-    { store: "Lucknow", issue: "Payment retry loop", sla: "20 min", type: "Remote", wait: "12 min" },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Priority Queue</h1>
-        <p className="text-sm text-muted-foreground">SLA-sensitive tickets sorted by urgency.</p>
-      </div>
-
-      <div className="grid gap-3">
-        {queue.map((q, idx) => (
-          <Card key={idx}>
-            <CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
-                  {idx + 1}
-                </div>
-                <div>
-                  <div className="font-medium text-sm">{q.issue}</div>
-                  <div className="text-xs text-muted-foreground">{q.store} · Waiting {q.wait}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge variant="outline">{q.type}</Badge>
-                <div className="text-right">
-                  <div className="text-xs text-muted-foreground">SLA Target</div>
-                  <div className="text-sm font-medium">{q.sla}</div>
-                </div>
-                <Button size="sm">Accept</Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
     </div>
   );
 }
