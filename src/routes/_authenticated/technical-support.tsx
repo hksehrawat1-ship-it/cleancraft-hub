@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import {
   LayoutDashboard,
   Ticket,
@@ -14,16 +13,7 @@ import {
   BookOpen,
   TrendingUp,
   Headphones,
-  Phone,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Search,
-  Wrench,
-  CalendarClock,
-  Filter,
-  Play,
-  Pause,
 } from "lucide-react";
 import { TechSupportDashboard } from "@/components/tech-support/dashboard";
 import { MySupportTickets } from "@/components/tech-support/my-tickets";
