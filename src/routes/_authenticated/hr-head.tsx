@@ -63,6 +63,8 @@ import { HrRecruitment } from "@/components/hr-head/recruitment";
 import { HrEmployees } from "@/components/hr-head/employees";
 import { HrOnboarding } from "@/components/hr-head/onboarding";
 import { HrAttendance } from "@/components/hr-head/attendance";
+import { HrPerformanceTraining } from "@/components/hr-head/performance-training";
+
 
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
