@@ -59,6 +59,7 @@ import {
   type LetterKind,
 } from "@/components/hr-head/data";
 import { HrHeadDashboardHome } from "@/components/hr-head/dashboard";
+import { HrRecruitment } from "@/components/hr-head/recruitment";
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
   head: () => ({
@@ -154,7 +155,7 @@ function HrHeadDashboard() {
         </div>
         <main className="overflow-auto p-4 md:p-6">
           {active === "dashboard" && <HrHeadDashboardHome onGo={setActive} />}
-          {active === "recruitment" && <RecruitmentSection />}
+          {active === "recruitment" && <HrRecruitment />}
           {active === "employees" && <EmployeesSection />}
           {active === "onboarding" && <OnboardingSection />}
           {active === "attendance" && <AttendanceSection />}
