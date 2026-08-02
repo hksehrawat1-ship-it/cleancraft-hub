@@ -62,6 +62,8 @@ import { HrHeadDashboardHome } from "@/components/hr-head/dashboard";
 import { HrRecruitment } from "@/components/hr-head/recruitment";
 import { HrEmployees } from "@/components/hr-head/employees";
 import { HrOnboarding } from "@/components/hr-head/onboarding";
+import { HrAttendance } from "@/components/hr-head/attendance";
+
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
   head: () => ({
