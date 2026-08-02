@@ -24,6 +24,7 @@ import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
 import { Route as AuthenticatedPackingStaffRouteImport } from './routes/_authenticated/packing-staff'
+import { Route as AuthenticatedPantryChar38cleaningRouteImport } from './routes/_authenticated/pantry&cleaning'
 import { Route as AuthenticatedPantryStaffRouteImport } from './routes/_authenticated/pantry-staff'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
@@ -121,6 +122,12 @@ const AuthenticatedPackingStaffRoute =
   AuthenticatedPackingStaffRouteImport.update({
     id: '/packing-staff',
     path: '/packing-staff',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPantryChar38cleaningRoute =
+  AuthenticatedPantryChar38cleaningRouteImport.update({
+    id: '/pantry&cleaning',
+    path: '/pantry&cleaning',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPantryStaffRoute =
@@ -236,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
   '/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
   '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
@@ -270,6 +278,7 @@ export interface FileRoutesByTo {
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
   '/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
   '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
@@ -306,6 +315,7 @@ export interface FileRoutesById {
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
   '/_authenticated/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/_authenticated/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
   '/_authenticated/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pme': typeof AuthenticatedPmeRoute
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/master'
     | '/packing-staff'
+    | '/pantry&cleaning'
     | '/pantry-staff'
     | '/payments'
     | '/pme'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/master'
     | '/packing-staff'
+    | '/pantry&cleaning'
     | '/pantry-staff'
     | '/payments'
     | '/pme'
@@ -411,6 +423,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leads'
     | '/_authenticated/master'
     | '/_authenticated/packing-staff'
+    | '/_authenticated/pantry&cleaning'
     | '/_authenticated/pantry-staff'
     | '/_authenticated/payments'
     | '/_authenticated/pme'
@@ -546,6 +559,13 @@ declare module '@tanstack/react-router' {
       path: '/packing-staff'
       fullPath: '/packing-staff'
       preLoaderRoute: typeof AuthenticatedPackingStaffRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pantry&cleaning': {
+      id: '/_authenticated/pantry&cleaning'
+      path: '/pantry&cleaning'
+      fullPath: '/pantry&cleaning'
+      preLoaderRoute: typeof AuthenticatedPantryChar38cleaningRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pantry-staff': {
@@ -687,6 +707,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
   AuthenticatedPackingStaffRoute: typeof AuthenticatedPackingStaffRoute
+  AuthenticatedPantryChar38cleaningRoute: typeof AuthenticatedPantryChar38cleaningRoute
   AuthenticatedPantryStaffRoute: typeof AuthenticatedPantryStaffRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
@@ -717,6 +738,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
   AuthenticatedPackingStaffRoute: AuthenticatedPackingStaffRoute,
+  AuthenticatedPantryChar38cleaningRoute:
+    AuthenticatedPantryChar38cleaningRoute,
   AuthenticatedPantryStaffRoute: AuthenticatedPantryStaffRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPmeRoute: AuthenticatedPmeRoute,
