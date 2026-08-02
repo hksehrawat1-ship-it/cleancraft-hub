@@ -17,6 +17,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authenticated/field-engineer'
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
@@ -79,6 +80,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFieldEngineerRoute =
+  AuthenticatedFieldEngineerRouteImport.update({
+    id: '/field-engineer',
+    path: '/field-engineer',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHrHeadRoute = AuthenticatedHrHeadRouteImport.update({
   id: '/hr-head',
   path: '/hr-head',
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
@@ -223,6 +231,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
@@ -254,6 +263,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/complaints'
     | '/dashboard'
+    | '/field-engineer'
     | '/hr-head'
     | '/leads'
     | '/master'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/complaints'
     | '/dashboard'
+    | '/field-engineer'
     | '/hr-head'
     | '/leads'
     | '/master'
@@ -344,6 +356,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
+    | '/_authenticated/field-engineer'
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
     | '/_authenticated/master'
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/field-engineer': {
+      id: '/_authenticated/field-engineer'
+      path: '/field-engineer'
+      fullPath: '/field-engineer'
+      preLoaderRoute: typeof AuthenticatedFieldEngineerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/hr-head': {
@@ -580,6 +600,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFieldEngineerRoute: typeof AuthenticatedFieldEngineerRoute
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
@@ -604,6 +625,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFieldEngineerRoute: AuthenticatedFieldEngineerRoute,
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
