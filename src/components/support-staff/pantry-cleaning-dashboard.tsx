@@ -545,7 +545,9 @@ export function PantryCleaningDashboard() {
           />
         )}
         {section === "supplies" && <PantryCleaningSupplies lang={lang} setLang={setLang} />}
-        {section === "problem" && problemView}
+        {section === "problem" && (
+          <PantryCleaningReportProblem lang={lang} setLang={setLang} />
+        )}
         {section === "help" && helpView}
       </main>
 
