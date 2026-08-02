@@ -24,6 +24,7 @@ import {
   type TaskStatus,
 } from "./data";
 import { ManagerDashboard } from "./manager-dashboard";
+import { AssignTasks } from "./assign-tasks";
 
 export type AdminSection =
   | "dashboard"
@@ -110,97 +111,7 @@ export function AdminManagerWorkspace({
 
 
   if (section === "assign") {
-    return (
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight md:text-2xl">Assign Tasks</h1>
-          <p className="text-sm text-muted-foreground">
-            Give a clear task with area, time and priority.
-          </p>
-        </div>
-        <Card>
-          <CardContent className="space-y-3 p-4">
-            <Input
-              placeholder="Task (e.g. Deep clean Floor 2 washroom)"
-              value={aTitle}
-              onChange={(e) => setATitle(e.target.value)}
-            />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Select value={aStaff} onValueChange={setAStaff}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Assign to staff" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STAFF.map((s) => (
-                    <SelectItem key={s.id} value={s.name}>
-                      {s.name} — {ROLE_META[s.role].label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={aArea} onValueChange={setAArea}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Area" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[
-                    "Ground floor",
-                    "Floor 1",
-                    "Floor 2",
-                    "Pantry",
-                    "Washroom",
-                    "Store room",
-                    "Dispatch bay",
-                    "All floors",
-                  ].map((a) => (
-                    <SelectItem key={a} value={a}>
-                      {a}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input
-                placeholder="Time slot (e.g. 11:00 AM)"
-                value={aSlot}
-                onChange={(e) => setASlot(e.target.value)}
-              />
-              <Select value={aPriority} onValueChange={setAPriority}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="normal">Normal</SelectItem>
-                  <SelectItem value="high">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button onClick={assign}>Assign Task</Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Recently assigned</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {tasks.slice(0, 5).map((t) => (
-              <div
-                key={t.id}
-                className="flex items-center justify-between rounded-md border p-3 text-sm"
-              >
-                <span>
-                  {t.title}
-                  <span className="block text-xs text-muted-foreground">
-                    {t.assignee} · {t.area} · {t.slot}
-                  </span>
-                </span>
-                <Badge variant={statusVariant(t.status)}>{STATUS_LABEL[t.status]}</Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AssignTasks onGo={(s) => onGo?.(s as AdminSection)} />;
   }
 
   if (section === "staff-tasks") {
