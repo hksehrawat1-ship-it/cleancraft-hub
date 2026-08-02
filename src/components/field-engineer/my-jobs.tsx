@@ -105,7 +105,11 @@ const T = {
   savedToast: { en: "Saved on ticket", hi: "टिकट पर सहेजा गया" },
 } as const;
 
-const STAGE: { key: WorkStage | "received" | "resched"; label: Bi; icon: React.ComponentType<{ className?: string }> }[] = [
+const STAGE: {
+  key: WorkStage | "received" | "resched";
+  label: Bi;
+  icon: React.ComponentType<{ className?: string }>;
+}[] = [
   { key: "received", label: { en: "Job Received", hi: "कार्य प्राप्त" }, icon: FileText },
   { key: "going", label: { en: "Going to Site", hi: "साइट जा रहे हैं" }, icon: Truck },
   { key: "reached", label: { en: "Reached Site", hi: "साइट पहुँचे" }, icon: MapPin },
@@ -135,7 +139,10 @@ const EXTRA: Record<string, Extra> = {
       en: "Remote check done. Error E04 means drum imbalance. Check bolts and shock absorber.",
       hi: "रिमोट जाँच पूर्ण। E04 का मतलब ड्रम असंतुलन। बोल्ट और शॉक अब्ज़ॉर्बर जाँचें।",
     },
-    parts: { en: "Drum bolt set, spanner kit, level gauge", hi: "ड्रम बोल्ट सेट, स्पैनर किट, लेवल गेज" },
+    parts: {
+      en: "Drum bolt set, spanner kit, level gauge",
+      hi: "ड्रम बोल्ट सेट, स्पैनर किट, लेवल गेज",
+    },
     history: [
       { en: "12 Jun — Drum belt replaced", hi: "12 जून — ड्रम बेल्ट बदली गई" },
       { en: "02 Mar — Routine service", hi: "02 मार्च — नियमित सर्विस" },
@@ -182,7 +189,10 @@ const EXTRA: Record<string, Extra> = {
     date: { en: "Yesterday, 11:00 AM", hi: "कल, सुबह 11:00" },
     model: "CC-SETUP",
     serial: "SN-SET-90011",
-    tsNote: { en: "Installation approved. No pending point.", hi: "इंस्टॉलेशन स्वीकृत। कोई बिंदु लंबित नहीं।" },
+    tsNote: {
+      en: "Installation approved. No pending point.",
+      hi: "इंस्टॉलेशन स्वीकृत। कोई बिंदु लंबित नहीं।",
+    },
     parts: { en: "Installation kit", hi: "इंस्टॉलेशन किट" },
     history: [{ en: "Store opened last month", hi: "स्टोर पिछले महीने खुला" }],
   },
@@ -278,8 +288,18 @@ export function FieldEngineerMyJobs({ lang, onGo }: { lang: Lang; onGo?: (s: "re
 
   const kpis = [
     { label: T.jobsToday[lang], value: counts.today, tone: "text-primary", tab: "today" as TabKey },
-    { label: T.urgent[lang], value: counts.urgent, tone: "text-destructive", tab: "today" as TabKey },
-    { label: T.pending[lang], value: counts.pending, tone: "text-amber-600", tab: "pending" as TabKey },
+    {
+      label: T.urgent[lang],
+      value: counts.urgent,
+      tone: "text-destructive",
+      tab: "today" as TabKey,
+    },
+    {
+      label: T.pending[lang],
+      value: counts.pending,
+      tone: "text-amber-600",
+      tab: "pending" as TabKey,
+    },
     {
       label: T.completed[lang],
       value: counts.completed,
@@ -354,7 +374,9 @@ export function FieldEngineerMyJobs({ lang, onGo }: { lang: Lang; onGo?: (s: "re
               <CardContent className="space-y-3 p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge className={priorityBadge(job)}>
-                    {job.priority === "normal" ? PRIORITY_LABEL.normal[lang] : PRIORITY_LABEL[job.priority][lang]}
+                    {job.priority === "normal"
+                      ? PRIORITY_LABEL.normal[lang]
+                      : PRIORITY_LABEL[job.priority][lang]}
                   </Badge>
                   <span className="text-xs font-semibold text-muted-foreground">{job.id}</span>
                 </div>
@@ -391,7 +413,9 @@ export function FieldEngineerMyJobs({ lang, onGo }: { lang: Lang; onGo?: (s: "re
                 <div className="grid gap-2 sm:grid-cols-2">
                   <Button
                     className="h-12 text-base"
-                    onClick={() => toast.success(`${T.callToast[lang]} ${job.owner} · ${job.phone}`)}
+                    onClick={() =>
+                      toast.success(`${T.callToast[lang]} ${job.owner} · ${job.phone}`)
+                    }
                   >
                     <Phone className="mr-2 h-5 w-5" />
                     {T.call[lang]}
@@ -475,7 +499,10 @@ export function FieldEngineerMyJobs({ lang, onGo }: { lang: Lang; onGo?: (s: "re
                 <Row label={T.model[lang]} value={EXTRA[detail.id]?.model ?? "—"} />
                 <Row label={T.serial[lang]} value={EXTRA[detail.id]?.serial ?? "—"} />
                 <Row label={T.problem[lang]} value={detail.issue[lang]} />
-                <Row label={T.visit[lang]} value={EXTRA[detail.id]?.date[lang] ?? detail.slot[lang]} />
+                <Row
+                  label={T.visit[lang]}
+                  value={EXTRA[detail.id]?.date[lang] ?? detail.slot[lang]}
+                />
 
                 <div>
                   <div className="mb-1 text-xs font-semibold uppercase text-muted-foreground">
@@ -571,11 +598,21 @@ export function FieldEngineerMyJobs({ lang, onGo }: { lang: Lang; onGo?: (s: "re
           <div className="space-y-3">
             <div className="space-y-1">
               <Label>{T.reschedNew[lang]}</Label>
-              <Input type="date" value={reDate} onChange={(e) => setReDate(e.target.value)} className="h-12" />
+              <Input
+                type="date"
+                value={reDate}
+                onChange={(e) => setReDate(e.target.value)}
+                className="h-12"
+              />
             </div>
             <div className="space-y-1">
               <Label>{T.reschedTime[lang]}</Label>
-              <Input type="time" value={reTime} onChange={(e) => setReTime(e.target.value)} className="h-12" />
+              <Input
+                type="time"
+                value={reTime}
+                onChange={(e) => setReTime(e.target.value)}
+                className="h-12"
+              />
             </div>
             <div className="space-y-1">
               <Label>{T.reason[lang]}</Label>
