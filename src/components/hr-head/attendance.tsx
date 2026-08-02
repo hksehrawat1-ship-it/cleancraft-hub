@@ -271,11 +271,12 @@ export function HrAttendance() {
         ),
       );
       toast.success("Attendance corrected — original record preserved in history");
-    } else if (action.kind === "reg-approve" || action.kind === "reg-reject") {
-      decideReg(action.kind, action.reg, reason);
-    } else {
-      decideLeave(action.kind, action.req, reason);
+    } else if ("reg" in action) {
+      decideReg(action.kind as "reg-approve" | "reg-reject", action.reg, reason);
+    } else if ("req" in action) {
+      decideLeave(action.kind as "leave-approve" | "leave-reject" | "leave-modify", action.req, reason);
     }
+
     setAction(null);
     setReason("");
     setConfirmRetro(false);
