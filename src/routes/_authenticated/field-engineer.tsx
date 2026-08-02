@@ -14,6 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { FieldEngineerHome } from "@/components/field-engineer/home";
+import {
+  JOBS,
+  JOB_STATUS_LABEL,
+  PRIORITY_LABEL,
+  priorityTone,
+  statusTone,
+  type Bi,
+  type Job,
+  type Lang,
+} from "@/components/field-engineer/data";
 import {
   Home,
   Wrench,
@@ -54,8 +65,6 @@ export const Route = createFileRoute("/_authenticated/field-engineer")({
   component: FieldEngineerDashboard,
 });
 
-type Lang = "en" | "hi";
-type Bi = { en: string; hi: string };
 type SectionKey = "home" | "jobs" | "schedule" | "report" | "expenses" | "help";
 
 const T = {
@@ -190,125 +199,42 @@ const NAV: { key: SectionKey; icon: React.ComponentType<{ className?: string }> 
   { key: "help", icon: BookOpen },
 ];
 
-/* ---------------- Shared sample data ---------------- */
-type Job = {
-  id: string;
-  store: Bi;
-  owner: string;
-  phone: string;
-  issue: Bi;
-  machine: Bi;
-  priority: "safety" | "breakdown" | "normal";
-  status: "scheduled" | "transit" | "parts" | "completed";
-  slot: Bi;
-  city: Bi;
-};
-
-const PRIORITY_LABEL: Record<Job["priority"], Bi> = {
-  safety: { en: "Safety Critical", hi: "सुरक्षा गंभीर" },
-  breakdown: { en: "Breakdown", hi: "मशीन बंद" },
-  normal: { en: "Normal", hi: "सामान्य" },
-};
-
-const STATUS_LABEL: Record<Job["status"], Bi> = {
-  scheduled: T.scheduled,
-  transit: T.inTransit,
-  parts: T.awaitingParts,
-  completed: T.completed,
-};
-
-const JOBS: Job[] = [
-  {
-    id: "FE-2041",
-    store: { en: "Jaipur — Vaishali Nagar", hi: "जयपुर — वैशाली नगर" },
-    owner: "Rahul Sharma",
-    phone: "+91 98290 11223",
-    issue: {
-      en: "Washer drum vibration + error E04",
-      hi: "वॉशर ड्रम में कंपन + एरर E04",
-    },
-    machine: { en: "Washer 12kg", hi: "वॉशर 12 किग्रा" },
-    priority: "safety",
-    status: "transit",
-    slot: { en: "10:00 AM", hi: "सुबह 10:00" },
-    city: { en: "Jaipur", hi: "जयपुर" },
-  },
-  {
-    id: "FE-2042",
-    store: { en: "Indore — Vijay Nagar", hi: "इंदौर — विजय नगर" },
-    owner: "Neha Agarwal",
-    phone: "+91 90390 44551",
-    issue: { en: "Dryer heating coil replacement", hi: "ड्रायर हीटिंग कॉइल बदलना" },
-    machine: { en: "Dryer 10kg", hi: "ड्रायर 10 किग्रा" },
-    priority: "breakdown",
-    status: "scheduled",
-    slot: { en: "12:30 PM", hi: "दोपहर 12:30" },
-    city: { en: "Indore", hi: "इंदौर" },
-  },
-  {
-    id: "FE-2043",
-    store: { en: "Lucknow — Gomti Nagar", hi: "लखनऊ — गोमती नगर" },
-    owner: "Amit Verma",
-    phone: "+91 99350 77812",
-    issue: { en: "Steam iron boiler pressure drop", hi: "स्टीम आयरन बॉयलर प्रेशर कम" },
-    machine: { en: "Steam Iron", hi: "स्टीम आयरन" },
-    priority: "normal",
-    status: "scheduled",
-    slot: { en: "3:00 PM", hi: "दोपहर 3:00" },
-    city: { en: "Lucknow", hi: "लखनऊ" },
-  },
-  {
-    id: "FE-2039",
-    store: { en: "Surat — Adajan", hi: "सूरत — अडाजण" },
-    owner: "Kiran Patel",
-    phone: "+91 98250 33440",
-    issue: {
-      en: "Machine installation & commissioning",
-      hi: "मशीन इंस्टॉलेशन एवं कमीशनिंग",
-    },
-    machine: { en: "Full Setup", hi: "पूर्ण सेटअप" },
-    priority: "normal",
-    status: "completed",
-    slot: { en: "Yesterday", hi: "कल" },
-    city: { en: "Surat", hi: "सूरत" },
-  },
-  {
-    id: "FE-2036",
-    store: { en: "Pune 2 — Kothrud", hi: "पुणे 2 — कोथरुड" },
-    owner: "Sagar Joshi",
-    phone: "+91 91750 66220",
-    issue: {
-      en: "Awaiting spare part (control board)",
-      hi: "स्पेयर पार्ट की प्रतीक्षा (कंट्रोल बोर्ड)",
-    },
-    machine: { en: "Washer 8kg", hi: "वॉशर 8 किग्रा" },
-    priority: "breakdown",
-    status: "parts",
-    slot: { en: "Hold", hi: "रोका गया" },
-    city: { en: "Pune", hi: "पुणे" },
-  },
-];
-
-function priorityTone(p: Job["priority"]) {
-  if (p === "safety") return "bg-red-600 text-white";
-  if (p === "breakdown") return "bg-rose-100 text-rose-700 border-rose-200";
-  return "bg-muted text-muted-foreground";
-}
-
-function statusTone(s: Job["status"]) {
-  if (s === "completed") return "text-emerald-600";
-  if (s === "transit") return "text-primary";
-  if (s === "parts") return "text-amber-600";
-  return "text-blue-600";
-}
+/* ---------------- Shared sample data (imported) ---------------- */
+const STATUS_LABEL = JOB_STATUS_LABEL;
 
 function FieldEngineerDashboard() {
   const [lang, setLang] = useState<Lang>("en");
   const [active, setActive] = useState<SectionKey>("home");
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] w-full bg-muted/30">
-      <aside className="w-64 shrink-0 border-r bg-background">
+    <div className="flex min-h-[calc(100vh-3rem)] w-full flex-col bg-muted/30 md:flex-row">
+      {/* Mobile top nav */}
+      <div className="border-b bg-background md:hidden">
+        <div className="flex items-center gap-2 px-3 py-2">
+          <HardHat className="h-4 w-4 shrink-0 text-primary" />
+          <span className="text-sm font-semibold">{T.title[lang]}</span>
+        </div>
+        <nav className="flex gap-2 overflow-x-auto px-3 pb-2">
+          {NAV.map((item) => {
+            const Icon = item.icon;
+            const isActive = active === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setActive(item.key)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
+                  isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {T.nav[item.key][lang]}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      <aside className="hidden w-64 shrink-0 border-r bg-background md:block">
         <div className="p-4 border-b">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">
             {T.employee[lang]}
@@ -338,111 +264,36 @@ function FieldEngineerDashboard() {
         </nav>
       </aside>
 
-      <main className="flex-1 min-w-0 p-6 overflow-auto space-y-4">
-        <div className="flex items-center justify-end">
-          <div className="inline-flex items-center gap-2 border rounded-md p-1 bg-background">
-            <Languages className="w-4 h-4 text-muted-foreground ml-1" />
-            <Button
-              size="sm"
-              variant={lang === "en" ? "default" : "ghost"}
-              onClick={() => setLang("en")}
-            >
-              English
-            </Button>
-            <Button
-              size="sm"
-              variant={lang === "hi" ? "default" : "ghost"}
-              onClick={() => setLang("hi")}
-            >
-              हिन्दी
-            </Button>
+      <main className="min-w-0 flex-1 space-y-4 overflow-auto p-4 md:p-6">
+        {active !== "home" && (
+          <div className="flex items-center justify-end">
+            <div className="inline-flex items-center gap-2 border rounded-md p-1 bg-background">
+              <Languages className="w-4 h-4 text-muted-foreground ml-1" />
+              <Button
+                size="sm"
+                variant={lang === "en" ? "default" : "ghost"}
+                onClick={() => setLang("en")}
+              >
+                English
+              </Button>
+              <Button
+                size="sm"
+                variant={lang === "hi" ? "default" : "ghost"}
+                onClick={() => setLang("hi")}
+              >
+                हिन्दी
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
 
-        {active === "home" && <HomeSection lang={lang} onGo={setActive} />}
+        {active === "home" && <FieldEngineerHome lang={lang} setLang={setLang} onGo={setActive} />}
         {active === "jobs" && <JobsSection lang={lang} />}
         {active === "schedule" && <ScheduleSection lang={lang} />}
         {active === "report" && <ReportSection lang={lang} />}
         {active === "expenses" && <ExpensesSection lang={lang} />}
         {active === "help" && <HelpSection lang={lang} />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Home ---------------- */
-function HomeSection({ lang, onGo }: { lang: Lang; onGo: (k: SectionKey) => void }) {
-  const stats = [
-    { label: T.jobsToday[lang], value: 3, icon: CalendarDays, tone: "text-blue-600" },
-    { label: T.completed[lang], value: 1, icon: CheckCircle2, tone: "text-emerald-600" },
-    { label: T.inTransit[lang], value: 1, icon: Truck, tone: "text-primary" },
-    { label: T.awaitingParts[lang], value: 1, icon: AlertTriangle, tone: "text-amber-600" },
-  ];
-  const next = JOBS[0];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{T.greeting[lang]}</h1>
-        <p className="text-sm text-muted-foreground">{T.greetingSub[lang]}</p>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {stats.map(({ label, value, icon: Icon, tone }) => (
-          <Card key={label}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted-foreground">
-                <Icon className={`w-3.5 h-3.5 ${tone}`} />
-                {label}
-              </div>
-              <div className="text-2xl font-semibold tabular-nums mt-1">{value}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card className="border-primary/40">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-primary" /> {T.nextVisit[lang]}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-medium">{next.store[lang]}</span>
-            <Badge className={priorityTone(next.priority)}>{PRIORITY_LABEL[next.priority][lang]}</Badge>
-            <span className="text-xs text-muted-foreground">{next.slot[lang]}</span>
-          </div>
-          <p className="text-sm text-muted-foreground">{next.issue[lang]}</p>
-          <div className="flex flex-wrap gap-2">
-            <Button size="sm" onClick={() => toast.success(`${T.calling[lang]} ${next.owner}`)}>
-              <Phone className="w-3.5 h-3.5 mr-1" /> {T.callOwner[lang]}
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => toast.success(T.markedReached[lang])}>
-              <MapPin className="w-3.5 h-3.5 mr-1" /> {T.reachedSite[lang]}
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => onGo("report")}>
-              <FileText className="w-3.5 h-3.5 mr-1" /> {T.submitReport[lang]}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {(["jobs", "schedule", "expenses"] as SectionKey[]).map((key) => {
-          const Icon = NAV.find((n) => n.key === key)!.icon;
-          return (
-            <button
-              key={key}
-              onClick={() => onGo(key)}
-              className="border rounded-md p-4 bg-background hover:bg-muted text-left transition-colors"
-            >
-              <Icon className="w-4 h-4 text-primary" />
-              <div className="mt-2 text-sm font-medium">{T.nav[key][lang]}</div>
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 }
@@ -513,7 +364,9 @@ function JobsSection({ lang }: { lang: Lang }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-mono text-muted-foreground">{j.id}</span>
                   <span className="font-medium">{j.store[lang]}</span>
-                  <Badge className={priorityTone(j.priority)}>{PRIORITY_LABEL[j.priority][lang]}</Badge>
+                  <Badge className={priorityTone(j.priority)}>
+                    {PRIORITY_LABEL[j.priority][lang]}
+                  </Badge>
                 </div>
                 <div className={`text-xs font-medium ${statusTone(j.status)}`}>
                   {STATUS_LABEL[j.status][lang]}
@@ -616,7 +469,11 @@ function ScheduleSection({ lang }: { lang: Lang }) {
                   >
                     <Truck className="w-3.5 h-3.5 mr-1" /> {T.startTravel[lang]}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => toast.success(T.ownerNotified[lang])}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toast.success(T.ownerNotified[lang])}
+                  >
                     {T.notifyOwner[lang]}
                   </Button>
                 </div>
@@ -882,8 +739,12 @@ function ExpensesSection({ lang }: { lang: Lang }) {
         ].map((s) => (
           <Card key={s.label}>
             <CardContent className="p-4">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</div>
-              <div className={`text-2xl font-semibold tabular-nums mt-1 flex items-center ${s.tone}`}>
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {s.label}
+              </div>
+              <div
+                className={`text-2xl font-semibold tabular-nums mt-1 flex items-center ${s.tone}`}
+              >
                 <IndianRupee className="w-4 h-4" />
                 {s.value.toLocaleString("en-IN")}
               </div>
@@ -1023,7 +884,11 @@ function HelpSection({ lang }: { lang: Lang }) {
       name: "Rohit Nair",
       phone: "+91 98110 22334",
     },
-    { role: { en: "Service Head", hi: "सर्विस हेड" }, name: "Vikas Mehta", phone: "+91 98110 55667" },
+    {
+      role: { en: "Service Head", hi: "सर्विस हेड" },
+      name: "Vikas Mehta",
+      phone: "+91 98110 55667",
+    },
     {
       role: { en: "Spare Parts Desk", hi: "स्पेयर पार्ट्स डेस्क" },
       name: "Store Team",
