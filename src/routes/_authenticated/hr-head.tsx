@@ -61,6 +61,7 @@ import {
 import { HrHeadDashboardHome } from "@/components/hr-head/dashboard";
 import { HrRecruitment } from "@/components/hr-head/recruitment";
 import { HrEmployees } from "@/components/hr-head/employees";
+import { HrOnboarding } from "@/components/hr-head/onboarding";
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
   head: () => ({
@@ -158,7 +159,7 @@ function HrHeadDashboard() {
           {active === "dashboard" && <HrHeadDashboardHome onGo={setActive} />}
           {active === "recruitment" && <HrRecruitment />}
           {active === "employees" && <HrEmployees />}
-          {active === "onboarding" && <OnboardingSection />}
+          {active === "onboarding" && <HrOnboarding />}
           {active === "attendance" && <AttendanceSection />}
           {active === "performance" && <PerformanceSection />}
           {active === "letters" && <LettersSection />}
