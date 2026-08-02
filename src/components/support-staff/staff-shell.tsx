@@ -3,6 +3,7 @@ import { Home, ListChecks, Boxes, AlertTriangle, HelpCircle } from "lucide-react
 import { ROLE_META, type StaffRole } from "./data";
 import { StaffWorkspace, type StaffSection } from "./staff-workspace";
 import { PackingHome } from "./packing-home";
+import { PackingMyTasks } from "./packing-my-tasks";
 import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -109,6 +110,8 @@ export function StaffShell({
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
         {activeRole === "packing" && active === "home" ? (
           <PackingHome lang={lang} setLang={setLang} />
+        ) : activeRole === "packing" && active === "tasks" ? (
+          <PackingMyTasks lang={lang} setLang={setLang} />
         ) : (
           <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
         )}
