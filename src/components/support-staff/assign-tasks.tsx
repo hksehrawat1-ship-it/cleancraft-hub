@@ -2,18 +2,14 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   AlertTriangle,
-  ArrowLeft,
   CheckCircle2,
   Clock,
-  Coffee,
   Image as ImageIcon,
   ListChecks,
   MapPin,
   Mic,
-  Package,
   Plus,
   Repeat,
-  SprayCan,
   Trash2,
   Video,
   X,
