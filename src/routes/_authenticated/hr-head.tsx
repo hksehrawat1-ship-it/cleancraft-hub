@@ -163,7 +163,7 @@ function HrHeadDashboard() {
           {active === "employees" && <HrEmployees />}
           {active === "onboarding" && <HrOnboarding />}
           {active === "attendance" && <HrAttendance />}
-          {active === "performance" && <PerformanceSection />}
+          {active === "performance" && <HrPerformanceTraining />}
           {active === "letters" && <LettersSection />}
           {active === "access" && <AccessSection />}
           {active === "reports" && <ReportsSection />}
