@@ -156,7 +156,7 @@ function HrHeadDashboard() {
         <main className="overflow-auto p-4 md:p-6">
           {active === "dashboard" && <HrHeadDashboardHome onGo={setActive} />}
           {active === "recruitment" && <HrRecruitment />}
-          {active === "employees" && <EmployeesSection />}
+          {active === "employees" && <HrEmployees />}
           {active === "onboarding" && <OnboardingSection />}
           {active === "attendance" && <AttendanceSection />}
           {active === "performance" && <PerformanceSection />}
