@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { FieldEngineerHome } from "@/components/field-engineer/home";
+import { FieldEngineerMyJobs } from "@/components/field-engineer/my-jobs";
 import {
   JOBS,
   JOB_STATUS_LABEL,
@@ -288,7 +289,7 @@ function FieldEngineerDashboard() {
         )}
 
         {active === "home" && <FieldEngineerHome lang={lang} setLang={setLang} onGo={setActive} />}
-        {active === "jobs" && <JobsSection lang={lang} />}
+        {active === "jobs" && <FieldEngineerMyJobs lang={lang} onGo={setActive} />}
         {active === "schedule" && <ScheduleSection lang={lang} />}
         {active === "report" && <ReportSection lang={lang} />}
         {active === "expenses" && <ExpensesSection lang={lang} />}
