@@ -26,6 +26,8 @@ import {
 import { ManagerDashboard } from "./manager-dashboard";
 import { AssignTasks } from "./assign-tasks";
 import { StaffTasks } from "./staff-tasks";
+import { ReviewWork } from "./review-work";
+
 
 export type AdminSection =
   | "dashboard"
@@ -120,84 +122,9 @@ export function AdminManagerWorkspace({
   }
 
   if (section === "review") {
-    const submitted = tasks.filter((t) => t.status === "done" || t.status === "issue");
-    return (
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight md:text-2xl">Review Work</h1>
-          <p className="text-sm text-muted-foreground">
-            Approve finished work or send it back for redo with a remark.
-          </p>
-        </div>
-        {submitted.map((t) => {
-          const state = reviewed[t.id];
-          return (
-            <Card key={t.id}>
-              <CardContent className="space-y-3 p-4">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <div className="font-medium">{t.title}</div>
-                    <p className="text-xs text-muted-foreground">
-                      {t.assignee} · {t.area} · {t.slot}
-                    </p>
-                  </div>
-                  <Badge
-                    variant={
-                      state === "approved"
-                        ? "default"
-                        : state === "redo"
-                          ? "destructive"
-                          : "secondary"
-                    }
-                  >
-                    {state === "approved" ? "Approved" : state === "redo" ? "Redo sent" : "Awaiting review"}
-                  </Badge>
-                </div>
-                <Textarea
-                  placeholder="Remark for the staff (required for redo)"
-                  value={remark[t.id] ?? ""}
-                  onChange={(e) => setRemark((p) => ({ ...p, [t.id]: e.target.value }))}
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setReviewed((p) => ({ ...p, [t.id]: "approved" }));
-                      toast.success("Work approved");
-                    }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => {
-                      if (!remark[t.id]) {
-                        toast.error("Add a remark before sending redo");
-                        return;
-                      }
-                      setReviewed((p) => ({ ...p, [t.id]: "redo" }));
-                      setTasks((p) =>
-                        p.map((x) =>
-                          x.id === t.id ? { ...x, status: "pending", note: remark[t.id] } : x,
-                        ),
-                      );
-                      toast.success("Sent back for redo");
-                    }}
-                  >
-                    Send for Redo
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-        {submitted.length === 0 && (
-          <p className="text-sm text-muted-foreground">No completed work waiting for review.</p>
-        )}
-      </div>
-    );
+    return <ReviewWork onGo={(s) => onGo?.(s as AdminSection)} />;
   }
+
 
   if (section === "schedule") {
     const slots = ["Morning (8–11 AM)", "Midday (11 AM–2 PM)", "Afternoon (2–5 PM)", "Evening (5–8 PM)"];
