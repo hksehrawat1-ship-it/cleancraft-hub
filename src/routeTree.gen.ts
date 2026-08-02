@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedAdministrationManagerRouteImport } from './routes/_authenticated/administration-manager'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authenticated/field-engineer'
@@ -69,6 +70,12 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     id: '/.well-known/oauth-protected-resource',
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedAdministrationManagerRoute =
+  AuthenticatedAdministrationManagerRouteImport.update({
+    id: '/administration-manager',
+    path: '/administration-manager',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
   id: '/complaints',
@@ -199,6 +206,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
@@ -229,6 +237,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
@@ -261,6 +270,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/field-engineer': typeof AuthenticatedFieldEngineerRoute
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/administration-manager'
     | '/complaints'
     | '/dashboard'
     | '/field-engineer'
@@ -323,6 +334,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/administration-manager'
     | '/complaints'
     | '/dashboard'
     | '/field-engineer'
@@ -354,6 +366,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/administration-manager'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
     | '/_authenticated/field-engineer'
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/.well-known/oauth-protected-resource'
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/administration-manager': {
+      id: '/_authenticated/administration-manager'
+      path: '/administration-manager'
+      fullPath: '/administration-manager'
+      preLoaderRoute: typeof AuthenticatedAdministrationManagerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/complaints': {
       id: '/_authenticated/complaints'
@@ -598,6 +618,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdministrationManagerRoute: typeof AuthenticatedAdministrationManagerRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFieldEngineerRoute: typeof AuthenticatedFieldEngineerRoute
@@ -623,6 +644,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdministrationManagerRoute:
+    AuthenticatedAdministrationManagerRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFieldEngineerRoute: AuthenticatedFieldEngineerRoute,
