@@ -58,6 +58,7 @@ import {
   type Letter,
   type LetterKind,
 } from "@/components/hr-head/data";
+import { HrHeadDashboardHome } from "@/components/hr-head/dashboard";
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
   head: () => ({
