@@ -125,10 +125,13 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "facility",
-    label: "7. Administration",
+    label: "7. Support Staff",
     icon: Building2,
     items: [
       { key: "facility-mgr", label: "Administration Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
+      { key: "pantry-staff", label: "Pantry Staff", icon: Package, blurb: "Pantry supplies, daily refreshments, stock checks and hygiene." },
+      { key: "cleaning-staff", label: "Cleaning Staff", icon: CheckCircle2, blurb: "Daily cleaning schedules, sanitation checks and supply tracking." },
+      { key: "packing-staff", label: "Packing Staff", icon: Package, blurb: "Order packing, dispatch readiness, defect checks and throughput." },
     ],
   },
   {
