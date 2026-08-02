@@ -41,7 +41,7 @@ export const ROLE_META: Record<
 > = {
   pantry: { label: "Pantry Staff", icon: Coffee, suppliesLabel: "Pantry Supplies" },
   cleaning: { label: "Cleaning Staff", icon: SprayCan, suppliesLabel: "Cleaning Supplies" },
-  packing: { label: "Packing Staff", icon: Package, suppliesLabel: "Packing Materials" },
+  packing: { label: "Packing Staff", icon: Package, suppliesLabel: "Packing Supplies" },
 };
 
 export const TASKS: StaffTask[] = [

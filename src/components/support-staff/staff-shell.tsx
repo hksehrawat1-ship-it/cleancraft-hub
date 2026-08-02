@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Home, ListChecks, Boxes, AlertTriangle, HelpCircle } from "lucide-react";
 import { ROLE_META, type StaffRole } from "./data";
 import { StaffWorkspace, type StaffSection } from "./staff-workspace";
+import { PackingHome } from "./packing-home";
+import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "home", label: "Home", icon: Home },
@@ -23,6 +25,7 @@ export function StaffShell({
 }) {
   const [active, setActive] = useState<StaffSection>("home");
   const [current, setCurrent] = useState<StaffRole>(role);
+  const [lang, setLang] = useState<Lang>("en");
   const activeRole = roles && roles.length ? current : role;
   const meta = ROLE_META[activeRole];
   const RoleIcon = meta.icon;
@@ -104,7 +107,11 @@ export function StaffShell({
       </aside>
 
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
-        <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
+        {activeRole === "packing" && active === "home" ? (
+          <PackingHome lang={lang} setLang={setLang} />
+        ) : (
+          <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
+        )}
       </main>
     </div>
   );
