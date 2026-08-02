@@ -179,6 +179,16 @@ export function PackingReportProblem({
     setStep(2);
   };
 
+  useEffect(() => {
+    if (!presetCat) return;
+    const c = CATS.find((x) => x.id === presetCat);
+    if (c) pickCat(c);
+    onPresetHandled?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presetCat]);
+
+
+
   const urgentHelp = () => {
     toast.error(
       lang === "hi"
