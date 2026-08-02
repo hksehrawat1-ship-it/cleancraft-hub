@@ -6,6 +6,8 @@ import { PackingHome } from "./packing-home";
 import { PackingMyTasks } from "./packing-my-tasks";
 import { PackingSupplies } from "./packing-supplies";
 import { PackingReportProblem } from "./packing-report-problem";
+import { PackingHelp } from "./packing-help";
+
 import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -29,7 +31,9 @@ export function StaffShell({
   const [active, setActive] = useState<StaffSection>("home");
   const [current, setCurrent] = useState<StaffRole>(role);
   const [lang, setLang] = useState<Lang>("en");
+  const [problemPreset, setProblemPreset] = useState<string | null>(null);
   const activeRole = roles && roles.length ? current : role;
+
   const meta = ROLE_META[activeRole];
   const RoleIcon = meta.icon;
   const heading = title ?? meta.label;
@@ -117,7 +121,22 @@ export function StaffShell({
         ) : activeRole === "packing" && active === "supplies" ? (
           <PackingSupplies lang={lang} setLang={setLang} />
         ) : activeRole === "packing" && active === "problem" ? (
-          <PackingReportProblem lang={lang} setLang={setLang} />
+          <PackingReportProblem
+            lang={lang}
+            setLang={setLang}
+            presetCat={problemPreset}
+            onPresetHandled={() => setProblemPreset(null)}
+          />
+        ) : activeRole === "packing" && active === "help" ? (
+          <PackingHelp
+            lang={lang}
+            setLang={setLang}
+            onReportProblem={(catId) => {
+              setProblemPreset(catId);
+              setActive("problem");
+            }}
+          />
+
         ) : (
           <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
         )}

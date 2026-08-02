@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,11 +125,16 @@ const ACTIVE: RepStatus[] = ["sent", "checking", "coming"];
 export function PackingReportProblem({
   lang,
   setLang,
+  presetCat,
+  onPresetHandled,
 }: {
   lang: Lang;
   setLang: (l: Lang) => void;
+  presetCat?: string | null;
+  onPresetHandled?: () => void;
 }) {
   const t = tr(lang);
+
   const [reports, setReports] = useState<Report[]>(SEED);
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [cat, setCat] = useState<Cat | null>(null);
@@ -173,6 +178,16 @@ export function PackingReportProblem({
     setUrgent(!!c.safety);
     setStep(2);
   };
+
+  useEffect(() => {
+    if (!presetCat) return;
+    const c = CATS.find((x) => x.id === presetCat);
+    if (c) pickCat(c);
+    onPresetHandled?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [presetCat]);
+
+
 
   const urgentHelp = () => {
     toast.error(
