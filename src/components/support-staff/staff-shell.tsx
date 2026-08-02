@@ -31,7 +31,9 @@ export function StaffShell({
   const [active, setActive] = useState<StaffSection>("home");
   const [current, setCurrent] = useState<StaffRole>(role);
   const [lang, setLang] = useState<Lang>("en");
+  const [problemPreset, setProblemPreset] = useState<string | null>(null);
   const activeRole = roles && roles.length ? current : role;
+
   const meta = ROLE_META[activeRole];
   const RoleIcon = meta.icon;
   const heading = title ?? meta.label;
