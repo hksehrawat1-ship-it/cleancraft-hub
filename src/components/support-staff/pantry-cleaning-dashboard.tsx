@@ -46,6 +46,7 @@ import {
 } from "./pantry-cleaning-data";
 import { KindBadge, StatusBadge } from "./pantry-cleaning-ui";
 import { PantryCleaningMyTasks } from "./pantry-cleaning-my-tasks";
+import { PantryCleaningSupplies } from "./pantry-cleaning-supplies";
 
 const SUPPLY_ALERTS: {
   id: string;
@@ -543,7 +544,7 @@ export function PantryCleaningDashboard() {
             onHelp={logHelp}
           />
         )}
-        {section === "supplies" && suppliesView}
+        {section === "supplies" && <PantryCleaningSupplies lang={lang} setLang={setLang} />}
         {section === "problem" && problemView}
         {section === "help" && helpView}
       </main>
