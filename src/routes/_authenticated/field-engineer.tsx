@@ -240,30 +240,28 @@ function FieldEngineerDashboard() {
 
       <main className="flex-1 min-w-0 p-6 overflow-auto space-y-4">
         {active !== "home" && (
-        <div className="flex items-center justify-end">
-          <div className="inline-flex items-center gap-2 border rounded-md p-1 bg-background">
-            <Languages className="w-4 h-4 text-muted-foreground ml-1" />
-            <Button
-              size="sm"
-              variant={lang === "en" ? "default" : "ghost"}
-              onClick={() => setLang("en")}
-            >
-              English
-            </Button>
-            <Button
-              size="sm"
-              variant={lang === "hi" ? "default" : "ghost"}
-              onClick={() => setLang("hi")}
-            >
-              हिन्दी
-            </Button>
+          <div className="flex items-center justify-end">
+            <div className="inline-flex items-center gap-2 border rounded-md p-1 bg-background">
+              <Languages className="w-4 h-4 text-muted-foreground ml-1" />
+              <Button
+                size="sm"
+                variant={lang === "en" ? "default" : "ghost"}
+                onClick={() => setLang("en")}
+              >
+                English
+              </Button>
+              <Button
+                size="sm"
+                variant={lang === "hi" ? "default" : "ghost"}
+                onClick={() => setLang("hi")}
+              >
+                हिन्दी
+              </Button>
+            </div>
           </div>
-        </div>
         )}
 
-        {active === "home" && (
-          <FieldEngineerHome lang={lang} setLang={setLang} onGo={setActive} />
-        )}
+        {active === "home" && <FieldEngineerHome lang={lang} setLang={setLang} onGo={setActive} />}
         {active === "jobs" && <JobsSection lang={lang} />}
         {active === "schedule" && <ScheduleSection lang={lang} />}
         {active === "report" && <ReportSection lang={lang} />}
@@ -340,7 +338,9 @@ function JobsSection({ lang }: { lang: Lang }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs font-mono text-muted-foreground">{j.id}</span>
                   <span className="font-medium">{j.store[lang]}</span>
-                  <Badge className={priorityTone(j.priority)}>{PRIORITY_LABEL[j.priority][lang]}</Badge>
+                  <Badge className={priorityTone(j.priority)}>
+                    {PRIORITY_LABEL[j.priority][lang]}
+                  </Badge>
                 </div>
                 <div className={`text-xs font-medium ${statusTone(j.status)}`}>
                   {STATUS_LABEL[j.status][lang]}
@@ -443,7 +443,11 @@ function ScheduleSection({ lang }: { lang: Lang }) {
                   >
                     <Truck className="w-3.5 h-3.5 mr-1" /> {T.startTravel[lang]}
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => toast.success(T.ownerNotified[lang])}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => toast.success(T.ownerNotified[lang])}
+                  >
                     {T.notifyOwner[lang]}
                   </Button>
                 </div>
@@ -709,8 +713,12 @@ function ExpensesSection({ lang }: { lang: Lang }) {
         ].map((s) => (
           <Card key={s.label}>
             <CardContent className="p-4">
-              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{s.label}</div>
-              <div className={`text-2xl font-semibold tabular-nums mt-1 flex items-center ${s.tone}`}>
+              <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                {s.label}
+              </div>
+              <div
+                className={`text-2xl font-semibold tabular-nums mt-1 flex items-center ${s.tone}`}
+              >
                 <IndianRupee className="w-4 h-4" />
                 {s.value.toLocaleString("en-IN")}
               </div>
@@ -850,7 +858,11 @@ function HelpSection({ lang }: { lang: Lang }) {
       name: "Rohit Nair",
       phone: "+91 98110 22334",
     },
-    { role: { en: "Service Head", hi: "सर्विस हेड" }, name: "Vikas Mehta", phone: "+91 98110 55667" },
+    {
+      role: { en: "Service Head", hi: "सर्विस हेड" },
+      name: "Vikas Mehta",
+      phone: "+91 98110 55667",
+    },
     {
       role: { en: "Spare Parts Desk", hi: "स्पेयर पार्ट्स डेस्क" },
       name: "Store Team",

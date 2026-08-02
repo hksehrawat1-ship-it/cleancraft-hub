@@ -24,14 +24,7 @@ import {
   Languages,
   User,
 } from "lucide-react";
-import {
-  JOBS,
-  PRIORITY_LABEL,
-  priorityTone,
-  type Bi,
-  type Lang,
-  type WorkStage,
-} from "./data";
+import { JOBS, PRIORITY_LABEL, priorityTone, type Bi, type Lang, type WorkStage } from "./data";
 
 type SectionKey = "home" | "jobs" | "schedule" | "report" | "expenses" | "help";
 
@@ -190,9 +183,7 @@ export function FieldEngineerHome({
               <User className="h-6 w-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-bold sm:text-2xl">
-                {L.hello[lang]}, Ramesh
-              </h1>
+              <h1 className="truncate text-xl font-bold sm:text-2xl">{L.hello[lang]}, Ramesh</h1>
               <p className="truncate text-sm text-muted-foreground">{today}</p>
             </div>
           </div>
