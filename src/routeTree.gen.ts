@@ -15,12 +15,16 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedAdministrationManagerRouteImport } from './routes/_authenticated/administration-manager'
+import { Route as AuthenticatedCleaningStaffRouteImport } from './routes/_authenticated/cleaning-staff'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authenticated/field-engineer'
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
+import { Route as AuthenticatedPackingStaffRouteImport } from './routes/_authenticated/packing-staff'
+import { Route as AuthenticatedPantryStaffRouteImport } from './routes/_authenticated/pantry-staff'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
 import { Route as AuthenticatedProjectCoordinatorRouteImport } from './routes/_authenticated/project-coordinator'
@@ -70,6 +74,18 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAdministrationManagerRoute =
+  AuthenticatedAdministrationManagerRouteImport.update({
+    id: '/administration-manager',
+    path: '/administration-manager',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCleaningStaffRoute =
+  AuthenticatedCleaningStaffRouteImport.update({
+    id: '/cleaning-staff',
+    path: '/cleaning-staff',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
   id: '/complaints',
   path: '/complaints',
@@ -101,6 +117,18 @@ const AuthenticatedMasterRoute = AuthenticatedMasterRouteImport.update({
   path: '/master',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPackingStaffRoute =
+  AuthenticatedPackingStaffRouteImport.update({
+    id: '/packing-staff',
+    path: '/packing-staff',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPantryStaffRoute =
+  AuthenticatedPantryStaffRouteImport.update({
+    id: '/pantry-staff',
+    path: '/pantry-staff',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
   id: '/payments',
   path: '/payments',
@@ -199,12 +227,16 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
+  '/cleaning-staff': typeof AuthenticatedCleaningStaffRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
+  '/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -229,12 +261,16 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
+  '/cleaning-staff': typeof AuthenticatedCleaningStaffRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
+  '/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
   '/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -261,12 +297,16 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/administration-manager': typeof AuthenticatedAdministrationManagerRoute
+  '/_authenticated/cleaning-staff': typeof AuthenticatedCleaningStaffRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
+  '/_authenticated/packing-staff': typeof AuthenticatedPackingStaffRoute
+  '/_authenticated/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pme': typeof AuthenticatedPmeRoute
   '/_authenticated/project-coordinator': typeof AuthenticatedProjectCoordinatorRoute
@@ -293,12 +333,16 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/administration-manager'
+    | '/cleaning-staff'
     | '/complaints'
     | '/dashboard'
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
     | '/master'
+    | '/packing-staff'
+    | '/pantry-staff'
     | '/payments'
     | '/pme'
     | '/project-coordinator'
@@ -323,12 +367,16 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/administration-manager'
+    | '/cleaning-staff'
     | '/complaints'
     | '/dashboard'
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
     | '/master'
+    | '/packing-staff'
+    | '/pantry-staff'
     | '/payments'
     | '/pme'
     | '/project-coordinator'
@@ -354,12 +402,16 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/administration-manager'
+    | '/_authenticated/cleaning-staff'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
     | '/_authenticated/field-engineer'
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
     | '/_authenticated/master'
+    | '/_authenticated/packing-staff'
+    | '/_authenticated/pantry-staff'
     | '/_authenticated/payments'
     | '/_authenticated/pme'
     | '/_authenticated/project-coordinator'
@@ -433,6 +485,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/administration-manager': {
+      id: '/_authenticated/administration-manager'
+      path: '/administration-manager'
+      fullPath: '/administration-manager'
+      preLoaderRoute: typeof AuthenticatedAdministrationManagerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/cleaning-staff': {
+      id: '/_authenticated/cleaning-staff'
+      path: '/cleaning-staff'
+      fullPath: '/cleaning-staff'
+      preLoaderRoute: typeof AuthenticatedCleaningStaffRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/complaints': {
       id: '/_authenticated/complaints'
       path: '/complaints'
@@ -473,6 +539,20 @@ declare module '@tanstack/react-router' {
       path: '/master'
       fullPath: '/master'
       preLoaderRoute: typeof AuthenticatedMasterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/packing-staff': {
+      id: '/_authenticated/packing-staff'
+      path: '/packing-staff'
+      fullPath: '/packing-staff'
+      preLoaderRoute: typeof AuthenticatedPackingStaffRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/pantry-staff': {
+      id: '/_authenticated/pantry-staff'
+      path: '/pantry-staff'
+      fullPath: '/pantry-staff'
+      preLoaderRoute: typeof AuthenticatedPantryStaffRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/payments': {
@@ -598,12 +678,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdministrationManagerRoute: typeof AuthenticatedAdministrationManagerRoute
+  AuthenticatedCleaningStaffRoute: typeof AuthenticatedCleaningStaffRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedFieldEngineerRoute: typeof AuthenticatedFieldEngineerRoute
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
+  AuthenticatedPackingStaffRoute: typeof AuthenticatedPackingStaffRoute
+  AuthenticatedPantryStaffRoute: typeof AuthenticatedPantryStaffRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
   AuthenticatedProjectCoordinatorRoute: typeof AuthenticatedProjectCoordinatorRoute
@@ -623,12 +707,17 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdministrationManagerRoute:
+    AuthenticatedAdministrationManagerRoute,
+  AuthenticatedCleaningStaffRoute: AuthenticatedCleaningStaffRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedFieldEngineerRoute: AuthenticatedFieldEngineerRoute,
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
+  AuthenticatedPackingStaffRoute: AuthenticatedPackingStaffRoute,
+  AuthenticatedPantryStaffRoute: AuthenticatedPantryStaffRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPmeRoute: AuthenticatedPmeRoute,
   AuthenticatedProjectCoordinatorRoute: AuthenticatedProjectCoordinatorRoute,
