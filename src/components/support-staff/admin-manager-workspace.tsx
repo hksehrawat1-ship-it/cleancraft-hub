@@ -29,6 +29,7 @@ import { StaffTasks } from "./staff-tasks";
 import { ReviewWork } from "./review-work";
 import { WorkSchedule } from "./work-schedule";
 import { SuppliesRequests } from "./supplies-requests";
+import { StaffPerformance } from "./staff-performance";
 
 
 
@@ -138,48 +139,5 @@ export function AdminManagerWorkspace({
     return <SuppliesRequests />;
   }
 
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight md:text-2xl">Staff Performance</h1>
-        <p className="text-sm text-muted-foreground">
-          Completion rate, problems raised and review outcomes per person.
-        </p>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {STAFF.map((s) => {
-          const list = tasks.filter((t) => t.assignee === s.name);
-          const d = list.filter((t) => t.status === "done").length;
-          const rate = list.length ? Math.round((d / list.length) * 100) : 0;
-          return (
-            <Card key={s.id}>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">{s.name}</CardTitle>
-                <p className="text-xs text-muted-foreground">
-                  {ROLE_META[s.role].label} · {s.shift}
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Progress value={rate} />
-                <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                  <div className="rounded-md border p-2">
-                    <div className="text-lg font-semibold tabular-nums">{list.length}</div>
-                    Tasks
-                  </div>
-                  <div className="rounded-md border p-2">
-                    <div className="text-lg font-semibold tabular-nums">{d}</div>
-                    Done
-                  </div>
-                  <div className="rounded-md border p-2">
-                    <div className="text-lg font-semibold tabular-nums">{rate}%</div>
-                    Rate
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return <StaffPerformance />;
 }
