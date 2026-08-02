@@ -23,6 +23,7 @@ import {
   type StaffTask,
   type TaskStatus,
 } from "./data";
+import { ManagerDashboard } from "./manager-dashboard";
 
 export type AdminSection =
   | "dashboard"
