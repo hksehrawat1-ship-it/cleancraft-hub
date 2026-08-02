@@ -1,35 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { toast } from "sonner";
 import { FieldEngineerHome } from "@/components/field-engineer/home";
 import { FieldEngineerExpenses } from "@/components/field-engineer/expenses";
 import { FieldEngineerMyJobs } from "@/components/field-engineer/my-jobs";
 import { FieldEngineerWorkReport } from "@/components/field-engineer/work-report";
 import { FieldEngineerVisitSchedule } from "@/components/field-engineer/visit-schedule";
 import { FieldEngineerHelpGuides } from "@/components/field-engineer/help-guides";
-import {
-  JOBS,
-  JOB_STATUS_LABEL,
-  PRIORITY_LABEL,
-  priorityTone,
-  statusTone,
-  type Bi,
-  type Job,
-  type Lang,
-} from "@/components/field-engineer/data";
+import { type Bi, type Lang } from "@/components/field-engineer/data";
 import {
   Home,
   Wrench,
@@ -38,16 +16,6 @@ import {
   Receipt,
   BookOpen,
   HardHat,
-  MapPin,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
-  Truck,
-  Phone,
-  Plus,
-  Search,
-  IndianRupee,
-  Download,
   Languages,
 } from "lucide-react";
 
@@ -203,9 +171,6 @@ const NAV: { key: SectionKey; icon: React.ComponentType<{ className?: string }> 
   { key: "expenses", icon: Receipt },
   { key: "help", icon: BookOpen },
 ];
-
-/* ---------------- Shared sample data (imported) ---------------- */
-const STATUS_LABEL = JOB_STATUS_LABEL;
 
 function FieldEngineerDashboard() {
   const [lang, setLang] = useState<Lang>("en");
