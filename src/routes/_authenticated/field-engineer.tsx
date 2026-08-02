@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { FieldEngineerHome } from "@/components/field-engineer/home";
 import { FieldEngineerMyJobs } from "@/components/field-engineer/my-jobs";
+import { FieldEngineerVisitSchedule } from "@/components/field-engineer/visit-schedule";
 import {
   JOBS,
   JOB_STATUS_LABEL,
@@ -290,73 +291,11 @@ function FieldEngineerDashboard() {
 
         {active === "home" && <FieldEngineerHome lang={lang} setLang={setLang} onGo={setActive} />}
         {active === "jobs" && <FieldEngineerMyJobs lang={lang} onGo={setActive} />}
-        {active === "schedule" && <ScheduleSection lang={lang} />}
+        {active === "schedule" && <FieldEngineerVisitSchedule lang={lang} onGo={setActive} />}
         {active === "report" && <ReportSection lang={lang} />}
         {active === "expenses" && <ExpensesSection lang={lang} />}
         {active === "help" && <HelpSection lang={lang} />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Visit Schedule ---------------- */
-function ScheduleSection({ lang }: { lang: Lang }) {
-  const days = [
-    {
-      day: T.today[lang],
-      items: JOBS.filter((j) => j.status === "scheduled" || j.status === "transit"),
-    },
-    { day: T.tomorrow[lang], items: [JOBS[4], JOBS[2]] },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{T.nav.schedule[lang]}</h1>
-        <p className="text-sm text-muted-foreground">{T.scheduleSub[lang]}</p>
-      </div>
-
-      {days.map((d) => (
-        <Card key={d.day}>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-primary" /> {d.day}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {d.items.map((j, i) => (
-              <div
-                key={`${d.day}-${j.id}-${i}`}
-                className="border rounded-md p-3 bg-muted/20 flex flex-wrap items-center justify-between gap-2"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-sm font-semibold tabular-nums w-24">{j.slot[lang]}</div>
-                  <div>
-                    <div className="text-sm font-medium">{j.store[lang]}</div>
-                    <div className="text-xs text-muted-foreground">{j.issue[lang]}</div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => toast.success(T.travelStarted[lang])}
-                  >
-                    <Truck className="w-3.5 h-3.5 mr-1" /> {T.startTravel[lang]}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => toast.success(T.ownerNotified[lang])}
-                  >
-                    {T.notifyOwner[lang]}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      ))}
     </div>
   );
 }
