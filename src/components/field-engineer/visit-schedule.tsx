@@ -148,7 +148,7 @@ export function FieldEngineerVisitSchedule({
   onGo,
 }: {
   lang: Lang;
-  onGo?: (key: string) => void;
+  onGo?: (key: "report" | "jobs") => void;
 }) {
   const [tab, setTab] = useState<DayKey>("today");
   const [status, setStatus] = useState<Record<string, VisitStatus>>({});
