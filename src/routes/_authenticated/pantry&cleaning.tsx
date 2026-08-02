@@ -20,7 +20,6 @@ export const Route = createFileRoute("/_authenticated/pantry&cleaning")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <StaffShell role="pantry" roles={["pantry", "cleaning"]} title="Pantry & Cleaning Staff" />
-  ),
+  component: PantryCleaningDashboard,
+
 });
