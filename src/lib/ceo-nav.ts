@@ -120,7 +120,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     icon: Truck,
     items: [
       { key: "logistics", label: "Logistic Executive", icon: Truck, blurb: "Dispatches, in-transit, delivery SLA, freight cost." },
-      { key: "packing", label: "Packing Boy", icon: Package, blurb: "Daily packed units, defects, pending orders, productivity." },
+      
     ],
   },
   {
