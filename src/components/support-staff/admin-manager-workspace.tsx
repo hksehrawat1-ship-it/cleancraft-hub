@@ -26,6 +26,8 @@ import {
 import { ManagerDashboard } from "./manager-dashboard";
 import { AssignTasks } from "./assign-tasks";
 import { StaffTasks } from "./staff-tasks";
+import { ReviewWork } from "./review-work";
+
 
 export type AdminSection =
   | "dashboard"
