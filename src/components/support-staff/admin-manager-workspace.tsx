@@ -127,56 +127,9 @@ export function AdminManagerWorkspace({
 
 
   if (section === "schedule") {
-    const slots = ["Morning (8–11 AM)", "Midday (11 AM–2 PM)", "Afternoon (2–5 PM)", "Evening (5–8 PM)"];
-    return (
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight md:text-2xl">Work Schedule</h1>
-          <p className="text-sm text-muted-foreground">Shift timings and slot-wise workload.</p>
-        </div>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Shifts today</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {STAFF.map((s) => (
-              <div
-                key={s.id}
-                className="flex items-center justify-between rounded-md border p-3 text-sm"
-              >
-                <span>
-                  {s.name}
-                  <span className="block text-xs text-muted-foreground">
-                    {ROLE_META[s.role].label}
-                  </span>
-                </span>
-                <span className="text-xs text-muted-foreground">{s.shift}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {slots.map((slot, i) => {
-            const list = tasks.filter((_, idx) => idx % slots.length === i);
-            return (
-              <Card key={slot}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm">{slot}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-1">
-                  {list.map((t) => (
-                    <div key={t.id} className="text-xs text-muted-foreground">
-                      {t.slot} · {t.title} — {t.assignee}
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-      </div>
-    );
+    return <WorkSchedule onGo={(s) => onGo?.(s as AdminSection)} />;
   }
+
 
   if (section === "supplies") {
     return (
