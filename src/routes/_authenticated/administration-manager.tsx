@@ -89,7 +89,7 @@ function AdminManagerDashboard() {
       </aside>
 
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
-        <AdminManagerWorkspace section={active} />
+        <AdminManagerWorkspace section={active} onGo={setActive} />
       </main>
     </div>
   );
