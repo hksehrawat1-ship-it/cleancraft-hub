@@ -125,11 +125,16 @@ const ACTIVE: RepStatus[] = ["sent", "checking", "coming"];
 export function PackingReportProblem({
   lang,
   setLang,
+  presetCat,
+  onPresetHandled,
 }: {
   lang: Lang;
   setLang: (l: Lang) => void;
+  presetCat?: string | null;
+  onPresetHandled?: () => void;
 }) {
   const t = tr(lang);
+
   const [reports, setReports] = useState<Report[]>(SEED);
   const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(0);
   const [cat, setCat] = useState<Cat | null>(null);
