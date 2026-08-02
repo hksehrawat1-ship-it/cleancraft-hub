@@ -47,7 +47,13 @@ function statusVariant(s: TaskStatus): "default" | "secondary" | "destructive" |
   return "outline";
 }
 
-export function AdminManagerWorkspace({ section }: { section: AdminSection }) {
+export function AdminManagerWorkspace({
+  section,
+  onGo,
+}: {
+  section: AdminSection;
+  onGo?: (s: AdminSection) => void;
+}) {
   const [tasks, setTasks] = useState<StaffTask[]>(TASKS);
   const [reviewed, setReviewed] = useState<Record<string, "approved" | "redo">>({});
   const [remark, setRemark] = useState<Record<string, string>>({});
