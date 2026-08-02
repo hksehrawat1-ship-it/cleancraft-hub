@@ -543,7 +543,7 @@ export function PantryCleaningDashboard() {
             onHelp={logHelp}
           />
         )}
-        {section === "supplies" && suppliesView}
+        {section === "supplies" && <PantryCleaningSupplies lang={lang} setLang={setLang} />}
         {section === "problem" && problemView}
         {section === "help" && helpView}
       </main>
