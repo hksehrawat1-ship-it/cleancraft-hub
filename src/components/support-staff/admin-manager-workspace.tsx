@@ -28,6 +28,7 @@ import { AssignTasks } from "./assign-tasks";
 import { StaffTasks } from "./staff-tasks";
 import { ReviewWork } from "./review-work";
 import { WorkSchedule } from "./work-schedule";
+import { SuppliesRequests } from "./supplies-requests";
 
 
 
@@ -134,53 +135,7 @@ export function AdminManagerWorkspace({
 
 
   if (section === "supplies") {
-    return (
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight md:text-2xl">Supplies &amp; Requests</h1>
-          <p className="text-sm text-muted-foreground">
-            Stock levels across pantry, cleaning and packing, plus staff requests.
-          </p>
-        </div>
-        {(Object.keys(ROLE_META) as StaffRole[]).map((role) => (
-          <Card key={role}>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{ROLE_META[role].suppliesLabel}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {SUPPLIES.filter((s) => s.role === role).map((s) => {
-                const low = s.inStock <= s.minLevel;
-                return (
-                  <div
-                    key={s.id}
-                    className="flex items-center justify-between rounded-md border p-3 text-sm"
-                  >
-                    <span>
-                      {s.name}
-                      <span className="block text-xs text-muted-foreground">
-                        {s.inStock} {s.unit} in stock · min {s.minLevel}
-                      </span>
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={low ? "destructive" : "secondary"}>
-                        {low ? "Reorder" : "OK"}
-                      </Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => toast.success(`Purchase order raised for ${s.name}`)}
-                      >
-                        Raise PO
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
+    return <SuppliesRequests />;
   }
 
   return (
