@@ -23,6 +23,7 @@ import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authen
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
+import { Route as AuthenticatedPackingStaffRouteImport } from './routes/_authenticated/packing-staff'
 import { Route as AuthenticatedPantryStaffRouteImport } from './routes/_authenticated/pantry-staff'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
@@ -116,6 +117,12 @@ const AuthenticatedMasterRoute = AuthenticatedMasterRouteImport.update({
   path: '/master',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPackingStaffRoute =
+  AuthenticatedPackingStaffRouteImport.update({
+    id: '/packing-staff',
+    path: '/packing-staff',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPantryStaffRoute =
   AuthenticatedPantryStaffRouteImport.update({
     id: '/pantry-staff',
@@ -228,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
+  '/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
@@ -261,6 +269,7 @@ export interface FileRoutesByTo {
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/master': typeof AuthenticatedMasterRoute
+  '/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/payments': typeof AuthenticatedPaymentsRoute
   '/pme': typeof AuthenticatedPmeRoute
@@ -296,6 +305,7 @@ export interface FileRoutesById {
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
+  '/_authenticated/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/_authenticated/pantry-staff': typeof AuthenticatedPantryStaffRoute
   '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pme': typeof AuthenticatedPmeRoute
@@ -331,6 +341,7 @@ export interface FileRouteTypes {
     | '/hr-head'
     | '/leads'
     | '/master'
+    | '/packing-staff'
     | '/pantry-staff'
     | '/payments'
     | '/pme'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/hr-head'
     | '/leads'
     | '/master'
+    | '/packing-staff'
     | '/pantry-staff'
     | '/payments'
     | '/pme'
@@ -398,6 +410,7 @@ export interface FileRouteTypes {
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
     | '/_authenticated/master'
+    | '/_authenticated/packing-staff'
     | '/_authenticated/pantry-staff'
     | '/_authenticated/payments'
     | '/_authenticated/pme'
@@ -526,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/master'
       fullPath: '/master'
       preLoaderRoute: typeof AuthenticatedMasterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/packing-staff': {
+      id: '/_authenticated/packing-staff'
+      path: '/packing-staff'
+      fullPath: '/packing-staff'
+      preLoaderRoute: typeof AuthenticatedPackingStaffRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pantry-staff': {
@@ -666,6 +686,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
+  AuthenticatedPackingStaffRoute: typeof AuthenticatedPackingStaffRoute
   AuthenticatedPantryStaffRoute: typeof AuthenticatedPantryStaffRoute
   AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPmeRoute: typeof AuthenticatedPmeRoute
@@ -695,6 +716,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
+  AuthenticatedPackingStaffRoute: AuthenticatedPackingStaffRoute,
   AuthenticatedPantryStaffRoute: AuthenticatedPantryStaffRoute,
   AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPmeRoute: AuthenticatedPmeRoute,
