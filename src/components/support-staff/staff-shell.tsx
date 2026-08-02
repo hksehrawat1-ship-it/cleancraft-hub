@@ -11,21 +11,51 @@ const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ 
   { key: "help", label: "Help", icon: HelpCircle },
 ];
 
-export function StaffShell({ role }: { role: StaffRole }) {
+export function StaffShell({
+  role,
+  roles,
+  title,
+}: {
+  role: StaffRole;
+  /** When provided, the shell shows a switch between these roles (e.g. Pantry & Cleaning). */
+  roles?: StaffRole[];
+  title?: string;
+}) {
   const [active, setActive] = useState<StaffSection>("home");
-  const meta = ROLE_META[role];
+  const [current, setCurrent] = useState<StaffRole>(role);
+  const activeRole = roles && roles.length ? current : role;
+  const meta = ROLE_META[activeRole];
   const RoleIcon = meta.icon;
+  const heading = title ?? meta.label;
   const nav = NAV_BASE.map((n) =>
     n.key === "supplies" ? { ...n, label: meta.suppliesLabel } : n,
   );
+
+  const roleSwitch =
+    roles && roles.length > 1 ? (
+      <div className="flex gap-2">
+        {roles.map((r) => (
+          <button
+            key={r}
+            onClick={() => setCurrent(r)}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+              activeRole === r ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+            }`}
+          >
+            {ROLE_META[r].label}
+          </button>
+        ))}
+      </div>
+    ) : null;
 
   return (
     <div className="flex min-h-[calc(100vh-3rem)] w-full flex-col bg-muted/30 md:flex-row">
       <div className="border-b bg-background md:hidden">
         <div className="flex items-center gap-2 px-3 py-2">
           <RoleIcon className="h-4 w-4 shrink-0 text-primary" />
-          <span className="text-sm font-semibold">{meta.label}</span>
+          <span className="text-sm font-semibold">{heading}</span>
         </div>
+        {roleSwitch && <div className="px-3 pb-2">{roleSwitch}</div>}
         <nav className="flex gap-2 overflow-x-auto px-3 pb-2">
           {nav.map((item) => (
             <button
@@ -45,12 +75,15 @@ export function StaffShell({ role }: { role: StaffRole }) {
       </div>
 
       <aside className="hidden w-64 shrink-0 border-r bg-background md:block">
-        <div className="border-b p-4">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Support Staff</div>
-          <div className="flex items-center gap-2 font-semibold">
-            <RoleIcon className="h-4 w-4 text-primary" />
-            {meta.label}
+        <div className="space-y-2 border-b p-4">
+          <div>
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">Support Staff</div>
+            <div className="flex items-center gap-2 font-semibold">
+              <RoleIcon className="h-4 w-4 text-primary" />
+              {heading}
+            </div>
           </div>
+          {roleSwitch}
         </div>
         <nav className="space-y-1 p-2">
           {nav.map((item) => (
@@ -71,7 +104,7 @@ export function StaffShell({ role }: { role: StaffRole }) {
       </aside>
 
       <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
-        <StaffWorkspace role={role} section={active} onGo={setActive} />
+        <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
       </main>
     </div>
   );
