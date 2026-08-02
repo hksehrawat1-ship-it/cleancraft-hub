@@ -117,7 +117,22 @@ export function StaffShell({
         ) : activeRole === "packing" && active === "supplies" ? (
           <PackingSupplies lang={lang} setLang={setLang} />
         ) : activeRole === "packing" && active === "problem" ? (
-          <PackingReportProblem lang={lang} setLang={setLang} />
+          <PackingReportProblem
+            lang={lang}
+            setLang={setLang}
+            presetCat={problemPreset}
+            onPresetHandled={() => setProblemPreset(null)}
+          />
+        ) : activeRole === "packing" && active === "help" ? (
+          <PackingHelp
+            lang={lang}
+            setLang={setLang}
+            onReportProblem={(catId) => {
+              setProblemPreset(catId);
+              setActive("problem");
+            }}
+          />
+
         ) : (
           <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
         )}
