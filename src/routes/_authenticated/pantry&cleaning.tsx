@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { StaffShell } from "@/components/support-staff/staff-shell";
+import { PantryCleaningDashboard } from "@/components/support-staff/pantry-cleaning-dashboard";
+
 
 export const Route = createFileRoute("/_authenticated/pantry&cleaning")({
   head: () => ({
