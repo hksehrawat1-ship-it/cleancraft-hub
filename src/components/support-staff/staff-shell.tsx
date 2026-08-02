@@ -4,6 +4,7 @@ import { ROLE_META, type StaffRole } from "./data";
 import { StaffWorkspace, type StaffSection } from "./staff-workspace";
 import { PackingHome } from "./packing-home";
 import { PackingMyTasks } from "./packing-my-tasks";
+import { PackingSupplies } from "./packing-supplies";
 import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -112,6 +113,8 @@ export function StaffShell({
           <PackingHome lang={lang} setLang={setLang} />
         ) : activeRole === "packing" && active === "tasks" ? (
           <PackingMyTasks lang={lang} setLang={setLang} />
+        ) : activeRole === "packing" && active === "supplies" ? (
+          <PackingSupplies lang={lang} setLang={setLang} />
         ) : (
           <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
         )}
