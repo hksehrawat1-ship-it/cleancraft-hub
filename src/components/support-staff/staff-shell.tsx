@@ -6,6 +6,8 @@ import { PackingHome } from "./packing-home";
 import { PackingMyTasks } from "./packing-my-tasks";
 import { PackingSupplies } from "./packing-supplies";
 import { PackingReportProblem } from "./packing-report-problem";
+import { PackingHelp } from "./packing-help";
+
 import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
