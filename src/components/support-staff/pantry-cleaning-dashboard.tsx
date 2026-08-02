@@ -550,7 +550,13 @@ export function PantryCleaningDashboard() {
         {section === "problem" && (
           <PantryCleaningReportProblem lang={lang} setLang={setLang} />
         )}
-        {section === "help" && helpView}
+        {section === "help" && (
+          <PantryCleaningHelp
+            lang={lang}
+            setLang={setLang}
+            onReportProblem={() => setSection("problem")}
+          />
+        )}
       </main>
 
       {/* completion dialog (Home) */}
