@@ -25,6 +25,7 @@ import {
 } from "./data";
 import { ManagerDashboard } from "./manager-dashboard";
 import { AssignTasks } from "./assign-tasks";
+import { StaffTasks } from "./staff-tasks";
 
 export type AdminSection =
   | "dashboard"
@@ -115,59 +116,7 @@ export function AdminManagerWorkspace({
   }
 
   if (section === "staff-tasks") {
-    return (
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight md:text-2xl">Staff Tasks</h1>
-            <p className="text-sm text-muted-foreground">Live status of every assigned task.</p>
-          </div>
-          <Select value={filterRole} onValueChange={setFilterRole}>
-            <SelectTrigger className="w-56">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All support staff</SelectItem>
-              {(Object.keys(ROLE_META) as StaffRole[]).map((r) => (
-                <SelectItem key={r} value={r}>
-                  {ROLE_META[r].label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="space-y-2">
-          {filtered.map((t) => (
-            <Card key={t.id}>
-              <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
-                <div>
-                  <div className="font-medium">{t.title}</div>
-                  <p className="text-xs text-muted-foreground">
-                    {t.id} · {t.assignee} · {t.area} · {t.slot}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {t.priority === "high" && <Badge variant="outline">Urgent</Badge>}
-                  <Badge variant={statusVariant(t.status)}>{STATUS_LABEL[t.status]}</Badge>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setTasks((p) =>
-                        p.map((x) => (x.id === t.id ? { ...x, priority: "high" } : x)),
-                      );
-                      toast.success("Marked urgent");
-                    }}
-                  >
-                    Mark Urgent
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+    return <StaffTasks onGo={(s) => onGo?.(s as AdminSection)} />;
   }
 
   if (section === "review") {
