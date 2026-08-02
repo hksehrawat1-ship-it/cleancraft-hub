@@ -58,6 +58,7 @@ import {
   type Letter,
   type LetterKind,
 } from "@/components/hr-head/data";
+import { HrHeadDashboardHome } from "@/components/hr-head/dashboard";
 
 export const Route = createFileRoute("/_authenticated/hr-head")({
   head: () => ({
@@ -152,7 +153,7 @@ function HrHeadDashboard() {
           </Select>
         </div>
         <main className="overflow-auto p-4 md:p-6">
-          {active === "dashboard" && <DashboardSection onGo={setActive} />}
+          {active === "dashboard" && <HrHeadDashboardHome onGo={setActive} />}
           {active === "recruitment" && <RecruitmentSection />}
           {active === "employees" && <EmployeesSection />}
           {active === "onboarding" && <OnboardingSection />}
