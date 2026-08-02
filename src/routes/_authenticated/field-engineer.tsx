@@ -207,8 +207,34 @@ function FieldEngineerDashboard() {
   const [active, setActive] = useState<SectionKey>("home");
 
   return (
-    <div className="flex min-h-[calc(100vh-3rem)] w-full bg-muted/30">
-      <aside className="w-64 shrink-0 border-r bg-background">
+    <div className="flex min-h-[calc(100vh-3rem)] w-full flex-col bg-muted/30 md:flex-row">
+      {/* Mobile top nav */}
+      <div className="border-b bg-background md:hidden">
+        <div className="flex items-center gap-2 px-3 py-2">
+          <HardHat className="h-4 w-4 shrink-0 text-primary" />
+          <span className="text-sm font-semibold">{T.title[lang]}</span>
+        </div>
+        <nav className="flex gap-2 overflow-x-auto px-3 pb-2">
+          {NAV.map((item) => {
+            const Icon = item.icon;
+            const isActive = active === item.key;
+            return (
+              <button
+                key={item.key}
+                onClick={() => setActive(item.key)}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
+                  isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {T.nav[item.key][lang]}
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      <aside className="hidden w-64 shrink-0 border-r bg-background md:block">
         <div className="p-4 border-b">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">
             {T.employee[lang]}
@@ -238,7 +264,7 @@ function FieldEngineerDashboard() {
         </nav>
       </aside>
 
-      <main className="flex-1 min-w-0 p-6 overflow-auto space-y-4">
+      <main className="min-w-0 flex-1 space-y-4 overflow-auto p-4 md:p-6">
         {active !== "home" && (
           <div className="flex items-center justify-end">
             <div className="inline-flex items-center gap-2 border rounded-md p-1 bg-background">
