@@ -19,6 +19,7 @@ import { FieldEngineerExpenses } from "@/components/field-engineer/expenses";
 import { FieldEngineerMyJobs } from "@/components/field-engineer/my-jobs";
 import { FieldEngineerWorkReport } from "@/components/field-engineer/work-report";
 import { FieldEngineerVisitSchedule } from "@/components/field-engineer/visit-schedule";
+import { FieldEngineerHelpGuides } from "@/components/field-engineer/help-guides";
 import {
   JOBS,
   JOB_STATUS_LABEL,
@@ -296,150 +297,8 @@ function FieldEngineerDashboard() {
         {active === "schedule" && <FieldEngineerVisitSchedule lang={lang} onGo={setActive} />}
         {active === "report" && <FieldEngineerWorkReport lang={lang} />}
         {active === "expenses" && <FieldEngineerExpenses lang={lang} />}
-        {active === "help" && <HelpSection lang={lang} />}
+        {active === "help" && <FieldEngineerHelpGuides lang={lang} />}
       </main>
-    </div>
-  );
-}
-
-/* ---------------- Help & Guides ---------------- */
-function HelpSection({ lang }: { lang: Lang }) {
-  const [q, setQ] = useState("");
-  const guides: { title: Bi; cat: Bi; pages: number }[] = [
-    {
-      title: { en: "Washer Error Codes (E01–E12)", hi: "वॉशर एरर कोड (E01–E12)" },
-      cat: { en: "Washer", hi: "वॉशर" },
-      pages: 6,
-    },
-    {
-      title: { en: "Dryer Heating Coil Replacement", hi: "ड्रायर हीटिंग कॉइल बदलना" },
-      cat: { en: "Dryer", hi: "ड्रायर" },
-      pages: 4,
-    },
-    {
-      title: { en: "Steam Iron Boiler Service SOP", hi: "स्टीम आयरन बॉयलर सर्विस SOP" },
-      cat: { en: "Steam Iron", hi: "स्टीम आयरन" },
-      pages: 5,
-    },
-    {
-      title: {
-        en: "Electrical Safety Checklist Before Work",
-        hi: "कार्य से पहले विद्युत सुरक्षा चेकलिस्ट",
-      },
-      cat: { en: "Safety", hi: "सुरक्षा" },
-      pages: 2,
-    },
-    {
-      title: { en: "Machine Installation & Commissioning", hi: "मशीन इंस्टॉलेशन एवं कमीशनिंग" },
-      cat: { en: "Installation", hi: "इंस्टॉलेशन" },
-      pages: 8,
-    },
-    {
-      title: { en: "Spare Part Request Process", hi: "स्पेयर पार्ट अनुरोध प्रक्रिया" },
-      cat: { en: "Process", hi: "प्रक्रिया" },
-      pages: 3,
-    },
-  ];
-  const filtered = guides.filter(
-    (g) =>
-      !q.trim() ||
-      g.title[lang].toLowerCase().includes(q.toLowerCase()) ||
-      g.cat[lang].toLowerCase().includes(q.toLowerCase()),
-  );
-
-  const contacts: { role: Bi; name: string; phone: string }[] = [
-    {
-      role: { en: "Technical Support", hi: "तकनीकी सहायता" },
-      name: "Rohit Nair",
-      phone: "+91 98110 22334",
-    },
-    {
-      role: { en: "Service Head", hi: "सर्विस हेड" },
-      name: "Vikas Mehta",
-      phone: "+91 98110 55667",
-    },
-    {
-      role: { en: "Spare Parts Desk", hi: "स्पेयर पार्ट्स डेस्क" },
-      name: "Store Team",
-      phone: "+91 98110 88990",
-    },
-  ];
-
-  return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">{T.nav.help[lang]}</h1>
-          <p className="text-sm text-muted-foreground">{T.helpSub[lang]}</p>
-        </div>
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 w-4 h-4 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={T.searchGuides[lang]}
-            className="pl-9 w-64"
-          />
-        </div>
-      </div>
-
-      <Card className="border-amber-300">
-        <CardContent className="p-4 flex items-start gap-3">
-          <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5" />
-          <div className="text-sm">
-            <div className="font-medium">{T.safetyFirst[lang]}</div>
-            <p className="text-muted-foreground">{T.safetyText[lang]}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {filtered.map((g) => (
-          <Card key={g.title.en}>
-            <CardContent className="p-4 flex items-center justify-between gap-3">
-              <div>
-                <div className="text-sm font-medium">{g.title[lang]}</div>
-                <div className="text-xs text-muted-foreground">
-                  {g.cat[lang]} · {g.pages} {T.pages[lang]}
-                </div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => toast.success(T.guideDownloaded[lang])}
-              >
-                <Download className="w-3.5 h-3.5 mr-1" /> {T.open[lang]}
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">{T.escalation[lang]}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {contacts.map((c) => (
-            <div
-              key={c.name}
-              className="border rounded-md p-3 bg-muted/20 flex items-center justify-between gap-2"
-            >
-              <div>
-                <div className="text-sm font-medium">{c.name}</div>
-                <div className="text-xs text-muted-foreground">{c.role[lang]}</div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => toast.success(`${T.calling[lang]} ${c.name}`)}
-              >
-                <Phone className="w-3.5 h-3.5 mr-1" /> {c.phone}
-              </Button>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
     </div>
   );
 }
