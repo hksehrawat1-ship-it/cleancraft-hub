@@ -213,7 +213,7 @@ export const movement = () => {
 };
 
 export const access = () => ({
-  pendingCreation: USER_ACCOUNTS.filter((a) => a.account === "Not Created").length,
+  pendingCreation: USER_ACCOUNTS.filter((a) => a.account === "Pending Creation").length,
   invitesNotAccepted: USER_ACCOUNTS.filter((a) => a.invite === "Sent" || a.invite === "Expired").length,
   lockedSuspended: USER_ACCOUNTS.filter((a) => a.account === "Locked" || a.account === "Suspended").length,
   privilegedChanges: USER_ACCOUNTS.filter((a) => (a.roleHistory ?? []).length > 0).length,
