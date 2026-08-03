@@ -120,7 +120,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     icon: Truck,
     items: [
       { key: "logistics", label: "Logistic Executive", icon: Truck, blurb: "Dispatches, in-transit, delivery SLA, freight cost." },
-      
+      { key: "packing-staff", label: "Packing Staff", icon: Package, blurb: "Order packing, dispatch readiness, defect checks and throughput." },
     ],
   },
   {
@@ -130,7 +130,6 @@ export const CEO_GROUPS: CeoGroup[] = [
     items: [
       { key: "facility-mgr", label: "Administration Manager", icon: Building2, blurb: "Maintenance log, utilities, vendor AMC status, compliance." },
       { key: "pantry-cleaning-staff", label: "Pantry & Cleaning Staff", icon: Package, blurb: "Pantry refreshments and stock plus daily cleaning schedules, sanitation and supply tracking." },
-      { key: "packing-staff", label: "Packing Staff", icon: Package, blurb: "Order packing, dispatch readiness, defect checks and throughput." },
     ],
   },
   {
