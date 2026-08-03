@@ -64,6 +64,7 @@ import { HrEmployees } from "@/components/hr-head/employees";
 import { HrOnboarding } from "@/components/hr-head/onboarding";
 import { HrAttendance } from "@/components/hr-head/attendance";
 import { HrPerformanceTraining } from "@/components/hr-head/performance-training";
+import { HrLetters } from "@/components/hr-head/letters";
 
 
 
@@ -166,7 +167,7 @@ function HrHeadDashboard() {
           {active === "onboarding" && <HrOnboarding />}
           {active === "attendance" && <HrAttendance />}
           {active === "performance" && <HrPerformanceTraining />}
-          {active === "letters" && <LettersSection />}
+          {active === "letters" && <HrLetters />}
           {active === "access" && <AccessSection />}
           {active === "reports" && <ReportsSection />}
           {active === "policies" && <PoliciesSection />}
