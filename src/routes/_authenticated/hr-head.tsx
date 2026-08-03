@@ -40,6 +40,7 @@ import {
   Clock,
   AlertTriangle,
   GraduationCap,
+  Gauge,
 } from "lucide-react";
 import {
   CANDIDATES,
@@ -68,6 +69,8 @@ import { HrLetters } from "@/components/hr-head/letters";
 import { HrUserAccess } from "@/components/hr-head/user-access";
 import { HrReports } from "@/components/hr-head/reports";
 import { HrSettings } from "@/components/hr-head/settings";
+import { HrMyPerformance } from "@/components/hr-head/my-performance";
+import { useAuth } from "@/hooks/use-auth";
 
 
 
@@ -103,6 +106,7 @@ type SectionKey =
   | "letters"
   | "access"
   | "reports"
+  | "performance-self"
   | "policies";
 
 const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
@@ -115,11 +119,13 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "letters", label: "Letters, Notices & Warnings", icon: FileWarning },
   { key: "access", label: "User Access", icon: ShieldCheck },
   { key: "reports", label: "Reports to CEO", icon: BarChart3 },
+  { key: "performance-self", label: "My Performance", icon: Gauge },
   { key: "policies", label: "HR Policies & Settings", icon: Settings2 },
 ];
 
 function HrHeadDashboard() {
   const [active, setActive] = useState<SectionKey>("dashboard");
+  const { isCEO } = useAuth();
 
   return (
     <div className="flex min-h-[calc(100vh-3rem)] w-full bg-muted/30">
@@ -173,6 +179,7 @@ function HrHeadDashboard() {
           {active === "letters" && <HrLetters />}
           {active === "access" && <HrUserAccess />}
           {active === "reports" && <HrReports />}
+          {active === "performance-self" && <HrMyPerformance isCeo={isCEO} />}
           {active === "policies" && <HrSettings />}
         </main>
       </div>
