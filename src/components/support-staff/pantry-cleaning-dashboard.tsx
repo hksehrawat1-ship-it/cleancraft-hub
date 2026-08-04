@@ -70,7 +70,7 @@ const STATE_LABEL = {
   unavailable: { en: "Item unavailable", hi: "सामान नहीं है", cls: "bg-destructive/15 text-destructive" },
 };
 
-type Section = "home" | "tasks" | "supplies" | "problem" | "help";
+type Section = "home" | "tasks" | "supplies" | "problem" | "help" | "performance";
 
 export function PantryCleaningDashboard() {
   const [lang, setLang] = useState<Lang>("en");
