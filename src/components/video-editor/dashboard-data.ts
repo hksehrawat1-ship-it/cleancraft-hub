@@ -436,3 +436,52 @@ export const ALL_STATUSES: VeStatus[] = [
 export function currentVersion(r: VeRecord) {
   return r.versions.length ? r.versions[r.versions.length - 1].version : "—";
 }
+
+export function detailsFor(r: VeRecord) {
+  return {
+    objective:
+      r.objective ??
+      (r.contentType === "Advertisement"
+        ? "Drive franchise enquiries from paid traffic."
+        : r.contentType === "Testimonial"
+        ? "Build trust using real customer proof."
+        : r.contentType === "Training Video"
+        ? "Train store staff on standard operating steps."
+        : "Grow reach and enquiries for Clean Craft stores."),
+    audience:
+      r.audience ??
+      (r.brand.includes("Franchise")
+        ? "Business owners and investors, 28-45, tier 1-2 cities"
+        : r.brand.includes("Training")
+        ? "Store owners and store staff"
+        : "Urban households and premium laundry customers"),
+    script:
+      r.script ??
+      "Approved script / caption is attached in the brief folder. Do not change pricing, offer or claim text.",
+    audioFiles: r.audioFiles ?? [
+      { name: `${r.contentId}_voiceover.wav`, size: "180 MB" },
+      { name: "approved_bgm_track_04.mp3", size: "8 MB" },
+    ],
+    brandAssets: r.brandAssets ?? [
+      "Logo pack (PNG, SVG, animated MOGRT)",
+      "Brand fonts — Poppins + Anek Devanagari",
+      "Lower-third + end card templates",
+    ],
+    timeline:
+      r.timeline ??
+      [
+        { at: "Assigned", who: r.assignedBy, what: `Video assigned with brief and raw files (${r.contentId})` },
+        ...(r.startedAt ? [{ at: r.startedAt, who: EDITOR_NAME, what: "Editing started — start time recorded" }] : []),
+        ...r.versions.map((v) => ({
+          at: v.submittedOn,
+          who: EDITOR_NAME,
+          what: `${v.version} submitted for review`,
+        })),
+        ...r.corrections.map((c) => ({
+          at: c.raisedOn,
+          who: c.reviewer,
+          what: `Correction raised on ${c.version} (${c.points.length} points)`,
+        })),
+      ],
+  };
+}
