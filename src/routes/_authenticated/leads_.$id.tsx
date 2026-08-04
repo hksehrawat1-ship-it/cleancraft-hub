@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Phone, MessageCircle, Pencil } from "lucide-react";
 import { LeadDialog, classificationVariant, type Lead } from "./leads";
+import { RecordLineage } from "@/components/record-lineage";
+
 
 export const Route = createFileRoute("/_authenticated/leads_/$id")({
   head: () => ({ meta: [{ title: "Lead Details — Clean Craft OS" }] }),
