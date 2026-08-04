@@ -961,3 +961,201 @@ export const READINESS_CHECKS = [
   "Tracking information added",
   "Platform format requirements met",
 ];
+
+/* ---- Social account governance structures ---- */
+export type AccountStatus =
+  | "Connected"
+  | "Attention Required"
+  | "Reauthorisation Required"
+  | "Disconnected"
+  | "Suspended"
+  | "Archived";
+
+export const ACCOUNT_STATUSES: AccountStatus[] = [
+  "Connected",
+  "Attention Required",
+  "Reauthorisation Required",
+  "Disconnected",
+  "Suspended",
+  "Archived",
+];
+
+export type AccessLevel = "View Only" | "Content Manager" | "Publisher" | "Account Administrator";
+
+export const ACCESS_LEVELS: AccessLevel[] = [
+  "View Only",
+  "Content Manager",
+  "Publisher",
+  "Account Administrator",
+];
+
+export type AccountUser = {
+  name: string;
+  role: string;
+  level: AccessLevel;
+  grantedOn: string;
+  grantedBy: string;
+  lastActivity: string;
+  exited?: boolean;
+};
+
+export type SocialAccount = {
+  id: string;
+  platform: "Instagram" | "Facebook" | "YouTube" | "LinkedIn" | "X" | "Pinterest" | "Other";
+  accountName: string;
+  handle: string;
+  brand: string;
+  profileUrl: string;
+  owner: string;
+  managers: string[];
+  status: AccountStatus;
+  lastSync: string;
+  lastPublished: string;
+  scheduledCount: number;
+  permissions: string[];
+  connectedOn: string;
+  tokenExpiry: string;
+  publishingPermission: boolean;
+  recentFailures: number;
+  restriction?: string;
+  suspension?: string;
+  unusualAccess?: string;
+  requiredAction?: string;
+  warning?: string;
+  publishingPaused?: boolean;
+  tone: string;
+  users: AccountUser[];
+  accessHistory: { at: string; by: string; note: string }[];
+};
+
+export const SOCIAL_ACCOUNTS: SocialAccount[] = [
+  {
+    id: "SA-01", platform: "Instagram", accountName: "Clean Craft India", handle: "@cleancraft.india",
+    brand: "Clean Craft Services", profileUrl: "https://instagram.com/cleancraft.india",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda", "Kavita Joshi"],
+    status: "Connected", lastSync: "Today, 11:40", lastPublished: "Today, 09:10", scheduledCount: 4,
+    permissions: ["Read profile", "Publish content", "Read insights", "Manage comments"],
+    connectedOn: "12 Feb 2026", tokenExpiry: "Valid for 58 days", publishingPermission: true,
+    recentFailures: 0, requiredAction: "None", tone: "from-pink-500/25 to-pink-500/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "12 Feb 2026", grantedBy: "CEO", lastActivity: "Today, 11:40" },
+      { name: "Kavita Joshi", role: "Content Executive", level: "Content Manager", grantedOn: "3 Mar 2026", grantedBy: "Priya Nanda", lastActivity: "Today, 10:05" },
+      { name: "Rohit Sharma", role: "Video Editor", level: "View Only", grantedOn: "3 Mar 2026", grantedBy: "Priya Nanda", lastActivity: "Yesterday, 18:20" },
+    ],
+    accessHistory: [
+      { at: "3 Mar 2026", by: "Priya Nanda", note: "Granted Content Manager access to Kavita Joshi" },
+      { at: "12 Feb 2026", by: "CEO", note: "Account connected via platform OAuth (least-privilege scopes)" },
+    ],
+  },
+  {
+    id: "SA-02", platform: "Facebook", accountName: "Clean Craft Laundry", handle: "Clean Craft Laundry (Page)",
+    brand: "Clean Craft Services", profileUrl: "https://facebook.com/cleancraftlaundry",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda"],
+    status: "Disconnected", lastSync: "1 Aug, 12:00", lastPublished: "1 Aug, 12:00", scheduledCount: 2,
+    permissions: ["Read page", "Publish content"], connectedOn: "12 Feb 2026",
+    tokenExpiry: "Token revoked", publishingPermission: false, recentFailures: 1,
+    requiredAction: "Reconnect the page and restore publishing permission.",
+    warning: "Page token revoked — one post failed today. 2 scheduled posts are at risk.",
+    tone: "from-blue-600/25 to-blue-600/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "12 Feb 2026", grantedBy: "CEO", lastActivity: "Today, 09:05" },
+      { name: "Arjun Mehta", role: "Ex-Marketing Executive", level: "Publisher", grantedOn: "5 Jan 2026", grantedBy: "CEO", lastActivity: "18 Jul 2026", exited: true },
+    ],
+    accessHistory: [
+      { at: "4 Aug 2026", by: "System", note: "Publishing failed — page token revoked by platform" },
+      { at: "12 Feb 2026", by: "CEO", note: "Account connected via platform OAuth" },
+    ],
+  },
+  {
+    id: "SA-03", platform: "YouTube", accountName: "Clean Craft", handle: "@cleancraft",
+    brand: "Clean Craft Franchise", profileUrl: "https://youtube.com/@cleancraft",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda", "Imran Qureshi"],
+    status: "Reauthorisation Required", lastSync: "Today, 07:15", lastPublished: "29 Jul, 11:00",
+    scheduledCount: 1, permissions: ["Read channel", "Upload video", "Read analytics"],
+    connectedOn: "20 Feb 2026", tokenExpiry: "Expires in 3 days", publishingPermission: true,
+    recentFailures: 0, requiredAction: "Reauthorise the channel before 7 Aug to avoid upload failures.",
+    warning: "Access token expires in 3 days.", tone: "from-red-500/25 to-red-500/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "20 Feb 2026", grantedBy: "CEO", lastActivity: "Today, 07:15" },
+      { name: "Imran Qureshi", role: "Video Editor", level: "View Only", grantedOn: "20 Feb 2026", grantedBy: "Priya Nanda", lastActivity: "Yesterday, 09:20" },
+    ],
+    accessHistory: [
+      { at: "Today, 07:15", by: "System", note: "Token expiry warning raised (3 days)" },
+      { at: "20 Feb 2026", by: "CEO", note: "Channel connected via platform OAuth" },
+    ],
+  },
+  {
+    id: "SA-04", platform: "LinkedIn", accountName: "Clean Craft Business", handle: "Clean Craft Business",
+    brand: "Clean Craft Franchise", profileUrl: "https://linkedin.com/company/cleancraft",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda"],
+    status: "Connected", lastSync: "Today, 11:00", lastPublished: "Yesterday, 17:30", scheduledCount: 2,
+    permissions: ["Read organisation", "Publish content"], connectedOn: "1 Mar 2026",
+    tokenExpiry: "Valid for 41 days", publishingPermission: true, recentFailures: 0,
+    requiredAction: "None", tone: "from-sky-600/25 to-sky-600/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "1 Mar 2026", grantedBy: "CEO", lastActivity: "Today, 11:00" },
+      { name: "Sales Head", role: "Sales Head", level: "View Only", grantedOn: "10 Mar 2026", grantedBy: "Priya Nanda", lastActivity: "Today, 08:30" },
+    ],
+    accessHistory: [{ at: "1 Mar 2026", by: "CEO", note: "Account connected via platform OAuth" }],
+  },
+  {
+    id: "SA-05", platform: "X", accountName: "Clean Craft", handle: "@cleancraft_in",
+    brand: "Clean Craft Services", profileUrl: "https://x.com/cleancraft_in",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda"],
+    status: "Attention Required", lastSync: "—", lastPublished: "—", scheduledCount: 1,
+    permissions: ["Read profile"], connectedOn: "Not connected",
+    tokenExpiry: "No token issued", publishingPermission: false, recentFailures: 0,
+    requiredAction: "Request a connection — publishing permission is missing.",
+    warning: "Account not linked yet, but 1 post is scheduled against it.",
+    unusualAccess: "3 failed connection attempts logged on 2 Aug.",
+    tone: "from-slate-700/25 to-slate-700/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "2 Aug 2026", grantedBy: "CEO", lastActivity: "2 Aug, 16:10" },
+    ],
+    accessHistory: [{ at: "2 Aug 2026", by: "System", note: "Multiple failed connection attempts (3)" }],
+  },
+  {
+    id: "SA-06", platform: "Pinterest", accountName: "Clean Craft Home Care", handle: "@cleancrafthome",
+    brand: "Clean Craft Services", profileUrl: "https://pinterest.com/cleancrafthome",
+    owner: "Clean Craft Pvt Ltd", managers: [], status: "Suspended",
+    lastSync: "18 Jul, 10:00", lastPublished: "16 Jul, 12:00", scheduledCount: 0,
+    permissions: ["Read profile"], connectedOn: "5 Apr 2026", tokenExpiry: "Suspended",
+    publishingPermission: false, recentFailures: 0,
+    suspension: "Platform suspended the account pending review of a reported pin.",
+    restriction: "Publishing restricted by platform until review completes.",
+    requiredAction: "Submit a platform appeal and keep publishing paused.",
+    publishingPaused: true, tone: "from-rose-500/25 to-rose-500/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "5 Apr 2026", grantedBy: "CEO", lastActivity: "18 Jul, 10:00" },
+    ],
+    accessHistory: [{ at: "18 Jul 2026", by: "System", note: "Platform suspension notice received" }],
+  },
+  {
+    id: "SA-07", platform: "Other", accountName: "Google Business Profiles", handle: "22 store listings",
+    brand: "Clean Craft Franchise", profileUrl: "https://business.google.com/cleancraft",
+    owner: "Clean Craft Pvt Ltd", managers: ["Priya Nanda", "Performance Marketing Executive"],
+    status: "Connected", lastSync: "Today, 08:00", lastPublished: "Today, 08:00", scheduledCount: 0,
+    permissions: ["Read listings", "Post updates", "Reply to reviews"], connectedOn: "8 Jan 2026",
+    tokenExpiry: "Valid for 90 days", publishingPermission: true, recentFailures: 0,
+    requiredAction: "None", tone: "from-emerald-500/25 to-emerald-500/5",
+    users: [
+      { name: "Priya Nanda", role: "Social Media Account Manager", level: "Account Administrator", grantedOn: "8 Jan 2026", grantedBy: "CEO", lastActivity: "Today, 08:00" },
+      { name: "Ankit Rana", role: "Performance Marketing Executive", level: "Publisher", grantedOn: "8 Jan 2026", grantedBy: "CEO", lastActivity: "Today, 07:50" },
+    ],
+    accessHistory: [{ at: "8 Jan 2026", by: "CEO", note: "Listings group connected via platform OAuth" }],
+  },
+  {
+    id: "SA-08", platform: "Instagram", accountName: "Clean Craft Franchise (archive)", handle: "@cleancraft.franchise",
+    brand: "Clean Craft Franchise", profileUrl: "https://instagram.com/cleancraft.franchise",
+    owner: "Clean Craft Pvt Ltd", managers: [], status: "Archived",
+    lastSync: "10 Jun, 09:00", lastPublished: "8 Jun, 17:00", scheduledCount: 0,
+    permissions: ["Read profile"], connectedOn: "3 Jan 2026", tokenExpiry: "Archived",
+    publishingPermission: false, recentFailures: 0,
+    requiredAction: "None — publishing history preserved for records.",
+    publishingPaused: true, tone: "from-slate-500/20 to-slate-500/5",
+    users: [],
+    accessHistory: [
+      { at: "10 Jun 2026", by: "CEO", note: "Account archived — history preserved, access revoked" },
+    ],
+  },
+];
