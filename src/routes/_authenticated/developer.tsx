@@ -18,11 +18,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { DevDashboard } from "@/components/developer/dashboard";
-import {
-  DevBugs,
-  DevDocs,
-  DevPerformance,
-} from "@/components/developer/pages";
+import { DevDocs, DevPerformance } from "@/components/developer/pages";
+import { DevBugs } from "@/components/developer/bugs";
 import { DevReleases } from "@/components/developer/releases";
 import { DevTickets } from "@/components/developer/tickets";
 import { DevProjectTasks } from "@/components/developer/project-tasks";
