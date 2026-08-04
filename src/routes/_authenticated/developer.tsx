@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { DevDashboard } from "@/components/developer/dashboard";
 import {
-  DevProjectTasks,
   DevStorePos,
   DevBugs,
   DevDocs,
@@ -27,6 +26,7 @@ import {
 } from "@/components/developer/pages";
 import { DevReleases } from "@/components/developer/releases";
 import { DevTickets } from "@/components/developer/tickets";
+import { DevProjectTasks } from "@/components/developer/project-tasks";
 
 export const Route = createFileRoute("/_authenticated/developer")({
   head: () => ({
