@@ -8,8 +8,10 @@ import { FieldEngineerWorkReport } from "@/components/field-engineer/work-report
 import { FieldEngineerVisitSchedule } from "@/components/field-engineer/visit-schedule";
 import { FieldEngineerHelpGuides } from "@/components/field-engineer/help-guides";
 import { type Bi, type Lang } from "@/components/field-engineer/data";
+import { FieldEngineerPerformance } from "@/components/field-engineer/performance";
 import {
   Home,
+  TrendingUp,
   Wrench,
   CalendarDays,
   FileText,
@@ -38,18 +40,19 @@ export const Route = createFileRoute("/_authenticated/field-engineer")({
   component: FieldEngineerDashboard,
 });
 
-type SectionKey = "home" | "jobs" | "schedule" | "report" | "expenses" | "help";
+type SectionKey = "home" | "jobs" | "schedule" | "report" | "expenses" | "help" | "performance";
 
 const T = {
   employee: { en: "Employee", hi: "कर्मचारी" },
   title: { en: "Field Engineer", hi: "फील्ड इंजीनियर" },
   nav: {
-    home: { en: "Home", hi: "होम" },
+    home: { en: "Dashboard", hi: "डैशबोर्ड" },
     jobs: { en: "My Jobs", hi: "मेरे कार्य" },
     schedule: { en: "Visit Schedule", hi: "विज़िट शेड्यूल" },
     report: { en: "Submit Work Report", hi: "कार्य रिपोर्ट जमा करें" },
     expenses: { en: "My Expenses", hi: "मेरे खर्च" },
     help: { en: "Help & Guides", hi: "सहायता एवं गाइड" },
+    performance: { en: "Performance", hi: "प्रदर्शन" },
   } as Record<SectionKey, Bi>,
   greeting: { en: "Good morning, Engineer", hi: "सुप्रभात, इंजीनियर" },
   greetingSub: {
@@ -170,6 +173,7 @@ const NAV: { key: SectionKey; icon: React.ComponentType<{ className?: string }> 
   { key: "report", icon: FileText },
   { key: "expenses", icon: Receipt },
   { key: "help", icon: BookOpen },
+  { key: "performance", icon: TrendingUp },
 ];
 
 function FieldEngineerDashboard() {
@@ -263,6 +267,7 @@ function FieldEngineerDashboard() {
         {active === "report" && <FieldEngineerWorkReport lang={lang} />}
         {active === "expenses" && <FieldEngineerExpenses lang={lang} />}
         {active === "help" && <FieldEngineerHelpGuides lang={lang} />}
+        {active === "performance" && <FieldEngineerPerformance lang={lang} />}
       </main>
     </div>
   );
