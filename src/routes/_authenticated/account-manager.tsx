@@ -15,7 +15,8 @@ import {
   MonitorSmartphone,
   TrendingUp,
 } from "lucide-react";
-import { AmBillingPos, AmPerformance } from "@/components/account-manager/pages";
+import { AmBillingPos } from "@/components/account-manager/pages";
+import { AmPerformance } from "@/components/account-manager/performance";
 import { AmDispatchClearance } from "@/components/account-manager/dispatch-clearance";
 import { AmPaymentRequests } from "@/components/account-manager/payment-requests";
 import { AmDashboard } from "@/components/account-manager/dashboard";
