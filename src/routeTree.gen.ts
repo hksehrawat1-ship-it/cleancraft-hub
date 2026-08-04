@@ -33,6 +33,7 @@ import { Route as AuthenticatedRmRouteImport } from './routes/_authenticated/rm'
 import { Route as AuthenticatedSalesCmsRouteImport } from './routes/_authenticated/sales-cms'
 import { Route as AuthenticatedSalesExecutiveRouteImport } from './routes/_authenticated/sales-executive'
 import { Route as AuthenticatedSalesHeadRouteImport } from './routes/_authenticated/sales-head'
+import { Route as AuthenticatedSmmRouteImport } from './routes/_authenticated/smm'
 import { Route as AuthenticatedStoresRouteImport } from './routes/_authenticated/stores'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedTechnicalSupportRouteImport } from './routes/_authenticated/technical-support'
@@ -170,6 +171,11 @@ const AuthenticatedSalesHeadRoute = AuthenticatedSalesHeadRouteImport.update({
   path: '/sales-head',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSmmRoute = AuthenticatedSmmRouteImport.update({
+  id: '/smm',
+  path: '/smm',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedStoresRoute = AuthenticatedStoresRouteImport.update({
   id: '/stores',
   path: '/stores',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/sales-head': typeof AuthenticatedSalesHeadRoute
+  '/smm': typeof AuthenticatedSmmRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/technical-support': typeof AuthenticatedTechnicalSupportRoute
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/sales-head': typeof AuthenticatedSalesHeadRoute
+  '/smm': typeof AuthenticatedSmmRoute
   '/stores': typeof AuthenticatedStoresRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/technical-support': typeof AuthenticatedTechnicalSupportRoute
@@ -306,6 +314,7 @@ export interface FileRoutesById {
   '/_authenticated/sales-cms': typeof AuthenticatedSalesCmsRoute
   '/_authenticated/sales-executive': typeof AuthenticatedSalesExecutiveRoute
   '/_authenticated/sales-head': typeof AuthenticatedSalesHeadRoute
+  '/_authenticated/smm': typeof AuthenticatedSmmRoute
   '/_authenticated/stores': typeof AuthenticatedStoresRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/_authenticated/technical-support': typeof AuthenticatedTechnicalSupportRoute
@@ -341,6 +350,7 @@ export interface FileRouteTypes {
     | '/sales-cms'
     | '/sales-executive'
     | '/sales-head'
+    | '/smm'
     | '/stores'
     | '/tasks'
     | '/technical-support'
@@ -374,6 +384,7 @@ export interface FileRouteTypes {
     | '/sales-cms'
     | '/sales-executive'
     | '/sales-head'
+    | '/smm'
     | '/stores'
     | '/tasks'
     | '/technical-support'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
     | '/_authenticated/sales-cms'
     | '/_authenticated/sales-executive'
     | '/_authenticated/sales-head'
+    | '/_authenticated/smm'
     | '/_authenticated/stores'
     | '/_authenticated/tasks'
     | '/_authenticated/technical-support'
@@ -598,6 +610,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSalesHeadRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/smm': {
+      id: '/_authenticated/smm'
+      path: '/smm'
+      fullPath: '/smm'
+      preLoaderRoute: typeof AuthenticatedSmmRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/stores': {
       id: '/_authenticated/stores'
       path: '/stores'
@@ -676,6 +695,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSalesCmsRoute: typeof AuthenticatedSalesCmsRoute
   AuthenticatedSalesExecutiveRoute: typeof AuthenticatedSalesExecutiveRoute
   AuthenticatedSalesHeadRoute: typeof AuthenticatedSalesHeadRoute
+  AuthenticatedSmmRoute: typeof AuthenticatedSmmRoute
   AuthenticatedStoresRoute: typeof AuthenticatedStoresRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedTechnicalSupportRoute: typeof AuthenticatedTechnicalSupportRoute
@@ -706,6 +726,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSalesCmsRoute: AuthenticatedSalesCmsRoute,
   AuthenticatedSalesExecutiveRoute: AuthenticatedSalesExecutiveRoute,
   AuthenticatedSalesHeadRoute: AuthenticatedSalesHeadRoute,
+  AuthenticatedSmmRoute: AuthenticatedSmmRoute,
   AuthenticatedStoresRoute: AuthenticatedStoresRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedTechnicalSupportRoute: AuthenticatedTechnicalSupportRoute,
