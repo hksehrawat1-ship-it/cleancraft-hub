@@ -758,3 +758,206 @@ export function getSubmissionDetails(contentId: string) {
     SUBMISSION_DETAILS[contentId] ?? { editorNotes: "No editor notes submitted.", priorPoints: [] }
   );
 }
+
+/* ---- Publishing calendar shared structures ---- */
+export const TODAY_ISO = "2026-08-04";
+
+export const PUBLISH_STATUSES: PublishStatus[] = [
+  "Scheduled",
+  "Ready to Publish",
+  "Published",
+  "Failed",
+  "Reschedule Required",
+  "Not Scheduled",
+];
+
+export const CALENDAR_STATUSES = [
+  "Approved",
+  "Ready to Schedule",
+  "Scheduled",
+  "Ready to Publish",
+  "Published",
+  "Publishing Failed",
+  "Reschedule Required",
+  "Cancelled",
+] as const;
+export type CalendarStatus = (typeof CALENDAR_STATUSES)[number];
+
+export type ScheduleHistoryEntry = { at: string; by: string; note: string };
+
+export type PublishRecord = {
+  id: string;
+  contentId: string;
+  title: string;
+  brand: string;
+  platform: SmPlatform;
+  type: ContentType;
+  campaign: string;
+  editor: string;
+  version: string;
+  account: string;
+  date: string; // ISO yyyy-mm-dd
+  time: string; // HH:mm
+  timezone: string;
+  status: CalendarStatus;
+  caption: string;
+  hashtags: string;
+  cta: string;
+  thumbnail: string;
+  firstComment?: string;
+  link: string;
+  trackingCode: string;
+  thumbTone: string;
+  publishedAt?: string;
+  publishedUrl?: string;
+  platformPostId?: string;
+  publishedBy?: string;
+  failureReason?: string;
+  history: ScheduleHistoryEntry[];
+};
+
+export const PUBLISH_RECORDS: PublishRecord[] = [
+  {
+    id: "PB-2201", contentId: "CC-CN-1049", title: "Behind the scenes — plant tour",
+    brand: "Clean Craft Services", platform: "Instagram", type: "Reel",
+    campaign: "Service Awareness", editor: "Neha Verma", version: "V1",
+    account: "@cleancraft.india", date: "2026-08-04", time: "09:10", timezone: "IST (UTC+5:30)",
+    status: "Published", caption: "Inside our plant — where every garment gets its second life.",
+    hashtags: "#cleancraft #laundry #drycleaning", cta: "Book a pickup — link in bio",
+    thumbnail: "plant-tour-thumb.jpg", link: "https://cleancraft.in/services",
+    trackingCode: "ig_service_aug_reel", thumbTone: "from-emerald-500/30 to-emerald-500/5",
+    publishedAt: "4 Aug 2026, 09:10", publishedUrl: "https://instagram.com/p/ccplant01",
+    platformPostId: "IG_POST_ID_placeholder", publishedBy: "Priya Nanda (SMM)",
+    history: [
+      { at: "2 Aug, 18:00", by: "Priya Nanda", note: "Scheduled for 4 Aug 09:10 IST" },
+      { at: "4 Aug, 09:10", by: "System", note: "Published successfully" },
+    ],
+  },
+  {
+    id: "PB-2202", contentId: "CC-CN-1045", title: "Customer review compilation — Aug",
+    brand: "Clean Craft Services", platform: "Facebook", type: "Reel",
+    campaign: "Service Awareness", editor: "Neha Verma", version: "V1",
+    account: "Clean Craft Laundry", date: "2026-08-04", time: "13:00", timezone: "IST (UTC+5:30)",
+    status: "Scheduled", caption: "Our customers said it better than we could.",
+    hashtags: "#cleancraft #reviews", cta: "Try us this week",
+    thumbnail: "review-comp-thumb.jpg", link: "https://cleancraft.in/reviews",
+    trackingCode: "fb_service_aug_reviews", thumbTone: "from-blue-500/30 to-blue-500/5",
+    history: [{ at: "3 Aug, 11:20", by: "Priya Nanda", note: "Scheduled for 4 Aug 13:00 IST" }],
+  },
+  {
+    id: "PB-2203", contentId: "CC-CN-1050", title: "Franchise webinar promo",
+    brand: "Clean Craft Franchise", platform: "Facebook", type: "Reel",
+    campaign: "Webinar Promo", editor: "Rohit Sharma", version: "V1",
+    account: "Clean Craft Laundry", date: "2026-08-04", time: "09:00", timezone: "IST (UTC+5:30)",
+    status: "Publishing Failed", caption: "Free franchise webinar this Saturday — 40 seats only.",
+    hashtags: "#franchise #business", cta: "Register now",
+    thumbnail: "webinar-thumb.jpg", link: "https://cleancraft.in/webinar",
+    trackingCode: "fb_franchise_webinar", thumbTone: "from-red-500/30 to-red-500/5",
+    failureReason: "Facebook page token revoked — account disconnected.",
+    history: [
+      { at: "1 Aug, 12:40", by: "Priya Nanda", note: "Scheduled for 4 Aug 09:00 IST" },
+      { at: "4 Aug, 09:00", by: "System", note: "Publishing failed — account disconnected" },
+    ],
+  },
+  {
+    id: "PB-2204", contentId: "CC-CN-1043", title: "Store launch teaser — Indore",
+    brand: "Clean Craft Franchise", platform: "Instagram", type: "Story",
+    campaign: "Franchise Aug — Reel Ads", editor: "Rohit Sharma", version: "V1",
+    account: "@cleancraft.india", date: "2026-08-04", time: "18:30", timezone: "IST (UTC+5:30)",
+    status: "Ready to Publish", caption: "Indore, we are opening this week.",
+    hashtags: "#cleancraft #indore #newstore", cta: "Swipe up for offers",
+    thumbnail: "indore-teaser-thumb.jpg", link: "https://cleancraft.in/stores/indore",
+    trackingCode: "ig_franchise_indore", thumbTone: "from-blue-500/30 to-blue-500/5",
+    history: [{ at: "Yesterday, 19:40", by: "Priya Nanda", note: "Scheduled for 4 Aug 18:30 IST" }],
+  },
+  {
+    id: "PB-2205", contentId: "CC-CN-1051", title: "Fabric care tips — X thread card",
+    brand: "Clean Craft Services", platform: "X", type: "Static Post",
+    campaign: "Service Awareness", editor: "Neha Verma", version: "V1",
+    account: "@cleancraft_in", date: "2026-08-04", time: "15:30", timezone: "IST (UTC+5:30)",
+    status: "Reschedule Required", caption: "",
+    hashtags: "#fabriccare", cta: "Read the full guide",
+    thumbnail: "fabric-card.jpg", link: "", trackingCode: "",
+    thumbTone: "from-amber-500/30 to-amber-500/5",
+    history: [
+      { at: "2 Aug, 10:00", by: "Priya Nanda", note: "Scheduled for 3 Aug 15:30 IST" },
+      { at: "3 Aug, 16:10", by: "Priya Nanda", note: "Missed slot — reschedule required" },
+    ],
+  },
+  {
+    id: "PB-2206", contentId: "CC-CN-1052", title: "Store opening highlights — Surat",
+    brand: "Clean Craft Franchise", platform: "Instagram", type: "Reel",
+    campaign: "Franchise Aug — Reel Ads", editor: "Imran Qureshi", version: "V1",
+    account: "@cleancraft.india", date: "2026-08-02", time: "11:00", timezone: "IST (UTC+5:30)",
+    status: "Published", caption: "Surat store is live. Thank you for the love.",
+    hashtags: "#cleancraft #surat", cta: "Find your nearest store",
+    thumbnail: "surat-thumb.jpg", link: "https://cleancraft.in/stores/surat",
+    trackingCode: "ig_franchise_surat", thumbTone: "from-emerald-500/30 to-emerald-500/5",
+    publishedAt: "2 Aug 2026, 11:00", publishedUrl: "https://instagram.com/p/ccsurat01",
+    platformPostId: "IG_POST_ID_placeholder", publishedBy: "Priya Nanda (SMM)",
+    history: [
+      { at: "31 Jul, 14:00", by: "Priya Nanda", note: "Scheduled for 2 Aug 11:00 IST" },
+      { at: "2 Aug, 11:00", by: "System", note: "Published successfully" },
+    ],
+  },
+  {
+    id: "PB-2207", contentId: "CC-CN-1047", title: "Owner testimonial — Lucknow",
+    brand: "Clean Craft Franchise", platform: "YouTube", type: "Short",
+    campaign: "Franchise Aug — Reel Ads", editor: "Imran Qureshi", version: "V1",
+    account: "Clean Craft", date: "2026-08-06", time: "10:00", timezone: "IST (UTC+5:30)",
+    status: "Scheduled", caption: "Lucknow owner shares his first-year numbers.",
+    hashtags: "#franchise #cleancraft", cta: "Apply for a franchise",
+    thumbnail: "lucknow-thumb.jpg", link: "https://cleancraft.in/franchise",
+    trackingCode: "yt_franchise_lucknow", thumbTone: "from-blue-500/30 to-blue-500/5",
+    history: [{ at: "3 Aug, 09:00", by: "Priya Nanda", note: "Scheduled for 6 Aug 10:00 IST" }],
+  },
+  {
+    id: "PB-2208", contentId: "CC-CN-1046", title: "Investment breakdown — cost sheet",
+    brand: "Clean Craft Franchise", platform: "LinkedIn", type: "Static Post",
+    campaign: "B2B Corporate Laundry", editor: "Rohit Sharma", version: "V1",
+    account: "Clean Craft Business", date: "2026-08-07", time: "12:00", timezone: "IST (UTC+5:30)",
+    status: "Scheduled", caption: "",
+    hashtags: "#franchise #investment", cta: "Download the cost sheet",
+    thumbnail: "", link: "https://cleancraft.in/cost-sheet",
+    trackingCode: "li_franchise_costsheet", thumbTone: "from-blue-500/30 to-blue-500/5",
+    history: [{ at: "Today, 08:20", by: "Priya Nanda", note: "Scheduled for 7 Aug 12:00 IST" }],
+  },
+  {
+    id: "PB-2209", contentId: "CC-CN-1048", title: "Festive offer creative — Rakhi",
+    brand: "Clean Craft Services", platform: "Instagram", type: "Static Post",
+    campaign: "Festive Offer", editor: "Unassigned", version: "V1",
+    account: "@cleancraft.india", date: "2026-08-05", time: "20:00", timezone: "IST (UTC+5:30)",
+    status: "Cancelled", caption: "Rakhi week offer — 20% off on ethnic wear.",
+    hashtags: "#rakhi #offer", cta: "Visit your nearest store",
+    thumbnail: "rakhi-thumb.jpg", link: "https://cleancraft.in/offers",
+    trackingCode: "ig_festive_rakhi", thumbTone: "from-slate-500/25 to-slate-500/5",
+    history: [
+      { at: "2 Aug, 16:00", by: "Priya Nanda", note: "Scheduled for 5 Aug 20:00 IST" },
+      { at: "3 Aug, 10:00", by: "Priya Nanda", note: "Cancelled — offer approval withdrawn by brand team" },
+    ],
+  },
+  {
+    id: "PB-2210", contentId: "CC-CN-1049", title: "Behind the scenes — plant tour (LinkedIn cut)",
+    brand: "Clean Craft Services", platform: "LinkedIn", type: "Short",
+    campaign: "B2B Corporate Laundry", editor: "Neha Verma", version: "V1",
+    account: "Clean Craft Business", date: "2026-08-04", time: "13:00", timezone: "IST (UTC+5:30)",
+    status: "Scheduled", caption: "How we process 4,000 garments a day.",
+    hashtags: "#b2b #laundry", cta: "Talk to our B2B team",
+    thumbnail: "plant-tour-li.jpg", link: "https://cleancraft.in/b2b",
+    trackingCode: "li_b2b_plant", thumbTone: "from-blue-500/30 to-blue-500/5",
+    history: [{ at: "3 Aug, 12:00", by: "Priya Nanda", note: "Scheduled for 4 Aug 13:00 IST" }],
+  },
+];
+
+export const READINESS_CHECKS = [
+  "Approved video version selected",
+  "Caption approved",
+  "Thumbnail approved",
+  "Correct social account selected",
+  "Correct publishing date and time",
+  "Hashtags checked",
+  "Call-to-action checked",
+  "Destination link checked",
+  "Tracking information added",
+  "Platform format requirements met",
+];
