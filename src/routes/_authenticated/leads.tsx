@@ -354,27 +354,18 @@ function ConvertButton({ lead, onDone }: { lead: Lead; onDone: () => void }) {
   const [loading, setLoading] = useState(false);
   async function convert() {
     setLoading(true);
-    const { data: u } = await supabase.auth.getUser();
-    const userId = u.user?.id;
-    const { error: insErr } = await (supabase as any).from("franchise_bookings").insert({
-      lead_id: lead.id,
-      franchisee_name: lead.name,
-      city: lead.city,
-      booking_amount: 0,
-      booked_at: new Date().toISOString(),
-      created_by: userId,
-      notes: lead.remarks,
+    // Idempotent backend handover: reuses the existing franchise record if one
+    // already exists for this lead, so no duplicate is ever created.
+    const { error } = await (supabase as any).rpc("handover_lead_to_franchise", {
+      _lead_id: lead.id,
+      _booking_amount: 0,
     });
-    if (insErr) { setLoading(false); return toast.error(insErr.message); }
-    const { error: updErr } = await (supabase as any)
-      .from("leads")
-      .update({ converted_to_franchise_at: new Date().toISOString(), lead_stage: "Handover Done" })
-      .eq("id", lead.id);
-    if (updErr) { setLoading(false); return toast.error(updErr.message); }
     setLoading(false);
-    toast.success("Converted to franchise project");
+    if (error) return toast.error(error.message);
+    toast.success("Converted to franchise — same record carried forward");
     onDone();
   }
+
   return (
     <Button size="sm" variant="outline" className="text-emerald-700 border-emerald-200 mr-1" onClick={convert} disabled={loading}>
       <ArrowRightCircle className="w-4 h-4 mr-1" /> {loading ? "Converting…" : "Convert to Franchise"}
