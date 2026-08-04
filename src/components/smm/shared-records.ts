@@ -1159,3 +1159,207 @@ export const SOCIAL_ACCOUNTS: SocialAccount[] = [
     ],
   },
 ];
+
+/* ---- Leads & Handover shared structures ---- */
+export const LEAD_INTERESTS = [
+  "Clean Craft Franchise",
+  "GILM Course",
+  "Laundry Service",
+  "Product Enquiry",
+  "Partnership",
+  "Vendor Enquiry",
+  "Customer Support",
+  "Other",
+] as const;
+export type LeadInterest = (typeof LEAD_INTERESTS)[number];
+
+export const HANDOVER_STAGES = [
+  "New Enquiry",
+  "Verification Required",
+  "Qualified",
+  "Ready for Handover",
+  "Sent to Sales Head",
+  "Awaiting Acceptance",
+  "Accepted",
+  "Sales Follow-up Started",
+  "Returned for Information",
+  "Reassigned by Sales Head",
+  "Duplicate",
+  "Spam",
+  "Not Relevant",
+] as const;
+export type HandoverStage = (typeof HANDOVER_STAGES)[number];
+
+export const QUALIFICATION_CHECKS = [
+  "Name available",
+  "Valid mobile number or email",
+  "City identified",
+  "Enquiry type selected",
+  "Customer intent understood",
+  "Spam check completed",
+  "Duplicate check completed",
+  "Relevant notes added",
+  "Consent / communication preference recorded (when available)",
+];
+
+export type SmLead = {
+  leadId: string;
+  name: string;
+  mobile: string;
+  email: string;
+  city: string;
+  state: string;
+  occupation: string;
+  enquiryType: string;
+  interest: LeadInterest;
+  productInterest: string;
+  investmentRange?: string;
+  timeline: string;
+  language: string;
+  platform: SmPlatform;
+  account: string;
+  campaign: string;
+  advertisement: string;
+  contentId: string;
+  message: string;
+  consent: string;
+  notes: string;
+  priority: "High" | "Medium" | "Low";
+  enquiredAt: string;
+  minutesSinceEnquiry: number;
+  stage: HandoverStage;
+  duplicateOf?: string;
+  duplicateOwner?: string;
+  duplicateStage?: string;
+  salesNote?: string;
+  assignedExecutive?: string;
+  returnReason?: string;
+  returnCount: number;
+  timeline_log: { at: string; by: string; note: string }[];
+};
+
+export const SM_LEADS: SmLead[] = [
+  {
+    leadId: "CC-LD-5201", name: "Rakesh Mehta", mobile: "+919876544412", email: "rakesh.mehta@gmail.com",
+    city: "Jaipur", state: "Rajasthan", occupation: "Retail shop owner", enquiryType: "Franchise enquiry",
+    interest: "Clean Craft Franchise", productInterest: "Franchise — Tier 2 city model",
+    investmentRange: "Rs 25–30 L", timeline: "Within 30 days", language: "Hindi",
+    platform: "Instagram", account: "@cleancraft.india", campaign: "Franchise Aug — Reel Ads",
+    advertisement: "Reel Ad — Owner Story 15s", contentId: "CC-CN-1049",
+    message: "I want franchise details for Jaipur. Please share investment and returns.",
+    consent: "Consented to WhatsApp and calls", notes: "Ready capital, has 600 sq ft shop available.",
+    priority: "High", enquiredAt: "Today, 07:10", minutesSinceEnquiry: 8, stage: "New Enquiry",
+    returnCount: 0,
+    timeline_log: [{ at: "Today, 07:10", by: "System", note: "Enquiry captured from Instagram reel ad" }],
+  },
+  {
+    leadId: "CC-LD-5202", name: "Sunita Rao", mobile: "+919067787781", email: "sunita.rao@yahoo.com",
+    city: "Pune", state: "Maharashtra", occupation: "Homemaker", enquiryType: "Service enquiry",
+    interest: "Laundry Service", productInterest: "Monthly laundry plan", timeline: "This week",
+    language: "Marathi", platform: "Instagram", account: "@cleancraft.india",
+    campaign: "Service Awareness", advertisement: "Static Post — Fabric Care",
+    contentId: "CC-CN-1052", message: "Do you pick up from Kothrud? What is monthly cost?",
+    consent: "Consented to calls", notes: "Enquired earlier in July as well.",
+    priority: "Medium", enquiredAt: "Today, 09:35", minutesSinceEnquiry: 45,
+    stage: "Verification Required", duplicateOf: "CC-LD-5088", duplicateOwner: "Amit Khanna (Sales Exec)",
+    duplicateStage: "Proposal Sent", returnCount: 0,
+    timeline_log: [
+      { at: "Today, 09:35", by: "System", note: "Enquiry captured — possible duplicate on mobile match" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5203", name: "Imran Sheikh", mobile: "+919912342210", email: "imran.sheikh@outlook.com",
+    city: "Bhopal", state: "Madhya Pradesh", occupation: "Textile trader", enquiryType: "Franchise enquiry",
+    interest: "Clean Craft Franchise", productInterest: "Franchise — main city model",
+    investmentRange: "Rs 30–40 L", timeline: "Within 15 days", language: "Hindi",
+    platform: "YouTube", account: "@cleancraft", campaign: "Machine Tour Organic",
+    advertisement: "Organic — Machine Walkthrough", contentId: "CC-CN-1044",
+    message: "Watched your machine video. I have a commercial space ready in Bhopal.",
+    consent: "Consented to WhatsApp", notes: "High intent, wants a call today.",
+    priority: "High", enquiredAt: "Today, 10:02", minutesSinceEnquiry: 118, stage: "Qualified",
+    returnCount: 0,
+    timeline_log: [
+      { at: "Today, 10:02", by: "System", note: "Enquiry captured from YouTube comment form" },
+      { at: "Today, 10:20", by: "Priya Nanda", note: "Verified contact and qualified" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5204", name: "Divya Nair", mobile: "+918776636634", email: "divya.nair@gmail.com",
+    city: "Kochi", state: "Kerala", occupation: "Trainer", enquiryType: "Course enquiry",
+    interest: "GILM Course", productInterest: "GILM certification — Aug batch", timeline: "Next month",
+    language: "English", platform: "Facebook", account: "Clean Craft Laundry",
+    campaign: "Webinar Promo", advertisement: "Reel Ad — Webinar Promo", contentId: "CC-CN-1050",
+    message: "Please share GILM course fees and batch dates.",
+    consent: "Consented to email", notes: "Wants weekend batch.",
+    priority: "Medium", enquiredAt: "Yesterday, 20:15", minutesSinceEnquiry: 900,
+    stage: "Ready for Handover", returnCount: 0,
+    timeline_log: [
+      { at: "Yesterday, 20:15", by: "System", note: "Enquiry captured from Facebook ad" },
+      { at: "Yesterday, 20:50", by: "Priya Nanda", note: "Qualified — ready for handover" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5205", name: "Harpreet Singh", mobile: "+918211901190", email: "harpreet.s@gmail.com",
+    city: "Ludhiana", state: "Punjab", occupation: "Garment exporter", enquiryType: "Franchise enquiry",
+    interest: "Clean Craft Franchise", productInterest: "Franchise — flagship model",
+    investmentRange: "Rs 40 L+", timeline: "Immediate", language: "Punjabi",
+    platform: "Instagram", account: "@cleancraft.india", campaign: "Franchise Aug — Reel Ads",
+    advertisement: "Reel Ad — Owner Story 15s", contentId: "CC-CN-1049",
+    message: "Ready to invest now. Want a meeting this week.",
+    consent: "Consented to WhatsApp and calls", notes: "Very high intent — priority handover.",
+    priority: "High", enquiredAt: "Today, 08:20", minutesSinceEnquiry: 260,
+    stage: "Awaiting Acceptance", returnCount: 0,
+    timeline_log: [
+      { at: "Today, 08:20", by: "System", note: "Enquiry captured" },
+      { at: "Today, 08:55", by: "Priya Nanda", note: "Sent to Sales Head — recommended response within 1 hour" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5206", name: "Ankit Bansal", mobile: "+917788112233", email: "ankit.b@company.in",
+    city: "Delhi", state: "Delhi", occupation: "Hotel operations manager", enquiryType: "B2B enquiry",
+    interest: "Partnership", productInterest: "Bulk laundry contract — 3 properties",
+    timeline: "This quarter", language: "English", platform: "LinkedIn", account: "Clean Craft Business",
+    campaign: "B2B Corporate Laundry", advertisement: "Static Post — Cost Sheet", contentId: "CC-CN-1046",
+    message: "We need a bulk laundry partner for 3 hotels in Delhi NCR.",
+    consent: "Consented to email", notes: "Decision maker, asked for rate card.",
+    priority: "High", enquiredAt: "Today, 11:05", minutesSinceEnquiry: 40, stage: "Accepted",
+    assignedExecutive: "Amit Khanna", salesNote: "Accepted — B2B desk will call today.",
+    returnCount: 0,
+    timeline_log: [
+      { at: "Today, 11:05", by: "System", note: "Enquiry captured" },
+      { at: "Today, 11:20", by: "Priya Nanda", note: "Qualified and sent to Sales Head" },
+      { at: "Today, 11:40", by: "Sales Head", note: "Accepted and assigned to Amit Khanna" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5207", name: "Meera Joshi", mobile: "+919000012345", email: "",
+    city: "", state: "", occupation: "", enquiryType: "Service enquiry",
+    interest: "Laundry Service", productInterest: "Dry cleaning", timeline: "Not stated",
+    language: "Hindi", platform: "Instagram", account: "@cleancraft.india",
+    campaign: "Service Awareness", advertisement: "Story — Offer", contentId: "CC-CN-1043",
+    message: "Rate kya hai?", consent: "Not recorded", notes: "",
+    priority: "Low", enquiredAt: "Today, 06:40", minutesSinceEnquiry: 340,
+    stage: "Returned for Information", returnReason: "City and service details missing — cannot route.",
+    returnCount: 2,
+    timeline_log: [
+      { at: "Today, 06:40", by: "System", note: "Enquiry captured" },
+      { at: "Today, 07:30", by: "Priya Nanda", note: "Sent to Sales Head" },
+      { at: "Today, 08:10", by: "Sales Head", note: "Returned — city and service details missing" },
+      { at: "Today, 09:00", by: "Sales Head", note: "Returned again — still no city" },
+    ],
+  },
+  {
+    leadId: "CC-LD-5208", name: "Promo Bot", mobile: "+910000000000", email: "spam@promo.link",
+    city: "", state: "", occupation: "", enquiryType: "Other", interest: "Other",
+    productInterest: "—", timeline: "—", language: "English", platform: "Facebook",
+    account: "Clean Craft Laundry", campaign: "Service Awareness", advertisement: "—",
+    contentId: "CC-CN-1045", message: "Buy cheap followers — click this link.",
+    consent: "Not recorded", notes: "Marked spam, retained for audit history.",
+    priority: "Low", enquiredAt: "Yesterday, 22:10", minutesSinceEnquiry: 800, stage: "Spam",
+    returnCount: 0,
+    timeline_log: [
+      { at: "Yesterday, 22:10", by: "System", note: "Enquiry captured" },
+      { at: "Yesterday, 22:15", by: "Priya Nanda", note: "Marked spam — kept for audit history" },
+    ],
+  },
+];
