@@ -17,8 +17,8 @@ import {
   BookOpen,
   TrendingUp,
 } from "lucide-react";
+import { DevDashboard } from "@/components/developer/dashboard";
 import {
-  DevDashboard,
   DevTickets,
   DevProjectTasks,
   DevStorePos,
