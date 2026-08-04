@@ -16,13 +16,13 @@ import {
   TrendingUp,
 } from "lucide-react";
 import {
-  AmDashboard,
   AmFollowups,
   AmDispatchClearance,
   AmBillingPos,
   AmPerformance,
 } from "@/components/account-manager/pages";
 import { AmPaymentRequests } from "@/components/account-manager/payment-requests";
+import { AmDashboard } from "@/components/account-manager/dashboard";
 
 export const Route = createFileRoute("/_authenticated/account-manager")({
   head: () => ({
