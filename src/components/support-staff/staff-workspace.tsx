@@ -32,7 +32,7 @@ import {
   type TaskStatus,
 } from "./data";
 
-export type StaffSection = "home" | "tasks" | "supplies" | "problem" | "help";
+export type StaffSection = "home" | "tasks" | "supplies" | "problem" | "help" | "performance";
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
   pending: "Not started",

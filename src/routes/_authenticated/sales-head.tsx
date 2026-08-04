@@ -74,8 +74,8 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "pipeline", label: "Sales Pipeline", icon: TrendingDown },
   { key: "meetings", label: "Meetings", icon: CalendarClock },
   { key: "tasks", label: "Team Tasks", icon: ListChecks },
-  { key: "performance", label: "Performance", icon: TrendingUp },
   { key: "resources", label: "Resources", icon: FolderOpen },
+  { key: "performance", label: "Performance", icon: TrendingUp },
 ];
 
 function SalesHeadDashboard() {

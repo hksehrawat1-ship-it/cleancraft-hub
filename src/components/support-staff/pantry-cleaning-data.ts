@@ -270,11 +270,12 @@ export const SAMPLE_TASKS: Task[] = [
 ];
 
 export const L = {
-  home: { en: "Home", hi: "होम" },
+  home: { en: "Dashboard", hi: "डैशबोर्ड" },
   tasks: { en: "My Tasks", hi: "मेरे काम" },
   supplies: { en: "Supplies", hi: "सामान" },
   problem: { en: "Report a Problem", hi: "समस्या बताएं" },
   help: { en: "Help", hi: "मदद" },
+  performance: { en: "Performance", hi: "प्रदर्शन" },
   tasksToday: { en: "Tasks Today", hi: "आज के काम" },
   remaining: { en: "Remaining Tasks", hi: "बाकी काम" },
   urgent: { en: "Urgent", hi: "ज़रूरी" },

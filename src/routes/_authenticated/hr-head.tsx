@@ -119,8 +119,8 @@ const NAV: { key: SectionKey; label: string; icon: React.ComponentType<{ classNa
   { key: "letters", label: "Letters, Notices & Warnings", icon: FileWarning },
   { key: "access", label: "User Access", icon: ShieldCheck },
   { key: "reports", label: "Reports to CEO", icon: BarChart3 },
-  { key: "performance-self", label: "My Performance", icon: Gauge },
   { key: "policies", label: "HR Policies & Settings", icon: Settings2 },
+  { key: "performance-self", label: "My Performance", icon: Gauge },
 ];
 
 function HrHeadDashboard() {

@@ -55,7 +55,7 @@ export const ROLE_SCOPE: Record<RoleName, { scope: string; modules: string[]; no
   },
   "Field Engineer": {
     scope: "Assigned jobs and visits",
-    modules: ["Home", "My Jobs", "Visit Schedule", "Work Report", "My Expenses"],
+    modules: ["Dashboard", "My Jobs", "Visit Schedule", "Work Report", "My Expenses"],
     note: "Sees own jobs and own expense records.",
   },
   "Administration Manager": {
@@ -65,7 +65,7 @@ export const ROLE_SCOPE: Record<RoleName, { scope: string; modules: string[]; no
   },
   "Pantry & Cleaning Staff": {
     scope: "Own tasks only",
-    modules: ["Home", "My Tasks", "Supplies", "Report a Problem", "Help"],
+    modules: ["Dashboard", "My Tasks", "Supplies", "Report a Problem", "Help"],
     note: "Sees only own tasks and own private information.",
   },
   "Logistics Manager": {
@@ -75,7 +75,7 @@ export const ROLE_SCOPE: Record<RoleName, { scope: string; modules: string[]; no
   },
   "Packing Staff": {
     scope: "Own packing tasks only",
-    modules: ["Home", "My Tasks", "Packing Supplies", "Report a Problem", "Help"],
+    modules: ["Dashboard", "My Tasks", "Packing Supplies", "Report a Problem", "Help"],
     note: "Sees only own tasks.",
   },
   Employee: {

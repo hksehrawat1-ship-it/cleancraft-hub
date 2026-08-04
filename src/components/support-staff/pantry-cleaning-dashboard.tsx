@@ -29,6 +29,7 @@ import {
   Mic,
   PlayCircle,
   RotateCcw,
+  TrendingUp,
   Volume2,
 } from "lucide-react";
 import {
@@ -49,6 +50,7 @@ import { PantryCleaningMyTasks } from "./pantry-cleaning-my-tasks";
 import { PantryCleaningReportProblem } from "./pantry-cleaning-report-problem";
 import { PantryCleaningHelp } from "./pantry-cleaning-help";
 import { PantryCleaningSupplies } from "./pantry-cleaning-supplies";
+import { StaffMyPerformance } from "./my-performance";
 
 const SUPPLY_ALERTS: {
   id: string;
@@ -171,6 +173,7 @@ export function PantryCleaningDashboard() {
     { key: "supplies", label: L.supplies, icon: Boxes },
     { key: "problem", label: L.problem, icon: AlertTriangle },
     { key: "help", label: L.help, icon: HelpCircle },
+    { key: "performance", label: L.performance, icon: TrendingUp },
   ];
 
   const TaskCard = ({ task }: { task: Task }) => {
@@ -550,6 +553,7 @@ export function PantryCleaningDashboard() {
         {section === "problem" && (
           <PantryCleaningReportProblem lang={lang} setLang={setLang} />
         )}
+        {section === "performance" && <StaffMyPerformance lang={lang} />}
         {section === "help" && (
           <PantryCleaningHelp
             lang={lang}

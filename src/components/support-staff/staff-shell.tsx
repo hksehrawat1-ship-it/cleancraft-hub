@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, ListChecks, Boxes, AlertTriangle, HelpCircle } from "lucide-react";
+import { Home, ListChecks, Boxes, AlertTriangle, HelpCircle, TrendingUp } from "lucide-react";
 import { ROLE_META, type StaffRole } from "./data";
 import { StaffWorkspace, type StaffSection } from "./staff-workspace";
 import { PackingHome } from "./packing-home";
@@ -7,15 +7,17 @@ import { PackingMyTasks } from "./packing-my-tasks";
 import { PackingSupplies } from "./packing-supplies";
 import { PackingReportProblem } from "./packing-report-problem";
 import { PackingHelp } from "./packing-help";
+import { StaffMyPerformance } from "./my-performance";
 
 import type { Lang } from "./pantry-cleaning-data";
 
 const NAV_BASE: { key: StaffSection; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-  { key: "home", label: "Home", icon: Home },
+  { key: "home", label: "Dashboard", icon: Home },
   { key: "tasks", label: "My Tasks", icon: ListChecks },
   { key: "supplies", label: "Supplies", icon: Boxes },
   { key: "problem", label: "Report a Problem", icon: AlertTriangle },
   { key: "help", label: "Help", icon: HelpCircle },
+  { key: "performance", label: "Performance", icon: TrendingUp },
 ];
 
 export function StaffShell({
@@ -137,6 +139,8 @@ export function StaffShell({
             }}
           />
 
+        ) : active === "performance" ? (
+          <StaffMyPerformance lang={lang} />
         ) : (
           <StaffWorkspace role={activeRole} section={active} onGo={setActive} />
         )}
