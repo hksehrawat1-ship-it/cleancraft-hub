@@ -3,10 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,624 +16,600 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
-import { AlertTriangle, ShieldAlert, Clock, Search, Download } from "lucide-react";
+import { AlertTriangle, FilePlus2, Search, ShieldCheck } from "lucide-react";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+const MANAGER = "Priya Nair";
 
-const STATUSES = [
-  "New Request",
-  "Under Verification",
-  "Information Requested",
-  "Approved",
-  "Payment Scheduled",
-  "Paid",
-  "On Hold",
-  "Rejected",
-  "Closed",
+const PAYMENT_TYPES = [
+  "Franchise Fee",
+  "Machine Payment",
+  "Consumables Payment",
+  "Training Fee",
+  "App or POS Fee",
+  "Security Deposit",
+  "Other Approved Charge",
 ] as const;
-type Status = (typeof STATUSES)[number];
+type PaymentType = (typeof PAYMENT_TYPES)[number];
 
-const CHECKLIST = [
-  "Store / project ID matches active project",
-  "Payment type matches approved project budget",
-  "Amount within sanctioned milestone limit",
-  "Quotation or invoice attached and readable",
-  "Vendor / beneficiary details verified",
-  "Milestone actually completed (PM confirmation)",
-  "No duplicate request for same milestone",
-  "GST / tax component correct",
-  "Budget balance available for this project",
-  "Approval authority confirmed for this amount",
-] as const;
+type ReqStatus =
+  | "Draft"
+  | "New"
+  | "Under Review"
+  | "Information Required"
+  | "Accepted"
+  | "Returned"
+  | "Cancelled";
 
-type Req = {
+type Priority = "Normal" | "Important" | "Urgent";
+
+type Hist = { at: string; by: string; action: string };
+
+type PReq = {
   id: string;
+  projectId: string;
   store: string;
-  project: string;
-  type: string;
+  owner: string;
+  mobileMasked: string;
+  emailMasked: string;
+  city: string;
+  state: string;
+  coordinator: string;
+  type: PaymentType;
+  purpose: string;
+  items: string;
   amount: number;
-  raisedBy: string;
-  role: string;
-  raisedOn: string;
-  needBy: string;
-  status: Status;
-  priority: "Critical" | "High" | "Normal";
-  blocksDispatch: boolean;
-  budgetRisk: boolean;
-  beneficiary: string;
-  accountMasked: string;
-  checks: boolean[];
-  notes: { at: string; by: string; text: string }[];
-  audit: { at: string; by: string; action: string }[];
+  taxRef: string;
+  due: string;
+  clearanceType: "Machine Dispatch" | "Consumable Dispatch" | "Not Required";
+  launchDate: string;
+  quotation: string;
+  instructions: string;
+  priority: Priority;
+  status: ReqStatus;
+  submitted: string;
+  pendingDays: number;
+  amountMissing?: boolean;
+  approvalMissing?: boolean;
+  contactMissing?: boolean;
+  responseOverdue?: boolean;
+  acceptance?: {
+    by: string;
+    amount: number;
+    due: string;
+    vyapar: string;
+    instructions: string;
+    firstFollowUp: string;
+    clearanceRequired: boolean;
+  };
+  history: Hist[];
 };
 
-const mkChecks = (n: number) => CHECKLIST.map((_, i) => i < n);
-
-const SEED: Req[] = [
+const SEED: PReq[] = [
   {
-    id: "PR-2041", store: "Jaipur", project: "PRJ-JAI-07", type: "Machine Advance", amount: 450000,
-    raisedBy: "Rahul Sharma", role: "Project Coordinator", raisedOn: "3 Aug", needBy: "Today",
-    status: "New Request", priority: "Critical", blocksDispatch: true, budgetRisk: false,
-    beneficiary: "Clean Craft Machinery Pvt Ltd", accountMasked: "XXXXXX4417",
-    checks: mkChecks(0),
-    notes: [{ at: "3 Aug", by: "Rahul Sharma", text: "Machine dispatch blocked until 60% advance is released." }],
-    audit: [{ at: "3 Aug 10:12", by: "Rahul Sharma", action: "Request created" }],
+    id: "PAY-3101", projectId: "PRJ-JAI-07", store: "Clean Craft Jaipur", owner: "Rajesh Agarwal",
+    mobileMasked: "+91 98XXXXXX21", emailMasked: "raj****@gmail.com", city: "Jaipur", state: "Rajasthan",
+    coordinator: "Rahul Sharma", type: "Machine Payment",
+    purpose: "60% machine advance before dispatch",
+    items: "Washer 25kg x1, Dryer 20kg x1, Steam Iron x2, Boiler x1",
+    amount: 750000, taxRef: "GST 18% — as per quotation QT-4412", due: "4 Aug 2026",
+    clearanceType: "Machine Dispatch", launchDate: "22 Aug 2026", quotation: "QT-4412 (approved by COO)",
+    instructions: "Dispatch is blocked until this advance is verified.",
+    priority: "Urgent", status: "New", submitted: "3 Aug 2026", pendingDays: 1,
+    history: [{ at: "3 Aug 10:12", by: "Rahul Sharma", action: "Request submitted to Accounts" }],
   },
   {
-    id: "PR-2042", store: "Indore", project: "PRJ-IND-03", type: "Civil Work Milestone", amount: 180000,
-    raisedBy: "Anita Rao", role: "Project Manager", raisedOn: "2 Aug", needBy: "6 Aug",
-    status: "Under Verification", priority: "High", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "Shree Constructions", accountMasked: "XXXXXX9021",
-    checks: mkChecks(6),
-    notes: [{ at: "3 Aug", by: "Account Manager", text: "Site photos received, verifying measurement sheet." }],
-    audit: [
-      { at: "2 Aug 15:40", by: "Anita Rao", action: "Request created" },
-      { at: "3 Aug 09:05", by: "Account Manager", action: "Moved to Under Verification" },
+    id: "PAY-3107", projectId: "PRJ-KNP-06", store: "Clean Craft Kanpur", owner: "Shalini Verma",
+    mobileMasked: "+91 95XXXXXX12", emailMasked: "sha****@outlook.com", city: "Kanpur", state: "Uttar Pradesh",
+    coordinator: "Suresh Patel", type: "Franchise Fee",
+    purpose: "Franchise booking amount", items: "Not applicable", amount: 300000,
+    taxRef: "GST 18% — franchise agreement clause 4", due: "6 Aug 2026",
+    clearanceType: "Not Required", launchDate: "30 Sep 2026", quotation: "Signed agreement copy missing",
+    instructions: "Owner requested payment link on registered email.",
+    priority: "Important", status: "Information Required", submitted: "2 Aug 2026", pendingDays: 2,
+    approvalMissing: true, responseOverdue: true,
+    history: [
+      { at: "2 Aug 09:00", by: "Suresh Patel", action: "Request submitted" },
+      { at: "2 Aug 15:00", by: MANAGER, action: "Asked for information — approval or quotation missing" },
     ],
   },
   {
-    id: "PR-2043", store: "Lucknow", project: "PRJ-LKO-02", type: "Franchise 2nd Instalment", amount: 600000,
-    raisedBy: "Vikram Singh", role: "Sales Head", raisedOn: "1 Aug", needBy: "7 Aug",
-    status: "Information Requested", priority: "High", blocksDispatch: true, budgetRisk: false,
-    beneficiary: "Clean Craft Franchise Account", accountMasked: "XXXXXX1188",
-    checks: mkChecks(4),
-    notes: [{ at: "2 Aug", by: "Account Manager", text: "Signed agreement copy missing — requested from Sales Head." }],
-    audit: [
-      { at: "1 Aug 11:20", by: "Vikram Singh", action: "Request created" },
-      { at: "2 Aug 12:00", by: "Account Manager", action: "Information requested: agreement copy" },
+    id: "PAY-3109", projectId: "PRJ-BLR-11", store: "Clean Craft Whitefield", owner: "Anand Kumar",
+    mobileMasked: "+91 99XXXXXX43", emailMasked: "ana****@gmail.com", city: "Bengaluru", state: "Karnataka",
+    coordinator: "Neha Gupta", type: "Consumables Payment",
+    purpose: "Opening consumables and packaging kit",
+    items: "Detergent 200L, Hangers 1500, Poly covers 3000, Tags 5000",
+    amount: 168000, taxRef: "GST 18% — QT-4498", due: "9 Aug 2026",
+    clearanceType: "Consumable Dispatch", launchDate: "5 Sep 2026", quotation: "QT-4498",
+    instructions: "Deliver along with machine consignment.",
+    priority: "Normal", status: "Under Review", submitted: "1 Aug 2026", pendingDays: 3,
+    history: [
+      { at: "1 Aug 11:20", by: "Neha Gupta", action: "Request submitted" },
+      { at: "2 Aug 10:05", by: MANAGER, action: "Review started" },
     ],
   },
   {
-    id: "PR-2044", store: "Surat", project: "PRJ-SUR-05", type: "Vendor Payment", amount: 92000,
-    raisedBy: "Deepak Yadav", role: "Logistics Executive", raisedOn: "1 Aug", needBy: "8 Aug",
-    status: "Approved", priority: "Normal", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "Gujarat Freight Lines", accountMasked: "XXXXXX7734",
-    checks: mkChecks(10),
-    notes: [],
-    audit: [
-      { at: "1 Aug 09:00", by: "Deepak Yadav", action: "Request created" },
-      { at: "2 Aug 16:30", by: "Account Manager", action: "Verified and approved" },
+    id: "PAY-3110", projectId: "PRJ-PUN-08", store: "Clean Craft Kothrud", owner: "Snehal Kulkarni",
+    mobileMasked: "+91 90XXXXXX18", emailMasked: "sne****@yahoo.com", city: "Pune", state: "Maharashtra",
+    coordinator: "Anita Rao", type: "Security Deposit",
+    purpose: "Refundable security deposit as per agreement", items: "Not applicable",
+    amount: 100000, taxRef: "Not taxable — refundable deposit", due: "12 Aug 2026",
+    clearanceType: "Not Required", launchDate: "18 Sep 2026", quotation: "Agreement clause 9",
+    instructions: "Deposit to be shown separately in Vyapar.", priority: "Normal",
+    status: "New", submitted: "3 Aug 2026", pendingDays: 1, contactMissing: false,
+    history: [{ at: "3 Aug 16:40", by: "Anita Rao", action: "Request submitted" }],
+  },
+  {
+    id: "PAY-3111", projectId: "PRJ-JAI-07", store: "Clean Craft Jaipur", owner: "Rajesh Agarwal",
+    mobileMasked: "+91 98XXXXXX21", emailMasked: "raj****@gmail.com", city: "Jaipur", state: "Rajasthan",
+    coordinator: "Rahul Sharma", type: "Machine Payment",
+    purpose: "Machine advance (re-submitted)", items: "Washer 25kg x1, Dryer 20kg x1, Steam Iron x2, Boiler x1",
+    amount: 750000, taxRef: "GST 18% — QT-4412", due: "4 Aug 2026",
+    clearanceType: "Machine Dispatch", launchDate: "22 Aug 2026", quotation: "QT-4412",
+    instructions: "", priority: "Urgent", status: "New", submitted: "4 Aug 2026", pendingDays: 0,
+    history: [{ at: "4 Aug 09:05", by: "Rahul Sharma", action: "Request submitted" }],
+  },
+  {
+    id: "PAY-3103", projectId: "PRJ-LKO-02", store: "Clean Craft Lucknow", owner: "Sunil Mishra",
+    mobileMasked: "+91 99XXXXXX08", emailMasked: "sun****@gmail.com", city: "Lucknow", state: "Uttar Pradesh",
+    coordinator: "Rahul Sharma", type: "Machine Payment",
+    purpose: "Machine balance before dispatch", items: "Washer 15kg x1, Dryer 15kg x1",
+    amount: 520000, taxRef: "GST 18% — QT-4380", due: "3 Aug 2026",
+    clearanceType: "Machine Dispatch", launchDate: "16 Aug 2026", quotation: "QT-4380",
+    instructions: "", priority: "Important", status: "Accepted", submitted: "24 Jul 2026", pendingDays: 0,
+    acceptance: {
+      by: MANAGER, amount: 520000, due: "3 Aug 2026", vyapar: "VY-INV-2277",
+      instructions: "RTGS to Clean Craft current account (masked).",
+      firstFollowUp: "29 Jul 2026", clearanceRequired: true,
+    },
+    history: [
+      { at: "24 Jul 10:00", by: "Rahul Sharma", action: "Request submitted" },
+      { at: "24 Jul 15:00", by: MANAGER, action: "Request accepted — moved to Follow-ups & Verification" },
     ],
   },
   {
-    id: "PR-2045", store: "Nagpur", project: "PRJ-NAG-01", type: "Machine Balance", amount: 520000,
-    raisedBy: "Rahul Sharma", role: "Project Coordinator", raisedOn: "29 Jul", needBy: "4 Aug",
-    status: "On Hold", priority: "Critical", blocksDispatch: true, budgetRisk: true,
-    beneficiary: "Clean Craft Machinery Pvt Ltd", accountMasked: "XXXXXX4417",
-    checks: mkChecks(7),
-    notes: [{ at: "31 Jul", by: "Account Manager", text: "Owner collection pending — hold until franchise amount credited." }],
-    audit: [
-      { at: "29 Jul 14:10", by: "Rahul Sharma", action: "Request created" },
-      { at: "31 Jul 10:45", by: "Account Manager", action: "Put on hold: collection pending" },
-    ],
-  },
-  {
-    id: "PR-2046", store: "Bhopal", project: "PRJ-BPL-04", type: "Interior & Branding", amount: 240000,
-    raisedBy: "Anita Rao", role: "Project Manager", raisedOn: "30 Jul", needBy: "5 Aug",
-    status: "Payment Scheduled", priority: "High", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "Signature Interiors", accountMasked: "XXXXXX5560",
-    checks: mkChecks(10),
-    notes: [{ at: "2 Aug", by: "Account Manager", text: "Scheduled for NEFT on 5 Aug." }],
-    audit: [
-      { at: "30 Jul 12:00", by: "Anita Rao", action: "Request created" },
-      { at: "2 Aug 11:00", by: "Account Manager", action: "Payment scheduled 5 Aug (NEFT)" },
-    ],
-  },
-  {
-    id: "PR-2047", store: "Kanpur", project: "PRJ-KNP-06", type: "Electrical Work", amount: 68000,
-    raisedBy: "Suresh Patel", role: "Project Manager", raisedOn: "28 Jul", needBy: "1 Aug",
-    status: "Paid", priority: "Normal", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "Kanpur Electricals", accountMasked: "XXXXXX2290",
-    checks: mkChecks(10),
-    notes: [{ at: "1 Aug", by: "Account Manager", text: "Paid via NEFT, UTR shared with PM." }],
-    audit: [
-      { at: "28 Jul 10:00", by: "Suresh Patel", action: "Request created" },
-      { at: "31 Jul 15:00", by: "Account Manager", action: "Approved" },
-      { at: "1 Aug 11:30", by: "Account Manager", action: "Marked paid (UTR XXXXXX8891)" },
-    ],
-  },
-  {
-    id: "PR-2048", store: "Raipur", project: "PRJ-RAI-02", type: "Petty Cash Top-up", amount: 25000,
-    raisedBy: "Komal Sahu", role: "Trainer & Launch Executive", raisedOn: "27 Jul", needBy: "30 Jul",
-    status: "Rejected", priority: "Normal", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "Komal Sahu (staff advance)", accountMasked: "XXXXXX3345",
-    checks: mkChecks(3),
-    notes: [{ at: "28 Jul", by: "Account Manager", text: "Previous advance not settled — reject and resubmit with settlement." }],
-    audit: [
-      { at: "27 Jul 09:15", by: "Komal Sahu", action: "Request created" },
-      { at: "28 Jul 10:00", by: "Account Manager", action: "Rejected: earlier advance unsettled" },
-    ],
-  },
-  {
-    id: "PR-2049", store: "Jaipur", project: "PRJ-JAI-07", type: "POS Hardware", amount: 46000,
-    raisedBy: "Neha Gupta", role: "Developer", raisedOn: "26 Jul", needBy: "29 Jul",
-    status: "Closed", priority: "Normal", blocksDispatch: false, budgetRisk: false,
-    beneficiary: "TechPoint Systems", accountMasked: "XXXXXX6612",
-    checks: mkChecks(10),
-    notes: [],
-    audit: [
-      { at: "26 Jul 09:00", by: "Neha Gupta", action: "Request created" },
-      { at: "29 Jul 17:00", by: "Account Manager", action: "Paid and closed" },
+    id: "PAY-3096", projectId: "PRJ-AGR-01", store: "Clean Craft Agra", owner: "Deepa Chauhan",
+    mobileMasked: "+91 97XXXXXX72", emailMasked: "dee****@gmail.com", city: "Agra", state: "Uttar Pradesh",
+    coordinator: "Deepak Yadav", type: "Training Fee",
+    purpose: "Owner training batch — cancelled batch", items: "Not applicable", amount: 85000,
+    taxRef: "GST 18%", due: "20 Jul 2026", clearanceType: "Not Required", launchDate: "10 Aug 2026",
+    quotation: "TRN-221", instructions: "", priority: "Normal", status: "Cancelled",
+    submitted: "15 Jul 2026", pendingDays: 0,
+    history: [
+      { at: "15 Jul 09:00", by: "Deepak Yadav", action: "Request submitted" },
+      { at: "18 Jul 12:00", by: MANAGER, action: "Cancelled with authorisation (COO) — batch merged with Kanpur" },
     ],
   },
 ];
 
-const tone = (s: Status) => {
-  switch (s) {
-    case "Rejected":
-    case "On Hold":
-      return "bg-rose-100 text-rose-700";
-    case "Information Requested":
-    case "Under Verification":
-      return "bg-amber-100 text-amber-700";
-    case "New Request":
-      return "bg-blue-100 text-blue-700";
-    case "Approved":
-    case "Payment Scheduled":
-      return "bg-sky-100 text-sky-700";
-    case "Paid":
-    case "Closed":
-      return "bg-emerald-100 text-emerald-700";
-    default:
-      return "bg-muted text-muted-foreground";
-  }
+const CHECKLIST = [
+  "Correct franchise project selected",
+  "Franchise-owner details available",
+  "Payment purpose is clear",
+  "Amount matches approved quotation or agreement",
+  "Payment due date is valid",
+  "Machine or consumable item details are complete",
+  "Required approval is attached",
+  "Vyapar invoice is available or will be created",
+  "Dispatch clearance requirement is identified",
+];
+
+const TABS = ["New", "Under Review", "Information Required", "Accepted", "Cancelled", "All Requests"] as const;
+type TabKey = (typeof TABS)[number];
+
+const statusTone = (s: ReqStatus) => {
+  if (s === "Cancelled" || s === "Returned") return "bg-muted text-muted-foreground";
+  if (s === "Information Required") return "bg-rose-100 text-rose-700";
+  if (s === "Under Review") return "bg-amber-100 text-amber-700";
+  if (s === "Accepted") return "bg-emerald-100 text-emerald-700";
+  return "bg-blue-100 text-blue-700";
 };
-
-const prTone = (p: Req["priority"]) =>
-  p === "Critical" ? "bg-rose-100 text-rose-700" : p === "High" ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground";
-
-const OPEN: Status[] = ["New Request", "Under Verification", "Information Requested", "Approved", "Payment Scheduled", "On Hold"];
+const prioTone = (p: Priority) =>
+  p === "Urgent" ? "bg-rose-100 text-rose-700" : p === "Important" ? "bg-amber-100 text-amber-700" : "bg-muted text-muted-foreground";
 
 export function AmPaymentRequests() {
-  const [rows, setRows] = useState<Req[]>(SEED);
-  const [tab, setTab] = useState<"All" | Status>("All");
+  const [reqs, setReqs] = useState<PReq[]>(SEED);
+  const [tab, setTab] = useState<TabKey>("New");
   const [q, setQ] = useState("");
-  const [store, setStore] = useState("all");
-  const [type, setType] = useState("all");
-  const [role, setRole] = useState("all");
-  const [band, setBand] = useState("all");
-  const [flag, setFlag] = useState("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [checks, setChecks] = useState<Record<string, boolean>>({});
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [acceptOpen, setAcceptOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [returnOpen, setReturnOpen] = useState<"Return Request" | "Cancel with Authorisation" | null>(null);
+  const [dupWarn, setDupWarn] = useState<{ existing: string; onOk: () => void } | null>(null);
 
-  const [infoText, setInfoText] = useState("");
-  const [payMode, setPayMode] = useState("NEFT");
-  const [payDate, setPayDate] = useState("");
-  const [utr, setUtr] = useState("");
-  const [reason, setReason] = useState("");
+  // filters
+  const [fCoord, setFCoord] = useState("all");
+  const [fProject, setFProject] = useState("all");
+  const [fOwner, setFOwner] = useState("all");
+  const [fCity, setFCity] = useState("all");
+  const [fType, setFType] = useState("all");
+  const [fPrio, setFPrio] = useState("all");
+  const [fDue, setFDue] = useState("");
+  const [fStatus, setFStatus] = useState("all");
+  const [fSubmitted, setFSubmitted] = useState("");
 
-  const stores = useMemo(() => Array.from(new Set(SEED.map((r) => r.store))), []);
-  const types = useMemo(() => Array.from(new Set(SEED.map((r) => r.type))), []);
-  const roles = useMemo(() => Array.from(new Set(SEED.map((r) => r.role))), []);
+  // accept form
+  const [aAmount, setAAmount] = useState("");
+  const [aDue, setADue] = useState("");
+  const [aVyapar, setAVyapar] = useState("");
+  const [aInstr, setAInstr] = useState("");
+  const [aFollow, setAFollow] = useState("");
+  const [aClearance, setAClearance] = useState("yes");
 
-  const filtered = rows.filter((r) => {
-    if (tab !== "All" && r.status !== tab) return false;
-    if (store !== "all" && r.store !== store) return false;
-    if (type !== "all" && r.type !== type) return false;
-    if (role !== "all" && r.role !== role) return false;
-    if (band === "lt1" && r.amount >= 100000) return false;
-    if (band === "1to5" && (r.amount < 100000 || r.amount > 500000)) return false;
-    if (band === "gt5" && r.amount <= 500000) return false;
-    if (flag === "dispatch" && !r.blocksDispatch) return false;
-    if (flag === "budget" && !r.budgetRisk) return false;
-    if (flag === "overdue" && r.needBy !== "Today" && !/4 Aug|1 Aug|30 Jul|29 Jul/.test(r.needBy)) return false;
-    if (q) {
-      const hay = `${r.id} ${r.store} ${r.project} ${r.type} ${r.raisedBy} ${r.beneficiary}`.toLowerCase();
-      if (!hay.includes(q.toLowerCase())) return false;
-    }
+  // info form
+  const [infoItems, setInfoItems] = useState<string[]>([]);
+  const [infoNote, setInfoNote] = useState("");
+
+  // return/cancel form
+  const [rReason, setRReason] = useState("");
+  const [rAuth, setRAuth] = useState("");
+  const [rNote, setRNote] = useState("");
+
+  // coordinator submission form
+  const [nProject, setNProject] = useState("");
+  const [nType, setNType] = useState<PaymentType>("Franchise Fee");
+  const [nPurpose, setNPurpose] = useState("");
+  const [nItems, setNItems] = useState("");
+  const [nAmount, setNAmount] = useState("");
+  const [nDue, setNDue] = useState("");
+  const [nLaunch, setNLaunch] = useState("");
+  const [nQuote, setNQuote] = useState("");
+  const [nPrio, setNPrio] = useState<Priority>("Normal");
+  const [nNotes, setNNotes] = useState("");
+
+  const open = reqs.find((r) => r.id === openId) ?? null;
+  const uniq = (fn: (r: PReq) => string) => Array.from(new Set(reqs.map(fn)));
+
+  const update = (id: string, fn: (r: PReq) => PReq) => setReqs((rs) => rs.map((r) => (r.id === id ? fn(r) : r)));
+  const log = (r: PReq, action: string): PReq => ({ ...r, history: [...r.history, { at: "Now", by: MANAGER, action }] });
+
+  const kpi = {
+    fresh: reqs.filter((r) => r.status === "New").length,
+    info: reqs.filter((r) => r.status === "Information Required").length,
+    acceptedToday: reqs.filter((r) => r.status === "Accepted").length,
+    urgent: reqs.filter((r) => r.priority === "Urgent" && ["New", "Under Review"].includes(r.status)).length,
+    overdueReview: reqs.filter((r) => r.pendingDays > 1 && ["New", "Under Review"].includes(r.status)).length,
+  };
+
+  const duplicates = useMemo(() => {
+    const map = new Map<string, string[]>();
+    reqs
+      .filter((r) => !["Cancelled", "Returned"].includes(r.status))
+      .forEach((r) => {
+        const key = `${r.projectId}|${r.type}|${r.items}|${r.amount}`;
+        map.set(key, [...(map.get(key) ?? []), r.id]);
+      });
+    return Array.from(map.values()).filter((ids) => ids.length > 1);
+  }, [reqs]);
+
+  const dupIds = new Set(duplicates.flat());
+
+  const alerts = [
+    ...reqs.filter((r) => r.priority === "Urgent" && r.status === "New").map((r) => ({ level: "red", t: `${r.id} — Urgent request not reviewed` })),
+    ...reqs.filter((r) => r.pendingDays > 1 && ["New", "Under Review"].includes(r.status)).map((r) => ({ level: "amber", t: `${r.id} — Pending review for ${r.pendingDays} business days` })),
+    ...reqs.filter((r) => ["New", "Under Review"].includes(r.status)).map((r) => ({ level: "amber", t: `${r.id} — Launch date approaching (${r.launchDate})` })),
+    ...reqs.filter((r) => !r.amount || r.amountMissing).map((r) => ({ level: "red", t: `${r.id} — Amount missing or inconsistent` })),
+    ...reqs.filter((r) => r.approvalMissing).map((r) => ({ level: "red", t: `${r.id} — Approval document missing` })),
+    ...reqs.filter((r) => r.contactMissing).map((r) => ({ level: "red", t: `${r.id} — Franchise contact information missing` })),
+    ...duplicates.map((ids) => ({ level: "red", t: `Possible duplicate request: ${ids.join(" & ")}` })),
+    ...reqs.filter((r) => r.responseOverdue).map((r) => ({ level: "amber", t: `${r.id} — Project Coordinator response overdue` })),
+  ];
+
+  const filtered = reqs.filter((r) => {
+    if (tab !== "All Requests" && r.status !== tab) return false;
+    if (q && !`${r.id} ${r.projectId} ${r.store} ${r.owner} ${r.city} ${r.type} ${r.coordinator}`.toLowerCase().includes(q.toLowerCase())) return false;
+    if (fCoord !== "all" && r.coordinator !== fCoord) return false;
+    if (fProject !== "all" && r.projectId !== fProject) return false;
+    if (fOwner !== "all" && r.owner !== fOwner) return false;
+    if (fCity !== "all" && r.city !== fCity) return false;
+    if (fType !== "all" && r.type !== fType) return false;
+    if (fPrio !== "all" && r.priority !== fPrio) return false;
+    if (fStatus !== "all" && r.status !== fStatus) return false;
+    if (fDue && !r.due.toLowerCase().includes(fDue.toLowerCase())) return false;
+    if (fSubmitted && !r.submitted.toLowerCase().includes(fSubmitted.toLowerCase())) return false;
     return true;
   });
 
-  const open = rows.find((r) => r.id === openId) ?? null;
+  const checkedCount = CHECKLIST.filter((c) => checks[c]).length;
+  const checklistDone = checkedCount === CHECKLIST.length;
 
-  const update = (id: string, fn: (r: Req) => Req) =>
-    setRows((rs) => rs.map((r) => (r.id === id ? fn(r) : r)));
-
-  const log = (r: Req, action: string): Req => ({
-    ...r,
-    audit: [...r.audit, { at: "Now", by: "Account Manager", action }],
-  });
-
-  const move = (r: Req, status: Status, action: string) => {
-    update(r.id, (x) => log({ ...x, status }, action));
-    toast.success(`${r.id} → ${status}`);
+  const openRequest = (id: string) => {
+    setOpenId(id);
+    setChecks({});
+    const r = reqs.find((x) => x.id === id);
+    if (r) {
+      setAAmount(String(r.amount));
+      setADue(r.due);
+      setAVyapar(r.acceptance?.vyapar ?? "");
+      setAInstr("");
+      setAFollow("");
+      setAClearance(r.clearanceType === "Not Required" ? "no" : "yes");
+      if (r.status === "New") update(r.id, (x) => log({ ...x, status: "Under Review" }, "Review started"));
+    }
   };
-
-  const stats = {
-    open: rows.filter((r) => OPEN.includes(r.status)).length,
-    newCount: rows.filter((r) => r.status === "New Request").length,
-    verifying: rows.filter((r) => r.status === "Under Verification" || r.status === "Information Requested").length,
-    approvedValue: rows.filter((r) => r.status === "Approved" || r.status === "Payment Scheduled").reduce((s, r) => s + r.amount, 0),
-    paidValue: rows.filter((r) => r.status === "Paid" || r.status === "Closed").reduce((s, r) => s + r.amount, 0),
-    blocked: rows.filter((r) => r.blocksDispatch && OPEN.includes(r.status)).length,
-  };
-
-  const checksDone = open ? open.checks.filter(Boolean).length : 0;
-  const allChecked = checksDone === CHECKLIST.length;
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <SectionHead
-          title="Project Payment Requests"
-          sub="Verify, approve and release payments raised by Project Coordinators, Project Managers, Sales and Logistics."
-        />
-        <Button variant="outline" size="sm" onClick={() => toast.success("Request register exported")}>
-          <Download className="h-4 w-4 mr-2" /> Export Register
-        </Button>
+        <SectionHead title="Project Payment Requests" sub="Requests submitted by Project Coordinators for franchise, machine, consumable and other approved project charges" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input className="pl-8 w-full sm:w-64" placeholder="Search request, project, owner or city" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <Button size="sm" variant="outline" onClick={() => setSubmitOpen(true)}>
+            <FilePlus2 className="h-4 w-4 mr-2" /> Coordinator submission form
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
-        <StatCard label="Open Requests" value={String(stats.open)} />
-        <StatCard label="New (Action Needed)" value={String(stats.newCount)} tone="warn" />
-        <StatCard label="In Verification" value={String(stats.verifying)} />
-        <StatCard label="Approved Value" value={inr(stats.approvedValue)} />
-        <StatCard label="Paid This Month" value={inr(stats.paidValue)} tone="good" />
-        <StatCard label="Blocking Dispatch" value={String(stats.blocked)} tone="bad" />
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <StatCard label="New Requests" value={String(kpi.fresh)} />
+        <StatCard label="Information Required" value={String(kpi.info)} tone="bad" />
+        <StatCard label="Accepted Today" value={String(kpi.acceptedToday)} tone="good" />
+        <StatCard label="Urgent Requests" value={String(kpi.urgent)} tone="bad" />
+        <StatCard label="Overdue for Review" value={String(kpi.overdueReview)} tone="warn" />
       </div>
 
-      {stats.blocked > 0 && (
-        <Card className="border-rose-200 bg-rose-50/60">
-          <CardContent className="pt-4 flex items-start gap-3 text-sm">
-            <ShieldAlert className="h-4 w-4 text-rose-600 mt-0.5" />
-            <div>
-              <div className="font-medium text-rose-800">Attention needed</div>
-              <div className="text-rose-700">
-                {stats.blocked} request(s) are holding machine or material dispatch. Clear these first — store opening dates depend on them.
+      {alerts.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4" /> Attention</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-1.5 md:grid-cols-2 max-h-56 overflow-auto">
+            {alerts.map((a, i) => (
+              <div key={i} className={`text-xs rounded-md border p-2 ${a.level === "red" ? "border-rose-200 bg-rose-50 text-rose-800" : "border-amber-200 bg-amber-50 text-amber-800"}`}>
+                {a.t}
               </div>
-            </div>
+            ))}
           </CardContent>
         </Card>
       )}
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="flex flex-wrap h-auto">
-          <TabsTrigger value="All">All ({rows.length})</TabsTrigger>
-          {STATUSES.map((s) => (
-            <TabsTrigger key={s} value={s}>
-              {s} ({rows.filter((r) => r.status === s).length})
+          {TABS.map((t) => (
+            <TabsTrigger key={t} value={t} className="text-xs">
+              {t}
+              <span className="ml-1 text-muted-foreground">
+                ({t === "All Requests" ? reqs.length : reqs.filter((r) => r.status === t).length})
+              </span>
             </TabsTrigger>
           ))}
         </TabsList>
       </Tabs>
 
+      {/* Filters */}
       <Card>
-        <CardContent className="pt-4">
-          <div className="grid gap-2 md:grid-cols-3 lg:grid-cols-6">
-            <div className="relative md:col-span-3 lg:col-span-1">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input className="pl-8" placeholder="Search ID, store, vendor" value={q} onChange={(e) => setQ(e.target.value)} />
-            </div>
-            <FilterSelect value={store} onChange={setStore} label="All stores" options={stores} />
-            <FilterSelect value={type} onChange={setType} label="All payment types" options={types} />
-            <FilterSelect value={role} onChange={setRole} label="All requesters" options={roles} />
-            <Select value={band} onValueChange={setBand}>
-              <SelectTrigger><SelectValue placeholder="Any amount" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Any amount</SelectItem>
-                <SelectItem value="lt1">Below ₹1L</SelectItem>
-                <SelectItem value="1to5">₹1L – ₹5L</SelectItem>
-                <SelectItem value="gt5">Above ₹5L</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={flag} onValueChange={setFlag}>
-              <SelectTrigger><SelectValue placeholder="All flags" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All flags</SelectItem>
-                <SelectItem value="dispatch">Blocking dispatch</SelectItem>
-                <SelectItem value="budget">Budget risk</SelectItem>
-                <SelectItem value="overdue">Past need-by date</SelectItem>
-              </SelectContent>
-            </Select>
+        <CardContent className="pt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+          <FilterSelect label="Coordinator" value={fCoord} onChange={setFCoord} options={uniq((r) => r.coordinator)} />
+          <FilterSelect label="Franchise project" value={fProject} onChange={setFProject} options={uniq((r) => r.projectId)} />
+          <FilterSelect label="Franchise owner" value={fOwner} onChange={setFOwner} options={uniq((r) => r.owner)} />
+          <FilterSelect label="Store city" value={fCity} onChange={setFCity} options={uniq((r) => r.city)} />
+          <FilterSelect label="Payment type" value={fType} onChange={setFType} options={PAYMENT_TYPES as unknown as string[]} />
+          <FilterSelect label="Priority" value={fPrio} onChange={setFPrio} options={["Normal", "Important", "Urgent"]} />
+          <FilterSelect label="Request status" value={fStatus} onChange={setFStatus} options={["New", "Under Review", "Information Required", "Accepted", "Cancelled", "Returned"]} />
+          <div>
+            <Label className="text-[11px] text-muted-foreground">Due date</Label>
+            <Input className="h-9" placeholder="e.g. Aug" value={fDue} onChange={(e) => setFDue(e.target.value)} />
+          </div>
+          <div>
+            <Label className="text-[11px] text-muted-foreground">Submitted date</Label>
+            <Input className="h-9" placeholder="e.g. 3 Aug" value={fSubmitted} onChange={(e) => setFSubmitted(e.target.value)} />
+          </div>
+          <div className="flex items-end">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setFCoord("all"); setFProject("all"); setFOwner("all"); setFCity("all");
+                setFType("all"); setFPrio("all"); setFStatus("all"); setFDue(""); setFSubmitted("");
+              }}
+            >
+              Clear filters
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Desktop table */}
-      <Card className="hidden md:block">
+      <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Request</TableHead>
-                <TableHead>Store / Project</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Raised by</TableHead>
-                <TableHead>Need by</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((r) => (
-                <TableRow key={r.id} className="cursor-pointer" onClick={() => setOpenId(r.id)}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      {r.id}
-                      {r.blocksDispatch && OPEN.includes(r.status) && <AlertTriangle className="h-3.5 w-3.5 text-rose-600" />}
-                    </div>
-                    <Badge className={`${prTone(r.priority)} mt-1`}>{r.priority}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div>{r.store}</div>
-                    <div className="text-xs text-muted-foreground">{r.project}</div>
-                  </TableCell>
-                  <TableCell className="text-sm">{r.type}</TableCell>
-                  <TableCell className="text-right tabular-nums font-semibold">{inr(r.amount)}</TableCell>
-                  <TableCell className="text-sm">
-                    <div>{r.raisedBy}</div>
-                    <div className="text-xs text-muted-foreground">{r.role}</div>
-                  </TableCell>
-                  <TableCell className="text-sm">{r.needBy}</TableCell>
-                  <TableCell><Badge className={tone(r.status)}>{r.status}</Badge></TableCell>
-                  <TableCell className="text-right">
-                    <Button size="sm" variant="ghost">Open</Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {filtered.length === 0 && (
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">
-                    No requests match these filters.
-                  </TableCell>
+                  <TableHead>Request</TableHead>
+                  <TableHead>Project</TableHead>
+                  <TableHead>Franchise / owner</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>Payment type</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Due</TableHead>
+                  <TableHead>Requested by</TableHead>
+                  <TableHead>Priority</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead />
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((r) => (
+                  <TableRow key={r.id} className={dupIds.has(r.id) ? "bg-rose-50/60" : undefined}>
+                    <TableCell className="font-medium">
+                      {r.id}
+                      {dupIds.has(r.id) && <Badge className="ml-2 bg-rose-100 text-rose-700">Duplicate?</Badge>}
+                    </TableCell>
+                    <TableCell className="text-xs">{r.projectId}</TableCell>
+                    <TableCell className="text-sm">
+                      <div>{r.store}</div>
+                      <div className="text-xs text-muted-foreground">{r.owner}</div>
+                    </TableCell>
+                    <TableCell className="text-sm">{r.city}</TableCell>
+                    <TableCell className="text-sm">{r.type}</TableCell>
+                    <TableCell className="text-right tabular-nums font-semibold">{inr(r.amount)}</TableCell>
+                    <TableCell className="text-sm">{r.due}</TableCell>
+                    <TableCell className="text-xs">{r.coordinator}</TableCell>
+                    <TableCell><Badge className={prioTone(r.priority)}>{r.priority}</Badge></TableCell>
+                    <TableCell><Badge className={statusTone(r.status)}>{r.status}</Badge></TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="ghost" onClick={() => openRequest(r.id)}>Review Request</Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {filtered.length === 0 && (
+                  <TableRow><TableCell colSpan={11} className="text-center text-sm text-muted-foreground py-8">No requests match these filters.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden p-3 space-y-2">
+            {filtered.map((r) => (
+              <div key={r.id} className="border rounded-lg p-3 space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-medium">{r.id}</span>
+                  <Badge className={statusTone(r.status)}>{r.status}</Badge>
+                </div>
+                <div className="text-sm">{r.store} · {r.city}</div>
+                <div className="text-xs text-muted-foreground">{r.projectId} · {r.owner} · {r.type}</div>
+                <div className="text-sm font-semibold tabular-nums">{inr(r.amount)} · due {r.due}</div>
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <div className="flex gap-1">
+                    <Badge className={prioTone(r.priority)}>{r.priority}</Badge>
+                    {dupIds.has(r.id) && <Badge className="bg-rose-100 text-rose-700">Duplicate?</Badge>}
+                  </div>
+                  <Button size="sm" variant="outline" onClick={() => openRequest(r.id)}>Review Request</Button>
+                </div>
+                <div className="text-[11px] text-muted-foreground">Requested by {r.coordinator}</div>
+              </div>
+            ))}
+            {filtered.length === 0 && <div className="text-sm text-muted-foreground text-center py-6">No requests match these filters.</div>}
+          </div>
         </CardContent>
       </Card>
 
-      {/* Mobile cards */}
-      <div className="md:hidden space-y-2">
-        {filtered.map((r) => (
-          <button key={r.id} onClick={() => setOpenId(r.id)} className="w-full text-left border rounded-lg bg-background p-3">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-sm">{r.id} · {r.store}</span>
-              <Badge className={tone(r.status)}>{r.status}</Badge>
-            </div>
-            <div className="text-xs text-muted-foreground mt-1">{r.type} · {r.raisedBy} ({r.role})</div>
-            <div className="flex items-center justify-between mt-2">
-              <span className="tabular-nums font-semibold">{inr(r.amount)}</span>
-              <span className="text-xs flex items-center gap-1 text-muted-foreground">
-                <Clock className="h-3 w-3" /> {r.needBy}
-              </span>
-            </div>
-          </button>
-        ))}
-        {filtered.length === 0 && (
-          <div className="text-center text-sm text-muted-foreground py-8">No requests match these filters.</div>
-        )}
-      </div>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Permissions in force</CardTitle>
+        </CardHeader>
+        <CardContent className="text-xs text-muted-foreground grid gap-1 md:grid-cols-2">
+          <div>Project Coordinators create and view requests for their assigned projects only; they can never mark a payment received or verified.</div>
+          <div>Accounts Manager reviews, accepts, returns or cancels with authorisation.</div>
+          <div>Logistics Executive sees nothing here until dispatch clearance is issued.</div>
+          <div>Contact and payment data is masked; banking passwords, OTPs, card details and UPI PINs are never stored.</div>
+        </CardContent>
+      </Card>
 
+      {/* Review drawer */}
       <Sheet open={!!open} onOpenChange={(o) => !o && setOpenId(null)}>
-        <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+        <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
           {open && (
             <>
               <SheetHeader>
                 <SheetTitle className="flex flex-wrap items-center gap-2">
                   {open.id} · {open.store}
-                  <Badge className={tone(open.status)}>{open.status}</Badge>
-                  <Badge className={prTone(open.priority)}>{open.priority}</Badge>
+                  <Badge className={statusTone(open.status)}>{open.status}</Badge>
+                  <Badge className={prioTone(open.priority)}>{open.priority}</Badge>
                 </SheetTitle>
               </SheetHeader>
 
               <div className="mt-4 space-y-4 text-sm">
-                <div className="grid grid-cols-2 gap-3">
-                  <Field label="Project" value={open.project} />
-                  <Field label="Payment type" value={open.type} />
-                  <Field label="Amount" value={inr(open.amount)} />
-                  <Field label="Need by" value={open.needBy} />
-                  <Field label="Raised by" value={`${open.raisedBy} (${open.role})`} />
-                  <Field label="Raised on" value={open.raisedOn} />
-                  <Field label="Beneficiary" value={open.beneficiary} />
-                  <Field label="Account" value={open.accountMasked} />
-                </div>
-                <p className="text-[11px] text-muted-foreground">
-                  Bank details are masked. Never paste full account numbers, UPI PINs or banking passwords into notes.
-                </p>
-
-                {(open.blocksDispatch || open.budgetRisk) && (
-                  <div className="rounded-md border border-rose-200 bg-rose-50 p-3 text-rose-800 text-xs space-y-1">
-                    {open.blocksDispatch && <div>This payment is blocking dispatch for {open.store}.</div>}
-                    {open.budgetRisk && <div>Budget risk: project budget balance is tight for this amount.</div>}
+                {dupIds.has(open.id) && (
+                  <div className="rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-800">
+                    Possible duplicate of {duplicates.find((ids) => ids.includes(open.id))?.filter((i) => i !== open.id).join(", ")} — same project, payment type, items and amount. Confirm before accepting.
                   </div>
                 )}
 
-                <Separator />
+                <div className="grid grid-cols-2 gap-3">
+                  <F label="Payment Request ID" v={open.id} />
+                  <F label="Project ID" v={open.projectId} />
+                  <F label="Franchise owner" v={open.owner} />
+                  <F label="Mobile" v={open.mobileMasked} />
+                  <F label="Email" v={open.emailMasked} />
+                  <F label="City / state" v={`${open.city}, ${open.state}`} />
+                  <F label="Project Coordinator" v={open.coordinator} />
+                  <F label="Payment type" v={open.type} />
+                  <F label="Payment purpose" v={open.purpose} />
+                  <F label="Item or service description" v={open.items} />
+                  <F label="Amount" v={inr(open.amount)} />
+                  <F label="Tax information reference" v={open.taxRef} />
+                  <F label="Payment due date" v={open.due} />
+                  <F label="Required clearance type" v={open.clearanceType} />
+                  <F label="Planned launch date" v={open.launchDate} />
+                  <F label="Quotation / approval" v={open.quotation} />
+                  <F label="Special instructions" v={open.instructions || "—"} />
+                  <F label="Submitted on" v={open.submitted} />
+                </div>
 
+                <Separator />
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="font-medium">Verification checklist</div>
-                    <span className="text-xs text-muted-foreground">{checksDone}/{CHECKLIST.length}</span>
-                  </div>
-                  <Progress value={(checksDone / CHECKLIST.length) * 100} className="h-2 mb-3" />
+                  <div className="font-medium mb-2">Accounts review checklist ({checkedCount}/{CHECKLIST.length})</div>
                   <div className="space-y-2">
-                    {CHECKLIST.map((c, i) => (
-                      <label key={c} className="flex items-start gap-2">
-                        <Checkbox
-                          checked={open.checks[i]}
-                          onCheckedChange={(v) =>
-                            update(open.id, (r) => {
-                              const checks = [...r.checks];
-                              checks[i] = !!v;
-                              return checks[i] ? log({ ...r, checks }, `Checked: ${c}`) : { ...r, checks };
-                            })
-                          }
-                        />
-                        <span className="leading-tight">{c}</span>
+                    {CHECKLIST.map((c) => (
+                      <label key={c} className="flex items-start gap-2 text-xs">
+                        <Checkbox checked={!!checks[c]} onCheckedChange={(v) => setChecks((p) => ({ ...p, [c]: !!v }))} />
+                        <span>{c}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
                 <Separator />
-
-                <div className="space-y-2">
-                  <div className="font-medium">Actions</div>
-                  <div className="flex flex-wrap gap-2">
-                    {open.status === "New Request" && (
-                      <Button size="sm" onClick={() => move(open, "Under Verification", "Started verification")}>
-                        Start Verification
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      disabled={!allChecked || ["Approved", "Payment Scheduled", "Paid", "Closed"].includes(open.status)}
-                      onClick={() => move(open, "Approved", "Verified and approved")}
-                    >
-                      Approve
-                    </Button>
-                    {open.status === "Approved" && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => {
-                          if (!payDate) return toast.error("Add a payment date first");
-                          move(open, "Payment Scheduled", `Payment scheduled ${payDate} (${payMode})`);
-                        }}
-                      >
-                        Schedule Payment
-                      </Button>
-                    )}
-                    {(open.status === "Payment Scheduled" || open.status === "Approved") && (
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={() => {
-                          if (utr.trim().length < 4) return toast.error("Enter the transaction reference");
-                          move(open, "Paid", `Marked paid (ref ${"XXXXXX" + utr.trim().slice(-4)})`);
-                          setUtr("");
-                        }}
-                      >
-                        Mark Paid
-                      </Button>
-                    )}
-                    {open.status === "Paid" && (
-                      <Button size="sm" variant="secondary" onClick={() => move(open, "Closed", "Closed after requester confirmation")}>
-                        Close Request
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (!infoText.trim()) return toast.error("Write what information is missing");
-                        update(open.id, (r) =>
-                          log(
-                            {
-                              ...r,
-                              status: "Information Requested",
-                              notes: [...r.notes, { at: "Now", by: "Account Manager", text: infoText.trim() }],
-                            },
-                            `Information requested: ${infoText.trim()}`,
-                          ),
-                        );
-                        toast.success(`Sent back to ${open.raisedBy}`);
-                        setInfoText("");
-                      }}
-                    >
-                      Ask for Information
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => {
-                      if (!reason.trim()) return toast.error("Add a hold reason");
-                      update(open.id, (r) => log({ ...r, status: "On Hold", notes: [...r.notes, { at: "Now", by: "Account Manager", text: reason.trim() }] }, `Put on hold: ${reason.trim()}`));
-                      toast.success(`${open.id} put on hold`);
-                      setReason("");
-                    }}>
-                      Put On Hold
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => {
-                      if (!reason.trim()) return toast.error("Rejection reason is required");
-                      update(open.id, (r) => log({ ...r, status: "Rejected", notes: [...r.notes, { at: "Now", by: "Account Manager", text: reason.trim() }] }, `Rejected: ${reason.trim()}`));
-                      toast.success(`${open.id} rejected and returned`);
-                      setReason("");
-                    }}>
-                      Reject
-                    </Button>
-                  </div>
-                  {!allChecked && (
-                    <p className="text-xs text-amber-700">
-                      Approval unlocks only after all {CHECKLIST.length} verification points are ticked.
-                    </p>
-                  )}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    disabled={!checklistDone || ["Accepted", "Cancelled"].includes(open.status)}
+                    onClick={() => {
+                      if (dupIds.has(open.id)) {
+                        setDupWarn({
+                          existing: duplicates.find((ids) => ids.includes(open.id))?.filter((i) => i !== open.id).join(", ") ?? "",
+                          onOk: () => setAcceptOpen(true),
+                        });
+                        return;
+                      }
+                      setAcceptOpen(true);
+                    }}
+                  >
+                    Accept Request
+                  </Button>
+                  <Button size="sm" variant="outline" disabled={open.status === "Accepted"} onClick={() => setInfoOpen(true)}>Ask for Information</Button>
+                  <Button size="sm" variant="outline" onClick={() => setReturnOpen("Return Request")}>Return Request</Button>
+                  <Button size="sm" variant="destructive" onClick={() => setReturnOpen("Cancel with Authorisation")}>Cancel with Authorisation</Button>
+                  <Button size="sm" variant="ghost" onClick={() => toast.info(`Opening project ${open.projectId}`)}>View Project</Button>
                 </div>
+                {!checklistDone && !["Accepted", "Cancelled"].includes(open.status) && (
+                  <p className="text-[11px] text-muted-foreground">Complete all nine checklist points to enable acceptance.</p>
+                )}
 
-                <div className="grid gap-3">
-                  <div>
-                    <Label className="text-xs">Information / clarification needed</Label>
-                    <Textarea rows={2} value={infoText} onChange={(e) => setInfoText(e.target.value)} placeholder="e.g. Attach vendor invoice with GST number" />
+                {open.acceptance && (
+                  <div className="rounded-md border p-3 text-xs space-y-1 bg-emerald-50/60">
+                    <div className="font-medium text-emerald-800">Accepted — now in Payment Follow-ups &amp; Verification</div>
+                    <div>Accepted by {open.acceptance.by} · {inr(open.acceptance.amount)} · due {open.acceptance.due}</div>
+                    <div>Vyapar invoice: {open.acceptance.vyapar || "to be created"} · First follow-up: {open.acceptance.firstFollowUp || "—"}</div>
+                    <div>Dispatch clearance required: {open.acceptance.clearanceRequired ? "Yes" : "No"}</div>
+                    {open.acceptance.instructions && <div>Payment instructions: {open.acceptance.instructions}</div>}
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs">Payment mode</Label>
-                      <Select value={payMode} onValueChange={setPayMode}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {["NEFT", "RTGS", "IMPS", "UPI", "Cheque"].map((m) => (
-                            <SelectItem key={m} value={m}>{m}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs">Payment date</Label>
-                      <Input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs">Transaction reference (stored masked)</Label>
-                    <Input value={utr} onChange={(e) => setUtr(e.target.value)} placeholder="UTR / cheque no." />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Hold / rejection reason</Label>
-                    <Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason visible to the requester" />
-                  </div>
-                </div>
+                )}
 
                 <Separator />
-
                 <div>
-                  <div className="font-medium mb-2">Notes</div>
-                  <div className="space-y-2">
-                    {open.notes.length === 0 && <div className="text-xs text-muted-foreground">No notes yet.</div>}
-                    {open.notes.map((n, i) => (
-                      <div key={i} className="rounded-md border p-2 text-xs">
-                        <div className="text-muted-foreground">{n.by} · {n.at}</div>
-                        <div>{n.text}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="font-medium mb-2">Audit log</div>
+                  <div className="font-medium mb-2">Activity history</div>
                   <div className="space-y-1 text-xs text-muted-foreground">
-                    {open.audit.map((a, i) => (
-                      <div key={i}>• {a.at} — {a.by}: {a.action}</div>
-                    ))}
+                    {open.history.map((h, i) => (<div key={i}>• {h.at} — {h.by}: {h.action}</div>))}
                   </div>
                 </div>
               </div>
@@ -643,49 +618,259 @@ export function AmPaymentRequests() {
         </SheetContent>
       </Sheet>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">How requests are handled</CardTitle>
-        </CardHeader>
-        <CardContent className="text-xs text-muted-foreground space-y-1">
-          <div>New Request → Under Verification → Approved → Payment Scheduled → Paid → Closed. Information Requested, On Hold and Rejected return the request to the requester.</div>
-          <div>Every status change, checklist tick and reason is recorded in the audit log with the person and time.</div>
-          <div>Bank and transaction details are masked; full details stay with Accounts records only.</div>
-        </CardContent>
-      </Card>
+      {/* Accept dialog */}
+      <Dialog open={acceptOpen} onOpenChange={setAcceptOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Accept payment request</DialogTitle>
+            <DialogDescription>The same Payment Request ID continues into Payment Follow-ups &amp; Verification.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label className="text-xs">Accounts Manager</Label><Input value={MANAGER} readOnly /></div>
+            <div><Label className="text-xs">Accepted amount</Label><Input value={aAmount} onChange={(e) => setAAmount(e.target.value)} /></div>
+            <div><Label className="text-xs">Payment due date</Label><Input value={aDue} onChange={(e) => setADue(e.target.value)} /></div>
+            <div><Label className="text-xs">Vyapar invoice (if available)</Label><Input value={aVyapar} onChange={(e) => setAVyapar(e.target.value)} placeholder="VY-INV-…" /></div>
+            <div><Label className="text-xs">First follow-up date</Label><Input value={aFollow} onChange={(e) => setAFollow(e.target.value)} placeholder="e.g. 7 Aug 2026" /></div>
+            <div>
+              <Label className="text-xs">Dispatch clearance required</Label>
+              <Select value={aClearance} onValueChange={setAClearance}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="yes">Yes</SelectItem><SelectItem value="no">No</SelectItem></SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2">
+              <Label className="text-xs">Payment instructions</Label>
+              <Textarea rows={2} value={aInstr} onChange={(e) => setAInstr(e.target.value)} placeholder="Bank transfer details are shared securely — never record OTPs or PINs." />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAcceptOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (!open) return;
+                if (!aAmount || !aDue) return toast.error("Accepted amount and due date are required");
+                update(open.id, (r) =>
+                  log(
+                    {
+                      ...r,
+                      status: "Accepted",
+                      amount: Number(aAmount) || r.amount,
+                      due: aDue,
+                      acceptance: {
+                        by: MANAGER, amount: Number(aAmount) || r.amount, due: aDue, vyapar: aVyapar,
+                        instructions: aInstr, firstFollowUp: aFollow, clearanceRequired: aClearance === "yes",
+                      },
+                    },
+                    `Request accepted — ${inr(Number(aAmount) || 0)}, moved to Payment Follow-ups & Verification`,
+                  ),
+                );
+                toast.success(`${open.id} accepted and moved to Follow-ups & Verification`);
+                setAcceptOpen(false);
+              }}
+            >
+              Accept &amp; move forward
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ask for information */}
+      <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ask for information</DialogTitle>
+            <DialogDescription>The Project Coordinator responds inside the same Payment Request ID.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            {["Correct amount", "Approval or quotation", "Franchise contact details", "Item details", "Payment purpose", "Due date", "Launch date", "Other clarification"].map((i) => (
+              <label key={i} className="flex items-center gap-2 text-sm">
+                <Checkbox
+                  checked={infoItems.includes(i)}
+                  onCheckedChange={(v) => setInfoItems((p) => (v ? [...p, i] : p.filter((x) => x !== i)))}
+                />
+                {i}
+              </label>
+            ))}
+            <Textarea rows={2} value={infoNote} onChange={(e) => setInfoNote(e.target.value)} placeholder="Note for the Project Coordinator" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInfoOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (!open) return;
+                if (infoItems.length === 0) return toast.error("Select at least one item");
+                update(open.id, (r) => log({ ...r, status: "Information Required", responseOverdue: false }, `Information requested: ${infoItems.join(", ")}${infoNote ? ` — ${infoNote}` : ""}`));
+                toast.success("Information request sent to the Project Coordinator");
+                setInfoItems([]); setInfoNote(""); setInfoOpen(false);
+              }}
+            >
+              Send request
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Return / cancel */}
+      <Dialog open={!!returnOpen} onOpenChange={(o) => !o && setReturnOpen(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{returnOpen}</DialogTitle>
+            <DialogDescription>The request is never deleted — full history is preserved.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div><Label className="text-xs">Reason</Label><Input value={rReason} onChange={(e) => setRReason(e.target.value)} /></div>
+            <div><Label className="text-xs">Authorised person</Label><Input value={rAuth} onChange={(e) => setRAuth(e.target.value)} placeholder="e.g. COO — Vikram Shah" /></div>
+            <div><Label className="text-xs">Supporting note</Label><Textarea rows={2} value={rNote} onChange={(e) => setRNote(e.target.value)} /></div>
+            <div className="text-xs text-muted-foreground">Date and time will be recorded automatically.</div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReturnOpen(null)}>Close</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (!open) return;
+                if (!rReason.trim() || !rAuth.trim()) return toast.error("Reason and authorised person are required");
+                const cancel = returnOpen === "Cancel with Authorisation";
+                update(open.id, (r) => log({ ...r, status: cancel ? "Cancelled" : "Returned" }, `${returnOpen} — ${rReason.trim()} (authorised by ${rAuth.trim()})${rNote ? ` · ${rNote}` : ""}`));
+                toast.success(`${open.id} ${cancel ? "cancelled" : "returned"} with full history preserved`);
+                setRReason(""); setRAuth(""); setRNote(""); setReturnOpen(null);
+              }}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Duplicate confirmation */}
+      <Dialog open={!!dupWarn} onOpenChange={(o) => !o && setDupWarn(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Possible duplicate request</DialogTitle>
+            <DialogDescription>
+              An active request with the same project, payment type, items and amount already exists: {dupWarn?.existing}. Continue only if this is a genuinely separate payment.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDupWarn(null)}>Go back</Button>
+            <Button
+              onClick={() => {
+                dupWarn?.onOk();
+                setDupWarn(null);
+              }}
+            >
+              Confirm and continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Coordinator submission form */}
+      <Dialog open={submitOpen} onOpenChange={setSubmitOpen}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Project Coordinator submission</DialogTitle>
+            <DialogDescription>Coordinators may only request payment — they can never mark it received or verified.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <Label className="text-xs">Franchise project</Label>
+              <Select value={nProject} onValueChange={setNProject}>
+                <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
+                <SelectContent>
+                  {Array.from(new Set(reqs.map((r) => `${r.projectId} · ${r.store}`))).map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Payment type</Label>
+              <Select value={nType} onValueChange={(v) => setNType(v as PaymentType)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{PAYMENT_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Priority</Label>
+              <Select value={nPrio} onValueChange={(v) => setNPrio(v as Priority)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>{["Normal", "Important", "Urgent"].map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="col-span-2"><Label className="text-xs">Purpose</Label><Input value={nPurpose} onChange={(e) => setNPurpose(e.target.value)} /></div>
+            <div className="col-span-2"><Label className="text-xs">Machine or consumable items (if applicable)</Label><Textarea rows={2} value={nItems} onChange={(e) => setNItems(e.target.value)} /></div>
+            <div><Label className="text-xs">Approved amount (₹)</Label><Input value={nAmount} onChange={(e) => setNAmount(e.target.value)} /></div>
+            <div><Label className="text-xs">Due date</Label><Input value={nDue} onChange={(e) => setNDue(e.target.value)} placeholder="e.g. 12 Aug 2026" /></div>
+            <div><Label className="text-xs">Planned launch date</Label><Input value={nLaunch} onChange={(e) => setNLaunch(e.target.value)} placeholder="e.g. 20 Sep 2026" /></div>
+            <div><Label className="text-xs">Quotation / approval reference</Label><Input value={nQuote} onChange={(e) => setNQuote(e.target.value)} /></div>
+            <div className="col-span-2"><Label className="text-xs">Notes for Accounts Manager</Label><Textarea rows={2} value={nNotes} onChange={(e) => setNNotes(e.target.value)} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSubmitOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (!nProject || !nPurpose.trim() || !nAmount || !nDue) return toast.error("Project, purpose, amount and due date are required");
+                const [projectId, store] = nProject.split(" · ");
+                const base = reqs.find((r) => r.projectId === projectId);
+                const amount = Number(nAmount) || 0;
+                const dup = reqs.find(
+                  (r) => r.projectId === projectId && r.type === nType && r.amount === amount && !["Cancelled", "Returned"].includes(r.status),
+                );
+                const create = () => {
+                  const id = `PAY-${3112 + reqs.length}`;
+                  setReqs((rs) => [
+                    {
+                      id, projectId, store, owner: base?.owner ?? "New franchise owner",
+                      mobileMasked: base?.mobileMasked ?? "+91 9XXXXXXXXX", emailMasked: base?.emailMasked ?? "own****@mail.com",
+                      city: base?.city ?? "—", state: base?.state ?? "—", coordinator: "Rahul Sharma",
+                      type: nType, purpose: nPurpose.trim(), items: nItems.trim() || "Not applicable",
+                      amount, taxRef: "As per approved quotation", due: nDue,
+                      clearanceType: nType === "Machine Payment" ? "Machine Dispatch" : nType === "Consumables Payment" ? "Consumable Dispatch" : "Not Required",
+                      launchDate: nLaunch || "—", quotation: nQuote || "Pending", instructions: nNotes.trim(),
+                      priority: nPrio, status: "New", submitted: "4 Aug 2026", pendingDays: 0,
+                      history: [{ at: "Now", by: "Rahul Sharma (Project Coordinator)", action: "Request submitted to Accounts" }],
+                    },
+                    ...rs,
+                  ]);
+                  toast.success(`${id} submitted to Accounts`);
+                  setSubmitOpen(false);
+                  setNProject(""); setNPurpose(""); setNItems(""); setNAmount(""); setNDue(""); setNLaunch(""); setNQuote(""); setNNotes("");
+                  setTab("New");
+                };
+                if (dup) setDupWarn({ existing: dup.id, onOk: create });
+                else create();
+              }}
+            >
+              Submit to Accounts
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
-function FilterSelect({
-  value,
-  onChange,
-  label,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  label: string;
-  options: string[];
-}) {
+function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger><SelectValue placeholder={label} /></SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">{label}</SelectItem>
-        {options.map((o) => (
-          <SelectItem key={o} value={o}>{o}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <div>
+      <Label className="text-[11px] text-muted-foreground">{label}</Label>
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All</SelectItem>
+          {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function F({ label, v }: { label: string; v: string }) {
   return (
     <div>
       <div className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</div>
-      <div className="font-medium">{value}</div>
+      <div className="font-medium break-words">{v}</div>
     </div>
   );
 }
