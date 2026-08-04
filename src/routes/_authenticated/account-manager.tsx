@@ -17,12 +17,12 @@ import {
 } from "lucide-react";
 import {
   AmDashboard,
-  AmPaymentRequests,
   AmFollowups,
   AmDispatchClearance,
   AmBillingPos,
   AmPerformance,
 } from "@/components/account-manager/pages";
+import { AmPaymentRequests } from "@/components/account-manager/payment-requests";
 
 export const Route = createFileRoute("/_authenticated/account-manager")({
   head: () => ({
