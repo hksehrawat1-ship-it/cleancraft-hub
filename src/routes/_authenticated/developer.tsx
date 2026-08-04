@@ -23,10 +23,10 @@ import {
   DevProjectTasks,
   DevStorePos,
   DevBugs,
-  DevReleases,
   DevDocs,
   DevPerformance,
 } from "@/components/developer/pages";
+import { DevReleases } from "@/components/developer/releases";
 
 export const Route = createFileRoute("/_authenticated/developer")({
   head: () => ({
