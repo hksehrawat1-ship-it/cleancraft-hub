@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1817,5 +1817,3 @@ export const SEVERITY_GUIDE: Record<string, string> = {
   Medium: "Feature affected but workaround available",
   Low: "Minor visual or usability issue",
 };
-
-export { Card as _Card, CardHeader as _CardHeader, CardTitle as _CardTitle };
