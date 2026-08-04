@@ -101,7 +101,7 @@ function VideoEditorDashboard() {
         </div>
         <main className="p-4 md:p-6 overflow-auto">
           {active === "dashboard" && <VeDashboardPage onGoTo={(k) => setActive(k as SectionKey)} />}
-          {active === "videos" && <VeMyVideosPage />}
+          {active === "videos" && <VeMyVideosPage onGoTo={(k) => setActive(k as SectionKey)} />}
           {active === "submit" && <VeSubmitPage />}
           {active === "corrections" && <VeCorrectionsPage />}
           {active === "assets" && <VeAssetsPage />}

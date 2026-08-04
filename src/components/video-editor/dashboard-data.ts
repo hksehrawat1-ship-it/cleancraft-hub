@@ -65,7 +65,47 @@ export type VeRecord = {
   startedAt?: string;
   corrections: VeCorrectionRound[];
   versions: VeVersion[];
+  objective?: string;
+  audience?: string;
+  script?: string;
+  audioFiles?: { name: string; size: string }[];
+  brandAssets?: string[];
+  conflictingInstructions?: string;
+  timeline?: { at: string; who: string; what: string }[];
 };
+
+export type VeRequirements = {
+  orientation: string;
+  resolution: string;
+  aspectRatio: string;
+  duration: string;
+  subtitles: string;
+  logo: string;
+  music: string;
+  cta: string;
+  exportFormat: string;
+  platformNotes: string;
+};
+
+/** Derived from the shared record - no separate requirement records exist. */
+export function requirementsFor(r: VeRecord): VeRequirements {
+  const vertical = /Reel|Short|Story/i.test(`${r.contentType} ${r.platform}`);
+  return {
+    orientation: vertical ? "Vertical" : "Horizontal",
+    resolution: vertical ? "1080 x 1920" : "1920 x 1080",
+    aspectRatio: vertical ? "9:16" : "16:9",
+    duration: r.durationRequired,
+    subtitles: vertical ? "Burned-in, Hindi + English" : "Burned-in English, Hindi optional",
+    logo: vertical ? "Top-right, inside safe area" : "Bottom-right, full run",
+    music: "Approved licensed library only, -18dB under voice",
+    cta:
+      r.contentType === "Advertisement" || r.contentType === "Franchise Video"
+        ? "Franchise enquiry CTA + end card"
+        : "Follow + store locator end card",
+    exportFormat: vertical ? "H.264 MP4, 25fps, under 200MB" : "H.264 MP4, 25fps, high bitrate",
+    platformNotes: `${r.platform} — keep captions clear of platform UI, first 3s must hold the hook.`,
+  };
+}
 
 export const EDITOR_NAME = "Rohit Verma";
 
@@ -373,4 +413,75 @@ export function buildAlerts(records: VeRecord[]): VeAlert[] {
       alerts.push({ text: `Waiting too long for review — ${r.title}`, tone: "info", contentId: r.contentId });
   }
   return alerts;
+}
+
+export const BRANDS = Array.from(new Set(VE_RECORDS.map((r) => r.brand)));
+export const CONTENT_TYPES = Array.from(new Set(VE_RECORDS.map((r) => r.contentType)));
+export const PLATFORMS = Array.from(new Set(VE_RECORDS.map((r) => r.platform)));
+export const ASSIGNERS = Array.from(new Set(VE_RECORDS.map((r) => r.assignedBy)));
+export const ALL_STATUSES: VeStatus[] = [
+  "New",
+  "Assigned",
+  "Editing",
+  "Ready for Review",
+  "Submitted for Review",
+  "Correction Required",
+  "Resubmitted",
+  "Approved",
+  "Scheduled",
+  "Published",
+  "Cancelled",
+];
+
+export function currentVersion(r: VeRecord) {
+  return r.versions.length ? r.versions[r.versions.length - 1].version : "—";
+}
+
+export function detailsFor(r: VeRecord) {
+  return {
+    objective:
+      r.objective ??
+      (r.contentType === "Advertisement"
+        ? "Drive franchise enquiries from paid traffic."
+        : r.contentType === "Testimonial"
+        ? "Build trust using real customer proof."
+        : r.contentType === "Training Video"
+        ? "Train store staff on standard operating steps."
+        : "Grow reach and enquiries for Clean Craft stores."),
+    audience:
+      r.audience ??
+      (r.brand.includes("Franchise")
+        ? "Business owners and investors, 28-45, tier 1-2 cities"
+        : r.brand.includes("Training")
+        ? "Store owners and store staff"
+        : "Urban households and premium laundry customers"),
+    script:
+      r.script ??
+      "Approved script / caption is attached in the brief folder. Do not change pricing, offer or claim text.",
+    audioFiles: r.audioFiles ?? [
+      { name: `${r.contentId}_voiceover.wav`, size: "180 MB" },
+      { name: "approved_bgm_track_04.mp3", size: "8 MB" },
+    ],
+    brandAssets: r.brandAssets ?? [
+      "Logo pack (PNG, SVG, animated MOGRT)",
+      "Brand fonts — Poppins + Anek Devanagari",
+      "Lower-third + end card templates",
+    ],
+    timeline:
+      r.timeline ??
+      [
+        { at: "Assigned", who: r.assignedBy, what: `Video assigned with brief and raw files (${r.contentId})` },
+        ...(r.startedAt ? [{ at: r.startedAt, who: EDITOR_NAME, what: "Editing started — start time recorded" }] : []),
+        ...r.versions.map((v) => ({
+          at: v.submittedOn,
+          who: EDITOR_NAME,
+          what: `${v.version} submitted for review`,
+        })),
+        ...r.corrections.map((c) => ({
+          at: c.raisedOn,
+          who: c.reviewer,
+          what: `Correction raised on ${c.version} (${c.points.length} points)`,
+        })),
+      ],
+  };
 }
