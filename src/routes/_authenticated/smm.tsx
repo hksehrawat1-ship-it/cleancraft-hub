@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -20,8 +17,6 @@ import {
   BarChart3,
   FolderOpen,
   TrendingUp,
-  AlertTriangle,
-  Megaphone,
 } from "lucide-react";
 import { SmmContentQueuePage } from "@/components/smm/content-queue";
 import { SmmReviewPage } from "@/components/smm/review-approval";
@@ -31,8 +26,7 @@ import { SmmLeadsPage } from "@/components/smm/leads";
 import { SmmAnalyticsPage } from "@/components/smm/analytics";
 import { SmmTasksResourcesPage } from "@/components/smm/tasks-resources";
 import { SmmPerformancePage } from "@/components/smm/performance";
-import { SectionHead } from "@/components/smm/ui";
-import { CONTENT_QUEUE, SOCIAL_LEADS, APPROVALS } from "@/components/smm/data";
+import { SmmManagerDashboard } from "@/components/smm/manager-dashboard";
 
 export const Route = createFileRoute("/_authenticated/smm")({
   head: () => ({
@@ -124,7 +118,7 @@ function SmmDashboard() {
           </Select>
         </div>
         <main className="p-4 md:p-6 overflow-auto">
-          {active === "dashboard" && <DashboardSection />}
+          {active === "dashboard" && <SmmManagerDashboard onNavigate={(k) => setActive(k as SectionKey)} />}
           {active === "queue" && <SmmContentQueuePage />}
           {active === "review" && <SmmReviewPage />}
           {active === "calendar" && <SmmCalendarPage />}
@@ -134,106 +128,6 @@ function SmmDashboard() {
           {active === "tasks" && <SmmTasksResourcesPage />}
           {active === "performance" && <SmmPerformancePage />}
         </main>
-      </div>
-    </div>
-  );
-}
-
-function DashboardSection() {
-  const inProduction = CONTENT_QUEUE.filter((c) =>
-    ["Script", "Design", "Editing"].includes(c.stage),
-  ).length;
-  const pendingApproval = APPROVALS.filter((a) => a.status === "Pending").length;
-  const newLeads = SOCIAL_LEADS.filter((l) => l.status === "New").length;
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Megaphone className="w-5 h-5 text-primary" />
-        <SectionHead title="Dashboard" sub="Your content engine at a glance — today." />
-      </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        {[
-          { l: "Planned This Week", v: "12", s: "11 published" },
-          { l: "In Production", v: String(inProduction), s: "Script / Design / Editing" },
-          { l: "Pending Approval", v: String(pendingApproval), s: "Waiting on leadership" },
-          { l: "Leads to Hand Over", v: String(newLeads), s: "From DMs & comments" },
-        ].map((k) => (
-          <Card key={k.l}>
-            <CardContent className="p-4">
-              <div className="text-xs text-muted-foreground">{k.l}</div>
-              <div className="text-3xl font-bold tabular-nums mt-1">{k.v}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">{k.s}</div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Calendar completion — this week</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-end gap-6">
-            <div>
-              <div className="text-[11px] uppercase text-muted-foreground">Planned</div>
-              <div className="text-2xl font-bold tabular-nums">12</div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase text-muted-foreground">Published</div>
-              <div className="text-2xl font-bold tabular-nums">11</div>
-            </div>
-            <div>
-              <div className="text-[11px] uppercase text-muted-foreground">Completion</div>
-              <div className="text-2xl font-bold tabular-nums text-emerald-600">92%</div>
-            </div>
-          </div>
-          <Progress value={92} className="h-2 mt-3" />
-        </CardContent>
-      </Card>
-
-      <div className="grid lg:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-base">Today's focus</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {[
-              { t: "Jaipur owner reel stuck in editing since 2 days", tone: "text-destructive" },
-              { t: `${pendingApproval} items waiting for CEO / Sales Head approval`, tone: "text-amber-600" },
-              { t: `${newLeads} new leads not yet handed to sales`, tone: "text-amber-600" },
-              { t: "2 open slots in this week's calendar", tone: "text-muted-foreground" },
-            ].map((r) => (
-              <div key={r.t} className="flex items-center gap-2 text-sm">
-                <AlertTriangle className={`h-4 w-4 ${r.tone}`} />
-                <span>{r.t}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-base">Content produced this week</CardTitle></CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { l: "Reels", v: 8 },
-                { l: "Carousels", v: 3 },
-                { l: "Posts", v: 2 },
-                { l: "Stories", v: 14 },
-              ].map((p) => (
-                <div key={p.l} className="border rounded-md p-3 bg-muted/20">
-                  <div className="text-xs text-muted-foreground">{p.l}</div>
-                  <div className="text-2xl font-semibold tabular-nums mt-1">{p.v}</div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-2 mt-3">
-              <Badge variant="outline">Instagram 42 leads</Badge>
-              <Badge variant="outline">YouTube 18 leads</Badge>
-              <Badge variant="outline">Facebook 7 leads</Badge>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
