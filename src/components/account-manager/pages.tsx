@@ -2,16 +2,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SectionHead, StatCard } from "@/components/smm/ui";
-import {
-  IndianRupee,
-  Wallet,
-  Clock,
-  CheckCircle2,
-  Truck,
-  Receipt,
-  AlertTriangle,
-  TrendingUp,
-} from "lucide-react";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
