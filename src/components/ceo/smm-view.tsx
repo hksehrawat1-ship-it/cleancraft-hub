@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -49,15 +50,21 @@ export function SmmCeoView() {
 function SmmDashboardBody() {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Megaphone className="w-5 h-5 text-primary" />
-        <div>
-          <h2 className="text-xl font-semibold">Social Media Account Manager</h2>
-          <p className="text-xs text-muted-foreground">
-            Revenue Engine · Content calendar & lead contribution
-          </p>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Megaphone className="w-5 h-5 text-primary" />
+          <div>
+            <h2 className="text-xl font-semibold">Social Media Account Manager</h2>
+            <p className="text-xs text-muted-foreground">
+              Revenue Engine · Content calendar & lead contribution
+            </p>
+          </div>
         </div>
+        <Button asChild size="sm">
+          <Link to="/smm">Open Social Media Dashboard</Link>
+        </Button>
       </div>
+
 
       {/* 1. Content Calendar Completion */}
       <Card>
