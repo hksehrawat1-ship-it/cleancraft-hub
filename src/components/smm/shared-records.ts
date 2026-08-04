@@ -456,3 +456,178 @@ export const AUDIT_LOG = [
 ];
 
 export const MANAGER_NAME = "Priya Nanda";
+
+/* ---- Editor workload (front-end sample, no auto-assignment) ---- */
+export type EditorWorkload = {
+  name: string;
+  activeCount: number;
+  dueToday: number;
+  overdue: number;
+  availability: "Available" | "Busy" | "Overloaded" | "On Leave";
+};
+
+export const EDITOR_WORKLOAD: EditorWorkload[] = [
+  { name: "Rohit Sharma", activeCount: 4, dueToday: 2, overdue: 0, availability: "Busy" },
+  { name: "Neha Verma", activeCount: 3, dueToday: 1, overdue: 0, availability: "Available" },
+  { name: "Imran Qureshi", activeCount: 5, dueToday: 1, overdue: 1, availability: "Overloaded" },
+  { name: "Sahil Kapoor", activeCount: 1, dueToday: 0, overdue: 0, availability: "Available" },
+  { name: "Ritu Malhotra", activeCount: 0, dueToday: 0, overdue: 0, availability: "On Leave" },
+];
+
+export const CAMPAIGNS = [
+  "Franchise Aug — Reel Ads",
+  "Service Awareness",
+  "Webinar Promo",
+  "Festive Offer",
+  "B2B Corporate Laundry",
+  "Machine Tour Organic",
+];
+
+export const BRANDS = ["Clean Craft Franchise", "Clean Craft Services"];
+
+export const CONTENT_TYPES: ContentType[] = [
+  "Reel",
+  "Carousel",
+  "Static Post",
+  "Story",
+  "Long Video",
+  "Short",
+];
+
+export const PLATFORMS: SmPlatform[] = [
+  "Instagram",
+  "Facebook",
+  "YouTube",
+  "LinkedIn",
+  "X",
+  "Other",
+];
+
+export const FILE_SLOTS = [
+  "Raw videos",
+  "Raw audio",
+  "Script",
+  "Product images",
+  "Logo",
+  "Reference videos",
+  "Thumbnail reference",
+  "Supporting documents",
+];
+
+/* Per-content extras used by the Content Queue detail drawer */
+export type ContentExtras = {
+  campaign: string;
+  briefVersion: number;
+  objective: string;
+  audience: string;
+  keyMessage: string;
+  duration: string;
+  orientation: "Vertical 9:16" | "Square 1:1" | "Horizontal 16:9";
+  cta: string;
+  captionNeeds: string;
+  subtitleNeeds: string;
+  brandingNeeds: string;
+  musicDirection: string;
+  extraNotes: string;
+  files: Record<string, boolean>;
+  previousEditors: string[];
+  reviewerComments: { at: string; by: string; text: string }[];
+  corrections: { at: string; version: string; points: string[] }[];
+  publishedLink?: string;
+  leadsGenerated: number;
+  timeline: { at: string; by: string; event: string }[];
+};
+
+const filesAll = (present: string[]): Record<string, boolean> =>
+  Object.fromEntries(FILE_SLOTS.map((f) => [f, present.includes(f)]));
+
+export const CONTENT_EXTRAS: Record<string, ContentExtras> = {
+  "CC-CN-1041": {
+    campaign: "Franchise Aug — Reel Ads",
+    briefVersion: 2,
+    objective: "Drive franchise enquiries from tier-2 cities",
+    audience: "Salaried men, 28-45, considering a business",
+    keyMessage: "A Clean Craft store can be running in 45 days",
+    duration: "45-60 sec",
+    orientation: "Vertical 9:16",
+    cta: "DM 'FRANCHISE' to know the cost",
+    captionNeeds: "Hindi hook + English body, 3 hashtags max",
+    subtitleNeeds: "Burned-in Hindi subtitles",
+    brandingNeeds: "Logo bottom-right, brand red accent",
+    musicDirection: "Uplifting, low-volume under voice",
+    extraNotes: "Do not show exact investment figure on screen.",
+    files: filesAll(["Raw videos", "Raw audio", "Script", "Logo", "Reference videos"]),
+    previousEditors: [],
+    reviewerComments: [
+      { at: "1 Aug, 18:10", by: "Priya Nanda (SMM)", text: "Audio dips at 0:02, fix levels." },
+    ],
+    corrections: [
+      { at: "1 Aug, 18:10", version: "V1", points: ["Fix audio levels in first 3s", "Trim slow intro"] },
+    ],
+    leadsGenerated: 0,
+    timeline: [
+      { at: "31 Jul, 09:00", by: "Priya Nanda", event: "Content created (CC-CN-1041)" },
+      { at: "2 Aug, 10:15", by: "Priya Nanda", event: "Assigned to Rohit Sharma" },
+      { at: "1 Aug, 17:20", by: "Rohit Sharma", event: "Submitted V1 for review" },
+      { at: "1 Aug, 18:10", by: "Priya Nanda", event: "Correction requested on V1" },
+      { at: "Today, 06:40", by: "Rohit Sharma", event: "Resubmitted as V2" },
+    ],
+  },
+  "CC-CN-1042": {
+    campaign: "Service Awareness",
+    briefVersion: 3,
+    objective: "Educate customers on fabric care to lift service orders",
+    audience: "Urban households, 30-50",
+    keyMessage: "Steam wash protects fabric better than harsh dry clean",
+    duration: "6 slides",
+    orientation: "Square 1:1",
+    cta: "Book a pickup on the app",
+    captionNeeds: "English, myth-busting tone",
+    subtitleNeeds: "Not applicable",
+    brandingNeeds: "Brand fonts on every slide",
+    musicDirection: "Not applicable",
+    extraNotes: "Remove all price claims — compliance flagged.",
+    files: filesAll(["Script", "Product images", "Logo"]),
+    previousEditors: ["Sahil Kapoor"],
+    reviewerComments: [
+      { at: "Yesterday, 18:05", by: "Priya Nanda (SMM)", text: "Slide 5 text overflows on mobile." },
+    ],
+    corrections: [
+      { at: "30 Jul, 13:00", version: "V1", points: ["Pricing claim on slide 3 not approved"] },
+      { at: "Yesterday, 18:05", version: "V2", points: ["Slide 5 text overflow", "Use brand red, not orange"] },
+    ],
+    leadsGenerated: 0,
+    timeline: [
+      { at: "28 Jul, 11:00", by: "Priya Nanda", event: "Content created (CC-CN-1042)" },
+      { at: "29 Jul, 10:00", by: "Priya Nanda", event: "Assigned to Sahil Kapoor" },
+      { at: "31 Jul, 09:00", by: "Priya Nanda", event: "Reassigned to Neha Verma — reason: Sahil on launch shoot" },
+      { at: "Yesterday, 18:05", by: "Priya Nanda", event: "Correction requested on V2 (2nd return)" },
+    ],
+  },
+};
+
+export function getExtras(contentId: string): ContentExtras {
+  return (
+    CONTENT_EXTRAS[contentId] ?? {
+      campaign: "General Content",
+      briefVersion: 1,
+      objective: "Build brand awareness and enquiries",
+      audience: "Clean Craft core audience",
+      keyMessage: "Professional laundry, dependable service",
+      duration: "30-45 sec",
+      orientation: "Vertical 9:16",
+      cta: "Follow for more",
+      captionNeeds: "English caption with 3 hashtags",
+      subtitleNeeds: "Burned-in subtitles",
+      brandingNeeds: "Logo and brand colours",
+      musicDirection: "Trending audio, low volume",
+      extraNotes: "—",
+      files: filesAll(["Script", "Logo"]),
+      previousEditors: [],
+      reviewerComments: [],
+      corrections: [],
+      leadsGenerated: 0,
+      timeline: [{ at: "—", by: "Priya Nanda", event: `Content created (${contentId})` }],
+    }
+  );
+}
