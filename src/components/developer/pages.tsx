@@ -6,7 +6,7 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 /* ---------------------------------- data --------------------------------- */
 
 const TICKETS = [
-  { id: "DEV-১" .replace("১", "1041"), title: "POS bill print misaligned — Jaipur store", from: "Technical Support", priority: "High", status: "In Progress", due: "Today" },
+  { id: "DEV-1041", title: "POS bill print misaligned — Jaipur store", from: "Technical Support", priority: "High", status: "In Progress", due: "Today" },
   { id: "DEV-1042", title: "Franchise lead form not saving city field", from: "Sales Head", priority: "High", status: "New", due: "Today" },
   { id: "DEV-1043", title: "Attendance export missing last row", from: "HR Head", priority: "Medium", status: "In Progress", due: "Tomorrow" },
   { id: "DEV-1044", title: "Store dashboard slow on 2G", from: "Relationship Manager", priority: "Medium", status: "Waiting for Info", due: "6 Aug" },
