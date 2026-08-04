@@ -1,8 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -20,8 +17,6 @@ import {
   BarChart3,
   FolderOpen,
   TrendingUp,
-  AlertTriangle,
-  Megaphone,
 } from "lucide-react";
 import { SmmContentQueuePage } from "@/components/smm/content-queue";
 import { SmmReviewPage } from "@/components/smm/review-approval";
@@ -32,8 +27,6 @@ import { SmmAnalyticsPage } from "@/components/smm/analytics";
 import { SmmTasksResourcesPage } from "@/components/smm/tasks-resources";
 import { SmmPerformancePage } from "@/components/smm/performance";
 import { SmmManagerDashboard } from "@/components/smm/manager-dashboard";
-import { SectionHead } from "@/components/smm/ui";
-import { CONTENT_QUEUE, SOCIAL_LEADS, APPROVALS } from "@/components/smm/data";
 
 export const Route = createFileRoute("/_authenticated/smm")({
   head: () => ({
