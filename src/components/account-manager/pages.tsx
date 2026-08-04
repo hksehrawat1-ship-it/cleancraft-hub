@@ -47,18 +47,18 @@ const badgeTone = (s: string) => {
 export function AmDashboard() {
   return (
     <div className="space-y-4">
-      <SectionHead title="Account Manager Dashboard" subtitle="Payment requests, collections, dispatch clearance and billing at a glance." />
+      <SectionHead title="Account Manager Dashboard" sub="Payment requests, collections, dispatch clearance and billing at a glance." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Expected This Month" value={inr(5200000)} icon={IndianRupee} />
-        <StatCard label="Collected" value={inr(4680000)} icon={CheckCircle2} />
-        <StatCard label="Pending Collection" value={inr(520000)} icon={Clock} />
-        <StatCard label="Available Cash" value={inr(2210000)} icon={Wallet} />
+        <StatCard label="Expected This Month" value={inr(5200000)} />
+        <StatCard label="Collected" value={inr(4680000)} />
+        <StatCard label="Pending Collection" value={inr(520000)} />
+        <StatCard label="Available Cash" value={inr(2210000)} />
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Open Payment Requests" value="5" icon={Receipt} />
-        <StatCard label="Follow-ups Due" value="4" icon={AlertTriangle} />
-        <StatCard label="Dispatch Holds" value="2" icon={Truck} />
-        <StatCard label="Collection Rate" value="90%" icon={TrendingUp} />
+        <StatCard label="Open Payment Requests" value="5" />
+        <StatCard label="Follow-ups Due" value="4" />
+        <StatCard label="Dispatch Holds" value="2" />
+        <StatCard label="Collection Rate" value="90%" />
       </div>
       <Card>
         <CardHeader className="pb-2">
@@ -90,7 +90,7 @@ export function AmDashboard() {
 export function AmPaymentRequests() {
   return (
     <div className="space-y-4">
-      <SectionHead title="Project Payment Requests" subtitle="Requests raised by Project Coordinator, Project Manager, Sales and Logistics." />
+      <SectionHead title="Project Payment Requests" sub="Requests raised by Project Coordinator, Project Manager, Sales and Logistics." />
       <Card>
         <CardContent className="pt-6 space-y-2">
           {REQUESTS.map((r) => (
@@ -118,12 +118,12 @@ export function AmPaymentRequests() {
 export function AmFollowups() {
   return (
     <div className="space-y-4">
-      <SectionHead title="Payment Follow-ups & Verification" subtitle="Chase pending collections and verify payment proofs before clearing." />
+      <SectionHead title="Payment Follow-ups & Verification" sub="Chase pending collections and verify payment proofs before clearing." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Total Pending" value={inr(1045000)} icon={Clock} />
-        <StatCard label="Proof Awaited" value="1" icon={Receipt} />
-        <StatCard label="Verification Pending" value="1" icon={CheckCircle2} />
-        <StatCard label="Overdue" value="1" icon={AlertTriangle} />
+        <StatCard label="Total Pending" value={inr(1045000)} />
+        <StatCard label="Proof Awaited" value="1" />
+        <StatCard label="Verification Pending" value="1" />
+        <StatCard label="Overdue" value="1" />
       </div>
       <Card>
         <CardContent className="pt-6 space-y-2">
@@ -152,7 +152,7 @@ export function AmFollowups() {
 export function AmDispatchClearance() {
   return (
     <div className="space-y-4">
-      <SectionHead title="Dispatch Clearance" subtitle="Machines and materials dispatch only after payment clearance." />
+      <SectionHead title="Dispatch Clearance" sub="Machines and materials dispatch only after payment clearance." />
       <Card>
         <CardContent className="pt-6 space-y-2">
           {DISPATCH.map((d) => (
@@ -180,7 +180,7 @@ export function AmDispatchClearance() {
 export function AmBillingPos() {
   return (
     <div className="space-y-4">
-      <SectionHead title="Billing POS (Phase 2)" subtitle="Planned store billing and invoicing module — not yet active." />
+      <SectionHead title="Billing POS (Phase 2)" sub="Planned store billing and invoicing module — not yet active." />
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Phase 2 scope</CardTitle>
@@ -216,12 +216,12 @@ export function AmPerformance() {
   ];
   return (
     <div className="space-y-4">
-      <SectionHead title="Performance" subtitle="System-calculated metrics from payment, verification and dispatch records." />
+      <SectionHead title="Performance" sub="System-calculated metrics from payment, verification and dispatch records." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Collected This Month" value={inr(4680000)} icon={IndianRupee} />
-        <StatCard label="Avg Verification Time" value="4.2 hrs" icon={Clock} />
-        <StatCard label="Requests Processed" value="42" icon={Receipt} />
-        <StatCard label="Escalations" value="2" icon={AlertTriangle} />
+        <StatCard label="Collected This Month" value={inr(4680000)} />
+        <StatCard label="Avg Verification Time" value="4.2 hrs" />
+        <StatCard label="Requests Processed" value="42" />
+        <StatCard label="Escalations" value="2" />
       </div>
       <Card>
         <CardHeader className="pb-2">
