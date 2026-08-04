@@ -18,7 +18,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { DevDashboard } from "@/components/developer/dashboard";
-import { DevDocs, DevPerformance } from "@/components/developer/pages";
+import { DevDocs } from "@/components/developer/pages";
+import { DevPerformancePage } from "@/components/developer/performance";
 import { DevBugs } from "@/components/developer/bugs";
 import { DevReleases } from "@/components/developer/releases";
 import { DevTickets } from "@/components/developer/tickets";
@@ -120,7 +121,7 @@ function DeveloperWorkspace() {
           {active === "bugs" && <DevBugs />}
           {active === "releases" && <DevReleases />}
           {active === "docs" && <DevDocs />}
-          {active === "performance" && <DevPerformance />}
+          {active === "performance" && <DevPerformancePage />}
         </main>
       </div>
     </div>
