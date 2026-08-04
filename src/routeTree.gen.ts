@@ -18,6 +18,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as AuthenticatedAdministrationManagerRouteImport } from './routes/_authenticated/administration-manager'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDeveloperRouteImport } from './routes/_authenticated/developer'
 import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authenticated/field-engineer'
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
@@ -88,6 +89,11 @@ const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDeveloperRoute = AuthenticatedDeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedFieldEngineerRoute =
@@ -229,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
@@ -263,6 +270,7 @@ export interface FileRoutesByTo {
   '/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/developer': typeof AuthenticatedDeveloperRoute
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
@@ -299,6 +307,7 @@ export interface FileRoutesById {
   '/_authenticated/administration-manager': typeof AuthenticatedAdministrationManagerRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/developer': typeof AuthenticatedDeveloperRoute
   '/_authenticated/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
@@ -335,6 +344,7 @@ export interface FileRouteTypes {
     | '/administration-manager'
     | '/complaints'
     | '/dashboard'
+    | '/developer'
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
@@ -369,6 +379,7 @@ export interface FileRouteTypes {
     | '/administration-manager'
     | '/complaints'
     | '/dashboard'
+    | '/developer'
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/_authenticated/administration-manager'
     | '/_authenticated/complaints'
     | '/_authenticated/dashboard'
+    | '/_authenticated/developer'
     | '/_authenticated/field-engineer'
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
@@ -503,6 +515,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/developer': {
+      id: '/_authenticated/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof AuthenticatedDeveloperRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/field-engineer': {
@@ -680,6 +699,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdministrationManagerRoute: typeof AuthenticatedAdministrationManagerRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDeveloperRoute: typeof AuthenticatedDeveloperRoute
   AuthenticatedFieldEngineerRoute: typeof AuthenticatedFieldEngineerRoute
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
@@ -710,6 +730,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedAdministrationManagerRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDeveloperRoute: AuthenticatedDeveloperRoute,
   AuthenticatedFieldEngineerRoute: AuthenticatedFieldEngineerRoute,
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
