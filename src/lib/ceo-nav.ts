@@ -78,7 +78,7 @@ export const CEO_GROUPS: CeoGroup[] = [
   },
   {
     key: "ops",
-    label: "2. Operation Engine",
+    label: "2. Operations Engine",
     icon: ClipboardList,
     items: [
       { key: "proj-coord", label: "Project Coordinator", icon: ClipboardList, blurb: "Project intake, scheduling, vendor coordination, status reports." },
@@ -110,8 +110,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     label: "5. Accounts",
     icon: Calculator,
     items: [
-      { key: "accounts-master", label: "Accounts Master", icon: Calculator, blurb: "Books overview, ledgers, GST, audit-ready reports." },
-      { key: "accounts-exec", label: "Accounts Executive", icon: Calculator, blurb: "Daily entries, receivables, payables, reconciliation." },
+      { key: "accounts-master", label: "Accounts Manager", icon: Calculator, blurb: "Books overview, ledgers, GST, audit-ready reports." },
     ],
   },
   {

@@ -217,17 +217,8 @@ function MasterDashboard() {
         <FieldEngineerCeoView />
       ) : selected?.group === "accounts" && selected.item === "accounts-master" ? (
         <AccountsCeoView />
-      ) : selected?.group === "accounts" && selected.item === "accounts-exec" ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <current.i.icon className="w-5 h-5 text-primary" />
-              {current.i.label}
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">{current.g.label}</p>
-          </CardHeader>
-          <CardContent />
-        </Card>
+
+
 
 
 
