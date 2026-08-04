@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Phone, MessageCircle, Pencil } from "lucide-react";
 import { LeadDialog, classificationVariant, type Lead } from "./leads";
+import { RecordLineage } from "@/components/record-lineage";
+
 
 export const Route = createFileRoute("/_authenticated/leads_/$id")({
   head: () => ({ meta: [{ title: "Lead Details — Clean Craft OS" }] }),
@@ -109,6 +111,9 @@ function LeadDetailsPage() {
         {lead.next_action && <Badge variant="outline">Next: {lead.next_action}</Badge>}
         {lead.followup_date && <Badge variant="outline">Follow-up: {lead.followup_date}</Badge>}
       </div>
+
+      <RecordLineage leadId={id} />
+
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SectionCard title="Personal Details">

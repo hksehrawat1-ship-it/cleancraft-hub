@@ -56,6 +56,13 @@ export type Database = {
             foreignKeyName: "complaints_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "complaints_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
@@ -67,6 +74,7 @@ export type Database = {
           booking_amount: number
           city: string | null
           created_by: string | null
+          franchise_code: string | null
           franchisee_name: string | null
           id: string
           lead_id: string | null
@@ -77,6 +85,7 @@ export type Database = {
           booking_amount?: number
           city?: string | null
           created_by?: string | null
+          franchise_code?: string | null
           franchisee_name?: string | null
           id?: string
           lead_id?: string | null
@@ -87,6 +96,7 @@ export type Database = {
           booking_amount?: number
           city?: string | null
           created_by?: string | null
+          franchise_code?: string | null
           franchisee_name?: string | null
           id?: string
           lead_id?: string | null
@@ -99,6 +109,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "leads"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "franchise_bookings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["lead_id"]
           },
         ]
       }
@@ -135,6 +152,13 @@ export type Database = {
             referencedRelation: "leads"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["lead_id"]
+          },
         ]
       }
       leads: {
@@ -164,6 +188,7 @@ export type Database = {
           followup_date: string | null
           id: string
           lead_classification: string | null
+          lead_code: string | null
           lead_source: string | null
           lead_stage: string
           location_status: string | null
@@ -209,6 +234,7 @@ export type Database = {
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
+          lead_code?: string | null
           lead_source?: string | null
           lead_stage?: string
           location_status?: string | null
@@ -254,6 +280,7 @@ export type Database = {
           followup_date?: string | null
           id?: string
           lead_classification?: string | null
+          lead_code?: string | null
           lead_source?: string | null
           lead_stage?: string
           location_status?: string | null
@@ -319,6 +346,13 @@ export type Database = {
             foreignKeyName: "payments_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["store_id"]
+          },
+          {
+            foreignKeyName: "payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
@@ -359,12 +393,15 @@ export type Database = {
           actual_end: string | null
           created_at: string
           delayed: boolean
+          franchise_booking_id: string | null
           id: string
+          lead_id: string | null
           manager_id: string | null
           name: string
           notes: string | null
           planned_end: string | null
           planned_start: string | null
+          project_code: string | null
           status: Database["public"]["Enums"]["project_status"]
           store_id: string | null
           updated_at: string
@@ -373,12 +410,15 @@ export type Database = {
           actual_end?: string | null
           created_at?: string
           delayed?: boolean
+          franchise_booking_id?: string | null
           id?: string
+          lead_id?: string | null
           manager_id?: string | null
           name: string
           notes?: string | null
           planned_end?: string | null
           planned_start?: string | null
+          project_code?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           store_id?: string | null
           updated_at?: string
@@ -387,17 +427,55 @@ export type Database = {
           actual_end?: string | null
           created_at?: string
           delayed?: boolean
+          franchise_booking_id?: string | null
           id?: string
+          lead_id?: string | null
           manager_id?: string | null
           name?: string
           notes?: string | null
           planned_end?: string | null
           planned_start?: string | null
+          project_code?: string | null
           status?: Database["public"]["Enums"]["project_status"]
           store_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "projects_franchise_booking_id_fkey"
+            columns: ["franchise_booking_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_franchise_booking_id_fkey"
+            columns: ["franchise_booking_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["franchise_booking_id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "projects_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["store_id"]
+          },
           {
             foreignKeyName: "projects_store_id_fkey"
             columns: ["store_id"]
@@ -449,13 +527,17 @@ export type Database = {
           code: string | null
           created_at: string
           created_by: string | null
+          franchise_booking_id: string | null
           id: string
+          lead_id: string | null
           name: string
           notes: string | null
           opening_date: string | null
           owner_name: string | null
           owner_phone: string | null
+          project_id: string | null
           status: Database["public"]["Enums"]["store_status"]
+          store_code: string | null
           updated_at: string
         }
         Insert: {
@@ -463,13 +545,17 @@ export type Database = {
           code?: string | null
           created_at?: string
           created_by?: string | null
+          franchise_booking_id?: string | null
           id?: string
+          lead_id?: string | null
           name: string
           notes?: string | null
           opening_date?: string | null
           owner_name?: string | null
           owner_phone?: string | null
+          project_id?: string | null
           status?: Database["public"]["Enums"]["store_status"]
+          store_code?: string | null
           updated_at?: string
         }
         Update: {
@@ -477,16 +563,63 @@ export type Database = {
           code?: string | null
           created_at?: string
           created_by?: string | null
+          franchise_booking_id?: string | null
           id?: string
+          lead_id?: string | null
           name?: string
           notes?: string | null
           opening_date?: string | null
           owner_name?: string | null
           owner_phone?: string | null
+          project_id?: string | null
           status?: Database["public"]["Enums"]["store_status"]
+          store_code?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "stores_franchise_booking_id_fkey"
+            columns: ["franchise_booking_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stores_franchise_booking_id_fkey"
+            columns: ["franchise_booking_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["franchise_booking_id"]
+          },
+          {
+            foreignKeyName: "stores_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stores_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "stores_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stores_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["project_id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -558,11 +691,32 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tasks_related_lead_id_fkey"
+            columns: ["related_lead_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["lead_id"]
+          },
+          {
             foreignKeyName: "tasks_related_project_id_fkey"
             columns: ["related_project_id"]
             isOneToOne: false
             referencedRelation: "projects"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_related_project_id_fkey"
+            columns: ["related_project_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["project_id"]
+          },
+          {
+            foreignKeyName: "tasks_related_store_id_fkey"
+            columns: ["related_store_id"]
+            isOneToOne: false
+            referencedRelation: "record_lineage"
+            referencedColumns: ["store_id"]
           },
           {
             foreignKeyName: "tasks_related_store_id_fkey"
@@ -596,9 +750,104 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      record_lineage: {
+        Row: {
+          booked_at: string | null
+          booking_amount: number | null
+          franchise_booking_id: string | null
+          franchise_code: string | null
+          franchisee_name: string | null
+          lead_city: string | null
+          lead_code: string | null
+          lead_id: string | null
+          lead_name: string | null
+          lead_stage: string | null
+          project_code: string | null
+          project_id: string | null
+          project_name: string | null
+          project_status: Database["public"]["Enums"]["project_status"] | null
+          store_code: string | null
+          store_id: string | null
+          store_name: string | null
+          store_status: Database["public"]["Enums"]["store_status"] | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      handover_franchise_to_project: {
+        Args: { _franchise_booking_id: string; _project_name?: string }
+        Returns: {
+          actual_end: string | null
+          created_at: string
+          delayed: boolean
+          franchise_booking_id: string | null
+          id: string
+          lead_id: string | null
+          manager_id: string | null
+          name: string
+          notes: string | null
+          planned_end: string | null
+          planned_start: string | null
+          project_code: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          store_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "projects"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      handover_lead_to_franchise: {
+        Args: { _booking_amount?: number; _lead_id: string }
+        Returns: {
+          booked_at: string
+          booking_amount: number
+          city: string | null
+          created_by: string | null
+          franchise_code: string | null
+          franchisee_name: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "franchise_bookings"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      handover_project_to_store: {
+        Args: { _project_id: string; _store_name?: string }
+        Returns: {
+          city: string | null
+          code: string | null
+          created_at: string
+          created_by: string | null
+          franchise_booking_id: string | null
+          id: string
+          lead_id: string | null
+          name: string
+          notes: string | null
+          opening_date: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          project_id: string | null
+          status: Database["public"]["Enums"]["store_status"]
+          store_code: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "stores"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
