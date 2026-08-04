@@ -631,3 +631,130 @@ export function getExtras(contentId: string): ContentExtras {
     }
   );
 }
+
+/* ---- Review & Approval shared structures ---- */
+export const REVIEW_CHECKLIST_FULL = [
+  "Content brief followed",
+  "Correct message",
+  "Correct target audience",
+  "Correct duration",
+  "Correct aspect ratio and resolution",
+  "Logo and branding correct",
+  "Subtitle spelling checked",
+  "Audio quality acceptable",
+  "Music appropriate and approved",
+  "Visual quality acceptable",
+  "Call-to-action included",
+  "Thumbnail ready",
+  "Caption ready",
+  "No confidential or inappropriate content",
+  "Platform guidelines followed",
+];
+
+export const CORRECTION_CATEGORIES = [
+  "Cut or Timing",
+  "Subtitle",
+  "Spelling",
+  "Audio",
+  "Music",
+  "Colour",
+  "Logo or Branding",
+  "Aspect Ratio",
+  "Thumbnail",
+  "Caption",
+  "Call-to-Action",
+  "Missing Content",
+  "Compliance Concern",
+  "Other",
+] as const;
+
+export type CorrectionCategory = (typeof CORRECTION_CATEGORIES)[number];
+
+export type CorrectionPoint = {
+  id: string;
+  timestamp: string;
+  category: CorrectionCategory;
+  instruction: string;
+  priority: "High" | "Medium" | "Low";
+  reference?: string;
+  dueBy: string;
+  done?: boolean;
+  editorResponse?: string;
+};
+
+/** Editor notes + prior correction points, keyed by Content ID. */
+export const SUBMISSION_DETAILS: Record<
+  string,
+  { editorNotes: string; priorPoints: CorrectionPoint[] }
+> = {
+  "CC-CN-1041": {
+    editorNotes:
+      "Fixed the audio dip at 0:02 and trimmed 3s from the intro. Used approved background music track 4.",
+    priorPoints: [
+      {
+        id: "P1",
+        timestamp: "00:02",
+        category: "Audio",
+        instruction: "Audio level drops sharply — normalise the first 3 seconds.",
+        priority: "High",
+        dueBy: "Today, 06:00",
+        done: true,
+        editorResponse: "Normalised to -14 LUFS.",
+      },
+      {
+        id: "P2",
+        timestamp: "00:00",
+        category: "Cut or Timing",
+        instruction: "Intro is slow — cut to the hook within 2 seconds.",
+        priority: "Medium",
+        dueBy: "Today, 06:00",
+        done: true,
+        editorResponse: "Trimmed 3s.",
+      },
+    ],
+  },
+  "CC-CN-1042": {
+    editorNotes: "Replaced the pricing slide with a benefits slide as instructed.",
+    priorPoints: [
+      {
+        id: "P1",
+        timestamp: "Slide 3",
+        category: "Compliance Concern",
+        instruction: "Remove the unapproved pricing claim entirely.",
+        priority: "High",
+        dueBy: "1 Aug, 12:00",
+        done: true,
+        editorResponse: "Slide replaced.",
+      },
+      {
+        id: "P2",
+        timestamp: "Slide 5",
+        category: "Subtitle",
+        instruction: "Text overflows on mobile — reduce to two lines.",
+        priority: "High",
+        dueBy: "Today, 14:00",
+        done: false,
+      },
+      {
+        id: "P3",
+        timestamp: "All slides",
+        category: "Colour",
+        instruction: "Use brand red, not orange, on headings.",
+        priority: "Medium",
+        dueBy: "Today, 14:00",
+        done: false,
+      },
+    ],
+  },
+  "CC-CN-1044": {
+    editorNotes:
+      "First cut ready. Thumbnail and caption still pending from the content team — flagged in the brief.",
+    priorPoints: [],
+  },
+};
+
+export function getSubmissionDetails(contentId: string) {
+  return (
+    SUBMISSION_DETAILS[contentId] ?? { editorNotes: "No editor notes submitted.", priorPoints: [] }
+  );
+}
