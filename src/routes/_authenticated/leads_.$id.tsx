@@ -112,6 +112,9 @@ function LeadDetailsPage() {
         {lead.followup_date && <Badge variant="outline">Follow-up: {lead.followup_date}</Badge>}
       </div>
 
+      <RecordLineage leadId={id} />
+
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <SectionCard title="Personal Details">
           <Row k="Mobile" v={lead.phone} />
