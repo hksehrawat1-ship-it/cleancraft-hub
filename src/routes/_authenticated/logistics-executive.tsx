@@ -24,6 +24,7 @@ import {
   LogIssuesReturns,
   LogPerformance,
 } from "@/components/logistics/pages";
+import { LogisticsDispatchPlanning } from "@/components/logistics/dispatch-planning";
 import { LogisticsDashboard } from "@/components/logistics/dashboard";
 
 
