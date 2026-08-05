@@ -17,7 +17,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import {
-  LogDashboard,
   LogClearances,
   LogPackingTasks,
   LogDispatchPlanning,
@@ -25,6 +24,8 @@ import {
   LogIssuesReturns,
   LogPerformance,
 } from "@/components/logistics/pages";
+import { LogisticsDashboard } from "@/components/logistics/dashboard";
+
 
 export const Route = createFileRoute("/_authenticated/logistics-executive")({
   head: () => ({
@@ -113,7 +114,7 @@ function LogisticsExecutiveWorkspace() {
           </Select>
         </div>
         <main className="overflow-auto p-4 md:p-6">
-          {active === "dashboard" && <LogDashboard onGo={(k) => setActive(k as SectionKey)} />}
+          {active === "dashboard" && <LogisticsDashboard onGo={(k: string) => setActive(k as SectionKey)} />}
           {active === "clearances" && <LogClearances />}
           {active === "packing" && <LogPackingTasks />}
           {active === "planning" && <LogDispatchPlanning />}
