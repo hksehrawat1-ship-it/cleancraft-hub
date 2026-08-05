@@ -72,12 +72,20 @@ export function LeDispatchPlan() {
           {filtered.map((d) => (
             <div key={d.id} className="border rounded-md p-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <div className="font-medium text-sm">
-                  {d.id} · {d.store} — {d.items}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Qty {d.quantity} · Raised by {d.raisedBy} · Planned {d.plannedDate}
-                </div>
+                <div className="font-medium text-sm">{d.id} · {d.store} — {d.items}</div>
+                <div className="text-xs text-muted-foreground">Qty {d.quantity} · Raised by {d.raisedBy} · Planned {d.plannedDate}</div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={d.clearance ? "default" : "secondary
+                <Badge variant={d.clearance ? "default" : "secondary"}>{d.clearance ? "Cleared" : "Not cleared"}</Badge>
+                <Badge variant={d.status === "delayed" ? "destructive" : "outline"}>{statusLabel[d.status]}</Badge>
+                <Button size="sm" variant="outline" onClick={() => advance(d.id)} disabled={d.status === "delivered"}>
+                  {d.status === "delivered" ? "Done" : "Advance"}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

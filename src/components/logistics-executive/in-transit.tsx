@@ -70,12 +70,19 @@ export function LeInTransit() {
           {filtered.map((d) => (
             <div key={d.id} className="border rounded-md p-3 flex flex-wrap items-center justify-between gap-2">
               <div>
-                <div className="font-medium text-sm">
-                  {d.id} · {d.store} — {d.items}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Expected {d.expectedDate} · Packed by {d.packedBy ?? "—"}
-                </div>
+                <div className="font-medium text-sm">{d.id} · {d.store} — {d.items}</div>
+                <div className="text-xs text-muted-foreground">Expected {d.expectedDate} · Packed by {d.packedBy ?? "—"}</div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={d.status === "delayed" ? "destructive" : "secondary
+                <Badge variant={d.status === "delayed" ? "destructive" : "secondary"}>{statusLabel[d.status]}</Badge>
+                <Button size="sm" variant="outline" onClick={() => markDelivered(d.id)} disabled={d.status === "delivered"}>
+                  Mark Delivered
+                </Button>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
