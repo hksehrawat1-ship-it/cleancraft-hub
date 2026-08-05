@@ -25,6 +25,7 @@ import {
   LogPerformance,
 } from "@/components/logistics/pages";
 import { LogisticsDispatchPlanning } from "@/components/logistics/dispatch-planning";
+import { LogisticsClearances } from "@/components/logistics/clearances";
 import { LogisticsDashboard } from "@/components/logistics/dashboard";
 
 
@@ -116,7 +117,7 @@ function LogisticsExecutiveWorkspace() {
         </div>
         <main className="overflow-auto p-4 md:p-6">
           {active === "dashboard" && <LogisticsDashboard onGo={(k: string) => setActive(k as SectionKey)} />}
-          {active === "clearances" && <LogClearances />}
+          {active === "clearances" && <LogisticsClearances />}
           {active === "packing" && <LogPackingTasks />}
           {active === "planning" && <LogisticsDispatchPlanning />}
           {active === "delivery" && <LogDeliveryConfirmation />}
