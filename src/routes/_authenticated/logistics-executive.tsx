@@ -16,17 +16,13 @@ import {
   AlertTriangle,
   TrendingUp,
 } from "lucide-react";
-import {
-  LogClearances,
-  LogDispatchPlanning,
-  LogPerformance,
-} from "@/components/logistics/pages";
 import { LogisticsDispatchPlanning } from "@/components/logistics/dispatch-planning";
 import { LogisticsClearances } from "@/components/logistics/clearances";
 import { LogisticsPackingTasks } from "@/components/logistics/packing-tasks";
 import { LogisticsDeliveryConfirmation } from "@/components/logistics/delivery-confirmation";
 import { LogisticsIssuesReturns } from "@/components/logistics/issues-returns";
 import { LogisticsDashboard } from "@/components/logistics/dashboard";
+import { LogisticsPerformance } from "@/components/logistics/performance";
 
 
 export const Route = createFileRoute("/_authenticated/logistics-executive")({
@@ -122,7 +118,7 @@ function LogisticsExecutiveWorkspace() {
           {active === "planning" && <LogisticsDispatchPlanning />}
           {active === "delivery" && <LogisticsDeliveryConfirmation />}
           {active === "issues" && <LogisticsIssuesReturns />}
-          {active === "performance" && <LogPerformance />}
+          {active === "performance" && <LogisticsPerformance />}
         </main>
       </div>
     </div>
