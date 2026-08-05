@@ -17,7 +17,6 @@ import {
   TrendingUp,
 } from "lucide-react";
 import {
-  LogDashboard,
   LogClearances,
   LogPackingTasks,
   LogDispatchPlanning,
@@ -25,6 +24,8 @@ import {
   LogIssuesReturns,
   LogPerformance,
 } from "@/components/logistics/pages";
+import { LogisticsDashboard } from "@/components/logistics/dashboard";
+
 
 export const Route = createFileRoute("/_authenticated/logistics-executive")({
   head: () => ({
