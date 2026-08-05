@@ -56,4 +56,34 @@ export function LeDeliveryConfirmation() {
                   </div>
                   <div className="text-xs text-muted-foreground">Expected {d.expectedDate}</div>
                 </div>
-                <Badge variant={d.status === "delayed" ? "destructive" : "secondary
+                <Badge variant={d.status === "delayed" ? "destructive" : "secondary"}>{statusLabel[d.status]}</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Recipient Name</Label>
+                  <Input
+                    placeholder="Store manager name"
+                    value={recipient[d.id] || ""}
+                    onChange={(e) => setRecipient((p) => ({ ...p, [d.id]: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Delivery Note</Label>
+                  <Input
+                    placeholder="Condition, remarks"
+                    value={note[d.id] || ""}
+                    onChange={(e) => setNote((p) => ({ ...p, [d.id]: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <Button size="sm" onClick={() => confirm(d.id)}>
+                Confirm Delivery
+              </Button>
+            </div>
+          ))}
+          {awaiting.length === 0 && <p className="text-sm text-muted-foreground">No shipments awaiting confirmation.</p>}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
