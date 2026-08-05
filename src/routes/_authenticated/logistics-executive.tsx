@@ -117,7 +117,7 @@ function LogisticsExecutiveWorkspace() {
           {active === "dashboard" && <LogisticsDashboard onGo={(k: string) => setActive(k as SectionKey)} />}
           {active === "clearances" && <LogClearances />}
           {active === "packing" && <LogPackingTasks />}
-          {active === "planning" && <LogDispatchPlanning />}
+          {active === "planning" && <LogisticsDispatchPlanning />}
           {active === "delivery" && <LogDeliveryConfirmation />}
           {active === "issues" && <LogIssuesReturns />}
           {active === "performance" && <LogPerformance />}
