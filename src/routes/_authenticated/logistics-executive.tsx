@@ -19,13 +19,13 @@ import {
 import {
   LogClearances,
   LogDispatchPlanning,
-  LogDeliveryConfirmation,
   LogIssuesReturns,
   LogPerformance,
 } from "@/components/logistics/pages";
 import { LogisticsDispatchPlanning } from "@/components/logistics/dispatch-planning";
 import { LogisticsClearances } from "@/components/logistics/clearances";
 import { LogisticsPackingTasks } from "@/components/logistics/packing-tasks";
+import { LogisticsDeliveryConfirmation } from "@/components/logistics/delivery-confirmation";
 import { LogisticsDashboard } from "@/components/logistics/dashboard";
 
 
@@ -120,7 +120,7 @@ function LogisticsExecutiveWorkspace() {
           {active === "clearances" && <LogisticsClearances />}
           {active === "packing" && <LogisticsPackingTasks />}
           {active === "planning" && <LogisticsDispatchPlanning />}
-          {active === "delivery" && <LogDeliveryConfirmation />}
+          {active === "delivery" && <LogisticsDeliveryConfirmation />}
           {active === "issues" && <LogIssuesReturns />}
           {active === "performance" && <LogPerformance />}
         </main>
