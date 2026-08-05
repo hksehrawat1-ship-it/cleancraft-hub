@@ -23,6 +23,7 @@ import { Route as AuthenticatedDeveloperRouteImport } from './routes/_authentica
 import { Route as AuthenticatedFieldEngineerRouteImport } from './routes/_authenticated/field-engineer'
 import { Route as AuthenticatedHrHeadRouteImport } from './routes/_authenticated/hr-head'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
+import { Route as AuthenticatedLogisticsExecutiveRouteImport } from './routes/_authenticated/logistics-executive'
 import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated/master'
 import { Route as AuthenticatedPackingStaffRouteImport } from './routes/_authenticated/packing-staff'
 import { Route as AuthenticatedPantryChar38cleaningRouteImport } from './routes/_authenticated/pantry&cleaning'
@@ -119,6 +120,12 @@ const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLogisticsExecutiveRoute =
+  AuthenticatedLogisticsExecutiveRouteImport.update({
+    id: '/logistics-executive',
+    path: '/logistics-executive',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedMasterRoute = AuthenticatedMasterRouteImport.update({
   id: '/master',
   path: '/master',
@@ -247,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/logistics-executive': typeof AuthenticatedLogisticsExecutiveRoute
   '/master': typeof AuthenticatedMasterRoute
   '/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
@@ -283,6 +291,7 @@ export interface FileRoutesByTo {
   '/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/hr-head': typeof AuthenticatedHrHeadRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/logistics-executive': typeof AuthenticatedLogisticsExecutiveRoute
   '/master': typeof AuthenticatedMasterRoute
   '/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
@@ -321,6 +330,7 @@ export interface FileRoutesById {
   '/_authenticated/field-engineer': typeof AuthenticatedFieldEngineerRoute
   '/_authenticated/hr-head': typeof AuthenticatedHrHeadRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
+  '/_authenticated/logistics-executive': typeof AuthenticatedLogisticsExecutiveRoute
   '/_authenticated/master': typeof AuthenticatedMasterRoute
   '/_authenticated/packing-staff': typeof AuthenticatedPackingStaffRoute
   '/_authenticated/pantry&cleaning': typeof AuthenticatedPantryChar38cleaningRoute
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
+    | '/logistics-executive'
     | '/master'
     | '/packing-staff'
     | '/pantry&cleaning'
@@ -395,6 +406,7 @@ export interface FileRouteTypes {
     | '/field-engineer'
     | '/hr-head'
     | '/leads'
+    | '/logistics-executive'
     | '/master'
     | '/packing-staff'
     | '/pantry&cleaning'
@@ -432,6 +444,7 @@ export interface FileRouteTypes {
     | '/_authenticated/field-engineer'
     | '/_authenticated/hr-head'
     | '/_authenticated/leads'
+    | '/_authenticated/logistics-executive'
     | '/_authenticated/master'
     | '/_authenticated/packing-staff'
     | '/_authenticated/pantry&cleaning'
@@ -563,6 +576,13 @@ declare module '@tanstack/react-router' {
       path: '/leads'
       fullPath: '/leads'
       preLoaderRoute: typeof AuthenticatedLeadsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/logistics-executive': {
+      id: '/_authenticated/logistics-executive'
+      path: '/logistics-executive'
+      fullPath: '/logistics-executive'
+      preLoaderRoute: typeof AuthenticatedLogisticsExecutiveRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/master': {
@@ -724,6 +744,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFieldEngineerRoute: typeof AuthenticatedFieldEngineerRoute
   AuthenticatedHrHeadRoute: typeof AuthenticatedHrHeadRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
+  AuthenticatedLogisticsExecutiveRoute: typeof AuthenticatedLogisticsExecutiveRoute
   AuthenticatedMasterRoute: typeof AuthenticatedMasterRoute
   AuthenticatedPackingStaffRoute: typeof AuthenticatedPackingStaffRoute
   AuthenticatedPantryChar38cleaningRoute: typeof AuthenticatedPantryChar38cleaningRoute
@@ -756,6 +777,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFieldEngineerRoute: AuthenticatedFieldEngineerRoute,
   AuthenticatedHrHeadRoute: AuthenticatedHrHeadRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
+  AuthenticatedLogisticsExecutiveRoute: AuthenticatedLogisticsExecutiveRoute,
   AuthenticatedMasterRoute: AuthenticatedMasterRoute,
   AuthenticatedPackingStaffRoute: AuthenticatedPackingStaffRoute,
   AuthenticatedPantryChar38cleaningRoute:
