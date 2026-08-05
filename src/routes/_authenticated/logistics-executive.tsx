@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import {
   LogClearances,
-  LogPackingTasks,
   LogDispatchPlanning,
   LogDeliveryConfirmation,
   LogIssuesReturns,
@@ -26,6 +25,7 @@ import {
 } from "@/components/logistics/pages";
 import { LogisticsDispatchPlanning } from "@/components/logistics/dispatch-planning";
 import { LogisticsClearances } from "@/components/logistics/clearances";
+import { LogisticsPackingTasks } from "@/components/logistics/packing-tasks";
 import { LogisticsDashboard } from "@/components/logistics/dashboard";
 
 
@@ -118,7 +118,7 @@ function LogisticsExecutiveWorkspace() {
         <main className="overflow-auto p-4 md:p-6">
           {active === "dashboard" && <LogisticsDashboard onGo={(k: string) => setActive(k as SectionKey)} />}
           {active === "clearances" && <LogisticsClearances />}
-          {active === "packing" && <LogPackingTasks />}
+          {active === "packing" && <LogisticsPackingTasks />}
           {active === "planning" && <LogisticsDispatchPlanning />}
           {active === "delivery" && <LogDeliveryConfirmation />}
           {active === "issues" && <LogIssuesReturns />}
