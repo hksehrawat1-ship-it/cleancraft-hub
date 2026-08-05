@@ -121,10 +121,6 @@ export const CEO_GROUPS: CeoGroup[] = [
       { key: "logistics", label: "Logistic Executive", icon: Truck, blurb: "Dispatches, in-transit, delivery SLA, freight cost." },
       { key: "packing-staff", label: "Packing Staff", icon: Package, blurb: "Order packing, dispatch readiness, defect checks and throughput." },
     ],
-    routes: {
-      logistics: "/logistics-executive",
-      "packing-staff": "/packing-staff",
-    },
   },
   {
     key: "facility",
