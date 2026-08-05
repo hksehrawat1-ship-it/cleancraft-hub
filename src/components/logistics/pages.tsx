@@ -46,7 +46,7 @@ function Stat({
   value: string | number;
   sub?: string;
   icon?: React.ComponentType<{ className?: string }>;
-  tone?: "default" | "good" | "warn" | "bad";
+  tone?: "default" | "good" | "warn" | "bad" | "info";
 }) {
   const toneCls =
     tone === "good"
@@ -55,7 +55,9 @@ function Stat({
         ? "text-amber-600"
         : tone === "bad"
           ? "text-destructive"
-          : "text-foreground";
+          : tone === "info"
+            ? "text-primary"
+            : "text-foreground";
   return (
     <Card>
       <CardContent className="p-4">
@@ -134,7 +136,7 @@ export function LogDashboard({ onGo }: { onGo: (k: string) => void }) {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Clearances to accept" value={pendingClearances} icon={ClipboardCheck} tone="warn" />
         <Stat label="Packing in progress" value={packingOpen} icon={Boxes} />
-        <Stat label="In transit" value={inTransit} icon={Truck} tone="info" as never />
+        <Stat label="In transit" value={inTransit} icon={Truck} tone="info" />
         <Stat label="Awaiting POD" value={awaitingPod} icon={PackageCheck} tone="warn" />
         <Stat label="Open issues / returns" value={openIssues} icon={AlertTriangle} tone={openIssues ? "bad" : "good"} />
         <Stat label="Delivered this month" value={DELIVERIES.filter((d) => d.status === "confirmed").length} icon={CheckCircle2} tone="good" />
