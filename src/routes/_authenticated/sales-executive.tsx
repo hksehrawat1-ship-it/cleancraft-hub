@@ -1200,28 +1200,6 @@ function Stat({
   );
 }
 
-function BookingStat({
-  label,
-  count,
-  value,
-  tone,
-}: {
-  label: string;
-  count: number;
-  value: number;
-  tone?: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="text-xs text-muted-foreground">{label}</div>
-        <div className={`text-2xl font-semibold mt-1 ${tone ?? ""}`}>{count}</div>
-        <div className="text-xs text-muted-foreground mt-0.5">₹{value.toLocaleString("en-IN")}</div>
-      </CardContent>
-    </Card>
-  );
-}
-
 function FilterChip({
   active,
   onClick,

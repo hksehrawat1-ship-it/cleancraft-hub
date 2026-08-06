@@ -428,7 +428,6 @@ function IssueDetail({
   const [cPlatform, setCPlatform] = useState(record.platform);
   const [cRef, setCRef] = useState("");
   const [cDate, setCDate] = useState(TODAY);
-  const [cAmount, setCAmount] = useState("");
   const [cExpected, setCExpected] = useState("");
 
   // misc actions
@@ -500,7 +499,6 @@ function IssueDetail({
             platform: cPlatform,
             claimRef: cRef,
             claimDate: cDate,
-            amountRef: cAmount,
             documents: ["Damage photos", "Booking document", "Recipient statement"],
             status: "Submitted — awaiting platform review",
             expectedResolution: cExpected,
@@ -731,10 +729,6 @@ function IssueDetail({
             <Field label="Transport platform" value={record.claim.platform} />
             <Field label="Claim reference" value={record.claim.claimRef} />
             <Field label="Claim date" value={record.claim.claimDate} />
-            <Field
-              label="Claimed amount reference"
-              value={showRestricted ? record.claim.amountRef : "•••• restricted"}
-            />
             <Field label="Current claim status" value={record.claim.status} />
             <Field label="Expected resolution" value={record.claim.expectedResolution} />
             <Field label="Final outcome" value={record.claim.outcome} />
@@ -906,7 +900,6 @@ function IssueDetail({
                   <Label className="text-xs">Claim date</Label>
                   <Input type="date" value={cDate} onChange={(e) => setCDate(e.target.value)} />
                 </div>
-                <TextField label="Claimed amount reference" value={cAmount} onChange={setCAmount} />
                 <div className="space-y-1">
                   <Label className="text-xs">Expected resolution date</Label>
                   <Input type="date" value={cExpected} onChange={(e) => setCExpected(e.target.value)} />
