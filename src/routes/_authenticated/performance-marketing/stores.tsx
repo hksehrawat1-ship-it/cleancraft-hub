@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { PerfMktMyStores } from "@/components/perf-mkt/my-stores";
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/stores")({
   head: () => ({
@@ -15,10 +15,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/stor
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="My Stores"
-      description="Only the franchise stores assigned to you, linked by Store ID."
-    />
-  ),
+  component: PerfMktMyStores,
 });
+
