@@ -86,7 +86,6 @@ const CHECKLIST = [
 type Txn = {
   id: string;
   date: string;
-  amount: number;
   mode: (typeof PAYMENT_MODES)[number];
   accountMasked: string;
   refMasked: string;
@@ -102,7 +101,6 @@ type FollowUp = {
   method: string;
   outcome: (typeof OUTCOMES)[number];
   promiseDate?: string;
-  promiseAmount?: number;
   comments?: string;
   note?: string;
   nextAction: string;
@@ -118,7 +116,7 @@ type Pay = {
   coordinator: string;
   type: string;
   purpose: string;
-  amount: number;
+  target: number;
   due: string;
   daysOverdue: number;
   status: PayStatus;
@@ -126,7 +124,6 @@ type Pay = {
   instructions: string;
   vyaparInvoice: string;
   invoiceDate: string;
-  invoiceAmount: number;
   clearanceRequired: boolean;
   launchDate: string;
   launchAtRisk?: boolean;
@@ -138,7 +135,6 @@ type Pay = {
   txns: Txn[];
   follows: FollowUp[];
   verification?: {
-    amount: number;
     by: string;
     at: string;
     receipt: string;
