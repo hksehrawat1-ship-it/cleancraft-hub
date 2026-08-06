@@ -16,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/camp
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Google & Meta Campaigns"
-      description="Paid campaigns per store, linked by Store ID."
-    />
-  ),
+  component: PerfMktCampaigns,
 });
+
