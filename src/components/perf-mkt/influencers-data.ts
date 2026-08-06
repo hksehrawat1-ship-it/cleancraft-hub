@@ -100,7 +100,6 @@ export type Creator = {
   engagementRate: number;
   audienceLocation: string;
   pastCollabs: number;
-  rateCard: string;
   qualityRating: number;
   reliabilityRating: number;
   status: "Active" | "On Hold" | "Blocked";
@@ -139,7 +138,6 @@ export type Collaboration = {
   callToAction: string;
   submissionDeadline: string;
   publishDate: string;
-  amount: number;
   paymentTerms: string;
   paymentStatus: "Not due" | "Pending" | "Partly paid" | "Paid" | "On hold";
   status: CollabStatus;
@@ -153,12 +151,10 @@ export type Collaboration = {
     avgViews: number;
     engagement: number;
     previousPerformance: string;
-    quotedCost: number;
     estimatedReach: number;
     brandSuitability: string;
     riskNotes: string;
     expectedLeads: number;
-    expectedCpl: number;
     approvedBy?: string;
     approvedOn?: string;
   };
@@ -181,7 +177,6 @@ export type Collaboration = {
     publishedAt: string;
     screenshot: string;
     trackingRef: string;
-    finalAmount: number;
   };
   results?: {
     reach: number;
@@ -194,7 +189,6 @@ export type Collaboration = {
     enquiries: number;
     qualifiedLeads: number;
     orders: number;
-    salesValue: number;
     period: string;
     source: string;
   };
@@ -221,7 +215,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 6.4,
     audienceLocation: "78% Jaipur, 12% rest of Rajasthan",
     pastCollabs: 3,
-    rateCard: "₹45,000 long video · ₹18,000 short",
     qualityRating: 4.7,
     reliabilityRating: 4.8,
     status: "Active",
@@ -243,7 +236,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 8.1,
     audienceLocation: "84% Pune",
     pastCollabs: 1,
-    rateCard: "₹22,000 reel · ₹6,000 story set",
     qualityRating: 4.4,
     reliabilityRating: 4.1,
     status: "Active",
@@ -268,7 +260,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 5.2,
     audienceLocation: "71% Lucknow",
     pastCollabs: 2,
-    rateCard: "₹28,000 review video",
     qualityRating: 4.2,
     reliabilityRating: 3.6,
     status: "Active",
@@ -290,7 +281,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 7.3,
     audienceLocation: "66% Indore, 18% Bhopal",
     pastCollabs: 0,
-    rateCard: "₹15,000 reel",
     qualityRating: 4.0,
     reliabilityRating: 4.0,
     status: "Active",
@@ -312,7 +302,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 3.9,
     audienceLocation: "69% Surat",
     pastCollabs: 1,
-    rateCard: "₹24,000 long video",
     qualityRating: 3.4,
     reliabilityRating: 2.9,
     status: "On Hold",
@@ -334,7 +323,6 @@ export const CREATORS: Creator[] = [
     engagementRate: 0.8,
     audienceLocation: "Scattered, low local relevance",
     pastCollabs: 0,
-    rateCard: "₹40,000 reel",
     qualityRating: 2.1,
     reliabilityRating: 2.5,
     status: "Blocked",
@@ -365,7 +353,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Book a free pickup on the Clean Craft app",
     submissionDeadline: "2026-07-18",
     publishDate: "2026-07-22",
-    amount: 45000,
     paymentTerms: "50% advance, 50% after publishing",
     paymentStatus: "Paid",
     status: "completed",
@@ -379,12 +366,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 96000,
       engagement: 6.4,
       previousPerformance: "3 earlier collaborations, average CPL ₹142",
-      quotedCost: 45000,
       estimatedReach: 110000,
       brandSuitability: "Suitable — family-safe content",
       riskNotes: "None",
       expectedLeads: 300,
-      expectedCpl: 150,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-07-04",
     },
@@ -427,7 +412,6 @@ export const COLLABORATIONS: Collaboration[] = [
       publishedAt: "2026-07-22 18:30",
       screenshot: "jaipur-live-screenshot.png",
       trackingRef: "JAIRAIN20 / cleancraft.in/r/JAIRAIN20",
-      finalAmount: 45000,
     },
     results: {
       reach: 128000,
@@ -440,7 +424,6 @@ export const COLLABORATIONS: Collaboration[] = [
       enquiries: 486,
       qualifiedLeads: 312,
       orders: 141,
-      salesValue: 386000,
       period: "22 Jul – 05 Aug 2026",
       source: "Manual entry — YouTube Studio and POS screenshots attached",
     },
@@ -473,7 +456,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Swipe up to book a free pickup",
     submissionDeadline: "2026-08-09",
     publishDate: "2026-08-12",
-    amount: 22000,
     paymentTerms: "100% after publishing",
     paymentStatus: "Not due",
     status: "brief_shared",
@@ -487,12 +469,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 41000,
       engagement: 8.1,
       previousPerformance: "1 earlier collaboration, CPL ₹168",
-      quotedCost: 22000,
       estimatedReach: 52000,
       brandSuitability: "Suitable",
       riskNotes: "None",
       expectedLeads: 130,
-      expectedCpl: 169,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-08-01",
     },
@@ -537,7 +517,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Book your first order with code LKO25",
     submissionDeadline: "2026-08-03",
     publishDate: "2026-08-10",
-    amount: 28000,
     paymentTerms: "50% advance, 50% after publishing",
     paymentStatus: "Partly paid",
     status: "correction_required",
@@ -551,12 +530,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 58000,
       engagement: 5.2,
       previousPerformance: "2 earlier collaborations, CPL ₹210",
-      quotedCost: 28000,
       estimatedReach: 64000,
       brandSuitability: "Suitable with claim supervision",
       riskNotes: "History of overstating service claims — review carefully",
       expectedLeads: 140,
-      expectedCpl: 200,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-07-21",
     },
@@ -613,7 +590,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "DM to book festive care pickup",
     submissionDeadline: "2026-08-11",
     publishDate: "2026-08-16",
-    amount: 15000,
     paymentTerms: "100% after publishing",
     paymentStatus: "Not due",
     status: "internal_approval",
@@ -627,12 +603,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 27000,
       engagement: 7.3,
       previousPerformance: "No previous Clean Craft collaboration",
-      quotedCost: 15000,
       estimatedReach: 34000,
       brandSuitability: "Suitable",
       riskNotes: "Unproven with Clean Craft — start with a single reel",
       expectedLeads: 85,
-      expectedCpl: 176,
     },
     versions: [],
     audit: [{ at: "2026-08-04", by: "Nikhil Arora", action: "Creator shortlisted and sent for internal approval" }],
@@ -656,7 +630,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Find your nearest Clean Craft store",
     submissionDeadline: "2026-08-04",
     publishDate: "2026-08-08",
-    amount: 54000,
     paymentTerms: "50% advance, 50% after publishing",
     paymentStatus: "Partly paid",
     status: "under_review",
@@ -670,12 +643,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 96000,
       engagement: 6.4,
       previousPerformance: "Best performing creator, average CPL ₹142",
-      quotedCost: 54000,
       estimatedReach: 240000,
       brandSuitability: "Suitable",
       riskNotes: "None",
       expectedLeads: 420,
-      expectedCpl: 129,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-07-26",
     },
@@ -728,7 +699,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Tap to book a slot",
     submissionDeadline: "2026-08-06",
     publishDate: "2026-08-09",
-    amount: 6000,
     paymentTerms: "100% after publishing",
     paymentStatus: "Not due",
     status: "scheduled",
@@ -742,12 +712,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 41000,
       engagement: 8.1,
       previousPerformance: "CPL ₹168 on the previous reel",
-      quotedCost: 6000,
       estimatedReach: 24000,
       brandSuitability: "Suitable",
       riskNotes: "None",
       expectedLeads: 45,
-      expectedCpl: 133,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-08-02",
     },
@@ -800,7 +768,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Visit the Adajan store",
     submissionDeadline: "2026-07-28",
     publishDate: "2026-08-02",
-    amount: 24000,
     paymentTerms: "50% advance, 50% after publishing",
     paymentStatus: "On hold",
     status: "on_hold",
@@ -814,12 +781,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 33000,
       engagement: 3.9,
       previousPerformance: "1 earlier collaboration delivered 9 days late",
-      quotedCost: 24000,
       estimatedReach: 38000,
       brandSuitability: "Suitable",
       riskNotes: "Reliability rating 2.9 — monitor deadlines closely",
       expectedLeads: 95,
-      expectedCpl: 253,
       approvedBy: "Marketing Manager — Devika Rao",
       approvedOn: "2026-07-14",
     },
@@ -861,7 +826,6 @@ export const COLLABORATIONS: Collaboration[] = [
     callToAction: "Book now",
     submissionDeadline: "—",
     publishDate: "—",
-    amount: 40000,
     paymentTerms: "—",
     paymentStatus: "Not due",
     status: "rejected",
@@ -875,12 +839,10 @@ export const COLLABORATIONS: Collaboration[] = [
       avgViews: 21000,
       engagement: 0.8,
       previousPerformance: "None",
-      quotedCost: 40000,
       estimatedReach: 60000,
       brandSuitability: "Not suitable — inflated follower profile",
       riskNotes: "Brand-safety concern escalated to the manager",
       expectedLeads: 40,
-      expectedCpl: 1000,
     },
     versions: [],
     audit: [
@@ -945,7 +907,6 @@ export const COLLAB_PERFORMANCE_PREP = {
   avgCorrectionRounds: 1.3,
   qualifiedLeads: 968,
   orders: 402,
-  salesValue: 1124000,
   avgCostPerLead: 168,
   creatorReturn: 4.6,
   highPerformingCreators: ["Jaipur Food & Life — Ankit Sharma", "Pune Homemaker Diaries — Sneha Kulkarni"],

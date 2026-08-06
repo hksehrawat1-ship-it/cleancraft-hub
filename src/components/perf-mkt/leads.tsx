@@ -496,7 +496,7 @@ export function LeadsSalesPage() {
             <table className="w-full min-w-[1100px] text-sm">
               <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <tr>
-                  {["Store ID", "Store / City", "RM", "Marketing Exec", "Spend", "Leads", "Qualified", "Orders", "Sales", "Lead→Order", "CPL", "CPA", "ROAS", "Status", "Next Action"].map((h) => (
+                  {["Store ID", "Store / City", "RM", "Marketing Exec", "Leads", "Qualified", "Orders", "Lead→Order", "% of Target", "Status", "Next Action"].map((h) => (
                     <th key={h} className="whitespace-nowrap px-3 py-2 text-left font-medium">{h}</th>
                   ))}
                 </tr>
@@ -511,15 +511,11 @@ export function LeadsSalesPage() {
                     </td>
                     <td className="whitespace-nowrap px-3 py-2">{s.rm}</td>
                     <td className="whitespace-nowrap px-3 py-2">{s.executive}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(s.spend)}</td>
                     <td className="px-3 py-2">{s.leads}</td>
                     <td className="px-3 py-2">{s.qualified}</td>
                     <td className="px-3 py-2">{s.orders}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(s.sales)}</td>
                     <td className="px-3 py-2">{pct(s.orders, s.leads)}%</td>
-                    <td className="whitespace-nowrap px-3 py-2">₹{cpl(s.spend, s.leads).toLocaleString("en-IN")}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{s.orders ? `₹${cpa(s.spend, s.orders).toLocaleString("en-IN")}` : "—"}</td>
-                    <td className="px-3 py-2">{roas(s.sales, s.spend)}x</td>
+                    <td className="px-3 py-2">{pct(s.orders, s.targetOrders)}%</td>
                     <td className="px-3 py-2">
                       <Badge variant="outline" className={toneClasses[statusMeta[s.status].tone]}>{statusMeta[s.status].label}</Badge>
                     </td>
@@ -542,7 +538,7 @@ export function LeadsSalesPage() {
             <table className="w-full min-w-[900px] text-sm">
               <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <tr>
-                  {["Source", "Spend", "Leads", "Qualified", "Orders", "Sales", "CPL", "CPA", "ROAS", "Tracking"].map((h) => (
+                  {["Source", "Leads", "Qualified", "Orders", "Conversion", "Tracking"].map((h) => (
                     <th key={h} className="whitespace-nowrap px-3 py-2 text-left font-medium">{h}</th>
                   ))}
                 </tr>
@@ -551,14 +547,10 @@ export function LeadsSalesPage() {
                 {SOURCE_RESULTS.filter((s) => fSource === ALL || s.source === fSource).map((s) => (
                   <tr key={s.source} className="border-t">
                     <td className="whitespace-nowrap px-3 py-2 font-medium">{s.source}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{s.spend ? inr(s.spend) : "No paid spend"}</td>
                     <td className="px-3 py-2">{s.leads}</td>
                     <td className="px-3 py-2">{s.qualified}</td>
                     <td className="px-3 py-2">{s.orders}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(s.sales)}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{s.spend ? `₹${cpl(s.spend, s.leads).toLocaleString("en-IN")}` : "—"}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{s.spend && s.orders ? `₹${cpa(s.spend, s.orders).toLocaleString("en-IN")}` : "—"}</td>
-                    <td className="px-3 py-2">{s.spend ? `${roas(s.sales, s.spend)}x` : "—"}</td>
+                    <td className="px-3 py-2">{pct(s.orders, s.leads)}%</td>
                     <td className="px-3 py-2">
                       <Badge variant="outline" className={s.tracked ? toneClasses.healthy : toneClasses.attention}>
                         {s.tracked ? "Tracked" : "Manual / partial"}
@@ -582,7 +574,7 @@ export function LeadsSalesPage() {
             <table className="w-full min-w-[1150px] text-sm">
               <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <tr>
-                  {["Campaign ID", "Campaign", "Store", "Platform", "Objective", "Dates", "Spend", "Leads", "Qualified", "Orders", "Sales", "CPL", "CPA", "ROAS", "Status", ""].map((h, i) => (
+                  {["Campaign ID", "Campaign", "Store", "Platform", "Objective", "Dates", "Leads", "Qualified", "Orders", "Conversion", "Status", ""].map((h, i) => (
                     <th key={`${h}-${i}`} className="whitespace-nowrap px-3 py-2 text-left font-medium">{h}</th>
                   ))}
                 </tr>
@@ -596,14 +588,10 @@ export function LeadsSalesPage() {
                     <td className="whitespace-nowrap px-3 py-2">{c.platform}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-xs">{c.objective}</td>
                     <td className="whitespace-nowrap px-3 py-2 text-xs">{c.startDate} → {c.endDate ?? "Ongoing"}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(c.spend)}</td>
                     <td className="px-3 py-2">{c.leads}</td>
                     <td className="px-3 py-2">{c.qualified}</td>
                     <td className="px-3 py-2">{c.orders}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(c.sales)}</td>
-                    <td className="whitespace-nowrap px-3 py-2">₹{cpl(c.spend, c.leads).toLocaleString("en-IN")}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{c.orders ? `₹${cpa(c.spend, c.orders).toLocaleString("en-IN")}` : "—"}</td>
-                    <td className="px-3 py-2">{roas(c.sales, c.spend)}x</td>
+                    <td className="px-3 py-2">{pct(c.orders, c.leads)}%</td>
                     <td className="px-3 py-2">
                       <Badge variant="outline" className={c.status === "Running" ? toneClasses.active : c.status === "Needs Review" ? toneClasses.overdue : c.status === "Completed" ? toneClasses.healthy : toneClasses.draft}>
                         {c.status}
@@ -652,7 +640,7 @@ export function LeadsSalesPage() {
                   </div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>{l.storeId === "COMPANY" ? "Company franchise" : l.storeId}</span>
-                    <span>{l.orderValue ? inr(l.orderValue) : l.receivedAt}</span>
+                    <span>{l.orderStatus === "Order Placed" ? "Order placed" : l.receivedAt}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -674,7 +662,7 @@ export function LeadsSalesPage() {
             <table className="w-full min-w-[900px] text-sm">
               <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                 <tr>
-                  {["Entry ID", "Store", "Reference", "Order Date", "Order Value", "Lead ID", "Source / Promo", "Proof", "Submitted By", "Verification"].map((h) => (
+                  {["Entry ID", "Store", "Reference", "Order Date", "Lead ID", "Source / Promo", "Proof", "Submitted By", "Verification"].map((h) => (
                     <th key={h} className="whitespace-nowrap px-3 py-2 text-left font-medium">{h}</th>
                   ))}
                 </tr>
@@ -686,7 +674,6 @@ export function LeadsSalesPage() {
                     <td className="whitespace-nowrap px-3 py-2">{o.storeId}</td>
                     <td className="whitespace-nowrap px-3 py-2">{o.reference}</td>
                     <td className="whitespace-nowrap px-3 py-2">{o.orderDate}</td>
-                    <td className="whitespace-nowrap px-3 py-2">{inr(o.orderValue)}</td>
                     <td className="whitespace-nowrap px-3 py-2 font-mono text-xs">{o.leadId ?? "—"}</td>
                     <td className="whitespace-nowrap px-3 py-2">{o.sourceOrPromo}</td>
                     <td className="px-3 py-2 text-xs">{o.proof}</td>
@@ -798,9 +785,7 @@ export function LeadsSalesPage() {
                   <Field label="Contacted" value={openLead.contacted ? "Yes" : "No"} />
                   <Field label="Qualified / unqualified" value={openLead.quality} />
                   <Field label="Reason" value={openLead.qualityReason} />
-                  <Field label="Expected value" value={openLead.expectedValue ? inr(openLead.expectedValue) : "—"} />
                   <Field label="Order status" value={openLead.orderStatus} />
-                  <Field label="Order value" value={openLead.orderValue ? inr(openLead.orderValue) : "—"} />
                   <Field label="Lost reason" value={openLead.lostReason} />
                   <Field label="Last CRM update" value={openLead.lastCrmUpdate} />
                 </div>
@@ -894,10 +879,6 @@ export function LeadsSalesPage() {
             <div className="space-y-1">
               <Label className="text-xs">Order date</Label>
               <Input type="date" />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Order value (₹)</Label>
-              <Input type="number" min={0} placeholder="0" />
             </div>
             <div className="space-y-1">
               <Label className="text-xs">Related Lead ID (if available)</Label>

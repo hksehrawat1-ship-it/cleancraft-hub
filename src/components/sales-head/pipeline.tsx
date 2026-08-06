@@ -59,11 +59,7 @@ export type Opportunity = {
   priority: Priority;
   score: number;
   owner: string;
-  value: number;
-  proposalAmount?: number;
-  paymentAmount?: number;
   paymentDueAt?: string;
-  wonAmount?: number;
   lostReason?: string;
   stageSince: string;
   lastInteraction: string;
@@ -84,7 +80,7 @@ const UNITS = ["Franchise", "Master Franchise", "Corporate Tie-up"];
 const SOURCES = ["Google Ads", "Meta Ads", "Website", "Referral", "Exhibition", "Walk-in"];
 const CAMPAIGNS = ["FR-Q3-Search", "FR-Q3-Social", "Expo-Mumbai", "Referral Drive", "Organic"];
 
-const MONTH_TARGET = 6000000; // ₹60L
+const MONTH_TARGET_DEALS = 8; // deals target for the month
 
 /* --------------------------------- helpers -------------------------------- */
 
@@ -101,9 +97,6 @@ const thisMonthDay = (day: number) => {
 const daysSince = (iso: string) => Math.max(0, Math.round((now - new Date(iso).getTime()) / 86400000));
 const hoursSince = (iso: string) => Math.max(0, Math.round((now - new Date(iso).getTime()) / 3600000));
 
-export const inr = (v: number) =>
-  v >= 10000000 ? `₹${(v / 10000000).toFixed(2)}Cr` : v >= 100000 ? `₹${(v / 100000).toFixed(1)}L` : `₹${Math.round(v / 1000)}K`;
-
 const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—";
 const fmtDateTime = (iso: string) =>
@@ -119,7 +112,7 @@ const prioTone = (p: Priority) =>
 
 function mk(
   n: number, name: string, city: string, state: string, stage: PipeStage, owner: string,
-  value: number, score: number, priority: Priority, extra: Partial<Opportunity> = {},
+  score: number, priority: Priority, extra: Partial<Opportunity> = {},
 ): Opportunity {
   return {
     id: `OPP-${3000 + n}`,
@@ -128,7 +121,7 @@ function mk(
     unit: UNITS[n % UNITS.length],
     source: SOURCES[n % SOURCES.length],
     campaign: CAMPAIGNS[n % CAMPAIGNS.length],
-    stage, priority, score, owner, value,
+    stage, priority, score, owner,
     stageSince: dAgo((n % 9) + 1),
     lastInteraction: hAgo(((n * 7) % 60) + 2),
     nextAction: "Follow-up call",
