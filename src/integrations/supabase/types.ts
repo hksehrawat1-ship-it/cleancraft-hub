@@ -68,6 +68,30 @@ export type Database = {
           },
         ]
       }
+      departments: {
+        Row: {
+          code: string
+          created_at: string
+          manager_role: Database["public"]["Enums"]["app_role"] | null
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          manager_role?: Database["public"]["Enums"]["app_role"] | null
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          manager_role?: Database["public"]["Enums"]["app_role"] | null
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       franchise_bookings: {
         Row: {
           booked_at: string
@@ -306,6 +330,47 @@ export type Database = {
             columns: ["assigned_to"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+          work_item_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+          work_item_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
             referencedColumns: ["id"]
           },
         ]
@@ -748,6 +813,329 @@ export type Database = {
         }
         Relationships: []
       }
+      work_assignments: {
+        Row: {
+          accepted_at: string | null
+          assigned_by: string | null
+          created_at: string
+          from_user: string | null
+          id: string
+          missing_information: string | null
+          reassign_reason: string | null
+          return_reason: string | null
+          returned_at: string | null
+          superseded_at: string | null
+          to_role: Database["public"]["Enums"]["app_role"] | null
+          to_user: string | null
+          work_item_id: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          assigned_by?: string | null
+          created_at?: string
+          from_user?: string | null
+          id?: string
+          missing_information?: string | null
+          reassign_reason?: string | null
+          return_reason?: string | null
+          returned_at?: string | null
+          superseded_at?: string | null
+          to_role?: Database["public"]["Enums"]["app_role"] | null
+          to_user?: string | null
+          work_item_id: string
+        }
+        Update: {
+          accepted_at?: string | null
+          assigned_by?: string | null
+          created_at?: string
+          from_user?: string | null
+          id?: string
+          missing_information?: string | null
+          reassign_reason?: string | null
+          return_reason?: string | null
+          returned_at?: string | null
+          superseded_at?: string | null
+          to_role?: Database["public"]["Enums"]["app_role"] | null
+          to_user?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_assignments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_attachments: {
+        Row: {
+          created_at: string
+          external_url: string | null
+          id: string
+          kind: string
+          label: string | null
+          storage_path: string | null
+          uploaded_by: string | null
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          external_url?: string | null
+          id?: string
+          kind?: string
+          label?: string | null
+          storage_path?: string | null
+          uploaded_by?: string | null
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          external_url?: string | null
+          id?: string
+          kind?: string
+          label?: string | null
+          storage_path?: string | null
+          uploaded_by?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event_type: string
+          from_value: string | null
+          id: string
+          reason: string | null
+          to_value: string | null
+          work_item_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event_type: string
+          from_value?: string | null
+          id?: string
+          reason?: string | null
+          to_value?: string | null
+          work_item_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event_type?: string
+          from_value?: string | null
+          id?: string
+          reason?: string | null
+          to_value?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_events_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_handovers: {
+        Row: {
+          accepted_by: string | null
+          created_at: string
+          decided_at: string | null
+          decision: Database["public"]["Enums"]["handover_state"]
+          from_department: string | null
+          id: string
+          reason: string | null
+          sent_by: string | null
+          to_department: string | null
+          work_item_id: string
+        }
+        Insert: {
+          accepted_by?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision?: Database["public"]["Enums"]["handover_state"]
+          from_department?: string | null
+          id?: string
+          reason?: string | null
+          sent_by?: string | null
+          to_department?: string | null
+          work_item_id: string
+        }
+        Update: {
+          accepted_by?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision?: Database["public"]["Enums"]["handover_state"]
+          from_department?: string | null
+          id?: string
+          reason?: string | null
+          sent_by?: string | null
+          to_department?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_handovers_from_department_fkey"
+            columns: ["from_department"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "work_handovers_to_department_fkey"
+            columns: ["to_department"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "work_handovers_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_items: {
+        Row: {
+          approval_required: boolean
+          assigned_role: Database["public"]["Enums"]["app_role"] | null
+          assigned_user: string | null
+          cancelled_reason: string | null
+          completed_at: string | null
+          completion_summary: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_at: string | null
+          from_department: string | null
+          handover_status: Database["public"]["Enums"]["handover_state"]
+          id: string
+          is_test: boolean
+          issues_remaining: string | null
+          master_code: string | null
+          master_id: string | null
+          master_type: Database["public"]["Enums"]["work_master_type"]
+          next_action: string | null
+          notes_internal: string | null
+          parent_item_id: string | null
+          priority: Database["public"]["Enums"]["task_priority"]
+          record_code: string | null
+          record_type: Database["public"]["Enums"]["work_record_type"]
+          required_action: string | null
+          reviewed_by: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["work_status"]
+          title: string
+          to_department: string | null
+          updated_at: string
+        }
+        Insert: {
+          approval_required?: boolean
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          assigned_user?: string | null
+          cancelled_reason?: string | null
+          completed_at?: string | null
+          completion_summary?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          from_department?: string | null
+          handover_status?: Database["public"]["Enums"]["handover_state"]
+          id?: string
+          is_test?: boolean
+          issues_remaining?: string | null
+          master_code?: string | null
+          master_id?: string | null
+          master_type?: Database["public"]["Enums"]["work_master_type"]
+          next_action?: string | null
+          notes_internal?: string | null
+          parent_item_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          record_code?: string | null
+          record_type?: Database["public"]["Enums"]["work_record_type"]
+          required_action?: string | null
+          reviewed_by?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["work_status"]
+          title: string
+          to_department?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approval_required?: boolean
+          assigned_role?: Database["public"]["Enums"]["app_role"] | null
+          assigned_user?: string | null
+          cancelled_reason?: string | null
+          completed_at?: string | null
+          completion_summary?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_at?: string | null
+          from_department?: string | null
+          handover_status?: Database["public"]["Enums"]["handover_state"]
+          id?: string
+          is_test?: boolean
+          issues_remaining?: string | null
+          master_code?: string | null
+          master_id?: string | null
+          master_type?: Database["public"]["Enums"]["work_master_type"]
+          next_action?: string | null
+          notes_internal?: string | null
+          parent_item_id?: string | null
+          priority?: Database["public"]["Enums"]["task_priority"]
+          record_code?: string | null
+          record_type?: Database["public"]["Enums"]["work_record_type"]
+          required_action?: string | null
+          reviewed_by?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["work_status"]
+          title?: string
+          to_department?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_items_from_department_fkey"
+            columns: ["from_department"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "work_items_parent_item_id_fkey"
+            columns: ["parent_item_id"]
+            isOneToOne: false
+            referencedRelation: "work_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_items_to_department_fkey"
+            columns: ["to_department"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
     }
     Views: {
       record_lineage: {
@@ -856,6 +1244,11 @@ export type Database = {
         Returns: boolean
       }
       is_leadership: { Args: { _user_id: string }; Returns: boolean }
+      manages_department: {
+        Args: { _dept: string; _user_id: string }
+        Returns: boolean
+      }
+      user_department: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       app_role:
@@ -877,7 +1270,21 @@ export type Database = {
         | "video_editor"
         | "hr_head"
       complaint_status: "open" | "in_progress" | "resolved" | "closed"
+      handover_state: "not_applicable" | "sent" | "accepted" | "returned"
       lead_status: "new" | "hot" | "warm" | "cold" | "lost" | "converted"
+      notification_type:
+        | "new_assignment"
+        | "assignment_returned"
+        | "deadline_approaching"
+        | "work_overdue"
+        | "information_requested"
+        | "submitted_for_review"
+        | "work_approved"
+        | "correction_requested"
+        | "handover_sent"
+        | "handover_accepted"
+        | "handover_returned"
+        | "work_reopened"
       payment_status: "pending" | "paid" | "overdue" | "cancelled"
       project_status:
         | "planning"
@@ -893,6 +1300,45 @@ export type Database = {
         | "blocked"
         | "completed"
         | "cancelled"
+      work_master_type:
+        | "lead"
+        | "franchise"
+        | "project"
+        | "store"
+        | "employee"
+        | "none"
+      work_record_type:
+        | "task"
+        | "request"
+        | "ticket"
+        | "handover"
+        | "content"
+        | "payment_request"
+        | "clearance"
+        | "dispatch"
+        | "packing"
+        | "training"
+        | "survey"
+        | "marketing"
+        | "hr"
+        | "support"
+      work_status:
+        | "draft"
+        | "submitted"
+        | "assigned"
+        | "accepted"
+        | "in_progress"
+        | "submitted_for_review"
+        | "approved"
+        | "completed"
+        | "closed"
+        | "information_required"
+        | "returned"
+        | "blocked"
+        | "correction_required"
+        | "reassigned"
+        | "cancelled"
+        | "reopened"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1040,7 +1486,22 @@ export const Constants = {
         "hr_head",
       ],
       complaint_status: ["open", "in_progress", "resolved", "closed"],
+      handover_state: ["not_applicable", "sent", "accepted", "returned"],
       lead_status: ["new", "hot", "warm", "cold", "lost", "converted"],
+      notification_type: [
+        "new_assignment",
+        "assignment_returned",
+        "deadline_approaching",
+        "work_overdue",
+        "information_requested",
+        "submitted_for_review",
+        "work_approved",
+        "correction_requested",
+        "handover_sent",
+        "handover_accepted",
+        "handover_returned",
+        "work_reopened",
+      ],
       payment_status: ["pending", "paid", "overdue", "cancelled"],
       project_status: [
         "planning",
@@ -1057,6 +1518,48 @@ export const Constants = {
         "blocked",
         "completed",
         "cancelled",
+      ],
+      work_master_type: [
+        "lead",
+        "franchise",
+        "project",
+        "store",
+        "employee",
+        "none",
+      ],
+      work_record_type: [
+        "task",
+        "request",
+        "ticket",
+        "handover",
+        "content",
+        "payment_request",
+        "clearance",
+        "dispatch",
+        "packing",
+        "training",
+        "survey",
+        "marketing",
+        "hr",
+        "support",
+      ],
+      work_status: [
+        "draft",
+        "submitted",
+        "assigned",
+        "accepted",
+        "in_progress",
+        "submitted_for_review",
+        "approved",
+        "completed",
+        "closed",
+        "information_required",
+        "returned",
+        "blocked",
+        "correction_required",
+        "reassigned",
+        "cancelled",
+        "reopened",
       ],
     },
   },

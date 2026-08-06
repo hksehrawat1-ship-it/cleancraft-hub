@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { MyWorkQueue } from "@/components/work/my-work-queue";
+import { TeamWorkQueue } from "@/components/work/team-work-queue";
+import { NotificationBell } from "@/components/work/notification-bell";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -186,7 +189,17 @@ function ProjectCoordinatorDashboard() {
           ))}
         </div>
 
-        {active === "roles" && <RolesSection />}
+        {active === "roles" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Live shared work</h2>
+              <NotificationBell />
+            </div>
+            <MyWorkQueue />
+            <TeamWorkQueue department="projects" title="Projects Department Work" />
+            <RolesSection />
+          </div>
+        )}
         {active === "projects-status" && <ProjectsStatusSection />}
         {active === "stores" && <StoresSection />}
         {active === "mind-task" && <MindTaskSection />}
