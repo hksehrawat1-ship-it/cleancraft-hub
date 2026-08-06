@@ -28,6 +28,7 @@ import { Route as AuthenticatedMasterRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedPackingStaffRouteImport } from './routes/_authenticated/packing-staff'
 import { Route as AuthenticatedPantryChar38cleaningRouteImport } from './routes/_authenticated/pantry&cleaning'
 import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
+import { Route as AuthenticatedPerformanceMarketingRouteRouteImport } from './routes/_authenticated/performance-marketing/route'
 import { Route as AuthenticatedPmeRouteImport } from './routes/_authenticated/pme'
 import { Route as AuthenticatedProjectCoordinatorRouteImport } from './routes/_authenticated/project-coordinator'
 import { Route as AuthenticatedProjectManagerRouteImport } from './routes/_authenticated/project-manager'
@@ -45,6 +46,16 @@ import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedVideoEditorRouteImport } from './routes/_authenticated/video-editor'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedLeadsIdRouteImport } from './routes/_authenticated/leads_.$id'
+import { Route as AuthenticatedPerformanceMarketingIndexRouteImport } from './routes/_authenticated/performance-marketing/index'
+import { Route as AuthenticatedPerformanceMarketingCampaignsRouteImport } from './routes/_authenticated/performance-marketing/campaigns'
+import { Route as AuthenticatedPerformanceMarketingCreativesRouteImport } from './routes/_authenticated/performance-marketing/creatives'
+import { Route as AuthenticatedPerformanceMarketingDashboardRouteImport } from './routes/_authenticated/performance-marketing/dashboard'
+import { Route as AuthenticatedPerformanceMarketingInfluencersRouteImport } from './routes/_authenticated/performance-marketing/influencers'
+import { Route as AuthenticatedPerformanceMarketingLeadsSalesRouteImport } from './routes/_authenticated/performance-marketing/leads-sales'
+import { Route as AuthenticatedPerformanceMarketingPerformanceRouteImport } from './routes/_authenticated/performance-marketing/performance'
+import { Route as AuthenticatedPerformanceMarketingProfilesRouteImport } from './routes/_authenticated/performance-marketing/profiles'
+import { Route as AuthenticatedPerformanceMarketingRequestsRouteImport } from './routes/_authenticated/performance-marketing/requests'
+import { Route as AuthenticatedPerformanceMarketingStoresRouteImport } from './routes/_authenticated/performance-marketing/stores'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -148,6 +159,12 @@ const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPerformanceMarketingRouteRoute =
+  AuthenticatedPerformanceMarketingRouteRouteImport.update({
+    id: '/performance-marketing',
+    path: '/performance-marketing',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPmeRoute = AuthenticatedPmeRouteImport.update({
   id: '/pme',
   path: '/pme',
@@ -239,11 +256,72 @@ const AuthenticatedLeadsIdRoute = AuthenticatedLeadsIdRouteImport.update({
   path: '/leads/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPerformanceMarketingIndexRoute =
+  AuthenticatedPerformanceMarketingIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingCampaignsRoute =
+  AuthenticatedPerformanceMarketingCampaignsRouteImport.update({
+    id: '/campaigns',
+    path: '/campaigns',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingCreativesRoute =
+  AuthenticatedPerformanceMarketingCreativesRouteImport.update({
+    id: '/creatives',
+    path: '/creatives',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingDashboardRoute =
+  AuthenticatedPerformanceMarketingDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingInfluencersRoute =
+  AuthenticatedPerformanceMarketingInfluencersRouteImport.update({
+    id: '/influencers',
+    path: '/influencers',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingLeadsSalesRoute =
+  AuthenticatedPerformanceMarketingLeadsSalesRouteImport.update({
+    id: '/leads-sales',
+    path: '/leads-sales',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingPerformanceRoute =
+  AuthenticatedPerformanceMarketingPerformanceRouteImport.update({
+    id: '/performance',
+    path: '/performance',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingProfilesRoute =
+  AuthenticatedPerformanceMarketingProfilesRouteImport.update({
+    id: '/profiles',
+    path: '/profiles',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingRequestsRoute =
+  AuthenticatedPerformanceMarketingRequestsRouteImport.update({
+    id: '/requests',
+    path: '/requests',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
+const AuthenticatedPerformanceMarketingStoresRoute =
+  AuthenticatedPerformanceMarketingStoresRouteImport.update({
+    id: '/stores',
+    path: '/stores',
+    getParentRoute: () => AuthenticatedPerformanceMarketingRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
+  '/performance-marketing': typeof AuthenticatedPerformanceMarketingRouteRouteWithChildren
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/account-manager': typeof AuthenticatedAccountManagerRoute
@@ -276,6 +354,16 @@ export interface FileRoutesByFullPath {
   '/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/leads/$id': typeof AuthenticatedLeadsIdRoute
+  '/performance-marketing/campaigns': typeof AuthenticatedPerformanceMarketingCampaignsRoute
+  '/performance-marketing/creatives': typeof AuthenticatedPerformanceMarketingCreativesRoute
+  '/performance-marketing/dashboard': typeof AuthenticatedPerformanceMarketingDashboardRoute
+  '/performance-marketing/influencers': typeof AuthenticatedPerformanceMarketingInfluencersRoute
+  '/performance-marketing/leads-sales': typeof AuthenticatedPerformanceMarketingLeadsSalesRoute
+  '/performance-marketing/performance': typeof AuthenticatedPerformanceMarketingPerformanceRoute
+  '/performance-marketing/profiles': typeof AuthenticatedPerformanceMarketingProfilesRoute
+  '/performance-marketing/requests': typeof AuthenticatedPerformanceMarketingRequestsRoute
+  '/performance-marketing/stores': typeof AuthenticatedPerformanceMarketingStoresRoute
+  '/performance-marketing/': typeof AuthenticatedPerformanceMarketingIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -313,6 +401,16 @@ export interface FileRoutesByTo {
   '/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/leads/$id': typeof AuthenticatedLeadsIdRoute
+  '/performance-marketing/campaigns': typeof AuthenticatedPerformanceMarketingCampaignsRoute
+  '/performance-marketing/creatives': typeof AuthenticatedPerformanceMarketingCreativesRoute
+  '/performance-marketing/dashboard': typeof AuthenticatedPerformanceMarketingDashboardRoute
+  '/performance-marketing/influencers': typeof AuthenticatedPerformanceMarketingInfluencersRoute
+  '/performance-marketing/leads-sales': typeof AuthenticatedPerformanceMarketingLeadsSalesRoute
+  '/performance-marketing/performance': typeof AuthenticatedPerformanceMarketingPerformanceRoute
+  '/performance-marketing/profiles': typeof AuthenticatedPerformanceMarketingProfilesRoute
+  '/performance-marketing/requests': typeof AuthenticatedPerformanceMarketingRequestsRoute
+  '/performance-marketing/stores': typeof AuthenticatedPerformanceMarketingStoresRoute
+  '/performance-marketing': typeof AuthenticatedPerformanceMarketingIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -320,6 +418,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
+  '/_authenticated/performance-marketing': typeof AuthenticatedPerformanceMarketingRouteRouteWithChildren
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/account-manager': typeof AuthenticatedAccountManagerRoute
@@ -352,6 +451,16 @@ export interface FileRoutesById {
   '/_authenticated/video-editor': typeof AuthenticatedVideoEditorRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/leads_/$id': typeof AuthenticatedLeadsIdRoute
+  '/_authenticated/performance-marketing/campaigns': typeof AuthenticatedPerformanceMarketingCampaignsRoute
+  '/_authenticated/performance-marketing/creatives': typeof AuthenticatedPerformanceMarketingCreativesRoute
+  '/_authenticated/performance-marketing/dashboard': typeof AuthenticatedPerformanceMarketingDashboardRoute
+  '/_authenticated/performance-marketing/influencers': typeof AuthenticatedPerformanceMarketingInfluencersRoute
+  '/_authenticated/performance-marketing/leads-sales': typeof AuthenticatedPerformanceMarketingLeadsSalesRoute
+  '/_authenticated/performance-marketing/performance': typeof AuthenticatedPerformanceMarketingPerformanceRoute
+  '/_authenticated/performance-marketing/profiles': typeof AuthenticatedPerformanceMarketingProfilesRoute
+  '/_authenticated/performance-marketing/requests': typeof AuthenticatedPerformanceMarketingRequestsRoute
+  '/_authenticated/performance-marketing/stores': typeof AuthenticatedPerformanceMarketingStoresRoute
+  '/_authenticated/performance-marketing/': typeof AuthenticatedPerformanceMarketingIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -359,6 +468,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/mcp'
+    | '/performance-marketing'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/account-manager'
@@ -391,6 +501,16 @@ export interface FileRouteTypes {
     | '/video-editor'
     | '/.mcp/invoke-tool/$tool'
     | '/leads/$id'
+    | '/performance-marketing/campaigns'
+    | '/performance-marketing/creatives'
+    | '/performance-marketing/dashboard'
+    | '/performance-marketing/influencers'
+    | '/performance-marketing/leads-sales'
+    | '/performance-marketing/performance'
+    | '/performance-marketing/profiles'
+    | '/performance-marketing/requests'
+    | '/performance-marketing/stores'
+    | '/performance-marketing/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -428,12 +548,23 @@ export interface FileRouteTypes {
     | '/video-editor'
     | '/.mcp/invoke-tool/$tool'
     | '/leads/$id'
+    | '/performance-marketing/campaigns'
+    | '/performance-marketing/creatives'
+    | '/performance-marketing/dashboard'
+    | '/performance-marketing/influencers'
+    | '/performance-marketing/leads-sales'
+    | '/performance-marketing/performance'
+    | '/performance-marketing/profiles'
+    | '/performance-marketing/requests'
+    | '/performance-marketing/stores'
+    | '/performance-marketing'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/mcp'
+    | '/_authenticated/performance-marketing'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/account-manager'
@@ -466,6 +597,16 @@ export interface FileRouteTypes {
     | '/_authenticated/video-editor'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/leads_/$id'
+    | '/_authenticated/performance-marketing/campaigns'
+    | '/_authenticated/performance-marketing/creatives'
+    | '/_authenticated/performance-marketing/dashboard'
+    | '/_authenticated/performance-marketing/influencers'
+    | '/_authenticated/performance-marketing/leads-sales'
+    | '/_authenticated/performance-marketing/performance'
+    | '/_authenticated/performance-marketing/profiles'
+    | '/_authenticated/performance-marketing/requests'
+    | '/_authenticated/performance-marketing/stores'
+    | '/_authenticated/performance-marketing/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -613,6 +754,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/performance-marketing': {
+      id: '/_authenticated/performance-marketing'
+      path: '/performance-marketing'
+      fullPath: '/performance-marketing'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pme': {
       id: '/_authenticated/pme'
       path: '/pme'
@@ -732,10 +880,123 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeadsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/performance-marketing/': {
+      id: '/_authenticated/performance-marketing/'
+      path: '/'
+      fullPath: '/performance-marketing/'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingIndexRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/campaigns': {
+      id: '/_authenticated/performance-marketing/campaigns'
+      path: '/campaigns'
+      fullPath: '/performance-marketing/campaigns'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingCampaignsRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/creatives': {
+      id: '/_authenticated/performance-marketing/creatives'
+      path: '/creatives'
+      fullPath: '/performance-marketing/creatives'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingCreativesRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/dashboard': {
+      id: '/_authenticated/performance-marketing/dashboard'
+      path: '/dashboard'
+      fullPath: '/performance-marketing/dashboard'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingDashboardRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/influencers': {
+      id: '/_authenticated/performance-marketing/influencers'
+      path: '/influencers'
+      fullPath: '/performance-marketing/influencers'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingInfluencersRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/leads-sales': {
+      id: '/_authenticated/performance-marketing/leads-sales'
+      path: '/leads-sales'
+      fullPath: '/performance-marketing/leads-sales'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingLeadsSalesRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/performance': {
+      id: '/_authenticated/performance-marketing/performance'
+      path: '/performance'
+      fullPath: '/performance-marketing/performance'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingPerformanceRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/profiles': {
+      id: '/_authenticated/performance-marketing/profiles'
+      path: '/profiles'
+      fullPath: '/performance-marketing/profiles'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingProfilesRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/requests': {
+      id: '/_authenticated/performance-marketing/requests'
+      path: '/requests'
+      fullPath: '/performance-marketing/requests'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingRequestsRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
+    '/_authenticated/performance-marketing/stores': {
+      id: '/_authenticated/performance-marketing/stores'
+      path: '/stores'
+      fullPath: '/performance-marketing/stores'
+      preLoaderRoute: typeof AuthenticatedPerformanceMarketingStoresRouteImport
+      parentRoute: typeof AuthenticatedPerformanceMarketingRouteRoute
+    }
   }
 }
 
+interface AuthenticatedPerformanceMarketingRouteRouteChildren {
+  AuthenticatedPerformanceMarketingCampaignsRoute: typeof AuthenticatedPerformanceMarketingCampaignsRoute
+  AuthenticatedPerformanceMarketingCreativesRoute: typeof AuthenticatedPerformanceMarketingCreativesRoute
+  AuthenticatedPerformanceMarketingDashboardRoute: typeof AuthenticatedPerformanceMarketingDashboardRoute
+  AuthenticatedPerformanceMarketingInfluencersRoute: typeof AuthenticatedPerformanceMarketingInfluencersRoute
+  AuthenticatedPerformanceMarketingLeadsSalesRoute: typeof AuthenticatedPerformanceMarketingLeadsSalesRoute
+  AuthenticatedPerformanceMarketingPerformanceRoute: typeof AuthenticatedPerformanceMarketingPerformanceRoute
+  AuthenticatedPerformanceMarketingProfilesRoute: typeof AuthenticatedPerformanceMarketingProfilesRoute
+  AuthenticatedPerformanceMarketingRequestsRoute: typeof AuthenticatedPerformanceMarketingRequestsRoute
+  AuthenticatedPerformanceMarketingStoresRoute: typeof AuthenticatedPerformanceMarketingStoresRoute
+  AuthenticatedPerformanceMarketingIndexRoute: typeof AuthenticatedPerformanceMarketingIndexRoute
+}
+
+const AuthenticatedPerformanceMarketingRouteRouteChildren: AuthenticatedPerformanceMarketingRouteRouteChildren =
+  {
+    AuthenticatedPerformanceMarketingCampaignsRoute:
+      AuthenticatedPerformanceMarketingCampaignsRoute,
+    AuthenticatedPerformanceMarketingCreativesRoute:
+      AuthenticatedPerformanceMarketingCreativesRoute,
+    AuthenticatedPerformanceMarketingDashboardRoute:
+      AuthenticatedPerformanceMarketingDashboardRoute,
+    AuthenticatedPerformanceMarketingInfluencersRoute:
+      AuthenticatedPerformanceMarketingInfluencersRoute,
+    AuthenticatedPerformanceMarketingLeadsSalesRoute:
+      AuthenticatedPerformanceMarketingLeadsSalesRoute,
+    AuthenticatedPerformanceMarketingPerformanceRoute:
+      AuthenticatedPerformanceMarketingPerformanceRoute,
+    AuthenticatedPerformanceMarketingProfilesRoute:
+      AuthenticatedPerformanceMarketingProfilesRoute,
+    AuthenticatedPerformanceMarketingRequestsRoute:
+      AuthenticatedPerformanceMarketingRequestsRoute,
+    AuthenticatedPerformanceMarketingStoresRoute:
+      AuthenticatedPerformanceMarketingStoresRoute,
+    AuthenticatedPerformanceMarketingIndexRoute:
+      AuthenticatedPerformanceMarketingIndexRoute,
+  }
+
+const AuthenticatedPerformanceMarketingRouteRouteWithChildren =
+  AuthenticatedPerformanceMarketingRouteRoute._addFileChildren(
+    AuthenticatedPerformanceMarketingRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPerformanceMarketingRouteRoute: typeof AuthenticatedPerformanceMarketingRouteRouteWithChildren
   AuthenticatedAccountManagerRoute: typeof AuthenticatedAccountManagerRoute
   AuthenticatedAdministrationManagerRoute: typeof AuthenticatedAdministrationManagerRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
@@ -768,6 +1029,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPerformanceMarketingRouteRoute:
+    AuthenticatedPerformanceMarketingRouteRouteWithChildren,
   AuthenticatedAccountManagerRoute: AuthenticatedAccountManagerRoute,
   AuthenticatedAdministrationManagerRoute:
     AuthenticatedAdministrationManagerRoute,
