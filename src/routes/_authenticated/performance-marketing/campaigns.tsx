@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { PerfMktCampaigns } from "@/components/perf-mkt/campaigns";
+
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/campaigns")({
   head: () => ({
@@ -15,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/camp
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Google & Meta Campaigns"
-      description="Paid campaigns per store, linked by Store ID."
-    />
-  ),
+  component: PerfMktCampaigns,
 });
+
