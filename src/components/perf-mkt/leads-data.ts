@@ -542,15 +542,6 @@ export const OFFLINE_RESULTS: OfflineResult[] = [
 export function safeDiv(a: number, b: number) {
   return b > 0 ? a / b : 0;
 }
-export function cpl(spend: number, leads: number) {
-  return Math.round(safeDiv(spend, leads));
-}
-export function cpa(spend: number, orders: number) {
-  return Math.round(safeDiv(spend, orders));
-}
-export function roas(sales: number, spend: number) {
-  return Number(safeDiv(sales, spend).toFixed(2));
-}
 export function pct(a: number, b: number) {
   return Math.round(safeDiv(a, b) * 1000) / 10;
 }
@@ -594,15 +585,14 @@ export function leadAlerts(): LeadAlert[] {
   });
 
   STORE_RESULTS.forEach((s) => {
-    if (s.spend > 20000 && s.qualified < 6) {
-      out.push({ id: `${s.storeId}-spend`, severity: "high", title: "High spend with no qualified leads", detail: `${s.storeId} spent ₹${s.spend.toLocaleString("en-IN")} with only ${s.qualified} qualified leads.`, ref: s.storeId });
+    if (s.leads > 40 && s.qualified < 6) {
+      out.push({ id: `${s.storeId}-lowqual`, severity: "high", title: "High lead volume with few qualified leads", detail: `${s.storeId} received ${s.leads} leads with only ${s.qualified} qualified.`, ref: s.storeId });
     }
     if (s.orders === 0 && s.leads > 0) {
       out.push({ id: `${s.storeId}-noorders`, severity: "high", title: "Store receiving leads but no orders", detail: `${s.storeId} received ${s.leads} leads and reported 0 orders.`, ref: s.storeId });
     }
-    const acq = cpa(s.spend, s.orders);
-    if (s.orders > 0 && acq > 3000) {
-      out.push({ id: `${s.storeId}-cpa`, severity: "medium", title: "High cost per acquisition", detail: `${s.storeId} cost per acquisition is ₹${acq.toLocaleString("en-IN")}.`, ref: s.storeId });
+    if (s.targetOrders > 0 && pct(s.orders, s.targetOrders) < 50) {
+      out.push({ id: `${s.storeId}-target`, severity: "medium", title: "Below target order achievement", detail: `${s.storeId} achieved ${pct(s.orders, s.targetOrders)}% of its order target.`, ref: s.storeId });
     }
   });
 
@@ -612,7 +602,7 @@ export function leadAlerts(): LeadAlert[] {
   }
 
   OFFLINE_RESULTS.filter((o) => o.verification === "pending").forEach((o) =>
-    out.push({ id: `${o.id}-verify`, severity: "medium", title: "Manual result awaiting verification", detail: `${o.id} (${o.reference}) — ₹${o.orderValue.toLocaleString("en-IN")} submitted by ${o.submittedBy}.`, ref: o.id }),
+    out.push({ id: `${o.id}-verify`, severity: "medium", title: "Manual result awaiting verification", detail: `${o.id} (${o.reference}) submitted by ${o.submittedBy}.`, ref: o.id }),
   );
 
   return out;
@@ -624,22 +614,19 @@ export const LEADS_PERFORMANCE_PREP: { label: string; value: string; note: strin
   { label: "Leads generated", value: "628", note: "Marketing-attributed enquiries in period" },
   { label: "Qualified-lead rate", value: "56.4%", note: "Qualified ÷ total leads (Sales confirmed)" },
   { label: "Orders generated", value: "194", note: "Orders linked to marketing leads" },
-  { label: "Sales value generated", value: "₹17.69L", note: "Verified sales only" },
   { label: "Lead-to-order conversion", value: "30.9%", note: "Orders ÷ total leads" },
-  { label: "Cost per lead", value: "₹602", note: "Total spend ÷ leads" },
-  { label: "Cost per acquisition", value: "₹1,948", note: "Total spend ÷ orders" },
-  { label: "Return on ad spend", value: "4.67x", note: "Sales value ÷ spend" },
+  { label: "% of monthly order target achieved", value: "86%", note: "Orders ÷ monthly order target" },
   { label: "Attribution completeness", value: "88%", note: "Leads with campaign / creative / creator ID" },
   { label: "Lead handover accuracy", value: "94%", note: "Correct store and no duplicate Lead IDs" },
   { label: "Campaigns improved after sales feedback", value: "6", note: "Changes made using Sales feedback" },
 ];
 
 export const INTEGRATION_PLACEHOLDERS = [
-  "Google Ads — spend, clicks and lead sync",
-  "Meta Ads — lead form and spend sync",
+  "Google Ads — clicks and lead sync",
+  "Meta Ads — lead form sync",
   "Google Business Profile — calls, messages and direction requests",
   "WhatsApp Business — enquiry capture",
   "Sales CRM — lead qualification and outcome sync",
-  "POS — verified order values",
+  "POS — verified order counts",
   "Website analytics — clicks and tracking links",
 ];

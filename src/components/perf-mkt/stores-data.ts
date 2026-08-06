@@ -44,7 +44,7 @@ export type StoreInfluencer = {
   contentStatus: "not_started" | "in_progress" | "submitted" | "published" | "overdue";
   publishedLink?: string;
   leads: number;
-  sales: number;
+  orders: number;
   status: string;
 };
 
@@ -54,8 +54,7 @@ export type StoreLeadSales = {
   handedOver: number;
   contacted: number;
   orders: number;
-  salesAmount: number;
-  adSpend: number;
+  targetAchievedPct: number;
 };
 
 export type StoreActivity = {
@@ -77,7 +76,7 @@ export type StoreDetail = {
   operatingStatus: "live" | "opening" | "setup";
   objective: string;
   serviceArea: string;
-  monthlyBudget: number;
+  monthlyLeadTarget: number;
   salesTrend: "up" | "flat" | "down";
   attention: string[];
   profiles: StoreProfile[];
@@ -101,7 +100,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Increase dry-cleaning orders",
     serviceArea: "Vaishali Nagar, Ajmer Road — 8 km radius",
-    monthlyBudget: 70000,
+    monthlyLeadTarget: 130,
     salesTrend: "up",
     attention: ["Influencer content overdue (INF-551)"],
     profiles: [
@@ -111,12 +110,12 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 14, festival: 6, offer: 5, campaign: 8, awaitingApproval: 1, correction: 0 },
     influencers: [
-      { id: "INF-551", name: "Aarohi Sharma", platform: "Instagram", activity: "Reel — shoe laundry", plannedDate: "2026-08-07", contentStatus: "overdue", leads: 0, sales: 0, status: "Content overdue" },
-      { id: "INF-552", name: "Pink City Foodie", platform: "Instagram", activity: "Store visit story series", plannedDate: "2026-08-09", contentStatus: "not_started", leads: 0, sales: 0, status: "Awaiting confirmation" },
+      { id: "INF-551", name: "Aarohi Sharma", platform: "Instagram", activity: "Reel — shoe laundry", plannedDate: "2026-08-07", contentStatus: "overdue", leads: 0, orders: 0, status: "Content overdue" },
+      { id: "INF-552", name: "Pink City Foodie", platform: "Instagram", activity: "Store visit story series", plannedDate: "2026-08-09", contentStatus: "not_started", leads: 0, orders: 0, status: "Awaiting confirmation" },
     ],
-    leadsSales: { leads: 142, qualified: 92, handedOver: 90, contacted: 84, orders: 51, salesAmount: 486000, adSpend: 62000 },
+    leadsSales: { leads: 142, qualified: 92, handedOver: 90, contacted: 84, orders: 51, targetAchievedPct: 72 },
     activity: [
-      { at: "2026-08-05", actor: "Nikhil Arora", detail: "CMP-8821 budget raised to ₹45,000" },
+      { at: "2026-08-05", actor: "Nikhil Arora", detail: "CMP-8821 lead target raised to 90" },
       { at: "2026-08-02", actor: "Nikhil Arora", detail: "Google Business Profile photos updated (12 new)" },
       { at: "2025-11-20", actor: "Manager", detail: "Store assigned to Nikhil Arora — previous history retained" },
     ],
@@ -134,7 +133,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Grow monthly repeat customers",
     serviceArea: "Vijay Nagar, Scheme 54 — 6 km radius",
-    monthlyBudget: 55000,
+    monthlyLeadTarget: 100,
     salesTrend: "up",
     attention: ["Store information incomplete on GMB", "4 reviews awaiting response"],
     profiles: [
@@ -144,9 +143,9 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 11, festival: 4, offer: 3, campaign: 6, awaitingApproval: 2, correction: 0 },
     influencers: [
-      { id: "INF-559", name: "Indore Diaries", platform: "Instagram", activity: "Carousel — sofa cleaning", plannedDate: "2026-08-05", contentStatus: "published", publishedLink: "instagram.com/p/indore-diaries-cc", leads: 18, sales: 46000, status: "Payment approval pending" },
+      { id: "INF-559", name: "Indore Diaries", platform: "Instagram", activity: "Carousel — sofa cleaning", plannedDate: "2026-08-05", contentStatus: "published", publishedLink: "instagram.com/p/indore-diaries-cc", leads: 18, orders: 7, status: "Payment approval pending" },
     ],
-    leadsSales: { leads: 118, qualified: 71, handedOver: 71, contacted: 66, orders: 39, salesAmount: 372000, adSpend: 48500 },
+    leadsSales: { leads: 118, qualified: 71, handedOver: 71, contacted: 66, orders: 39, targetAchievedPct: 66 },
     activity: [
       { at: "2026-08-04", actor: "Aakash Menon", detail: "REQ-3384 raised — Google Business Profile update" },
       { at: "2026-08-04", actor: "Nikhil Arora", detail: "REQ-3384 accepted" },
@@ -165,7 +164,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Recover enquiry volume",
     serviceArea: "Gomti Nagar, Indira Nagar — 7 km radius",
-    monthlyBudget: 60000,
+    monthlyLeadTarget: 70,
     salesTrend: "down",
     attention: [
       "Campaign overspending (CMP-8847)",
@@ -180,9 +179,9 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 9, festival: 2, offer: 4, campaign: 5, awaitingApproval: 1, correction: 1 },
     influencers: [
-      { id: "INF-561", name: "Nawabi Lifestyle", platform: "Instagram", activity: "Reel — festival offer", plannedDate: "2026-08-04", contentStatus: "published", publishedLink: "instagram.com/p/nawabi-cc", leads: 9, sales: 0, status: "Results pending" },
+      { id: "INF-561", name: "Nawabi Lifestyle", platform: "Instagram", activity: "Reel — festival offer", plannedDate: "2026-08-04", contentStatus: "published", publishedLink: "instagram.com/p/nawabi-cc", leads: 9, orders: 0, status: "Results pending" },
     ],
-    leadsSales: { leads: 64, qualified: 22, handedOver: 18, contacted: 15, orders: 8, salesAmount: 158000, adSpend: 51000 },
+    leadsSales: { leads: 64, qualified: 22, handedOver: 18, contacted: 15, orders: 8, targetAchievedPct: 25 },
     activity: [
       { at: "2026-08-06", actor: "Sanya Kapoor", detail: "REQ-3391 raised — festival promotion (high priority)" },
       { at: "2026-08-03", actor: "System", detail: "CMP-8847 flagged: spend 95% with low qualified leads" },
@@ -201,7 +200,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Rebuild local search enquiries",
     serviceArea: "Adajan, Pal, Rander — 9 km radius",
-    monthlyBudget: 45000,
+    monthlyLeadTarget: 45,
     salesTrend: "down",
     attention: [
       "Sales declining despite active marketing",
@@ -215,7 +214,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 8, festival: 3, offer: 2, campaign: 4, awaitingApproval: 0, correction: 0 },
     influencers: [],
-    leadsSales: { leads: 38, qualified: 11, handedOver: 9, contacted: 7, orders: 4, salesAmount: 96000, adSpend: 44000 },
+    leadsSales: { leads: 38, qualified: 11, handedOver: 9, contacted: 7, orders: 4, targetAchievedPct: 21 },
     activity: [
       { at: "2026-08-06", actor: "Yash Malhotra", detail: "REQ-3388 raised — restart Google Ads" },
       { at: "2026-07-28", actor: "Nikhil Arora", detail: "CMP-8852 launched with revised keywords" },
@@ -234,7 +233,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Premium laundry lead generation",
     serviceArea: "Andheri West, Versova, Juhu — 6 km radius",
-    monthlyBudget: 95000,
+    monthlyLeadTarget: 170,
     salesTrend: "up",
     attention: [],
     profiles: [
@@ -244,9 +243,9 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 18, festival: 7, offer: 8, campaign: 12, awaitingApproval: 0, correction: 0 },
     influencers: [
-      { id: "INF-556", name: "Rohan Vlogs", platform: "YouTube", activity: "Store walkthrough video", plannedDate: "2026-08-02", contentStatus: "published", publishedLink: "youtube.com/watch?v=cc-andheri", leads: 34, sales: 128000, status: "Published — results tracking" },
+      { id: "INF-556", name: "Rohan Vlogs", platform: "YouTube", activity: "Store walkthrough video", plannedDate: "2026-08-02", contentStatus: "published", publishedLink: "youtube.com/watch?v=cc-andheri", leads: 34, orders: 21, status: "Published — results tracking" },
     ],
-    leadsSales: { leads: 176, qualified: 118, handedOver: 118, contacted: 112, orders: 68, salesAmount: 612000, adSpend: 88000 },
+    leadsSales: { leads: 176, qualified: 118, handedOver: 118, contacted: 112, orders: 68, targetAchievedPct: 77 },
     activity: [
       { at: "2026-08-04", actor: "Nikhil Arora", detail: "CMP-8834 creative refreshed for August" },
       { at: "2026-07-31", actor: "Ritika Bansal", detail: "July marketing report acknowledged" },
@@ -265,7 +264,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "opening",
     objective: "Launch awareness before opening",
     serviceArea: "Baner, Aundh, Balewadi — 5 km radius",
-    monthlyBudget: 40000,
+    monthlyLeadTarget: 15,
     salesTrend: "flat",
     attention: [
       "Google Business verification pending",
@@ -279,7 +278,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 3, festival: 0, offer: 1, campaign: 0, awaitingApproval: 2, correction: 0 },
     influencers: [],
-    leadsSales: { leads: 12, qualified: 5, handedOver: 5, contacted: 3, orders: 0, salesAmount: 0, adSpend: 8000 },
+    leadsSales: { leads: 12, qualified: 5, handedOver: 5, contacted: 3, orders: 0, targetAchievedPct: 0 },
     activity: [
       { at: "2026-08-05", actor: "Aakash Menon", detail: "REQ-3376 raised — Instagram profile setup" },
       { at: "2026-07-28", actor: "Manager", detail: "New store assigned to Nikhil Arora" },
@@ -298,7 +297,7 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     operatingStatus: "live",
     objective: "Grow sofa and carpet cleaning orders",
     serviceArea: "Arera Colony, Shahpura — 7 km radius",
-    monthlyBudget: 42000,
+    monthlyLeadTarget: 85,
     salesTrend: "flat",
     attention: ["Campaign report missing (July)"],
     profiles: [
@@ -308,9 +307,9 @@ export const STORE_DETAILS: Record<string, StoreDetail> = {
     ],
     creatives: { storeGraphics: 10, festival: 3, offer: 4, campaign: 5, awaitingApproval: 0, correction: 0 },
     influencers: [
-      { id: "INF-564", name: "Bhopal Bytes", platform: "YouTube", activity: "Short — pickup service", plannedDate: "2026-08-14", contentStatus: "not_started", leads: 0, sales: 0, status: "Planned" },
+      { id: "INF-564", name: "Bhopal Bytes", platform: "YouTube", activity: "Short — pickup service", plannedDate: "2026-08-14", contentStatus: "not_started", leads: 0, orders: 0, status: "Planned" },
     ],
-    leadsSales: { leads: 91, qualified: 55, handedOver: 55, contacted: 51, orders: 30, salesAmount: 264000, adSpend: 39000 },
+    leadsSales: { leads: 91, qualified: 55, handedOver: 55, contacted: 51, orders: 30, targetAchievedPct: 66 },
     activity: [
       { at: "2026-08-01", actor: "System", detail: "CMP-8801 completed — report pending" },
       { at: "2025-12-09", actor: "Manager", detail: "Store assigned to Nikhil Arora" },
@@ -336,8 +335,8 @@ export function computeHealth(storeId: string): { health: MarketingHealth; reaso
     reasons.push("No active campaign");
     severity += 2;
   }
-  if (campaigns.some((c) => c.spend / c.budget > 0.9 && c.qualified <= 10)) {
-    reasons.push("Campaign spending with few qualified leads");
+  if (campaigns.some((c) => c.leads < c.leadTarget * 0.5 && c.qualified <= 10)) {
+    reasons.push("Campaign underperforming against lead target");
     severity += 2;
   }
   if (detail.salesTrend === "down") {

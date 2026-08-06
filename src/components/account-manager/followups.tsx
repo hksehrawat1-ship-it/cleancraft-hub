@@ -904,7 +904,6 @@ export function AmFollowups() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Payment date</Label><Input value={pDate} onChange={(e) => setPDate(e.target.value)} placeholder="4 Aug 2026" /></div>
-            <div><Label className="text-xs">Amount received</Label><Input value={pAmt} onChange={(e) => setPAmt(e.target.value)} /></div>
             <div>
               <Label className="text-xs">Payment mode</Label>
               <Select value={pMode} onValueChange={(v) => setPMode(v as (typeof PAYMENT_MODES)[number])}>
@@ -927,24 +926,22 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                const amt = Number(pAmt);
-                if (!amt || amt <= 0) return toast.error("Enter a valid amount");
                 if (!pRef.trim()) return toast.error("Transaction or UTR number is required");
                 const masked = maskRef(pRef);
                 const exists = pays.some((p) => p.txns.some((t) => t.refMasked === masked));
                 if (exists && !pOverride) return toast.error("This transaction reference already exists — authorised review is required");
                 const txn: Txn = {
-                  id: `TXN-${8900 + open.txns.length + 1}`, date: pDate || "4 Aug 2026", amount: amt, mode: pMode,
+                  id: `TXN-${8900 + open.txns.length + 1}`, date: pDate || "4 Aug 2026", mode: pMode,
                   accountMasked: pAccount || "Bank ••••0000", refMasked: masked, proof: pProof || "Not uploaded",
                   receipt: pReceipt || "—", recordedBy: MANAGER, reviewed: false,
                 };
                 update(open.id, (p) => {
-                  const total = received(p) + amt;
-                  return log({ ...p, txns: [...p.txns, txn], status: total >= p.amount ? "Verification Pending" : "Partially Paid", nextAction: total >= p.amount ? "Verify payment" : "Collect balance", nextActionDue: "Today" }, `Payment recorded (${pMode}, ref ${masked})`);
+                  const total = received(p) + 1;
+                  return log({ ...p, txns: [...p.txns, txn], status: total >= p.target ? "Verification Pending" : "Partially Paid", nextAction: total >= p.target ? "Verify payment" : "Collect balance", nextActionDue: "Today" }, `Payment recorded (${pMode}, ref ${masked})`);
                 });
                 toast.success(`Payment recorded under ${open.id}`);
                 setPayOpen(false);
-                setPAmt(""); setPRef(""); setPProof(""); setPReceipt(""); setPAccount(""); setPDate(""); setPOverride(false);
+                setPRef(""); setPProof(""); setPReceipt(""); setPAccount(""); setPDate(""); setPOverride(false);
               }}
             >
               Save payment
