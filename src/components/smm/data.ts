@@ -57,7 +57,7 @@ export const CONTENT_QUEUE: ContentItem[] = [
     stage: "Script",
     owner: "Aman (Script)",
     due: "Thu",
-    hook: "Inside a ₹12L laundry setup",
+    hook: "Inside a fully equipped laundry setup",
     caption: "Full equipment tour of a Clean Craft store.",
     hashtags: "#laundrysetup #businessideas",
   },

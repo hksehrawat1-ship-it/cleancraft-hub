@@ -184,7 +184,7 @@ const KPIS = [
   { label: "Bookings This Week", value: "28", sub: "Target 32" },
   { label: "Leads Received", value: "420", sub: "This month" },
   { label: "Team Closure %", value: "10.4%", sub: "Target 12%" },
-  { label: "Revenue Booked", value: "₹18L", sub: "Month to date" },
+  { label: "Target Achieved", value: "88%", sub: "Bookings vs target" },
 ];
 
 const FUNNEL = [
@@ -389,7 +389,6 @@ function PerformanceSection() {
       <div className="grid md:grid-cols-3 gap-3">
         {[
           { label: "Bookings vs Target", value: 28, target: 32 },
-          { label: "Revenue vs Target (₹L)", value: 18, target: 22 },
           { label: "Closure % vs Target", value: 10.4, target: 12 },
         ].map((m) => (
           <Card key={m.label}>

@@ -39,7 +39,6 @@ import {
   type DispatchRecord,
   type DispatchStatus,
 } from "./dashboard-data";
-import { inr } from "./data";
 
 const TONE_TEXT: Record<string, string> = {
   good: "text-emerald-600",
@@ -599,7 +598,6 @@ export function LogisticsDashboard({ onGo }: { onGo: (k: string) => void }) {
                     <span>Booked: {r.booking!.bookingDate}</span>
                     <span>Dispatched: {r.booking!.dispatchDate ?? "pending"}</span>
                     <span>Expected delivery: {r.booking!.expectedDelivery}</span>
-                    <span>Freight reference: {inr(r.booking!.freightRef)}</span>
                   </div>
                   <a
                     href={r.booking!.trackingUrl}

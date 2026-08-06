@@ -29,7 +29,6 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
 import { AlertTriangle, FilePlus2, Search, ShieldCheck } from "lucide-react";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 const MANAGER = "Priya Nair";
 
 const PAYMENT_TYPES = [
@@ -69,7 +68,6 @@ type PReq = {
   type: PaymentType;
   purpose: string;
   items: string;
-  amount: number;
   taxRef: string;
   due: string;
   clearanceType: "Machine Dispatch" | "Consumable Dispatch" | "Not Required";
@@ -80,13 +78,11 @@ type PReq = {
   status: ReqStatus;
   submitted: string;
   pendingDays: number;
-  amountMissing?: boolean;
   approvalMissing?: boolean;
   contactMissing?: boolean;
   responseOverdue?: boolean;
   acceptance?: {
     by: string;
-    amount: number;
     due: string;
     vyapar: string;
     instructions: string;
@@ -103,7 +99,7 @@ const SEED: PReq[] = [
     coordinator: "Rahul Sharma", type: "Machine Payment",
     purpose: "60% machine advance before dispatch",
     items: "Washer 25kg x1, Dryer 20kg x1, Steam Iron x2, Boiler x1",
-    amount: 750000, taxRef: "GST 18% — as per quotation QT-4412", due: "4 Aug 2026",
+    taxRef: "GST 18% — as per quotation QT-4412", due: "4 Aug 2026",
     clearanceType: "Machine Dispatch", launchDate: "22 Aug 2026", quotation: "QT-4412 (approved by COO)",
     instructions: "Dispatch is blocked until this advance is verified.",
     priority: "Urgent", status: "New", submitted: "3 Aug 2026", pendingDays: 1,
@@ -113,7 +109,7 @@ const SEED: PReq[] = [
     id: "PAY-3107", projectId: "PRJ-KNP-06", store: "Clean Craft Kanpur", owner: "Shalini Verma",
     mobileMasked: "+91 95XXXXXX12", emailMasked: "sha****@outlook.com", city: "Kanpur", state: "Uttar Pradesh",
     coordinator: "Suresh Patel", type: "Franchise Fee",
-    purpose: "Franchise booking amount", items: "Not applicable", amount: 300000,
+    purpose: "Franchise booking amount", items: "Not applicable",
     taxRef: "GST 18% — franchise agreement clause 4", due: "6 Aug 2026",
     clearanceType: "Not Required", launchDate: "30 Sep 2026", quotation: "Signed agreement copy missing",
     instructions: "Owner requested payment link on registered email.",
@@ -130,7 +126,7 @@ const SEED: PReq[] = [
     coordinator: "Neha Gupta", type: "Consumables Payment",
     purpose: "Opening consumables and packaging kit",
     items: "Detergent 200L, Hangers 1500, Poly covers 3000, Tags 5000",
-    amount: 168000, taxRef: "GST 18% — QT-4498", due: "9 Aug 2026",
+    taxRef: "GST 18% — QT-4498", due: "9 Aug 2026",
     clearanceType: "Consumable Dispatch", launchDate: "5 Sep 2026", quotation: "QT-4498",
     instructions: "Deliver along with machine consignment.",
     priority: "Normal", status: "Under Review", submitted: "1 Aug 2026", pendingDays: 3,
@@ -144,7 +140,7 @@ const SEED: PReq[] = [
     mobileMasked: "+91 90XXXXXX18", emailMasked: "sne****@yahoo.com", city: "Pune", state: "Maharashtra",
     coordinator: "Anita Rao", type: "Security Deposit",
     purpose: "Refundable security deposit as per agreement", items: "Not applicable",
-    amount: 100000, taxRef: "Not taxable — refundable deposit", due: "12 Aug 2026",
+    taxRef: "Not taxable — refundable deposit", due: "12 Aug 2026",
     clearanceType: "Not Required", launchDate: "18 Sep 2026", quotation: "Agreement clause 9",
     instructions: "Deposit to be shown separately in Vyapar.", priority: "Normal",
     status: "New", submitted: "3 Aug 2026", pendingDays: 1, contactMissing: false,
@@ -155,7 +151,7 @@ const SEED: PReq[] = [
     mobileMasked: "+91 98XXXXXX21", emailMasked: "raj****@gmail.com", city: "Jaipur", state: "Rajasthan",
     coordinator: "Rahul Sharma", type: "Machine Payment",
     purpose: "Machine advance (re-submitted)", items: "Washer 25kg x1, Dryer 20kg x1, Steam Iron x2, Boiler x1",
-    amount: 750000, taxRef: "GST 18% — QT-4412", due: "4 Aug 2026",
+    taxRef: "GST 18% — QT-4412", due: "4 Aug 2026",
     clearanceType: "Machine Dispatch", launchDate: "22 Aug 2026", quotation: "QT-4412",
     instructions: "", priority: "Urgent", status: "New", submitted: "4 Aug 2026", pendingDays: 0,
     history: [{ at: "4 Aug 09:05", by: "Rahul Sharma", action: "Request submitted" }],
@@ -165,11 +161,11 @@ const SEED: PReq[] = [
     mobileMasked: "+91 99XXXXXX08", emailMasked: "sun****@gmail.com", city: "Lucknow", state: "Uttar Pradesh",
     coordinator: "Rahul Sharma", type: "Machine Payment",
     purpose: "Machine balance before dispatch", items: "Washer 15kg x1, Dryer 15kg x1",
-    amount: 520000, taxRef: "GST 18% — QT-4380", due: "3 Aug 2026",
+    taxRef: "GST 18% — QT-4380", due: "3 Aug 2026",
     clearanceType: "Machine Dispatch", launchDate: "16 Aug 2026", quotation: "QT-4380",
     instructions: "", priority: "Important", status: "Accepted", submitted: "24 Jul 2026", pendingDays: 0,
     acceptance: {
-      by: MANAGER, amount: 520000, due: "3 Aug 2026", vyapar: "VY-INV-2277",
+      by: MANAGER, due: "3 Aug 2026", vyapar: "VY-INV-2277",
       instructions: "RTGS to Clean Craft current account (masked).",
       firstFollowUp: "29 Jul 2026", clearanceRequired: true,
     },
@@ -182,7 +178,7 @@ const SEED: PReq[] = [
     id: "PAY-3096", projectId: "PRJ-AGR-01", store: "Clean Craft Agra", owner: "Deepa Chauhan",
     mobileMasked: "+91 97XXXXXX72", emailMasked: "dee****@gmail.com", city: "Agra", state: "Uttar Pradesh",
     coordinator: "Deepak Yadav", type: "Training Fee",
-    purpose: "Owner training batch — cancelled batch", items: "Not applicable", amount: 85000,
+    purpose: "Owner training batch — cancelled batch", items: "Not applicable",
     taxRef: "GST 18%", due: "20 Jul 2026", clearanceType: "Not Required", launchDate: "10 Aug 2026",
     quotation: "TRN-221", instructions: "", priority: "Normal", status: "Cancelled",
     submitted: "15 Jul 2026", pendingDays: 0,
@@ -242,7 +238,6 @@ export function AmPaymentRequests() {
   const [fSubmitted, setFSubmitted] = useState("");
 
   // accept form
-  const [aAmount, setAAmount] = useState("");
   const [aDue, setADue] = useState("");
   const [aVyapar, setAVyapar] = useState("");
   const [aInstr, setAInstr] = useState("");
@@ -263,7 +258,6 @@ export function AmPaymentRequests() {
   const [nType, setNType] = useState<PaymentType>("Franchise Fee");
   const [nPurpose, setNPurpose] = useState("");
   const [nItems, setNItems] = useState("");
-  const [nAmount, setNAmount] = useState("");
   const [nDue, setNDue] = useState("");
   const [nLaunch, setNLaunch] = useState("");
   const [nQuote, setNQuote] = useState("");
@@ -289,7 +283,7 @@ export function AmPaymentRequests() {
     reqs
       .filter((r) => !["Cancelled", "Returned"].includes(r.status))
       .forEach((r) => {
-        const key = `${r.projectId}|${r.type}|${r.items}|${r.amount}`;
+        const key = `${r.projectId}|${r.type}|${r.items}`;
         map.set(key, [...(map.get(key) ?? []), r.id]);
       });
     return Array.from(map.values()).filter((ids) => ids.length > 1);
@@ -301,7 +295,6 @@ export function AmPaymentRequests() {
     ...reqs.filter((r) => r.priority === "Urgent" && r.status === "New").map((r) => ({ level: "red", t: `${r.id} — Urgent request not reviewed` })),
     ...reqs.filter((r) => r.pendingDays > 1 && ["New", "Under Review"].includes(r.status)).map((r) => ({ level: "amber", t: `${r.id} — Pending review for ${r.pendingDays} business days` })),
     ...reqs.filter((r) => ["New", "Under Review"].includes(r.status)).map((r) => ({ level: "amber", t: `${r.id} — Launch date approaching (${r.launchDate})` })),
-    ...reqs.filter((r) => !r.amount || r.amountMissing).map((r) => ({ level: "red", t: `${r.id} — Amount missing or inconsistent` })),
     ...reqs.filter((r) => r.approvalMissing).map((r) => ({ level: "red", t: `${r.id} — Approval document missing` })),
     ...reqs.filter((r) => r.contactMissing).map((r) => ({ level: "red", t: `${r.id} — Franchise contact information missing` })),
     ...duplicates.map((ids) => ({ level: "red", t: `Possible duplicate request: ${ids.join(" & ")}` })),
@@ -331,7 +324,6 @@ export function AmPaymentRequests() {
     setChecks({});
     const r = reqs.find((x) => x.id === id);
     if (r) {
-      setAAmount(String(r.amount));
       setADue(r.due);
       setAVyapar(r.acceptance?.vyapar ?? "");
       setAInstr("");
@@ -437,7 +429,6 @@ export function AmPaymentRequests() {
                   <TableHead>Franchise / owner</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>Payment type</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
                   <TableHead>Due</TableHead>
                   <TableHead>Requested by</TableHead>
                   <TableHead>Priority</TableHead>
@@ -459,7 +450,6 @@ export function AmPaymentRequests() {
                     </TableCell>
                     <TableCell className="text-sm">{r.city}</TableCell>
                     <TableCell className="text-sm">{r.type}</TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">{inr(r.amount)}</TableCell>
                     <TableCell className="text-sm">{r.due}</TableCell>
                     <TableCell className="text-xs">{r.coordinator}</TableCell>
                     <TableCell><Badge className={prioTone(r.priority)}>{r.priority}</Badge></TableCell>
@@ -486,7 +476,7 @@ export function AmPaymentRequests() {
                 </div>
                 <div className="text-sm">{r.store} · {r.city}</div>
                 <div className="text-xs text-muted-foreground">{r.projectId} · {r.owner} · {r.type}</div>
-                <div className="text-sm font-semibold tabular-nums">{inr(r.amount)} · due {r.due}</div>
+                <div className="text-sm font-medium">Due {r.due}</div>
                 <div className="flex items-center justify-between gap-2 pt-1">
                   <div className="flex gap-1">
                     <Badge className={prioTone(r.priority)}>{r.priority}</Badge>
@@ -530,7 +520,7 @@ export function AmPaymentRequests() {
               <div className="mt-4 space-y-4 text-sm">
                 {dupIds.has(open.id) && (
                   <div className="rounded-md border border-rose-200 bg-rose-50 p-2 text-xs text-rose-800">
-                    Possible duplicate of {duplicates.find((ids) => ids.includes(open.id))?.filter((i) => i !== open.id).join(", ")} — same project, payment type, items and amount. Confirm before accepting.
+                    Possible duplicate of {duplicates.find((ids) => ids.includes(open.id))?.filter((i) => i !== open.id).join(", ")} — same project, payment type and items. Confirm before accepting.
                   </div>
                 )}
 
@@ -545,7 +535,6 @@ export function AmPaymentRequests() {
                   <F label="Payment type" v={open.type} />
                   <F label="Payment purpose" v={open.purpose} />
                   <F label="Item or service description" v={open.items} />
-                  <F label="Amount" v={inr(open.amount)} />
                   <F label="Tax information reference" v={open.taxRef} />
                   <F label="Payment due date" v={open.due} />
                   <F label="Required clearance type" v={open.clearanceType} />
@@ -598,7 +587,7 @@ export function AmPaymentRequests() {
                 {open.acceptance && (
                   <div className="rounded-md border p-3 text-xs space-y-1 bg-emerald-50/60">
                     <div className="font-medium text-emerald-800">Accepted — now in Payment Follow-ups &amp; Verification</div>
-                    <div>Accepted by {open.acceptance.by} · {inr(open.acceptance.amount)} · due {open.acceptance.due}</div>
+                    <div>Accepted by {open.acceptance.by} · due {open.acceptance.due}</div>
                     <div>Vyapar invoice: {open.acceptance.vyapar || "to be created"} · First follow-up: {open.acceptance.firstFollowUp || "—"}</div>
                     <div>Dispatch clearance required: {open.acceptance.clearanceRequired ? "Yes" : "No"}</div>
                     {open.acceptance.instructions && <div>Payment instructions: {open.acceptance.instructions}</div>}
@@ -627,7 +616,6 @@ export function AmPaymentRequests() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Accounts Manager</Label><Input value={MANAGER} readOnly /></div>
-            <div><Label className="text-xs">Accepted amount</Label><Input value={aAmount} onChange={(e) => setAAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Payment due date</Label><Input value={aDue} onChange={(e) => setADue(e.target.value)} /></div>
             <div><Label className="text-xs">Vyapar invoice (if available)</Label><Input value={aVyapar} onChange={(e) => setAVyapar(e.target.value)} placeholder="VY-INV-…" /></div>
             <div><Label className="text-xs">First follow-up date</Label><Input value={aFollow} onChange={(e) => setAFollow(e.target.value)} placeholder="e.g. 7 Aug 2026" /></div>
@@ -648,20 +636,19 @@ export function AmPaymentRequests() {
             <Button
               onClick={() => {
                 if (!open) return;
-                if (!aAmount || !aDue) return toast.error("Accepted amount and due date are required");
+                if (!aDue) return toast.error("Payment due date is required");
                 update(open.id, (r) =>
                   log(
                     {
                       ...r,
                       status: "Accepted",
-                      amount: Number(aAmount) || r.amount,
                       due: aDue,
                       acceptance: {
-                        by: MANAGER, amount: Number(aAmount) || r.amount, due: aDue, vyapar: aVyapar,
+                        by: MANAGER, due: aDue, vyapar: aVyapar,
                         instructions: aInstr, firstFollowUp: aFollow, clearanceRequired: aClearance === "yes",
                       },
                     },
-                    `Request accepted — ${inr(Number(aAmount) || 0)}, moved to Payment Follow-ups & Verification`,
+                    `Request accepted — moved to Payment Follow-ups & Verification`,
                   ),
                 );
                 toast.success(`${open.id} accepted and moved to Follow-ups & Verification`);
@@ -748,7 +735,7 @@ export function AmPaymentRequests() {
           <DialogHeader>
             <DialogTitle>Possible duplicate request</DialogTitle>
             <DialogDescription>
-              An active request with the same project, payment type, items and amount already exists: {dupWarn?.existing}. Continue only if this is a genuinely separate payment.
+              An active request with the same project, payment type and items already exists: {dupWarn?.existing}. Continue only if this is a genuinely separate payment.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -800,7 +787,6 @@ export function AmPaymentRequests() {
             </div>
             <div className="col-span-2"><Label className="text-xs">Purpose</Label><Input value={nPurpose} onChange={(e) => setNPurpose(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Machine or consumable items (if applicable)</Label><Textarea rows={2} value={nItems} onChange={(e) => setNItems(e.target.value)} /></div>
-            <div><Label className="text-xs">Approved amount (₹)</Label><Input value={nAmount} onChange={(e) => setNAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Due date</Label><Input value={nDue} onChange={(e) => setNDue(e.target.value)} placeholder="e.g. 12 Aug 2026" /></div>
             <div><Label className="text-xs">Planned launch date</Label><Input value={nLaunch} onChange={(e) => setNLaunch(e.target.value)} placeholder="e.g. 20 Sep 2026" /></div>
             <div><Label className="text-xs">Quotation / approval reference</Label><Input value={nQuote} onChange={(e) => setNQuote(e.target.value)} /></div>
@@ -810,12 +796,11 @@ export function AmPaymentRequests() {
             <Button variant="outline" onClick={() => setSubmitOpen(false)}>Cancel</Button>
             <Button
               onClick={() => {
-                if (!nProject || !nPurpose.trim() || !nAmount || !nDue) return toast.error("Project, purpose, amount and due date are required");
+                if (!nProject || !nPurpose.trim() || !nDue) return toast.error("Project, purpose and due date are required");
                 const [projectId, store] = nProject.split(" · ");
                 const base = reqs.find((r) => r.projectId === projectId);
-                const amount = Number(nAmount) || 0;
                 const dup = reqs.find(
-                  (r) => r.projectId === projectId && r.type === nType && r.amount === amount && !["Cancelled", "Returned"].includes(r.status),
+                  (r) => r.projectId === projectId && r.type === nType && !["Cancelled", "Returned"].includes(r.status),
                 );
                 const create = () => {
                   const id = `PAY-${3112 + reqs.length}`;
@@ -825,7 +810,7 @@ export function AmPaymentRequests() {
                       mobileMasked: base?.mobileMasked ?? "+91 9XXXXXXXXX", emailMasked: base?.emailMasked ?? "own****@mail.com",
                       city: base?.city ?? "—", state: base?.state ?? "—", coordinator: "Rahul Sharma",
                       type: nType, purpose: nPurpose.trim(), items: nItems.trim() || "Not applicable",
-                      amount, taxRef: "As per approved quotation", due: nDue,
+                      taxRef: "As per approved quotation", due: nDue,
                       clearanceType: nType === "Machine Payment" ? "Machine Dispatch" : nType === "Consumables Payment" ? "Consumable Dispatch" : "Not Required",
                       launchDate: nLaunch || "—", quotation: nQuote || "Pending", instructions: nNotes.trim(),
                       priority: nPrio, status: "New", submitted: "4 Aug 2026", pendingDays: 0,
@@ -835,7 +820,7 @@ export function AmPaymentRequests() {
                   ]);
                   toast.success(`${id} submitted to Accounts`);
                   setSubmitOpen(false);
-                  setNProject(""); setNPurpose(""); setNItems(""); setNAmount(""); setNDue(""); setNLaunch(""); setNQuote(""); setNNotes("");
+                  setNProject(""); setNPurpose(""); setNItems(""); setNDue(""); setNLaunch(""); setNQuote(""); setNNotes("");
                   setTab("New");
                 };
                 if (dup) setDupWarn({ existing: dup.id, onOk: create });

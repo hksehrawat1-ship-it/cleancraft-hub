@@ -101,17 +101,13 @@ export type Audience = {
   retargeting?: string;
 };
 
-export type BudgetPlan = {
-  type: "daily" | "total";
-  daily: number;
-  total: number;
-  approved: number;
+export type Targets = {
+  approved: boolean;
   approver: string;
   startDate: string;
   endDate: string;
-  expectedCpl: number;
   leadTarget: number;
-  salesTarget: number;
+  orderTarget: number;
 };
 
 export type CreativeBlock = {
@@ -150,17 +146,14 @@ export type Metrics = {
   calls: number;
   whatsapp: number;
   orders: number;
-  salesAmount: number;
-  salesVerified: boolean;
+  ordersVerified: boolean;
 };
 
 export type DailyUpdate = {
   date: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   observation: string;
   action: string;
   nextReview: string;
@@ -170,21 +163,18 @@ export type OptimisationEntry = {
   date: string;
   problem: string;
   change: string;
-  budgetChange?: string;
+  targetChange?: string;
   audienceChange?: string;
   creativeChange?: string;
-  bidChange?: string;
   expected: string;
   reviewDate: string;
   outcome?: string;
 };
 
 export type CampaignReport = {
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  salesAmount: number;
   bestCreative: string;
   bestAudience: string;
   learning: string;
@@ -208,8 +198,7 @@ export type CampaignRecord = {
   serviceArea: string;
   problem: string;
   outcome: string;
-  spend: number;
-  budget: BudgetPlan;
+  targets: Targets;
   audience: Audience;
   creatives: CreativeBlock[];
   handover: LeadHandover;
@@ -251,18 +240,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Vaishali Nagar, Ajmer Road — 8 km",
     problem: "Premium garment care revenue flat for two months.",
     outcome: "60 qualified leads and 25 premium orders this month.",
-    spend: 38400,
-    budget: {
-      type: "daily",
-      daily: 1500,
-      total: 45000,
-      approved: 45000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-07-18",
       endDate: "2026-08-17",
-      expectedCpl: 600,
       leadTarget: 75,
-      salesTarget: 450000,
+      orderTarget: 60,
     },
     audience: {
       city: "Jaipur",
@@ -281,14 +265,14 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
         type: "Static + carousel",
         headline: "Premium garment care, doorstep pickup",
         primaryText: "Suits, sarees and woollens cleaned by trained experts. Free pickup in Vaishali Nagar.",
-        description: "Trial pack ₹1299",
-        offer: "Premium care trial ₹1299",
+        description: "Trial pack",
+        offer: "Premium care trial",
         cta: "Get quote",
         destination: "cleancraft.in/jaipur-premium",
         landingPage: "Store landing page (Jaipur Vaishali)",
         phone: "+91 98290 41220",
         whatsapp: "+91 98290 41220",
-        terms: "Offer valid till 17 Aug 2026 on orders above ₹1299.",
+        terms: "Offer valid till 17 Aug 2026.",
         approval: "approved",
       },
     ],
@@ -302,22 +286,21 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       calls: 31,
       whatsapp: 22,
       orders: 27,
-      salesAmount: 268000,
-      salesVerified: true,
+      ordersVerified: true,
     },
     leadsContacted: 61,
     linkPassed: true,
     daily: [
-      { date: "2026-08-05", spend: 1480, leads: 4, qualified: 3, orders: 2, sales: 18400, observation: "Carousel outperforming static", action: "Shifted 60% budget to carousel", nextReview: "2026-08-08" },
-      { date: "2026-08-04", spend: 1520, leads: 3, qualified: 2, orders: 1, sales: 9200, observation: "CPL steady at ₹565", action: "No change", nextReview: "2026-08-06" },
+      { date: "2026-08-05", leads: 4, qualified: 3, orders: 2, observation: "Carousel outperforming static", action: "Shifted 60% budget to carousel", nextReview: "2026-08-08" },
+      { date: "2026-08-04", leads: 3, qualified: 2, orders: 1, observation: "CPL steady at ₹565", action: "No change", nextReview: "2026-08-06" },
     ],
     optimisations: [
-      { date: "2026-08-05", problem: "Static creative CPL ₹840", change: "Budget shifted to carousel creative", budgetChange: "₹900 → ₹1,500 daily", creativeChange: "Static paused", expected: "CPL below ₹600", reviewDate: "2026-08-08", outcome: "CPL ₹565 achieved" },
+      { date: "2026-08-05", problem: "Static creative underperforming on qualified leads", change: "Reach shifted to carousel creative", targetChange: "Daily reach target raised", creativeChange: "Static paused", expected: "Qualified-lead rate above 60%", reviewDate: "2026-08-08", outcome: "Qualified-lead rate improved to 64%" },
     ],
     checklist: [...APPROVAL_CHECKLIST],
     history: [
       { at: "2026-07-16", actor: "Nikhil Arora", detail: "Campaign created from REQ-3344 (Store STR-1042)" },
-      { at: "2026-07-17", actor: "Marketing Head", detail: "Budget approved ₹45,000" },
+      { at: "2026-07-17", actor: "Marketing Head", detail: "Targets approved" },
       { at: "2026-07-18", actor: "Nikhil Arora", detail: "Campaign launched with CRV-4402" },
     ],
   },
@@ -337,18 +320,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Gomti Nagar, Vibhuti Khand — 5 km",
     problem: "Store below break-even on monthly orders.",
     outcome: "100 qualified leads in 15 days.",
-    spend: 41800,
-    budget: {
-      type: "total",
-      daily: 2800,
-      total: 45000,
-      approved: 45000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-07-22",
       endDate: "2026-08-05",
-      expectedCpl: 700,
       leadTarget: 65,
-      salesTarget: 200000,
+      orderTarget: 27,
     },
     audience: {
       city: "Lucknow",
@@ -364,10 +342,10 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       {
         creativeId: "CRV-4451",
         type: "Video + static set",
-        headline: "Monsoon care package ₹699",
+        headline: "Monsoon care package",
         primaryText: "Damp clothes? Get monsoon-safe cleaning with free pickup and delivery.",
         description: "Package of 5 garments",
-        offer: "Monsoon care package ₹699",
+        offer: "Monsoon care package",
         cta: "Book pickup",
         destination: "cleancraft.in/lucknow-monsoon",
         landingPage: "Store landing page (Gomti Nagar)",
@@ -387,24 +365,21 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       calls: 27,
       whatsapp: 19,
       orders: 22,
-      salesAmount: 186000,
-      salesVerified: true,
+      ordersVerified: true,
     },
     leadsContacted: 58,
     linkPassed: true,
     daily: [
-      { date: "2026-08-05", spend: 2600, leads: 5, qualified: 3, orders: 2, sales: 16800, observation: "Final day — budget fully used", action: "Campaign completed, report prepared", nextReview: "2026-08-07" },
+      { date: "2026-08-05", leads: 5, qualified: 3, orders: 2, observation: "Final day — budget fully used", action: "Campaign completed, report prepared", nextReview: "2026-08-07" },
     ],
     optimisations: [
       { date: "2026-07-29", problem: "Qualified rate only 52%", change: "Added garment-count question to lead form", expected: "Qualified rate above 62%", reviewDate: "2026-08-02", outcome: "Qualified rate 64%" },
     ],
     checklist: [...APPROVAL_CHECKLIST],
     report: {
-      spend: 41800,
       leads: 64,
       qualified: 41,
       orders: 22,
-      salesAmount: 186000,
       bestCreative: "CRV-4451 video variant",
       bestAudience: "Gomti Nagar households 30–45",
       learning: "Package pricing converts better than percentage discounts.",
@@ -433,18 +408,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Adajan, Pal, Rander — 6 km",
     problem: "Enquiries dropped 34% after the old search campaign was paused.",
     outcome: "80 calls and 40 orders per month.",
-    spend: 0,
-    budget: {
-      type: "daily",
-      daily: 1300,
-      total: 40000,
-      approved: 0,
+    targets: {
+      approved: false,
       approver: "Pending — Accounts",
       startDate: "2026-08-08",
       endDate: "2026-09-07",
-      expectedCpl: 500,
       leadTarget: 80,
-      salesTarget: 300000,
+      orderTarget: 40,
     },
     audience: {
       city: "Surat",
@@ -474,7 +444,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       },
     ],
     handover: baseHandover("Clean Craft Surat — Adajan", "Yash Malhotra"),
-    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, salesAmount: 0, salesVerified: false },
+    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, ordersVerified: false },
     leadsContacted: 0,
     linkPassed: true,
     daily: [],
@@ -482,7 +452,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     checklist: APPROVAL_CHECKLIST.filter((c) => !["Budget approved", "Creative approved"].includes(c)),
     history: [
       { at: "2026-08-05", actor: "Nikhil Arora", detail: "Campaign drafted from REQ-3388 (Store STR-1103)" },
-      { at: "2026-08-05", actor: "Nikhil Arora", detail: "Submitted for budget approval ₹40,000" },
+      { at: "2026-08-05", actor: "Nikhil Arora", detail: "Submitted for target approval" },
     ],
   },
   {
@@ -500,18 +470,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Vijay Nagar, Scheme 54 — 4 km",
     problem: "Weekday order volume low.",
     outcome: "40 extra weekday orders.",
-    spend: 21400,
-    budget: {
-      type: "daily",
-      daily: 900,
-      total: 27000,
-      approved: 27000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-07-14",
       endDate: "2026-08-13",
-      expectedCpl: 450,
       leadTarget: 60,
-      salesTarget: 240000,
+      orderTarget: 32,
     },
     audience: {
       city: "Indore",
@@ -529,7 +494,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
         type: "Search RSA",
         headline: "Weekday 20% off dry cleaning",
         primaryText: "Book Monday to Thursday and save 20%.",
-        description: "Free pickup above ₹599",
+        description: "Free pickup included",
         offer: "Weekday 20% off pickup",
         cta: "Book now",
         destination: "cleancraft.in/indore-weekday",
@@ -550,16 +515,15 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       calls: 14,
       whatsapp: 6,
       orders: 7,
-      salesAmount: 62000,
-      salesVerified: false,
+      ordersVerified: false,
     },
     leadsContacted: 15,
     linkPassed: true,
     daily: [
-      { date: "2026-08-05", spend: 880, leads: 1, qualified: 0, orders: 0, sales: 0, observation: "CPL ₹891 — above approved ₹450", action: "Keyword review scheduled", nextReview: "2026-08-07" },
+      { date: "2026-08-05", leads: 1, qualified: 0, orders: 0, observation: "CPL ₹891 — above approved ₹450", action: "Keyword review scheduled", nextReview: "2026-08-07" },
     ],
     optimisations: [
-      { date: "2026-08-02", problem: "Broad keywords wasting spend", change: "Added 32 negative keywords", bidChange: "Manual CPC cap ₹28", expected: "CPL below ₹550", reviewDate: "2026-08-06", outcome: "Partial improvement" },
+      { date: "2026-08-02", problem: "Broad keywords driving low-quality clicks", change: "Added 32 negative keywords", expected: "Qualified-lead rate above 55%", reviewDate: "2026-08-06", outcome: "Partial improvement" },
     ],
     checklist: [...APPROVAL_CHECKLIST],
     history: [
@@ -584,18 +548,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Baner, Balewadi — 5 km",
     problem: "New store has no local awareness before launch.",
     outcome: "Launch-week footfall and 50 first orders.",
-    spend: 0,
-    budget: {
-      type: "total",
-      daily: 800,
-      total: 20000,
-      approved: 20000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-08-10",
       endDate: "2026-08-24",
-      expectedCpl: 400,
       leadTarget: 50,
-      salesTarget: 150000,
+      orderTarget: 20,
     },
     audience: {
       city: "Pune",
@@ -625,7 +584,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       },
     ],
     handover: baseHandover("Clean Craft Pune — Baner", "Aakash Menon"),
-    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, salesAmount: 0, salesVerified: false },
+    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, ordersVerified: false },
     leadsContacted: 0,
     linkPassed: false,
     daily: [],
@@ -633,7 +592,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     checklist: APPROVAL_CHECKLIST.filter((c) => !["Creative approved", "Destination link tested"].includes(c)),
     history: [
       { at: "2026-08-03", actor: "Nikhil Arora", detail: "Campaign created from REQ-3376 (Store STR-1134)" },
-      { at: "2026-08-04", actor: "Marketing Head", detail: "Budget approved ₹20,000" },
+      { at: "2026-08-04", actor: "Marketing Head", detail: "Targets approved" },
       { at: "2026-08-05", actor: "Nikhil Arora", detail: "CRV-4492 sent back for correction — offer wording" },
     ],
   },
@@ -653,18 +612,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Vijay Nagar — 4 km",
     problem: "Weekday order volume low.",
     outcome: "40 extra orders.",
-    spend: 23600,
-    budget: {
-      type: "total",
-      daily: 850,
-      total: 25000,
-      approved: 25000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-07-04",
       endDate: "2026-07-19",
-      expectedCpl: 450,
       leadTarget: 55,
-      salesTarget: 200000,
+      orderTarget: 27,
     },
     audience: {
       city: "Indore",
@@ -703,8 +657,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       calls: 22,
       whatsapp: 14,
       orders: 34,
-      salesAmount: 214000,
-      salesVerified: true,
+      ordersVerified: true,
     },
     leadsContacted: 58,
     linkPassed: true,
@@ -712,15 +665,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     optimisations: [],
     checklist: [...APPROVAL_CHECKLIST],
     report: {
-      spend: 23600,
       leads: 58,
       qualified: 39,
       orders: 34,
-      salesAmount: 214000,
       bestCreative: "CRV-4380 headline B",
       bestAudience: "Vijay Nagar professionals 28–40",
       learning: "Weekday-only messaging lifts weekday capacity use.",
-      nextAction: "Repeat monthly with ₹25,000 budget.",
+      nextAction: "Repeat monthly with the same reach target.",
       rmReview: "approved",
     },
     history: [
@@ -744,18 +695,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Vaishali Nagar — 8 km",
     problem: "Website visitors not converting to shoe-laundry orders.",
     outcome: "30 orders from past visitors.",
-    spend: 14980,
-    budget: {
-      type: "total",
-      daily: 700,
-      total: 15000,
-      approved: 15000,
+    targets: {
+      approved: true,
       approver: "Marketing Head",
       startDate: "2026-07-24",
       endDate: "2026-08-12",
-      expectedCpl: 350,
       leadTarget: 42,
-      salesTarget: 90000,
+      orderTarget: 12,
     },
     audience: {
       city: "Jaipur",
@@ -774,14 +720,14 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
         type: "Static banner set",
         headline: "Sneakers looking dull?",
         primaryText: "Professional shoe laundry with free pickup.",
-        description: "Flat ₹200 off above ₹1499",
-        offer: "Flat ₹200 off above ₹1499",
+        description: "Flat discount on orders",
+        offer: "Flat discount on orders",
         cta: "Book pickup",
         destination: "cleancraft.in/jaipur-shoe",
         landingPage: "Store landing page (Vaishali)",
         phone: "+91 98290 41220",
         whatsapp: "+91 98290 41220",
-        terms: "On orders above ₹1499.",
+        terms: "Minimum order value applies.",
         approval: "approved",
       },
     ],
@@ -795,19 +741,18 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
       calls: 12,
       whatsapp: 17,
       orders: 16,
-      salesAmount: 96000,
-      salesVerified: false,
+      ordersVerified: false,
     },
     leadsContacted: 27,
     linkPassed: true,
     daily: [
-      { date: "2026-08-04", spend: 640, leads: 2, qualified: 1, orders: 1, sales: 5400, observation: "Budget almost finished", action: "Requested top-up approval", nextReview: "2026-08-07" },
+      { date: "2026-08-04", leads: 2, qualified: 1, orders: 1, observation: "Budget almost finished", action: "Requested top-up approval", nextReview: "2026-08-07" },
     ],
     optimisations: [],
     checklist: [...APPROVAL_CHECKLIST],
     history: [
       { at: "2026-07-23", actor: "Nikhil Arora", detail: "Campaign created for STR-1042" },
-      { at: "2026-08-05", actor: "System", detail: "Budget exhausted — ₹14,980 of ₹15,000 spent" },
+      { at: "2026-08-05", actor: "System", detail: "Reach target fully used" },
     ],
   },
   {
@@ -826,18 +771,13 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     serviceArea: "Gomti Nagar — 5 km",
     problem: "Raksha Bandhan week walk-ins flat.",
     outcome: "60 enquiries during festival week.",
-    spend: 0,
-    budget: {
-      type: "total",
-      daily: 1200,
-      total: 35000,
-      approved: 0,
+    targets: {
+      approved: false,
       approver: "Pending",
       startDate: "2026-08-08",
       endDate: "2026-08-16",
-      expectedCpl: 550,
       leadTarget: 60,
-      salesTarget: 220000,
+      orderTarget: 29,
     },
     audience: {
       city: "Lucknow",
@@ -851,7 +791,7 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
     },
     creatives: [],
     handover: baseHandover("Clean Craft Lucknow — Gomti Nagar", "Sanya Kapoor"),
-    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, salesAmount: 0, salesVerified: false },
+    metrics: { impressions: 0, reach: 0, clicks: 0, leads: 0, qualified: 0, calls: 0, whatsapp: 0, orders: 0, ordersVerified: false },
     leadsContacted: 0,
     linkPassed: false,
     daily: [],
@@ -864,35 +804,22 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
 ];
 
 export const ctr = (m: Metrics) => (m.impressions ? (m.clicks / m.impressions) * 100 : 0);
-export const cpc = (c: CampaignRecord) => (c.metrics.clicks ? c.spend / c.metrics.clicks : 0);
-export const cpl = (c: CampaignRecord) => (c.metrics.leads ? c.spend / c.metrics.leads : 0);
-export const cpql = (c: CampaignRecord) => (c.metrics.qualified ? c.spend / c.metrics.qualified : 0);
-export const cps = (c: CampaignRecord) => (c.metrics.orders ? c.spend / c.metrics.orders : 0);
 export const conversion = (c: CampaignRecord) =>
   c.metrics.leads ? (c.metrics.orders / c.metrics.leads) * 100 : 0;
-/** ROAS is only shown when both spend and sales are verified. */
-export const roas = (c: CampaignRecord) =>
-  c.metrics.salesVerified && c.spend > 0 ? c.metrics.salesAmount / c.spend : null;
-export const budgetUsedPct = (c: CampaignRecord) =>
-  c.budget.total ? Math.min(100, Math.round((c.spend / c.budget.total) * 100)) : 0;
+export const targetAchievedPct = (c: CampaignRecord) =>
+  c.targets.leadTarget ? Math.min(100, Math.round((c.metrics.leads / c.targets.leadTarget) * 100)) : 0;
 
 const LIVE_STAGES: CampaignStage[] = ["active", "optimisation_required", "budget_exhausted"];
 
 export function campaignAlerts(c: CampaignRecord): string[] {
   const a: string[] = [];
-  if (LIVE_STAGES.includes(c.stage) && c.spend > 3000 && c.metrics.leads === 0)
-    a.push("Campaign spending without leads");
-  if (c.metrics.leads > 0 && cpl(c) > c.budget.expectedCpl) a.push("Cost per lead above approved target");
-  if (budgetUsedPct(c) >= 85 && budgetUsedPct(c) < 100) a.push("Budget nearly exhausted");
-  if (c.spend > c.budget.approved && c.budget.approved > 0) a.push("Campaign overspending");
   if (c.metrics.leads - c.leadsContacted >= 5) a.push("Leads not being contacted");
   if (c.metrics.leads >= 10 && c.metrics.qualified / c.metrics.leads < 0.5)
     a.push("Low qualified-lead rate");
-  if (c.metrics.orders > 0 && !c.metrics.salesVerified) a.push("Sales not linked to campaign (unverified)");
   if (c.creatives.some((cr) => cr.approval === "rejected" || cr.approval === "correction"))
     a.push("Creative rejected / correction required");
   if (!c.linkPassed) a.push("Destination link not working");
-  if (c.budget.endDate < CAMPAIGN_TODAY && LIVE_STAGES.includes(c.stage))
+  if (c.targets.endDate < CAMPAIGN_TODAY && LIVE_STAGES.includes(c.stage))
     a.push("Campaign end date passed");
   if (["completed"].includes(c.stage) && !c.report) a.push("Campaign report missing");
   if (LIVE_STAGES.includes(c.stage) && c.metrics.orders > 0 && conversion(c) < 20)

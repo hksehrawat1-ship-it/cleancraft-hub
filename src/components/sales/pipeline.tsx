@@ -149,7 +149,6 @@ type Opportunity = {
   campaign: string;
   owner: string;
   stage: Stage;
-  value: number;
   score: number;
   scoreReasons: string[];
   priority: Priority;
@@ -158,16 +157,14 @@ type Opportunity = {
   nextAction: string;
   followupDue: string | null;
   qualification: {
-    budget: string;
     timeline: string;
     decisionMaker: string;
     preference: string;
   } | null;
   meeting: { at: string; mode: string; confirmed: boolean } | null;
-  proposal: { value: number; sentAt: string } | null;
+  proposal: { sentAt: string } | null;
   expectedCloseDate: string | null;
-  payment: { amount: number; expectedAt: string; status: "Pending" | "Received" } | null;
-  finalAmount?: number;
+  payment: { expectedAt: string; status: "Pending" | "Received" } | null;
   lossReason?: string;
   stageHistory: StageEvent[];
   timeline: TimelineItem[];
@@ -198,12 +195,6 @@ function fmtDateTime(s: string) {
   const d = new Date(s);
   return `${d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} · ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 }
-function inr(n: number) {
-  if (n >= 10000000) return `₹${(n / 10000000).toFixed(2)}Cr`;
-  if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
-  if (n >= 1000) return `₹${Math.round(n / 1000)}K`;
-  return `₹${n}`;
-}
 function daysBetween(a: string, b = new Date().toISOString()) {
   return Math.floor((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
@@ -223,7 +214,7 @@ function noNextAction(o: Opportunity) {
   return !isClosed(o.stage) && !o.nextAction.trim();
 }
 function isStaleHighValue(o: Opportunity) {
-  return !isClosed(o.stage) && o.value >= 1500000 && daysBetween(o.lastInteraction) >= 7;
+  return !isClosed(o.stage) && (o.priority === "Urgent" || o.priority === "High") && daysBetween(o.lastInteraction) >= 7;
 }
 function thisMonth(s?: string | null) {
   if (!s) return false;
@@ -243,7 +234,6 @@ function mk(
   city: string,
   state: string,
   stage: Stage,
-  value: number,
   score: number,
   priority: Priority,
   opts: Partial<Opportunity> = {},
@@ -261,7 +251,6 @@ function mk(
     campaign: CAMPAIGNS[i % CAMPAIGNS.length],
     owner: OWNERS[i % OWNERS.length],
     stage,
-    value,
     score,
     scoreReasons: [
       score >= 75 ? "Budget confirmed" : "Budget not confirmed",
@@ -296,7 +285,6 @@ function mk(
 }
 
 const QUAL = {
-  budget: "₹18L – ₹25L",
   timeline: "Within 60 days",
   decisionMaker: "Yes — self",
   preference: "High street",
@@ -304,125 +292,123 @@ const QUAL = {
 
 function seed(): Opportunity[] {
   return [
-    mk(1, "Rakesh Agarwal", "Jaipur", "Rajasthan", "New Lead", 1800000, 62, "High", {
+    mk(1, "Rakesh Agarwal", "Jaipur", "Rajasthan", "New Lead", 62, "High", {
       nextAction: "First call",
       followupDue: dateOnly(0),
     }),
-    mk(2, "Neha Bhatia", "Indore", "Madhya Pradesh", "New Lead", 1500000, 48, "Medium", {
+    mk(2, "Neha Bhatia", "Indore", "Madhya Pradesh", "New Lead", 48, "Medium", {
       nextAction: "",
       followupDue: dateOnly(1),
     }),
-    mk(3, "Sandeep Rao", "Nagpur", "Maharashtra", "Attempting Contact", 1600000, 55, "High", {
+    mk(3, "Sandeep Rao", "Nagpur", "Maharashtra", "Attempting Contact", 55, "High", {
       nextAction: "Retry call (3rd attempt)",
       followupDue: dateOnly(-1),
     }),
-    mk(4, "Vikram Singh", "Lucknow", "Uttar Pradesh", "Attempting Contact", 1400000, 41, "Low", {
+    mk(4, "Vikram Singh", "Lucknow", "Uttar Pradesh", "Attempting Contact", 41, "Low", {
       nextAction: "WhatsApp intro",
       followupDue: dateOnly(2),
     }),
-    mk(5, "Farhan Qureshi", "Surat", "Gujarat", "Contacted", 1900000, 68, "High", {
+    mk(5, "Farhan Qureshi", "Surat", "Gujarat", "Contacted", 68, "High", {
       nextAction: "Send brochure",
       followupDue: dateOnly(0),
     }),
-    mk(6, "Deepa Nair", "Kochi", "Kerala", "Contacted", 1700000, 58, "Medium", {
+    mk(6, "Deepa Nair", "Kochi", "Kerala", "Contacted", 58, "Medium", {
       nextAction: "Qualification call",
       followupDue: dateOnly(3),
     }),
-    mk(7, "Arvind Kulkarni", "Pune", "Maharashtra", "Qualified", 2200000, 81, "Urgent", {
+    mk(7, "Arvind Kulkarni", "Pune", "Maharashtra", "Qualified", 81, "Urgent", {
       qualification: QUAL,
       nextAction: "Fix meeting slot",
       followupDue: dateOnly(-2),
     }),
-    mk(8, "Shalini Gupta", "Bhopal", "Madhya Pradesh", "Qualified", 2000000, 76, "High", {
+    mk(8, "Shalini Gupta", "Bhopal", "Madhya Pradesh", "Qualified", 76, "High", {
       qualification: QUAL,
       nextAction: "Share location checklist",
       followupDue: dateOnly(1),
     }),
-    mk(9, "Mohit Jain", "Ahmedabad", "Gujarat", "Meeting Scheduled", 2400000, 84, "Urgent", {
+    mk(9, "Mohit Jain", "Ahmedabad", "Gujarat", "Meeting Scheduled", 84, "Urgent", {
       qualification: QUAL,
       meeting: { at: daysAheadISO(1), mode: "Google Meet", confirmed: false },
       nextAction: "Confirm meeting",
       followupDue: dateOnly(0),
     }),
-    mk(10, "Priyanka Desai", "Vadodara", "Gujarat", "Meeting Scheduled", 2100000, 79, "High", {
+    mk(10, "Priyanka Desai", "Vadodara", "Gujarat", "Meeting Scheduled", 79, "High", {
       qualification: QUAL,
       meeting: { at: daysAheadISO(3), mode: "Store Visit", confirmed: true },
       nextAction: "Send location pin",
       followupDue: dateOnly(2),
     }),
-    mk(11, "Harish Menon", "Coimbatore", "Tamil Nadu", "Meeting Completed", 2300000, 82, "High", {
+    mk(11, "Harish Menon", "Coimbatore", "Tamil Nadu", "Meeting Completed", 82, "High", {
       qualification: QUAL,
       meeting: { at: daysAgoISO(3), mode: "Store Visit", confirmed: true },
       nextAction: "Prepare proposal",
       followupDue: dateOnly(-3),
       stageSince: daysAgoISO(9),
     }),
-    mk(12, "Kavita Sharma", "Kanpur", "Uttar Pradesh", "Proposal Sent", 2600000, 86, "Urgent", {
+    mk(12, "Kavita Sharma", "Kanpur", "Uttar Pradesh", "Proposal Sent", 86, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 2600000, sentAt: daysAgoISO(5) },
+      proposal: { sentAt: daysAgoISO(5) },
       nextAction: "Proposal follow-up",
       followupDue: dateOnly(0),
     }),
-    mk(13, "Rohit Malhotra", "Ludhiana", "Punjab", "Proposal Sent", 2500000, 74, "High", {
+    mk(13, "Rohit Malhotra", "Ludhiana", "Punjab", "Proposal Sent", 74, "High", {
       qualification: QUAL,
-      proposal: { value: 2500000, sentAt: daysAgoISO(12) },
+      proposal: { sentAt: daysAgoISO(12) },
       nextAction: "",
       followupDue: dateOnly(-4),
       stageSince: daysAgoISO(12),
       lastInteraction: daysAgoISO(11),
     }),
-    mk(14, "Sunil Patil", "Nashik", "Maharashtra", "Negotiation", 2800000, 89, "Urgent", {
+    mk(14, "Sunil Patil", "Nashik", "Maharashtra", "Negotiation", 89, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 2800000, sentAt: daysAgoISO(16) },
+      proposal: { sentAt: daysAgoISO(16) },
       expectedCloseDate: dateOnly(6),
       nextAction: "Discuss royalty terms",
       followupDue: dateOnly(1),
     }),
-    mk(15, "Anita Reddy", "Vijayawada", "Andhra Pradesh", "Negotiation", 2700000, 83, "High", {
+    mk(15, "Anita Reddy", "Vijayawada", "Andhra Pradesh", "Negotiation", 83, "High", {
       qualification: QUAL,
-      proposal: { value: 2700000, sentAt: daysAgoISO(20) },
+      proposal: { sentAt: daysAgoISO(20) },
       expectedCloseDate: dateOnly(12),
       nextAction: "Send revised quote",
       followupDue: dateOnly(-1),
       stageSince: daysAgoISO(14),
     }),
-    mk(16, "Gaurav Tiwari", "Patna", "Bihar", "Payment Pending", 3000000, 92, "Urgent", {
+    mk(16, "Gaurav Tiwari", "Patna", "Bihar", "Payment Pending", 92, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 3000000, sentAt: daysAgoISO(24) },
+      proposal: { sentAt: daysAgoISO(24) },
       expectedCloseDate: dateOnly(4),
-      payment: { amount: 500000, expectedAt: dateOnly(2), status: "Pending" },
+      payment: { expectedAt: dateOnly(2), status: "Pending" },
       nextAction: "Payment follow-up",
       followupDue: dateOnly(0),
     }),
-    mk(17, "Meera Iyer", "Mysuru", "Karnataka", "Payment Pending", 2900000, 88, "High", {
+    mk(17, "Meera Iyer", "Mysuru", "Karnataka", "Payment Pending", 88, "High", {
       qualification: QUAL,
-      proposal: { value: 2900000, sentAt: daysAgoISO(28) },
+      proposal: { sentAt: daysAgoISO(28) },
       expectedCloseDate: dateOnly(9),
-      payment: { amount: 400000, expectedAt: dateOnly(5), status: "Pending" },
+      payment: { expectedAt: dateOnly(5), status: "Pending" },
       nextAction: "Share payment link",
       followupDue: dateOnly(3),
     }),
-    mk(18, "Ajay Chauhan", "Jodhpur", "Rajasthan", "Won", 3200000, 95, "High", {
+    mk(18, "Ajay Chauhan", "Jodhpur", "Rajasthan", "Won", 95, "High", {
       qualification: QUAL,
-      proposal: { value: 3200000, sentAt: daysAgoISO(34) },
-      payment: { amount: 600000, expectedAt: dateOnly(-6), status: "Received" },
-      finalAmount: 3200000,
+      proposal: { sentAt: daysAgoISO(34) },
+      payment: { expectedAt: dateOnly(-6), status: "Received" },
       nextAction: "Handover to Project Coordinator",
       followupDue: null,
       expectedCloseDate: dateOnly(-4),
       stageSince: daysAgoISO(4),
     }),
-    mk(19, "Swati Kapoor", "Raipur", "Chhattisgarh", "Won", 2750000, 91, "Medium", {
+    mk(19, "Swati Kapoor", "Raipur", "Chhattisgarh", "Won", 91, "Medium", {
       qualification: QUAL,
-      proposal: { value: 2750000, sentAt: daysAgoISO(40) },
-      payment: { amount: 550000, expectedAt: dateOnly(-11), status: "Received" },
-      finalAmount: 2750000,
+      proposal: { sentAt: daysAgoISO(40) },
+      payment: { expectedAt: dateOnly(-11), status: "Received" },
       nextAction: "Handover to Project Coordinator",
       followupDue: null,
       expectedCloseDate: dateOnly(-9),
       stageSince: daysAgoISO(9),
     }),
-    mk(20, "Imran Shaikh", "Aurangabad", "Maharashtra", "Lost", 1600000, 44, "Low", {
+    mk(20, "Imran Shaikh", "Aurangabad", "Maharashtra", "Lost", 44, "Low", {
       lossReason: "Budget too low",
       nextAction: "",
       followupDue: null,
@@ -452,7 +438,6 @@ export function SalesPipeline() {
     priority: "all",
     score: "all",
     closeMonth: "all",
-    value: "all",
     stage: "all",
     q: "",
   });
@@ -477,9 +462,6 @@ export function SalesPipeline() {
         if (f.score === "high" && o.score < 80) return false;
         if (f.score === "mid" && (o.score < 50 || o.score >= 80)) return false;
         if (f.score === "low" && o.score >= 50) return false;
-        if (f.value === "gt25" && o.value < 2500000) return false;
-        if (f.value === "15to25" && (o.value < 1500000 || o.value >= 2500000)) return false;
-        if (f.value === "lt15" && o.value >= 1500000) return false;
         if (f.closeMonth !== "all" && monthKey(o.expectedCloseDate) !== f.closeMonth) return false;
         if (f.q.trim()) {
           const q = f.q.toLowerCase();
@@ -491,12 +473,9 @@ export function SalesPipeline() {
   );
 
   const active = filtered.filter((o) => !isClosed(o.stage));
-  const totalValue = active.reduce((s, o) => s + o.value, 0);
-  const weighted = active.reduce((s, o) => s + (o.value * PROBABILITY[o.stage]) / 100, 0);
+  const weightedConversions = active.reduce((s, o) => s + PROBABILITY[o.stage] / 100, 0);
   const closuresThisMonth = active.filter((o) => thisMonth(o.expectedCloseDate)).length;
-  const wonRevenue = filtered
-    .filter((o) => o.stage === "Won" && thisMonth(o.stageSince))
-    .reduce((s, o) => s + (o.finalAmount ?? o.value), 0);
+  const wonThisMonth = filtered.filter((o) => o.stage === "Won" && thisMonth(o.stageSince)).length;
 
   const detail = opps.find((o) => o.id === detailId) ?? null;
 
@@ -569,14 +548,13 @@ export function SalesPipeline() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat icon={Target} label="Active opportunities" value={String(active.length)} />
-        <Stat icon={Wallet} label="Pipeline value" value={inr(totalValue)} />
         <Stat
           icon={Activity}
-          label="Weighted value (est.)"
-          value={inr(Math.round(weighted))}
-          hint="Estimate"
+          label="Weighted expected conversions"
+          value={weightedConversions.toFixed(1)}
+          hint="Sum of probability across active opportunities"
         />
         <Stat
           icon={CalendarClock}
@@ -585,8 +563,8 @@ export function SalesPipeline() {
         />
         <Stat
           icon={Trophy}
-          label="Won revenue (this month)"
-          value={inr(wonRevenue)}
+          label="Conversions (this month)"
+          value={String(wonThisMonth)}
           tone="emerald"
         />
       </div>
@@ -650,16 +628,6 @@ export function SalesPipeline() {
                 { v: "high", l: "80+" },
                 { v: "mid", l: "50–79" },
                 { v: "low", l: "Below 50" },
-              ]}
-            />
-            <Pick
-              label="Opportunity value"
-              value={f.value}
-              onChange={(v) => setF({ ...f, value: v })}
-              options={[
-                { v: "gt25", l: "₹25L+" },
-                { v: "15to25", l: "₹15L–25L" },
-                { v: "lt15", l: "Below ₹15L" },
               ]}
             />
             <Pick
@@ -843,7 +811,7 @@ function KanbanBoard({
       <div className="flex gap-3 min-w-max">
         {STAGES.map((stage) => {
           const items = opps.filter((o) => o.stage === stage);
-          const value = items.reduce((s, o) => s + o.value, 0);
+          const expected = items.length * (PROBABILITY[stage] / 100);
           // Conversion rate = share of all opportunities that reached this stage or beyond.
           const idx = STAGES.indexOf(stage);
           const reached = all.filter(
@@ -878,8 +846,8 @@ function KanbanBoard({
                   </div>
                   <div className="mt-1.5 grid grid-cols-3 gap-1 text-[11px] text-muted-foreground">
                     <div>
-                      <div className="font-semibold text-foreground tabular-nums">{inr(value)}</div>
-                      value
+                      <div className="font-semibold text-foreground tabular-nums">{expected.toFixed(1)}</div>
+                      expected
                     </div>
                     <div>
                       <div className="font-semibold text-foreground tabular-nums">{conv}%</div>
@@ -952,7 +920,7 @@ function OppCard({
       </div>
 
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold tabular-nums">{inr(o.value)}</span>
+        <span className="font-semibold tabular-nums">{PROBABILITY[o.stage]}% likely</span>
         <span className="text-muted-foreground">Score {o.score}</span>
       </div>
 
@@ -1016,8 +984,7 @@ function TableView({
                 "Lead",
                 "City",
                 "Stage",
-                "Value",
-                "Weighted",
+                "Probability",
                 "Score",
                 "Priority",
                 "Owner",
@@ -1045,10 +1012,7 @@ function TableView({
                     {o.stage}
                   </Badge>
                 </td>
-                <td className="px-3 py-2 tabular-nums">{inr(o.value)}</td>
-                <td className="px-3 py-2 tabular-nums text-muted-foreground">
-                  {inr(Math.round((o.value * PROBABILITY[o.stage]) / 100))}
-                </td>
+                <td className="px-3 py-2 tabular-nums">{PROBABILITY[o.stage]}%</td>
                 <td className="px-3 py-2 tabular-nums">{o.score}</td>
                 <td className="px-3 py-2">
                   <Badge
@@ -1110,20 +1074,18 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
   const active = opps.filter((o) => !isClosed(o.stage));
   const rows = STAGES.filter((s) => !isClosed(s)).map((s) => {
     const items = active.filter((o) => o.stage === s);
-    const value = items.reduce((a, o) => a + o.value, 0);
-    return { stage: s, count: items.length, value, weighted: (value * PROBABILITY[s]) / 100 };
+    return { stage: s, count: items.length, weighted: (items.length * PROBABILITY[s]) / 100 };
   });
   const totalW = rows.reduce((a, r) => a + r.weighted, 0);
-  const byMonth = new Map<string, { value: number; weighted: number; count: number }>();
+  const byMonth = new Map<string, { weighted: number; count: number }>();
   active.forEach((o) => {
     const k = monthKey(o.expectedCloseDate) || "Unscheduled";
-    const cur = byMonth.get(k) ?? { value: 0, weighted: 0, count: 0 };
-    cur.value += o.value;
-    cur.weighted += (o.value * PROBABILITY[o.stage]) / 100;
+    const cur = byMonth.get(k) ?? { weighted: 0, count: 0 };
+    cur.weighted += PROBABILITY[o.stage] / 100;
     cur.count += 1;
     byMonth.set(k, cur);
   });
-  const max = Math.max(1, ...rows.map((r) => r.value));
+  const max = Math.max(1, ...rows.map((r) => r.count));
 
   return (
     <div className="space-y-4">
@@ -1136,8 +1098,8 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Weighted value = opportunity value × stage probability. Probabilities are configurable
-            defaults, not commitments.
+            Weighted expected conversions = number of leads × stage probability. Probabilities are
+            configurable defaults, not commitments.
           </p>
           <div className="space-y-2">
             {rows.map((r) => (
@@ -1148,21 +1110,20 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
                 <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary/70 rounded-full"
-                    style={{ width: `${(r.value / max) * 100}%` }}
+                    style={{ width: `${(r.count / max) * 100}%` }}
                   />
                 </div>
                 <div className="w-16 text-xs tabular-nums text-right">{r.count} opp</div>
-                <div className="w-20 text-xs tabular-nums text-right">{inr(r.value)}</div>
-                <div className="w-20 text-xs tabular-nums text-right font-semibold">
-                  {inr(Math.round(r.weighted))}
+                <div className="w-24 text-xs tabular-nums text-right font-semibold">
+                  {r.weighted.toFixed(1)} expected
                 </div>
               </div>
             ))}
           </div>
           <Separator />
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Total weighted pipeline (estimate)</span>
-            <span className="font-semibold tabular-nums">{inr(Math.round(totalW))}</span>
+            <span className="text-muted-foreground">Total weighted expected conversions</span>
+            <span className="font-semibold tabular-nums">{totalW.toFixed(1)}</span>
           </div>
         </CardContent>
       </Card>
@@ -1187,10 +1148,8 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
                         })}
                   </span>
                   <span className="text-muted-foreground tabular-nums">
-                    {v.count} opp · {inr(v.value)} · weighted{" "}
-                    <span className="font-semibold text-foreground">
-                      {inr(Math.round(v.weighted))}
-                    </span>
+                    {v.count} opp · expected{" "}
+                    <span className="font-semibold text-foreground">{v.weighted.toFixed(1)}</span>
                   </span>
                 </div>
               ))}
@@ -1273,7 +1232,7 @@ function PipelineHealth({ opps, onOpen }: { opps: Opportunity[]; onOpen: (id: st
                         {o.name} · {o.city}
                       </span>
                       <span className="text-muted-foreground tabular-nums ml-2">
-                        {inr(o.value)}
+                        {PROBABILITY[o.stage]}%
                       </span>
                     </button>
                   ))}
@@ -1309,17 +1268,13 @@ function StageChangeDialog({
 }) {
   const to = move?.to;
   const [note, setNote] = useState("");
-  const [budget, setBudget] = useState("");
   const [timeline, setTimeline] = useState("");
   const [dm, setDm] = useState("");
   const [pref, setPref] = useState("");
   const [meetAt, setMeetAt] = useState("");
   const [meetMode, setMeetMode] = useState("Google Meet");
-  const [proposalValue, setProposalValue] = useState("");
   const [closeDate, setCloseDate] = useState("");
-  const [payAmount, setPayAmount] = useState("");
   const [payDate, setPayDate] = useState("");
-  const [finalAmount, setFinalAmount] = useState("");
   const [lossReason, setLossReason] = useState("");
 
   // Reset when a new move starts.
@@ -1328,17 +1283,13 @@ function StageChangeDialog({
   if (key !== lastKey) {
     setLastKey(key);
     setNote("");
-    setBudget("");
     setTimeline("");
     setDm("");
     setPref("");
     setMeetAt("");
     setMeetMode("Google Meet");
-    setProposalValue("");
     setCloseDate("");
-    setPayAmount("");
     setPayDate("");
-    setFinalAmount("");
     setLossReason("");
   }
 
@@ -1359,9 +1310,9 @@ function StageChangeDialog({
       return toast.error("Notes are required for this stage change");
 
     if (to === "Qualified") {
-      if (!budget || !timeline || !dm || !pref)
+      if (!timeline || !dm || !pref)
         return toast.error("Complete all qualification details");
-      patch.qualification = { budget, timeline, decisionMaker: dm, preference: pref };
+      patch.qualification = { timeline, decisionMaker: dm, preference: pref };
     }
     if (to === "Meeting Scheduled") {
       if (!meetAt) return toast.error("Meeting date and time are required");
@@ -1370,9 +1321,7 @@ function StageChangeDialog({
       patch.followupDue = meetAt.slice(0, 10);
     }
     if (to === "Proposal Sent") {
-      if (!proposalValue) return toast.error("Proposal value is required");
-      patch.proposal = { value: Number(proposalValue), sentAt: new Date().toISOString() };
-      patch.value = Number(proposalValue);
+      patch.proposal = { sentAt: new Date().toISOString() };
       patch.nextAction = "Proposal follow-up";
     }
     if (to === "Negotiation") {
@@ -1380,16 +1329,12 @@ function StageChangeDialog({
       patch.expectedCloseDate = closeDate;
     }
     if (to === "Payment Pending") {
-      if (!payAmount || !payDate)
-        return toast.error("Payment amount and expected date are required");
-      patch.payment = { amount: Number(payAmount), expectedAt: payDate, status: "Pending" };
+      if (!payDate) return toast.error("Expected payment date is required");
+      patch.payment = { expectedAt: payDate, status: "Pending" };
       patch.nextAction = "Payment follow-up";
       patch.followupDue = payDate;
     }
     if (to === "Won") {
-      if (!finalAmount) return toast.error("Final amount is required to mark Won");
-      patch.finalAmount = Number(finalAmount);
-      patch.value = Number(finalAmount);
       patch.nextAction = "Handover to Project Coordinator";
       if (opp!.payment) patch.payment = { ...opp!.payment, status: "Received" };
     }
@@ -1417,13 +1362,6 @@ function StageChangeDialog({
         <div className="space-y-3">
           {to === "Qualified" && (
             <div className="grid grid-cols-2 gap-2">
-              <Field label="Budget range">
-                <Input
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  placeholder="₹18L – ₹25L"
-                />
-              </Field>
               <Field label="Timeline">
                 <Input
                   value={timeline}
@@ -1472,43 +1410,14 @@ function StageChangeDialog({
               </Field>
             </div>
           )}
-          {to === "Proposal Sent" && (
-            <Field label="Proposal value (₹)">
-              <Input
-                type="number"
-                value={proposalValue}
-                onChange={(e) => setProposalValue(e.target.value)}
-                placeholder="2500000"
-              />
-            </Field>
-          )}
           {to === "Negotiation" && (
             <Field label="Expected closing date">
               <Input type="date" value={closeDate} onChange={(e) => setCloseDate(e.target.value)} />
             </Field>
           )}
           {to === "Payment Pending" && (
-            <div className="grid grid-cols-2 gap-2">
-              <Field label="Payment amount (₹)">
-                <Input
-                  type="number"
-                  value={payAmount}
-                  onChange={(e) => setPayAmount(e.target.value)}
-                />
-              </Field>
-              <Field label="Expected payment date">
-                <Input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
-              </Field>
-            </div>
-          )}
-          {to === "Won" && (
-            <Field label="Final amount (₹)">
-              <Input
-                type="number"
-                value={finalAmount}
-                onChange={(e) => setFinalAmount(e.target.value)}
-                placeholder="3000000"
-              />
+            <Field label="Expected payment date">
+              <Input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
             </Field>
           )}
           {to === "Lost" && (
@@ -1656,15 +1565,13 @@ function DetailBody({
         <KV k="Source" v={o.source} />
         <KV k="Campaign" v={o.campaign} />
         <KV k="Assigned to" v={o.owner} />
-        <KV k="Budget" v={o.qualification?.budget} />
         <KV k="Timeline" v={o.qualification?.timeline} />
         <KV k="Decision maker" v={o.qualification?.decisionMaker} />
         <KV k="Preference" v={o.qualification?.preference} />
       </Block>
 
       <Block title="Opportunity & score">
-        <KV k="Opportunity value" v={inr(o.value)} />
-        <KV k="Weighted value (est.)" v={inr(Math.round((o.value * PROBABILITY[o.stage]) / 100))} />
+        <KV k="Stage probability" v={`${PROBABILITY[o.stage]}%`} />
         <KV k="Expected closing" v={fmtDate(o.expectedCloseDate)} />
         <KV k="Lead score" v={`${o.score}/100`} />
         <div className="pt-1 space-y-1">
@@ -1677,12 +1584,9 @@ function DetailBody({
       </Block>
 
       <Block title="Proposal & payment">
-        <KV k="Proposal value" v={o.proposal ? inr(o.proposal.value) : undefined} />
         <KV k="Proposal sent" v={o.proposal ? fmtDate(o.proposal.sentAt) : undefined} />
-        <KV k="Payment amount" v={o.payment ? inr(o.payment.amount) : undefined} />
         <KV k="Payment expected" v={o.payment ? fmtDate(o.payment.expectedAt) : undefined} />
         <KV k="Payment status" v={o.payment?.status} />
-        <KV k="Final amount" v={o.finalAmount ? inr(o.finalAmount) : undefined} />
         <KV k="Loss reason" v={o.lossReason} />
       </Block>
 

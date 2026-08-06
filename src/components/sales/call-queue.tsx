@@ -39,7 +39,6 @@ export type QueueLead = {
   engagedRecently: boolean;
   investmentReady: boolean;
   timeline: string;          // purchase timeline
-  budget: string;
   qualification: string;
   objections: string[];
   previousNotes: string[];
@@ -75,8 +74,8 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "Call · 3 days ago", hoursSinceContact: 72, scheduledAt: iso(-1, 11, 0),
     attempts: 1, missedInbound: true, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: true, investmentReady: true,
-    timeline: "Within 30 days", budget: "₹25–30 L",
-    qualification: "Budget confirmed ₹25–30L · Site shortlisted in Vaishali Nagar · Decision maker",
+    timeline: "Within 30 days",
+    qualification: "Budget confirmed · Site shortlisted in Vaishali Nagar · Decision maker",
     objections: ["Wants lower royalty in year 1", "Concerned about manpower hiring"],
     previousNotes: ["Proposal opened 3 times", "Brother is co-investor", "Prefers calls after 6 PM"],
     objective: "Close proposal feedback and lock agreement date",
@@ -88,7 +87,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "WhatsApp · yesterday", hoursSinceContact: 20, scheduledAt: iso(0, 11, 30),
     attempts: 0, missedInbound: false, callbackRequested: false, paymentCommitment: true,
     meetingToConfirm: false, isNew: false, engagedRecently: true, investmentReady: true,
-    timeline: "Within 15 days", budget: "₹20–25 L",
+    timeline: "Within 15 days",
     qualification: "Referred by Jaipur partner · Engagement letter shared · Booking amount promised",
     objections: ["Wants corner shop location before payment"],
     previousNotes: ["EL sent for signature", "Store visit completed at Indore pilot store"],
@@ -101,11 +100,11 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "Call · 5 days ago", hoursSinceContact: 120, scheduledAt: iso(-2, 15, 0),
     attempts: 2, missedInbound: false, callbackRequested: true, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: false, investmentReady: false,
-    timeline: "Within 60 days", budget: "₹20 L",
-    qualification: "Answered first call · Qualification incomplete · Budget indicative",
+    timeline: "Within 60 days",
+    qualification: "Answered first call · Qualification incomplete",
     objections: ["Not sure about location availability"],
     previousNotes: ["Asked to be called back this week"],
-    objective: "Complete qualification — budget, city, timeline",
+    objective: "Complete qualification — city, timeline",
     script: "Qualification Script — 6 discovery questions before pitching numbers.",
   },
   {
@@ -114,7 +113,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "—", hoursSinceContact: 4, scheduledAt: iso(0, 18, 0),
     attempts: 0, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: true, engagedRecently: true, investmentReady: false,
-    timeline: "Exploring", budget: "Not disclosed",
+    timeline: "Exploring",
     qualification: "Fresh inbound — no contact yet",
     objections: [],
     previousNotes: ["IndiaMART enquiry received today"],
@@ -127,7 +126,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "Call · 2 days ago", hoursSinceContact: 48, scheduledAt: iso(0, 13, 0),
     attempts: 0, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: true, investmentReady: true,
-    timeline: "1–2 months", budget: "₹40 L+",
+    timeline: "1–2 months",
     qualification: "Master franchise intent · 3-store territory · Strong capital",
     objections: ["Wants exclusivity for full city"],
     previousNotes: ["Asked for ROI comparison sheet"],
@@ -140,7 +139,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "WhatsApp · today", hoursSinceContact: 6, scheduledAt: iso(0, 16, 0),
     attempts: 0, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: true, isNew: false, engagedRecently: true, investmentReady: true,
-    timeline: "Within 45 days", budget: "₹18–22 L",
+    timeline: "Within 45 days",
     qualification: "Location finalised in Adajan · Site visit booked tomorrow",
     objections: [],
     previousNotes: ["Confirmed interest over WhatsApp"],
@@ -153,7 +152,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "WhatsApp · 2 days ago", hoursSinceContact: 50, scheduledAt: iso(0, 17, 15),
     attempts: 1, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: false, investmentReady: false,
-    timeline: "Within 45 days", budget: "₹22 L",
+    timeline: "Within 45 days",
     qualification: "Intro meeting booked · Qualification partially done",
     objections: ["Needs spouse approval"],
     previousNotes: ["Agenda to be shared before meeting"],
@@ -166,8 +165,8 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "Call · 6 days ago", hoursSinceContact: 144, scheduledAt: iso(0, 19, 0),
     attempts: 1, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: false, investmentReady: false,
-    timeline: "3+ months", budget: "₹15 L",
-    qualification: "Low urgency · Budget below threshold",
+    timeline: "3+ months",
+    qualification: "Low urgency",
     objections: ["Budget constrained"],
     previousNotes: ["Met at exhibition booth"],
     objective: "Nurture — share company profile, re-check timeline",
@@ -179,7 +178,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "—", hoursSinceContact: 2, scheduledAt: iso(0, 12, 0),
     attempts: 0, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: true, engagedRecently: true, investmentReady: true,
-    timeline: "Within 30 days", budget: "₹30 L",
+    timeline: "Within 30 days",
     qualification: "Referral from Ludhiana partner · Capital ready",
     objections: [],
     previousNotes: ["Referred this morning — high quality"],
@@ -192,7 +191,7 @@ const SAMPLE: QueueLead[] = [
     lastInteraction: "Call · 8 days ago", hoursSinceContact: 190, scheduledAt: iso(-3, 10, 0),
     attempts: 3, missedInbound: false, callbackRequested: false, paymentCommitment: false,
     meetingToConfirm: false, isNew: false, engagedRecently: false, investmentReady: false,
-    timeline: "Within 60 days", budget: "₹18 L",
+    timeline: "Within 60 days",
     qualification: "Proposal shared · Not responding to last 3 attempts",
     objections: ["Comparing with another laundry brand"],
     previousNotes: ["3 unanswered attempts", "Last spoke 8 days ago"],
@@ -648,7 +647,7 @@ function CallWorkspace({
           <Separator />
 
           <Block title="Qualification summary">{lead.qualification}</Block>
-          <Block title="Budget & timeline">{lead.budget} · {lead.timeline}</Block>
+          <Block title="Timeline">{lead.timeline}</Block>
 
           <div>
             <div className="text-xs font-semibold uppercase text-muted-foreground mb-1">Previous call notes</div>

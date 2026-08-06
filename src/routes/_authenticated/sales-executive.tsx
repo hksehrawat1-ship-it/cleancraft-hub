@@ -27,7 +27,6 @@ import {
   X,
   Target,
   Clock,
-  DollarSign,
   Trophy,
   Activity,
   MessageSquare,
@@ -833,7 +832,7 @@ function HandoverForm({
             <label className="text-xs text-muted-foreground">Discount</label>
             <input
               className={inputCls}
-              placeholder="e.g. ₹25,000 or 10%"
+              placeholder="e.g. 10% off"
               value={form.discount}
               onChange={(e) => set("discount", e.target.value)}
             />
@@ -1046,18 +1045,12 @@ function BookingsView({ leads, profiles, onSaved }: ViewProps) {
 
 function LostView({ leads, profiles, onSaved }: ViewProps) {
   const lost = leads.filter((l) => l.lead_stage === "Lost");
-  const totalValue = lost.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
 
   return (
     <div className="space-y-6">
       <Section title="Lost Leads Summary">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <Stat label="Total Lost" value={lost.length} tone="text-red-600" />
-          <Stat
-            label="Lost Value"
-            value={`₹${totalValue.toLocaleString("en-IN")}`}
-            tone="text-red-600"
-          />
           <Stat
             label="Most Common Stage"
             value={mostCommon(lost.map((l) => l.lead_stage)) ?? "—"}
@@ -1074,14 +1067,13 @@ function LostView({ leads, profiles, onSaved }: ViewProps) {
                   <Th>City</Th>
                   <Th>Lost Reason</Th>
                   <Th>Lost Stage</Th>
-                  <Th>Lost Value</Th>
                   <Th></Th>
                 </tr>
               </thead>
               <tbody>
                 {lost.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                    <td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
                       No lost leads.
                     </td>
                   </tr>
@@ -1093,9 +1085,6 @@ function LostView({ leads, profiles, onSaved }: ViewProps) {
                     <td className="px-4 py-3">{(l as any).lost_reason ?? "—"}</td>
                     <td className="px-4 py-3">
                       <Badge variant="outline">{(l as any).lost_stage ?? l.lead_stage}</Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      ₹{(Number(l.engagement_letter_fee_amount) || 0).toLocaleString("en-IN")}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link to="/leads/$id" params={{ id: l.id }}>
@@ -1125,25 +1114,13 @@ function HandoverView({ leads, profiles, onSaved }: ViewProps) {
     (l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage),
   );
   const handoverDone = leads.filter((l) => isHandoverDone(l.lead_stage));
-  const sumAmt = (arr: Lead[]) =>
-    arr.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
 
   return (
     <div className="space-y-6">
       <Section title="Hand Over to Account Department">
         <div className="grid grid-cols-2 gap-3">
-          <BookingStat
-            label="Pending Handover"
-            count={handoverPending.length}
-            value={sumAmt(handoverPending)}
-            tone="text-orange-600"
-          />
-          <BookingStat
-            label="Handover Complete"
-            count={handoverDone.length}
-            value={sumAmt(handoverDone)}
-            tone="text-emerald-600"
-          />
+          <Stat label="Pending Handover" value={handoverPending.length} tone="text-orange-600" />
+          <Stat label="Handover Complete" value={handoverDone.length} tone="text-emerald-600" />
         </div>
       </Section>
       <Section title="Pending Handover">
@@ -1217,28 +1194,6 @@ function Stat({
         <div className="text-xs text-muted-foreground">{label}</div>
         <div className={`text-2xl font-semibold mt-1 ${tone ?? ""}`}>{value}</div>
         {sub && <div className="text-xs text-muted-foreground mt-0.5">{sub}</div>}
-      </CardContent>
-    </Card>
-  );
-}
-
-function BookingStat({
-  label,
-  count,
-  value,
-  tone,
-}: {
-  label: string;
-  count: number;
-  value: number;
-  tone?: string;
-}) {
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="text-xs text-muted-foreground">{label}</div>
-        <div className={`text-2xl font-semibold mt-1 ${tone ?? ""}`}>{count}</div>
-        <div className="text-xs text-muted-foreground mt-0.5">₹{value.toLocaleString("en-IN")}</div>
       </CardContent>
     </Card>
   );
@@ -1627,11 +1582,10 @@ function AudioLibraryView() {
 
 const PERF_TARGETS = {
   winRate: 25, // %
-  pipelineCoverage: 3, // x of monthly quota
+  pipelineCoverage: 3, // x of monthly closure quota (in lead counts)
   responseWithin1h: 80, // %
   responseWithin24h: 95, // %
   monthlyClosures: 5, // KRA
-  avgDealSize: 250000, // ₹
 };
 
 const PERF_FEEDBACK_KEY = "ccos.sales-perf-feedback.v1";
@@ -1762,22 +1716,14 @@ function PerformanceView({
       ? Math.round((respMs.filter((m) => m <= 86400000).length / respMs.length) * 100)
       : 0;
 
-    // Average deal size
-    const dealValues = won
-      .map((l) => Number(l.engagement_letter_fee_amount) || 0)
-      .filter((n) => n > 0);
-    const avgDeal = dealValues.length
-      ? Math.round(dealValues.reduce((s, n) => s + n, 0) / dealValues.length)
-      : 0;
-
-    // Pipeline coverage — open pipeline value vs monthly quota (KRA: 5 * avg deal target)
+    // Weighted expected conversions — probability (win rate) × open lead count
     const openLeads = scoped.filter((l) => !isTerminal(l.lead_stage) && l.lead_stage !== "Lost");
-    const openValue = openLeads.reduce(
-      (s, l) => s + (Number(l.engagement_letter_fee_amount) || PERF_TARGETS.avgDealSize),
-      0,
-    );
-    const monthlyQuota = PERF_TARGETS.monthlyClosures * PERF_TARGETS.avgDealSize;
-    const coverage = monthlyQuota ? +(openValue / monthlyQuota).toFixed(1) : 0;
+    const winProbability = (winRate || PERF_TARGETS.winRate) / 100;
+    const weightedExpectedConversions = Math.round(openLeads.length * winProbability);
+
+    // Pipeline coverage — open lead count vs monthly closure quota
+    const monthlyQuota = PERF_TARGETS.monthlyClosures;
+    const coverage = monthlyQuota ? +(openLeads.length / monthlyQuota).toFixed(1) : 0;
 
     // Sales cycle length — created_at → converted_to_franchise_at (days)
     const cycleDays: number[] = [];
@@ -1805,25 +1751,25 @@ function PerformanceView({
       (l) => l.proposal_sent_date && l.proposal_sent_date >= weekStart,
     ).length;
 
-    // Weekly revenue & growth — engagement letter fee received this week vs last week
-    const revWeek = scoped
-      .filter(
-        (l) =>
-          l.engagement_letter_fee_received_date &&
-          l.engagement_letter_fee_received_date >= weekStart,
-      )
-      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const revPrev = scoped
-      .filter(
-        (l) =>
-          l.engagement_letter_fee_received_date &&
-          l.engagement_letter_fee_received_date >= prevWeekStart &&
-          l.engagement_letter_fee_received_date < weekStart,
-      )
-      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const growth = revPrev ? Math.round(((revWeek - revPrev) / revPrev) * 100) : revWeek ? 100 : 0;
+    // Weekly conversions & growth — engagement letter fee received this week vs last week (counts)
+    const convWeek = scoped.filter(
+      (l) =>
+        l.engagement_letter_fee_received_date &&
+        l.engagement_letter_fee_received_date >= weekStart,
+    ).length;
+    const convPrev = scoped.filter(
+      (l) =>
+        l.engagement_letter_fee_received_date &&
+        l.engagement_letter_fee_received_date >= prevWeekStart &&
+        l.engagement_letter_fee_received_date < weekStart,
+    ).length;
+    const growth = convPrev
+      ? Math.round(((convWeek - convPrev) / convPrev) * 100)
+      : convWeek
+        ? 100
+        : 0;
 
-    // Additional revenue (placeholder — upsell flag not in schema yet)
+    // Additional growth opportunities (placeholder — upsell flag not in schema yet)
     const upsell = scoped.filter(
       (l) =>
         (l.remarks || "").toLowerCase().includes("upsell") ||
@@ -1844,10 +1790,8 @@ function PerformanceView({
       avgRespHrs,
       within1h,
       within24h,
-      avgDeal,
-      dealValues,
+      weightedExpectedConversions,
       openLeads,
-      openValue,
       monthlyQuota,
       coverage,
       avgCycle,
@@ -1855,8 +1799,8 @@ function PerformanceView({
       followupsWk,
       meetingsWk,
       proposalsWk,
-      revWeek,
-      revPrev,
+      convWeek,
+      convPrev,
       growth,
       upsell,
     };
@@ -2048,31 +1992,29 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* D. Average deal size */}
+        {/* D. Weighted expected conversions */}
         <MetricBlock
-          icon={DollarSign}
-          name="Average deal size"
-          why="A low average deal size may indicate the rep discounts too aggressively or doesn't follow up on high-value leads."
-          impl="Average engagement-letter fee across won deals."
+          icon={Target}
+          name="Weighted expected conversions"
+          why="Applies the current win rate to the open pipeline to forecast how many leads are likely to convert."
+          impl="Open pipeline count × win probability (win rate)."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <TargetStat
-              label="Avg deal"
-              value={`₹${metrics.avgDeal.toLocaleString("en-IN")}`}
-              target={PERF_TARGETS.avgDealSize}
-              actual={metrics.avgDeal}
-              sub={`Target ₹${PERF_TARGETS.avgDealSize.toLocaleString("en-IN")}`}
-              onClick={() => openDrill("Won deals (by value)", metrics.won)}
+            <ClickStat
+              label="Expected conversions"
+              value={metrics.weightedExpectedConversions}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <ClickStat
-              label="Deals counted"
-              value={metrics.dealValues.length}
-              onClick={() => openDrill("Won deals", metrics.won)}
+              label="Open pipeline leads"
+              value={metrics.openLeads.length}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
-            <Stat
-              label="Total won value"
-              value={`₹${metrics.dealValues.reduce((s, n) => s + n, 0).toLocaleString("en-IN")}`}
+            <ClickStat
+              label="Won leads"
+              value={metrics.won.length}
               tone="text-emerald-700"
+              onClick={() => openDrill("Won deals", metrics.won)}
             />
           </div>
         </MetricBlock>
@@ -2115,8 +2057,8 @@ function PerformanceView({
         <MetricBlock
           icon={Target}
           name="Sales pipeline coverage"
-          why="High-performing teams maintain pipeline coverage of 3×–5× their revenue target."
-          impl="Open pipeline value ÷ monthly quota. Coloured against target."
+          why="High-performing teams maintain pipeline coverage of 3×–5× their monthly closure target."
+          impl="Open pipeline lead count ÷ monthly closure quota. Coloured against target."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <TargetStat
@@ -2128,14 +2070,14 @@ function PerformanceView({
               onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <ClickStat
-              label="Open pipeline value"
-              value={`₹${metrics.openValue.toLocaleString("en-IN")}`}
+              label="Open pipeline leads"
+              value={metrics.openLeads.length}
               onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <Stat
               label="Monthly quota"
-              value={`₹${metrics.monthlyQuota.toLocaleString("en-IN")}`}
-              sub={`${PERF_TARGETS.monthlyClosures} closures × avg deal`}
+              value={metrics.monthlyQuota}
+              sub={`${PERF_TARGETS.monthlyClosures} closures target`}
             />
           </div>
         </MetricBlock>
@@ -2220,20 +2162,16 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* I. Weekly revenue & growth */}
+        {/* I. Weekly conversions & growth */}
         <MetricBlock
           icon={TrendingUp}
-          name="Weekly sales revenue & growth"
-          why="A weekly view of closed revenue motivates the team and alerts leaders if momentum is slowing."
-          impl="Total engagement-letter fee received this week vs last week."
+          name="Weekly conversions & growth"
+          why="A weekly view of closed conversions motivates the team and alerts leaders if momentum is slowing."
+          impl="Total engagement-letter fee conversions this week vs last week."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Stat
-              label="This week"
-              value={`₹${metrics.revWeek.toLocaleString("en-IN")}`}
-              tone="text-emerald-700"
-            />
-            <Stat label="Last week" value={`₹${metrics.revPrev.toLocaleString("en-IN")}`} />
+            <Stat label="This week" value={metrics.convWeek} tone="text-emerald-700" />
+            <Stat label="Last week" value={metrics.convPrev} />
             <Stat
               label="Growth"
               value={`${metrics.growth >= 0 ? "+" : ""}${metrics.growth}%`}
@@ -2242,10 +2180,10 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* J. Additional revenue opportunities */}
+        {/* J. Additional growth opportunities */}
         <MetricBlock
-          icon={DollarSign}
-          name="Additional revenue opportunities"
+          icon={Users}
+          name="Additional growth opportunities"
           why="Tracks upsell, cross-sell and repeat business — highlights whether reps nurture existing customers."
           impl="Counts leads tagged 'upsell' or 'repeat' in remarks."
         >
@@ -2353,11 +2291,6 @@ function PerformanceView({
                         {l.lead_classification}
                       </Badge>
                     )}
-                    {l.engagement_letter_fee_amount ? (
-                      <div className="text-sm tabular-nums">
-                        ₹{Number(l.engagement_letter_fee_amount).toLocaleString("en-IN")}
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </Link>

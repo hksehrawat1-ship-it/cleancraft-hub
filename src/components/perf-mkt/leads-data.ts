@@ -114,11 +114,9 @@ export type LeadRecord = {
   quality: LeadQuality;
   qualityReason?: string;
   orderStatus: "Order Placed" | "No Order" | "Pending";
-  orderValue: number;
   lostReason?: string;
   lastCrmUpdate?: string;
   salesNotes?: string;
-  expectedValue?: number;
   contacted: boolean;
   manualEntry?: boolean;
   touchHistory: { at: string; source: LeadSource; detail: string }[];
@@ -148,7 +146,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "assigned",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-08-06 09:45",
     contacted: false,
     touchHistory: [{ at: "2026-08-06 09:42", source: "Google Ads", detail: "Search ad — form fill" }],
@@ -172,7 +169,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "awaiting_assignment",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     contacted: false,
     touchHistory: [
       { at: "2026-08-06 08:10", source: "Meta Ads", detail: "Instant form — monsoon offer" },
@@ -192,7 +188,7 @@ export const LEADS: LeadRecord[] = [
     latestSource: "Google Ads",
     campaignId: "CMP-8802",
     campaignName: "Franchise Enquiry — Company Search",
-    requirement: "Franchise enquiry — Delhi NCR, budget ₹25L",
+    requirement: "Franchise enquiry — Delhi NCR, large-format opportunity",
     assignedTo: "Ashish Rathore (Sales Head)",
     assignedRole: "Sales Head",
     handoverAt: "2026-08-05 16:26",
@@ -200,8 +196,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "contacted",
     quality: "Qualified",
     orderStatus: "Pending",
-    orderValue: 0,
-    expectedValue: 2500000,
     lastCrmUpdate: "2026-08-06 11:05",
     salesNotes: "Site shortlisting in Dwarka; second call on 08 Aug.",
     contacted: true,
@@ -229,7 +223,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 8400,
     lastCrmUpdate: "2026-08-05 18:40",
     salesNotes: "Promo code AAROHI10 used at billing.",
     contacted: true,
@@ -256,7 +249,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "no_update",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-08-03 10:40",
     contacted: false,
     touchHistory: [{ at: "2026-08-03 10:31", source: "Google Business Profile", detail: "Call button tap" }],
@@ -284,7 +276,6 @@ export const LEADS: LeadRecord[] = [
     quality: "Unqualified",
     qualityReason: "Outside service area — 22 km from store",
     orderStatus: "No Order",
-    orderValue: 0,
     lostReason: "Out of service area",
     lastCrmUpdate: "2026-08-03 12:10",
     contacted: true,
@@ -309,7 +300,6 @@ export const LEADS: LeadRecord[] = [
     quality: "Spam",
     qualityReason: "Invalid number pattern, repeated submissions",
     orderStatus: "No Order",
-    orderValue: 0,
     contacted: false,
     touchHistory: [{ at: "2026-08-01 14:12", source: "Meta Ads", detail: "Form fill — invalid data" }],
   },
@@ -332,7 +322,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 12600,
     lastCrmUpdate: "2026-08-01 17:20",
     salesNotes: "Converted to monthly package; referred by existing customer.",
     contacted: true,
@@ -362,7 +351,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 5900,
     lastCrmUpdate: "2026-07-31 10:02",
     contacted: true,
     touchHistory: [{ at: "2026-07-29 17:05", source: "Google Ads", detail: "Search ad — curtain cleaning" }],
@@ -386,7 +374,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "follow_up",
     quality: "Unable to Contact",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-07-30 16:15",
     salesNotes: "Three call attempts, phone unreachable.",
     contacted: true,
@@ -414,7 +401,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 15400,
     lastCrmUpdate: "2026-07-28 12:40",
     contacted: true,
     touchHistory: [{ at: "2026-07-25 09:20", source: "Meta Ads", detail: "Lead form — premium care" }],
@@ -438,7 +424,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "lost",
     quality: "Qualified",
     orderStatus: "No Order",
-    orderValue: 0,
     lostReason: "Price higher than local competitor",
     lastCrmUpdate: "2026-07-24 11:30",
     contacted: true,
@@ -454,46 +439,43 @@ export type StoreResult = {
   city: string;
   rm: string;
   executive: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
+  targetOrders: number;
   status: "good" | "watch" | "poor";
   nextAction: string;
 };
 
 export const STORE_RESULTS: StoreResult[] = [
-  { storeId: "STR-1042", store: "Clean Craft Jaipur — Vaishali", city: "Jaipur", rm: "Ritika Bansal", executive: "Nikhil Arora", spend: 62000, leads: 142, qualified: 92, orders: 51, sales: 486000, status: "good", nextAction: "Increase budget on best-performing search campaign" },
-  { storeId: "STR-1067", store: "Clean Craft Indore — Vijay Nagar", city: "Indore", rm: "Aakash Menon", executive: "Nikhil Arora", spend: 48500, leads: 118, qualified: 74, orders: 39, sales: 372000, status: "good", nextAction: "Refresh monsoon creative before 15 Aug" },
-  { storeId: "STR-1088", store: "Clean Craft Lucknow — Gomti Nagar", city: "Lucknow", rm: "Sanya Kapoor", executive: "Nikhil Arora", spend: 51000, leads: 64, qualified: 28, orders: 11, sales: 158000, status: "watch", nextAction: "Review lead form questions — high unqualified rate" },
-  { storeId: "STR-1103", store: "Clean Craft Surat — Adajan", city: "Surat", rm: "Yash Malhotra", executive: "Nikhil Arora", spend: 44000, leads: 38, qualified: 12, orders: 4, sales: 96000, status: "poor", nextAction: "Tighten service-area targeting and pause weak ad set" },
-  { storeId: "STR-1121", store: "Clean Craft Mumbai — Andheri West", city: "Mumbai", rm: "Ritika Bansal", executive: "Nikhil Arora", spend: 58000, leads: 96, qualified: 61, orders: 34, sales: 412000, status: "good", nextAction: "Repeat influencer collaboration that drove orders" },
-  { storeId: "STR-1134", store: "Clean Craft Nagpur — Dharampeth", city: "Nagpur", rm: "Aakash Menon", executive: "Nikhil Arora", spend: 39000, leads: 52, qualified: 21, orders: 9, sales: 118000, status: "watch", nextAction: "Ask store to confirm order updates in Sales CRM" },
-  { storeId: "STR-1149", store: "Clean Craft Kanpur — Swaroop Nagar", city: "Kanpur", rm: "Sanya Kapoor", executive: "Nikhil Arora", spend: 26000, leads: 18, qualified: 4, orders: 0, sales: 0, status: "poor", nextAction: "Spend with no orders — escalate to manager for review" },
+  { storeId: "STR-1042", store: "Clean Craft Jaipur — Vaishali", city: "Jaipur", rm: "Ritika Bansal", executive: "Nikhil Arora", leads: 142, qualified: 92, orders: 51, targetOrders: 45, status: "good", nextAction: "Increase reach on best-performing search campaign" },
+  { storeId: "STR-1067", store: "Clean Craft Indore — Vijay Nagar", city: "Indore", rm: "Aakash Menon", executive: "Nikhil Arora", leads: 118, qualified: 74, orders: 39, targetOrders: 40, status: "good", nextAction: "Refresh monsoon creative before 15 Aug" },
+  { storeId: "STR-1088", store: "Clean Craft Lucknow — Gomti Nagar", city: "Lucknow", rm: "Sanya Kapoor", executive: "Nikhil Arora", leads: 64, qualified: 28, orders: 11, targetOrders: 35, status: "watch", nextAction: "Review lead form questions — high unqualified rate" },
+  { storeId: "STR-1103", store: "Clean Craft Surat — Adajan", city: "Surat", rm: "Yash Malhotra", executive: "Nikhil Arora", leads: 38, qualified: 12, orders: 4, targetOrders: 30, status: "poor", nextAction: "Tighten service-area targeting and pause weak ad set" },
+  { storeId: "STR-1121", store: "Clean Craft Mumbai — Andheri West", city: "Mumbai", rm: "Ritika Bansal", executive: "Nikhil Arora", leads: 96, qualified: 61, orders: 34, targetOrders: 35, status: "good", nextAction: "Repeat influencer collaboration that drove orders" },
+  { storeId: "STR-1134", store: "Clean Craft Nagpur — Dharampeth", city: "Nagpur", rm: "Aakash Menon", executive: "Nikhil Arora", leads: 52, qualified: 21, orders: 9, targetOrders: 25, status: "watch", nextAction: "Ask store to confirm order updates in Sales CRM" },
+  { storeId: "STR-1149", store: "Clean Craft Kanpur — Swaroop Nagar", city: "Kanpur", rm: "Sanya Kapoor", executive: "Nikhil Arora", leads: 18, qualified: 4, orders: 0, targetOrders: 20, status: "poor", nextAction: "No orders — escalate to manager for review" },
 ];
 
 /* -------------------------------------------------------- source attribution */
 
 export type SourceResult = {
   source: LeadSource;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   tracked: boolean;
 };
 
 export const SOURCE_RESULTS: SourceResult[] = [
-  { source: "Google Ads", spend: 168000, leads: 214, qualified: 138, orders: 82, sales: 712000, tracked: true },
-  { source: "Meta Ads", spend: 142000, leads: 186, qualified: 96, orders: 48, sales: 468000, tracked: true },
-  { source: "Google Business Profile", spend: 0, leads: 74, qualified: 41, orders: 22, sales: 186000, tracked: true },
-  { source: "Facebook Organic", spend: 0, leads: 22, qualified: 9, orders: 4, sales: 34000, tracked: false },
-  { source: "Instagram Organic", spend: 0, leads: 31, qualified: 12, orders: 5, sales: 41000, tracked: false },
-  { source: "Influencer or YouTuber", spend: 68000, leads: 58, qualified: 34, orders: 19, sales: 214000, tracked: true },
-  { source: "Referral", spend: 0, leads: 24, qualified: 18, orders: 12, sales: 96000, tracked: true },
-  { source: "Other", spend: 0, leads: 19, qualified: 6, orders: 2, sales: 18000, tracked: false },
+  { source: "Google Ads", leads: 214, qualified: 138, orders: 82, tracked: true },
+  { source: "Meta Ads", leads: 186, qualified: 96, orders: 48, tracked: true },
+  { source: "Google Business Profile", leads: 74, qualified: 41, orders: 22, tracked: true },
+  { source: "Facebook Organic", leads: 22, qualified: 9, orders: 4, tracked: false },
+  { source: "Instagram Organic", leads: 31, qualified: 12, orders: 5, tracked: false },
+  { source: "Influencer or YouTuber", leads: 58, qualified: 34, orders: 19, tracked: true },
+  { source: "Referral", leads: 24, qualified: 18, orders: 12, tracked: true },
+  { source: "Other", leads: 19, qualified: 6, orders: 2, tracked: false },
 ];
 
 /* -------------------------------------------------------- campaign results */
@@ -506,27 +488,25 @@ export type CampaignResult = {
   objective: string;
   startDate: string;
   endDate?: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   status: "Running" | "Paused" | "Completed" | "Needs Review";
 };
 
 export const CAMPAIGN_RESULTS: CampaignResult[] = [
-  { campaignId: "CMP-8821", name: "Jaipur Dry Cleaning — Search", storeId: "STR-1042", platform: "Google Ads", objective: "Lead generation", startDate: "2026-07-01", spend: 42000, leads: 96, qualified: 64, orders: 38, sales: 342000, status: "Running" },
-  { campaignId: "CMP-8829", name: "Mumbai Premium Care — Leads", storeId: "STR-1121", platform: "Meta Ads", objective: "Lead generation", startDate: "2026-07-05", spend: 38000, leads: 74, qualified: 48, orders: 27, sales: 318000, status: "Running" },
-  { campaignId: "CMP-8834", name: "Indore Monsoon Offer — Leads", storeId: "STR-1067", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-10", endDate: "2026-08-15", spend: 31500, leads: 82, qualified: 52, orders: 29, sales: 262000, status: "Running" },
-  { campaignId: "CMP-8840", name: "Surat Reopen Offer — Leads", storeId: "STR-1103", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-18", spend: 28000, leads: 34, qualified: 11, orders: 4, sales: 82000, status: "Needs Review" },
-  { campaignId: "CMP-8845", name: "Nagpur Awareness — Reach", storeId: "STR-1134", platform: "Meta Ads", objective: "Store awareness", startDate: "2026-07-20", spend: 18000, leads: 26, qualified: 8, orders: 3, sales: 46000, status: "Paused" },
-  { campaignId: "CMP-8802", name: "Franchise Enquiry — Company Search", storeId: "COMPANY", platform: "Google Ads", objective: "Franchise enquiries", startDate: "2026-06-01", spend: 86000, leads: 64, qualified: 38, orders: 6, sales: 1080000, status: "Running" },
-  { campaignId: "CMP-8788", name: "Kanpur Launch — Search", storeId: "STR-1149", platform: "Google Ads", objective: "Lead generation", startDate: "2026-06-20", endDate: "2026-07-31", spend: 26000, leads: 18, qualified: 4, orders: 0, sales: 0, status: "Completed" },
+  { campaignId: "CMP-8821", name: "Jaipur Dry Cleaning — Search", storeId: "STR-1042", platform: "Google Ads", objective: "Lead generation", startDate: "2026-07-01", leads: 96, qualified: 64, orders: 38, status: "Running" },
+  { campaignId: "CMP-8829", name: "Mumbai Premium Care — Leads", storeId: "STR-1121", platform: "Meta Ads", objective: "Lead generation", startDate: "2026-07-05", leads: 74, qualified: 48, orders: 27, status: "Running" },
+  { campaignId: "CMP-8834", name: "Indore Monsoon Offer — Leads", storeId: "STR-1067", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-10", endDate: "2026-08-15", leads: 82, qualified: 52, orders: 29, status: "Running" },
+  { campaignId: "CMP-8840", name: "Surat Reopen Offer — Leads", storeId: "STR-1103", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-18", leads: 34, qualified: 11, orders: 4, status: "Needs Review" },
+  { campaignId: "CMP-8845", name: "Nagpur Awareness — Reach", storeId: "STR-1134", platform: "Meta Ads", objective: "Store awareness", startDate: "2026-07-20", leads: 26, qualified: 8, orders: 3, status: "Paused" },
+  { campaignId: "CMP-8802", name: "Franchise Enquiry — Company Search", storeId: "COMPANY", platform: "Google Ads", objective: "Franchise enquiries", startDate: "2026-06-01", leads: 64, qualified: 38, orders: 6, status: "Running" },
+  { campaignId: "CMP-8788", name: "Kanpur Launch — Search", storeId: "STR-1149", platform: "Google Ads", objective: "Lead generation", startDate: "2026-06-20", endDate: "2026-07-31", leads: 18, qualified: 4, orders: 0, status: "Completed" },
 ];
 
 /* ------------------------------------------------------------------- funnel */
 
-export type FunnelStage = { label: string; value: number; previous: number; isCurrency?: boolean };
+export type FunnelStage = { label: string; value: number; previous: number };
 
 export const FUNNEL: FunnelStage[] = [
   { label: "Reach", value: 486000, previous: 442000 },
@@ -534,7 +514,6 @@ export const FUNNEL: FunnelStage[] = [
   { label: "Enquiries", value: 628, previous: 574 },
   { label: "Qualified Leads", value: 354, previous: 318 },
   { label: "Orders", value: 194, previous: 168 },
-  { label: "Sales Value", value: 1769000, previous: 1584000, isCurrency: true },
 ];
 
 /* ----------------------------------------------------------- offline entries */
@@ -544,7 +523,6 @@ export type OfflineResult = {
   storeId: string;
   reference: string;
   orderDate: string;
-  orderValue: number;
   leadId?: string;
   sourceOrPromo: string;
   proof: string;
@@ -554,24 +532,15 @@ export type OfflineResult = {
 };
 
 export const OFFLINE_RESULTS: OfflineResult[] = [
-  { id: "OFF-3011", storeId: "STR-1042", reference: "INV-JPR-2281", orderDate: "2026-08-04", orderValue: 9800, leadId: "LEAD-23960", sourceOrPromo: "Promo code JPRAUG", proof: "Bill photo + POS screenshot", submittedBy: "Nikhil Arora", verification: "verified", verifiedBy: "Accounts — Pooja Nanda" },
-  { id: "OFF-3014", storeId: "STR-1121", reference: "INV-MUM-8842", orderDate: "2026-08-05", orderValue: 8400, leadId: "LEAD-24067", sourceOrPromo: "Promo code AAROHI10", proof: "Bill photo", submittedBy: "Nikhil Arora", verification: "pending" },
-  { id: "OFF-3015", storeId: "STR-1067", reference: "WALK-IN-1120", orderDate: "2026-08-05", orderValue: 4200, sourceOrPromo: "GMB offer post", proof: "Store register photo", submittedBy: "Store Manager — Indore", verification: "pending" },
+  { id: "OFF-3011", storeId: "STR-1042", reference: "INV-JPR-2281", orderDate: "2026-08-04", leadId: "LEAD-23960", sourceOrPromo: "Promo code JPRAUG", proof: "Bill photo + POS screenshot", submittedBy: "Nikhil Arora", verification: "verified", verifiedBy: "Accounts — Pooja Nanda" },
+  { id: "OFF-3014", storeId: "STR-1121", reference: "INV-MUM-8842", orderDate: "2026-08-05", leadId: "LEAD-24067", sourceOrPromo: "Promo code AAROHI10", proof: "Bill photo", submittedBy: "Nikhil Arora", verification: "pending" },
+  { id: "OFF-3015", storeId: "STR-1067", reference: "WALK-IN-1120", orderDate: "2026-08-05", sourceOrPromo: "GMB offer post", proof: "Store register photo", submittedBy: "Store Manager — Indore", verification: "pending" },
 ];
 
 /* ------------------------------------------------------------------- helpers */
 
 export function safeDiv(a: number, b: number) {
   return b > 0 ? a / b : 0;
-}
-export function cpl(spend: number, leads: number) {
-  return Math.round(safeDiv(spend, leads));
-}
-export function cpa(spend: number, orders: number) {
-  return Math.round(safeDiv(spend, orders));
-}
-export function roas(sales: number, spend: number) {
-  return Number(safeDiv(sales, spend).toFixed(2));
 }
 export function pct(a: number, b: number) {
   return Math.round(safeDiv(a, b) * 1000) / 10;
@@ -616,15 +585,14 @@ export function leadAlerts(): LeadAlert[] {
   });
 
   STORE_RESULTS.forEach((s) => {
-    if (s.spend > 20000 && s.qualified < 6) {
-      out.push({ id: `${s.storeId}-spend`, severity: "high", title: "High spend with no qualified leads", detail: `${s.storeId} spent ₹${s.spend.toLocaleString("en-IN")} with only ${s.qualified} qualified leads.`, ref: s.storeId });
+    if (s.leads > 40 && s.qualified < 6) {
+      out.push({ id: `${s.storeId}-lowqual`, severity: "high", title: "High lead volume with few qualified leads", detail: `${s.storeId} received ${s.leads} leads with only ${s.qualified} qualified.`, ref: s.storeId });
     }
     if (s.orders === 0 && s.leads > 0) {
       out.push({ id: `${s.storeId}-noorders`, severity: "high", title: "Store receiving leads but no orders", detail: `${s.storeId} received ${s.leads} leads and reported 0 orders.`, ref: s.storeId });
     }
-    const acq = cpa(s.spend, s.orders);
-    if (s.orders > 0 && acq > 3000) {
-      out.push({ id: `${s.storeId}-cpa`, severity: "medium", title: "High cost per acquisition", detail: `${s.storeId} cost per acquisition is ₹${acq.toLocaleString("en-IN")}.`, ref: s.storeId });
+    if (s.targetOrders > 0 && pct(s.orders, s.targetOrders) < 50) {
+      out.push({ id: `${s.storeId}-target`, severity: "medium", title: "Below target order achievement", detail: `${s.storeId} achieved ${pct(s.orders, s.targetOrders)}% of its order target.`, ref: s.storeId });
     }
   });
 
@@ -634,7 +602,7 @@ export function leadAlerts(): LeadAlert[] {
   }
 
   OFFLINE_RESULTS.filter((o) => o.verification === "pending").forEach((o) =>
-    out.push({ id: `${o.id}-verify`, severity: "medium", title: "Manual result awaiting verification", detail: `${o.id} (${o.reference}) — ₹${o.orderValue.toLocaleString("en-IN")} submitted by ${o.submittedBy}.`, ref: o.id }),
+    out.push({ id: `${o.id}-verify`, severity: "medium", title: "Manual result awaiting verification", detail: `${o.id} (${o.reference}) submitted by ${o.submittedBy}.`, ref: o.id }),
   );
 
   return out;
@@ -646,22 +614,19 @@ export const LEADS_PERFORMANCE_PREP: { label: string; value: string; note: strin
   { label: "Leads generated", value: "628", note: "Marketing-attributed enquiries in period" },
   { label: "Qualified-lead rate", value: "56.4%", note: "Qualified ÷ total leads (Sales confirmed)" },
   { label: "Orders generated", value: "194", note: "Orders linked to marketing leads" },
-  { label: "Sales value generated", value: "₹17.69L", note: "Verified sales only" },
   { label: "Lead-to-order conversion", value: "30.9%", note: "Orders ÷ total leads" },
-  { label: "Cost per lead", value: "₹602", note: "Total spend ÷ leads" },
-  { label: "Cost per acquisition", value: "₹1,948", note: "Total spend ÷ orders" },
-  { label: "Return on ad spend", value: "4.67x", note: "Sales value ÷ spend" },
+  { label: "% of monthly order target achieved", value: "86%", note: "Orders ÷ monthly order target" },
   { label: "Attribution completeness", value: "88%", note: "Leads with campaign / creative / creator ID" },
   { label: "Lead handover accuracy", value: "94%", note: "Correct store and no duplicate Lead IDs" },
   { label: "Campaigns improved after sales feedback", value: "6", note: "Changes made using Sales feedback" },
 ];
 
 export const INTEGRATION_PLACEHOLDERS = [
-  "Google Ads — spend, clicks and lead sync",
-  "Meta Ads — lead form and spend sync",
+  "Google Ads — clicks and lead sync",
+  "Meta Ads — lead form sync",
   "Google Business Profile — calls, messages and direction requests",
   "WhatsApp Business — enquiry capture",
   "Sales CRM — lead qualification and outcome sync",
-  "POS — verified order values",
+  "POS — verified order counts",
   "Website analytics — clicks and tracking links",
 ];

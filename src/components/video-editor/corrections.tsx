@@ -97,7 +97,7 @@ const RESUB_CHECKS = [
 function inferCategory(text: string): Category {
   const t = text.toLowerCase();
   if (/subtitle|caption/.test(t)) return "Subtitle";
-  if (/spelling|typo|text says|₹|figure/.test(t)) return "Spelling";
+  if (/spelling|typo|text says|figure/.test(t)) return "Spelling";
   if (/music|bgm|background music/.test(t)) return "Music";
   if (/audio|voice|db|sound|mic/.test(t)) return "Audio";
   if (/logo|brand/.test(t)) return "Logo or Branding";

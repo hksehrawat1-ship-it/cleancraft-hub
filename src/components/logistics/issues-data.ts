@@ -210,7 +210,6 @@ export type IssueRecord = {
     platform: string;
     claimRef: string;
     claimDate: string;
-    amountRef: string;
     documents: string[];
     status: string;
     expectedResolution: string;
@@ -341,7 +340,6 @@ export const ISSUES: IssueRecord[] = [
       platform: "Shiprocket",
       claimRef: "SRK-CLM-4410",
       claimDate: "2026-08-04",
-      amountRef: "Claim value as per vendor invoice reference (finance restricted)",
       documents: ["Damage photos", "LR damage remark", "Recipient statement"],
       status: "Submitted — awaiting platform review",
       expectedResolution: "2026-08-20",
@@ -553,7 +551,6 @@ export const ISSUES: IssueRecord[] = [
       platform: "WheelsEye",
       claimRef: "WE-CLM-2210",
       claimDate: "2026-07-30",
-      amountRef: "Declared consignment value reference (finance restricted)",
       documents: ["LR copy", "Hub handover sheet", "Transporter statement", "Packing photos"],
       status: "Under platform assessment",
       expectedResolution: "2026-08-09",

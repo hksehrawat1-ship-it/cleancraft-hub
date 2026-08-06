@@ -157,7 +157,7 @@ function RolesSection() {
     "Customer Acquisition",
     "Paid Advertising Campaign Management",
     "Campaign Optimization",
-    "Store Revenue Growth Support",
+    "Store Growth Support",
     "Marketing Performance Reporting",
     "Graphic creation",
   ];
@@ -166,7 +166,7 @@ function RolesSection() {
     "Create, manage, monitor, and optimize Google Ads, Meta Ads and other approved digital campaigns for franchise stores.",
     "Coordinate with the Relationship Manager on store requirements and campaign objectives.",
     "Plan and execute customer acquisition, app download, offer, seasonal and store-launch campaigns.",
-    "Monitor campaign performance, cost per lead, cost per acquisition and return on ad spend.",
+    "Monitor campaign performance, leads generated and conversion efficiency.",
     "Analyze customer behavior and campaign results, and continuously optimize for better performance.",
     "Coordinate with Social Media Manager, CRM Retention Executive and BTL Team to support store growth.",
     "Submit regular performance reports and recommendations to management.",
@@ -174,7 +174,7 @@ function RolesSection() {
 
   const completeMatrix = [
     "Campaign created",
-    "Budget approved",
+    "Campaign approved",
     "Ads launched",
     "Tracking verified",
     "Leads generated",
@@ -186,9 +186,9 @@ function RolesSection() {
 
   const kra = [
     "Generate qualified customers for stores.",
-    "Improve store revenue through paid marketing.",
-    "Achieve target ROAS.",
-    "Reduce customer acquisition cost.",
+    "Improve store growth through paid marketing.",
+    "Achieve target lead volume.",
+    "Improve customer acquisition efficiency.",
     "Support successful store launches and growth campaigns.",
   ];
 
@@ -200,17 +200,17 @@ function RolesSection() {
   ];
   const kpiMonthly = [
     "Leads generated",
-    "Customer acquisition cost (CAC)",
-    "Return on Ad Spend (ROAS)",
+    "Customer acquisition efficiency",
+    "Campaign conversion rate",
     "App downloads generated",
     "Orders generated",
-    "Store revenue contribution",
+    "Store growth contribution",
   ];
 
   const whatNotToDo = [
     "Launch campaigns without approval.",
     "Change offers without approval.",
-    "Overspend marketing budget.",
+    "Exceed approved campaign limits.",
     "Hide poor campaign performance.",
     "Use misleading advertisements.",
     "Ignore campaign optimization.",
@@ -241,7 +241,7 @@ function RolesSection() {
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
           Responsible for generating B2C sales, leads, app downloads, and customer acquisition for franchise stores
-          through paid digital marketing campaigns while ensuring maximum return on advertising spend.
+          through paid digital marketing campaigns while maximizing campaign efficiency.
         </CardContent>
       </Card>
 
@@ -291,7 +291,7 @@ function RolesSection() {
           <div>
             <span className="font-medium">Receives: </span>
             <span className="text-muted-foreground">
-              Campaign requirements, budgets, offers and store objectives from Management.
+              Campaign requirements, offers and store objectives from Management.
             </span>
           </div>
           <div>
@@ -735,10 +735,10 @@ type RMTaskStatus = "open" | "resolved" | "unresolved";
 
 function RMTasksSection() {
   const initialTasks = [
-    { id: "t1", title: "Prepare weekly ROAS report", due: "Today", priority: "High" },
+    { id: "t1", title: "Prepare weekly performance report", due: "Today", priority: "High" },
     { id: "t2", title: "Onboard 2 new influencers", due: "Tomorrow", priority: "Medium" },
     { id: "t3", title: "Audit GMB listings for Thane", due: "Fri", priority: "High" },
-    { id: "t4", title: "Reduce CPL for Store #14", due: "Next week", priority: "Low" },
+    { id: "t4", title: "Improve lead conversion for Store #14", due: "Next week", priority: "Low" },
   ];
 
   const [state, setState] = useState<
@@ -853,10 +853,10 @@ function RMTasksSection() {
 /* ---------------- Performance ---------------- */
 function PerformanceSection() {
   const kpis = [
-    { label: "ROAS", value: "3.4x", delta: "+0.4", up: true },
-    { label: "CPL", value: "₹128", delta: "-₹12", up: true },
-    { label: "Spend (MTD)", value: "₹4.2L", delta: "+8%", up: true },
     { label: "Leads", value: "1,284", delta: "-3%", up: false },
+    { label: "Qualified Leads", value: "812", delta: "+5%", up: true },
+    { label: "Conversion Rate", value: "63%", delta: "+2%", up: true },
+    { label: "Orders", value: "512", delta: "+6%", up: true },
   ];
 
   const goals = [

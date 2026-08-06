@@ -52,8 +52,8 @@ export type StoreCard = {
   marketingStatus: "healthy" | "attention" | "declining" | "setup";
   activeCampaigns: number;
   leadsThisMonth: number;
-  salesGenerated: number;
-  adSpend: number;
+  ordersThisMonth: number;
+  targetAchievedPct: number;
   pendingRequests: number;
 };
 
@@ -64,11 +64,13 @@ export type Campaign = {
   store: string;
   platform: "Google Ads" | "Meta Ads";
   objective: string;
-  budget: number;
-  spend: number;
+  reach: number;
+  clicks: number;
   leads: number;
   qualified: number;
-  sales: number;
+  orders: number;
+  leadTarget: number;
+  targetAchievedPct: number;
   status:
     | "running"
     | "awaiting_approval"
@@ -94,8 +96,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 3,
     leadsThisMonth: 142,
-    salesGenerated: 486000,
-    adSpend: 62000,
+    ordersThisMonth: 51,
+    targetAchievedPct: 95,
     pendingRequests: 1,
   },
   {
@@ -106,8 +108,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 2,
     leadsThisMonth: 118,
-    salesGenerated: 372000,
-    adSpend: 48500,
+    ordersThisMonth: 39,
+    targetAchievedPct: 88,
     pendingRequests: 2,
   },
   {
@@ -118,8 +120,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "attention",
     activeCampaigns: 2,
     leadsThisMonth: 64,
-    salesGenerated: 158000,
-    adSpend: 51000,
+    ordersThisMonth: 18,
+    targetAchievedPct: 46,
     pendingRequests: 3,
   },
   {
@@ -130,8 +132,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "declining",
     activeCampaigns: 1,
     leadsThisMonth: 38,
-    salesGenerated: 96000,
-    adSpend: 44000,
+    ordersThisMonth: 9,
+    targetAchievedPct: 32,
     pendingRequests: 2,
   },
   {
@@ -142,8 +144,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 3,
     leadsThisMonth: 176,
-    salesGenerated: 612000,
-    adSpend: 88000,
+    ordersThisMonth: 68,
+    targetAchievedPct: 104,
     pendingRequests: 0,
   },
   {
@@ -154,8 +156,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "setup",
     activeCampaigns: 0,
     leadsThisMonth: 12,
-    salesGenerated: 0,
-    adSpend: 8000,
+    ordersThisMonth: 0,
+    targetAchievedPct: 12,
     pendingRequests: 2,
   },
   {
@@ -166,8 +168,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 2,
     leadsThisMonth: 91,
-    salesGenerated: 264000,
-    adSpend: 39000,
+    ordersThisMonth: 30,
+    targetAchievedPct: 78,
     pendingRequests: 1,
   },
 ];
@@ -239,11 +241,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Jaipur — Vaishali",
     platform: "Google Ads",
     objective: "Store enquiries",
-    budget: 45000,
-    spend: 31200,
+    reach: 168000,
+    clicks: 7420,
     leads: 86,
     qualified: 54,
-    sales: 248000,
+    orders: 27,
+    leadTarget: 75,
+    targetAchievedPct: 115,
     status: "running",
     startDate: "2026-07-18",
     owner: "Nikhil Arora",
@@ -256,11 +260,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Mumbai — Andheri West",
     platform: "Meta Ads",
     objective: "Lead generation",
-    budget: 60000,
-    spend: 52400,
+    reach: 214000,
+    clicks: 9310,
     leads: 121,
     qualified: 74,
-    sales: 386000,
+    orders: 41,
+    leadTarget: 110,
+    targetAchievedPct: 110,
     status: "running",
     startDate: "2026-07-12",
     owner: "Nikhil Arora",
@@ -273,11 +279,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Lucknow — Gomti Nagar",
     platform: "Meta Ads",
     objective: "Offer promotion",
-    budget: 30000,
-    spend: 28650,
+    reach: 96000,
+    clicks: 2680,
     leads: 22,
     qualified: 7,
-    sales: 42000,
+    orders: 3,
+    leadTarget: 60,
+    targetAchievedPct: 37,
     status: "needs_optimisation",
     startDate: "2026-07-24",
     owner: "Nikhil Arora",
@@ -290,11 +298,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Surat — Adajan",
     platform: "Google Ads",
     objective: "Store enquiries",
-    budget: 25000,
-    spend: 24100,
+    reach: 58000,
+    clicks: 1420,
     leads: 14,
     qualified: 4,
-    sales: 18000,
+    orders: 1,
+    leadTarget: 55,
+    targetAchievedPct: 25,
     status: "low_balance",
     startDate: "2026-07-28",
     owner: "Nikhil Arora",
@@ -307,11 +317,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Pune — Baner",
     platform: "Meta Ads",
     objective: "Store launch",
-    budget: 35000,
-    spend: 0,
+    reach: 0,
+    clicks: 0,
     leads: 0,
     qualified: 0,
-    sales: 0,
+    orders: 0,
+    leadTarget: 50,
+    targetAchievedPct: 0,
     status: "awaiting_approval",
     startDate: "2026-08-08",
     owner: "Nikhil Arora",
@@ -324,11 +336,13 @@ export const CAMPAIGNS: Campaign[] = [
     store: "Clean Craft Bhopal — Arera Colony",
     platform: "Google Ads",
     objective: "Service enquiries",
-    budget: 20000,
-    spend: 19800,
+    reach: 142000,
+    clicks: 4680,
     leads: 61,
     qualified: 38,
-    sales: 186000,
+    orders: 20,
+    leadTarget: 50,
+    targetAchievedPct: 122,
     status: "completed",
     startDate: "2026-06-30",
     owner: "Nikhil Arora",
@@ -461,13 +475,10 @@ export const LEADS_SUMMARY = {
   handedOver: 371,
   contacted: 344,
   orders: 212,
-  salesAmount: 1988000,
-  adSpend: 341000,
+  targetAchievedPct: 89,
 };
 
 export const derived = {
-  costPerLead: Math.round(LEADS_SUMMARY.adSpend / LEADS_SUMMARY.total),
-  costPerSale: Math.round(LEADS_SUMMARY.adSpend / LEADS_SUMMARY.orders),
   conversion: Math.round((LEADS_SUMMARY.orders / LEADS_SUMMARY.total) * 1000) / 10,
 };
 

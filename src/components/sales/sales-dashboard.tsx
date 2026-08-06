@@ -17,7 +17,7 @@ const KPIS = [
   { key: "calls", label: "Calls Due", value: 18, sub: "6 overdue", icon: Phone, tone: "text-primary" },
   { key: "followups", label: "Follow-ups Due", value: 9, sub: "3 overdue", icon: CalendarClock, tone: "text-destructive" },
   { key: "meetings", label: "Meetings Today", value: 4, sub: "2 online", icon: Video, tone: "text-primary" },
-  { key: "closed", label: "Sales Closed", value: 3, sub: "₹6.9L this month", icon: Trophy, tone: "text-success" },
+  { key: "closed", label: "Sales Closed", value: 3, sub: "3 of 5 closures", icon: Trophy, tone: "text-success" },
 ] as const;
 
 type Urgency = "overdue" | "now" | "soon";
@@ -42,12 +42,12 @@ const TASKS: { title: string; who: string; time: string; type: "Call" | "WhatsAp
 ];
 
 const PIPELINE = [
-  { stage: "New Lead", count: 24, value: 0 },
-  { stage: "Contacted", count: 18, value: 0 },
-  { stage: "Qualified", count: 12, value: 42 },
-  { stage: "Proposal Sent", count: 8, value: 32 },
-  { stage: "Meeting Done", count: 6, value: 24 },
-  { stage: "Booking Received", count: 3, value: 13.5 },
+  { stage: "New Lead", count: 24 },
+  { stage: "Contacted", count: 18 },
+  { stage: "Qualified", count: 12 },
+  { stage: "Proposal Sent", count: 8 },
+  { stage: "Meeting Done", count: 6 },
+  { stage: "Booking Received", count: 3 },
 ];
 
 const MEETINGS = [
@@ -213,14 +213,14 @@ export function SalesDashboard({ salespersonName }: { salespersonName: string })
         {/* Pipeline */}
         <Card className="2xl:col-span-2">
           <CardContent className="p-4 sm:p-5">
-            <SectionHead title="Sales Pipeline Summary" subtitle="Lead count and value by stage" />
+            <SectionHead title="Sales Pipeline Summary" subtitle="Lead count by stage" />
             <div className="mt-3 space-y-3">
               {PIPELINE.map((p) => (
                 <div key={p.stage}>
                   <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 text-xs">
                     <span className="truncate font-medium">{p.stage}</span>
                     <span className="shrink-0 text-muted-foreground">
-                      {p.count} leads{p.value ? ` · ₹${p.value}L` : ""}
+                      {p.count} leads
                     </span>
                   </div>
                   <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -262,7 +262,7 @@ export function SalesDashboard({ salespersonName }: { salespersonName: string })
             <Metric label="Calls Completed" value="146" sub="Target 180" pct={81} />
             <Metric label="Avg. Response Time" value="24 min" sub="Target under 30 min" pct={88} />
             <Metric label="Conversion Rate" value="18%" sub="Team avg 14%" pct={72} />
-            <Metric label="Monthly Target" value="₹6.9L / ₹12L" sub="3 of 5 closures" pct={58} />
+            <Metric label="Monthly Target" value="3 / 5 closures" sub="58% of target" pct={58} />
           </div>
         </CardContent>
       </Card>

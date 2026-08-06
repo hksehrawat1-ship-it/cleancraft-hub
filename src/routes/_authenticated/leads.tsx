@@ -51,7 +51,6 @@ export type Lead = {
   city: string | null;
   state: string | null;
   lead_source: string | null;
-  budget_range: string | null;
   timeline: string | null;
   decision_maker_status: string | null;
   partnership_status: string | null;
@@ -444,7 +443,6 @@ export function LeadDialog({
         <SectionLabel>Qualification Details</SectionLabel>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <SelectField label="Decision Maker" value={form.decision_maker_status} onChange={(v) => update("decision_maker_status", v)} options={["Yes", "No"]} />
-          <Field label="Budget"><Input placeholder="e.g. 10-15 Lakh" value={form.budget_range ?? ""} onChange={(e) => update("budget_range", e.target.value)} /></Field>
           <Field label="Timeline"><Input placeholder="e.g. 1-3 months" value={form.timeline ?? ""} onChange={(e) => update("timeline", e.target.value)} /></Field>
           <SelectField label="Partnership Status" value={form.partnership_status} onChange={(v) => update("partnership_status", v)} options={["Solo", "With Partner", "Looking for Partner"]} />
           <SelectField label="Location Status" value={form.location_status} onChange={(v) => update("location_status", v)} options={["Identified", "Shortlisted", "Not Yet", "Owned"]} />
@@ -489,7 +487,6 @@ export function LeadDialog({
           <Field label="Engagement Letter Sent Date"><Input type="date" value={form.engagement_letter_sent_date ?? ""} onChange={(e) => update("engagement_letter_sent_date", e.target.value)} /></Field>
           <SelectField label="Engagement Letter Fee Status" value={form.engagement_letter_fee_status} onChange={(v) => update("engagement_letter_fee_status", v)} options={EL_FEE_STATUSES} />
           <Field label="Engagement Fee Received Date"><Input type="date" value={form.engagement_letter_fee_received_date ?? ""} onChange={(e) => update("engagement_letter_fee_received_date", e.target.value)} /></Field>
-          <Field label="Engagement Fee Amount (₹)"><Input type="number" value={form.engagement_letter_fee_amount ?? ""} onChange={(e) => update("engagement_letter_fee_amount", e.target.value)} /></Field>
           <Field label="Booking Date"><Input type="date" value={form.booking_date ?? ""} onChange={(e) => update("booking_date", e.target.value)} /></Field>
           <SelectField label="Booking Amount Status" value={form.booking_amount_status} onChange={(v) => update("booking_amount_status", v)} options={BOOKING_AMT_STATUSES} />
         </div>

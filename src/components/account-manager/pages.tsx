@@ -3,28 +3,26 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { SectionHead, StatCard } from "@/components/smm/ui";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
-
 const REQUESTS = [
-  { id: "PR-2041", store: "Jaipur", type: "Machine Advance", amount: 450000, raisedBy: "Project Coordinator", status: "Pending Approval", due: "Today" },
-  { id: "PR-2042", store: "Indore", type: "Civil Work Milestone", amount: 180000, raisedBy: "Project Manager", status: "Verified", due: "6 Aug" },
-  { id: "PR-2043", store: "Lucknow", type: "Franchise 2nd Instalment", amount: 600000, raisedBy: "Sales Head", status: "Awaiting Proof", due: "7 Aug" },
-  { id: "PR-2044", store: "Surat", type: "Vendor Payment", amount: 92000, raisedBy: "Logistics Executive", status: "Approved", due: "8 Aug" },
-  { id: "PR-2045", store: "Nagpur", type: "Machine Balance", amount: 520000, raisedBy: "Project Coordinator", status: "Rejected — Info Missing", due: "—" },
+  { id: "PR-2041", store: "Jaipur", type: "Machine Advance", raisedBy: "Project Coordinator", status: "Pending Approval", due: "Today" },
+  { id: "PR-2042", store: "Indore", type: "Civil Work Milestone", raisedBy: "Project Manager", status: "Verified", due: "6 Aug" },
+  { id: "PR-2043", store: "Lucknow", type: "Franchise 2nd Instalment", raisedBy: "Sales Head", status: "Awaiting Proof", due: "7 Aug" },
+  { id: "PR-2044", store: "Surat", type: "Vendor Payment", raisedBy: "Logistics Executive", status: "Approved", due: "8 Aug" },
+  { id: "PR-2045", store: "Nagpur", type: "Machine Balance", raisedBy: "Project Coordinator", status: "Rejected — Info Missing", due: "—" },
 ];
 
 const FOLLOWUPS = [
-  { id: "FU-501", store: "Lucknow", owner: "R. Mishra", pending: 600000, mode: "NEFT", promised: "6 Aug", attempts: 3, status: "Proof Awaited" },
-  { id: "FU-502", store: "Kanpur", owner: "S. Verma", pending: 250000, mode: "UPI", promised: "5 Aug", attempts: 1, status: "Verification Pending" },
-  { id: "FU-503", store: "Bhopal", owner: "A. Jain", pending: 120000, mode: "Cheque", promised: "9 Aug", attempts: 2, status: "Follow-up Due" },
-  { id: "FU-504", store: "Raipur", owner: "K. Sahu", pending: 75000, mode: "NEFT", promised: "3 Aug", attempts: 4, status: "Overdue" },
+  { id: "FU-501", store: "Lucknow", owner: "R. Mishra", mode: "NEFT", promised: "6 Aug", attempts: 3, status: "Proof Awaited" },
+  { id: "FU-502", store: "Kanpur", owner: "S. Verma", mode: "UPI", promised: "5 Aug", attempts: 1, status: "Verification Pending" },
+  { id: "FU-503", store: "Bhopal", owner: "A. Jain", mode: "Cheque", promised: "9 Aug", attempts: 2, status: "Follow-up Due" },
+  { id: "FU-504", store: "Raipur", owner: "K. Sahu", mode: "NEFT", promised: "3 Aug", attempts: 4, status: "Overdue" },
 ];
 
 const DISPATCH = [
-  { id: "DC-311", store: "Jaipur", items: "Full machine set", payable: 0, cleared: true, status: "Cleared for Dispatch" },
-  { id: "DC-312", store: "Indore", items: "Steam iron + boiler", payable: 40000, cleared: false, status: "Hold — Balance Due" },
-  { id: "DC-313", store: "Lucknow", items: "Full machine set", payable: 600000, cleared: false, status: "Hold — Payment Pending" },
-  { id: "DC-314", store: "Surat", items: "POS + counter kit", payable: 0, cleared: true, status: "Cleared for Dispatch" },
+  { id: "DC-311", store: "Jaipur", items: "Full machine set", cleared: true, status: "Cleared for Dispatch" },
+  { id: "DC-312", store: "Indore", items: "Steam iron + boiler", cleared: false, status: "Hold — Balance Due" },
+  { id: "DC-313", store: "Lucknow", items: "Full machine set", cleared: false, status: "Hold — Payment Pending" },
+  { id: "DC-314", store: "Surat", items: "POS + counter kit", cleared: true, status: "Cleared for Dispatch" },
 ];
 
 const badgeTone = (s: string) => {
@@ -38,12 +36,6 @@ export function AmDashboard() {
   return (
     <div className="space-y-4">
       <SectionHead title="Account Manager Dashboard" sub="Payment requests, collections, dispatch clearance and billing at a glance." />
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Expected This Month" value={inr(5200000)} />
-        <StatCard label="Collected" value={inr(4680000)} />
-        <StatCard label="Pending Collection" value={inr(520000)} />
-        <StatCard label="Available Cash" value={inr(2210000)} />
-      </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard label="Open Payment Requests" value="5" />
         <StatCard label="Follow-ups Due" value="4" />
@@ -65,10 +57,7 @@ export function AmDashboard() {
                   </div>
                   <div className="text-xs text-muted-foreground">Raised by {r.raisedBy} · due {r.due}</div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="tabular-nums font-semibold">{inr(r.amount)}</span>
-                  <Badge className={badgeTone(r.status)}>{r.status}</Badge>
-                </div>
+                <Badge className={badgeTone(r.status)}>{r.status}</Badge>
               </div>
             ))}
         </CardContent>
@@ -93,10 +82,7 @@ export function AmPaymentRequests() {
                   {r.type} · {r.raisedBy} · due {r.due}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="tabular-nums font-semibold">{inr(r.amount)}</span>
-                <Badge className={badgeTone(r.status)}>{r.status}</Badge>
-              </div>
+              <Badge className={badgeTone(r.status)}>{r.status}</Badge>
             </div>
           ))}
         </CardContent>
@@ -110,7 +96,7 @@ export function AmFollowups() {
     <div className="space-y-4">
       <SectionHead title="Payment Follow-ups & Verification" sub="Chase pending collections and verify payment proofs before clearing." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Total Pending" value={inr(1045000)} />
+        <StatCard label="Pending Follow-ups" value={String(FOLLOWUPS.length)} />
         <StatCard label="Proof Awaited" value="1" />
         <StatCard label="Verification Pending" value="1" />
         <StatCard label="Overdue" value="1" />
@@ -127,10 +113,7 @@ export function AmFollowups() {
                   {f.mode} · promised {f.promised} · {f.attempts} follow-ups
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="tabular-nums font-semibold">{inr(f.pending)}</span>
-                <Badge className={badgeTone(f.status)}>{f.status}</Badge>
-              </div>
+              <Badge className={badgeTone(f.status)}>{f.status}</Badge>
             </div>
           ))}
         </CardContent>
@@ -155,7 +138,7 @@ export function AmDispatchClearance() {
               </div>
               <div className="flex items-center gap-3">
                 <span className="tabular-nums text-sm">
-                  {d.payable ? `Balance ${inr(d.payable)}` : "No balance"}
+                  {d.cleared ? "No balance" : "Balance due"}
                 </span>
                 <Badge className={badgeTone(d.status)}>{d.status}</Badge>
               </div>
@@ -208,10 +191,10 @@ export function AmPerformance() {
     <div className="space-y-4">
       <SectionHead title="Performance" sub="System-calculated metrics from payment, verification and dispatch records." />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatCard label="Collected This Month" value={inr(4680000)} />
         <StatCard label="Avg Verification Time" value="4.2 hrs" />
         <StatCard label="Requests Processed" value="42" />
         <StatCard label="Escalations" value="2" />
+        <StatCard label="Collection Rate" value="90%" />
       </div>
       <Card>
         <CardHeader className="pb-2">

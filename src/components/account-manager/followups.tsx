@@ -29,7 +29,6 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
 import { AlertTriangle, PhoneCall, Search, ShieldCheck, Wallet } from "lucide-react";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 const MANAGER = "Priya Nair";
 const maskRef = (r: string) => (r.length > 4 ? `XXXXXX${r.trim().slice(-4)}` : `XXXXXX${r}`);
 
@@ -87,7 +86,6 @@ const CHECKLIST = [
 type Txn = {
   id: string;
   date: string;
-  amount: number;
   mode: (typeof PAYMENT_MODES)[number];
   accountMasked: string;
   refMasked: string;
@@ -103,7 +101,6 @@ type FollowUp = {
   method: string;
   outcome: (typeof OUTCOMES)[number];
   promiseDate?: string;
-  promiseAmount?: number;
   comments?: string;
   note?: string;
   nextAction: string;
@@ -119,7 +116,7 @@ type Pay = {
   coordinator: string;
   type: string;
   purpose: string;
-  amount: number;
+  target: number;
   due: string;
   daysOverdue: number;
   status: PayStatus;
@@ -127,7 +124,6 @@ type Pay = {
   instructions: string;
   vyaparInvoice: string;
   invoiceDate: string;
-  invoiceAmount: number;
   clearanceRequired: boolean;
   launchDate: string;
   launchAtRisk?: boolean;
@@ -139,7 +135,6 @@ type Pay = {
   txns: Txn[];
   follows: FollowUp[];
   verification?: {
-    amount: number;
     by: string;
     at: string;
     receipt: string;
@@ -154,43 +149,43 @@ const SEED: Pay[] = [
   {
     id: "PAY-3102", projectId: "PRJ-IND-03", store: "Clean Craft Indore", owner: "Meena Joshi",
     phoneMasked: "+91 97XXXXXX40", coordinator: "Anita Rao", type: "Franchise Fee",
-    purpose: "Second franchise instalment", amount: 600000, due: "2 Aug 2026", daysOverdue: 2,
+    purpose: "Second franchise instalment", target: 2, due: "2 Aug 2026", daysOverdue: 2,
     status: "Partially Paid", requestedOn: "27 Jul 2026",
     instructions: "NEFT to Clean Craft current account (masked).", vyaparInvoice: "VY-INV-2291",
-    invoiceDate: "26 Jul 2026", invoiceAmount: 600000, clearanceRequired: false,
-    launchDate: "12 Sep 2026", nextAction: "Collect balance ₹3,00,000", nextActionDue: "6 Aug 2026",
+    invoiceDate: "26 Jul 2026", clearanceRequired: false,
+    launchDate: "12 Sep 2026", nextAction: "Collect balance instalment", nextActionDue: "6 Aug 2026",
     nextPaymentDue: "8 Aug 2026", dispatchOnPartial: false,
     txns: [{
-      id: "TXN-8801", date: "1 Aug 2026", amount: 300000, mode: "Bank Transfer",
+      id: "TXN-8801", date: "1 Aug 2026", mode: "Bank Transfer",
       accountMasked: "HDFC ••••4417", refMasked: "XXXXXX7741", proof: "receipt_indore_1.pdf",
       receipt: "RCP-1188", recordedBy: MANAGER, reviewed: true,
     }],
     follows: [{
       at: "3 Aug 2026, 11:15", person: "Meena Joshi", method: "Call", outcome: "Partial Payment Promised",
-      promiseDate: "8 Aug 2026", promiseAmount: 300000, comments: "Balance after shop advance is released",
+      promiseDate: "8 Aug 2026", comments: "Balance after shop advance is released",
       note: "Send Vyapar invoice copy again", nextAction: "Follow up on balance", nextAt: "6 Aug 2026, 11:00",
     }],
     history: [
       { at: "27 Jul 09:30", by: MANAGER, action: "Request accepted, payment requested" },
-      { at: "1 Aug 16:20", by: MANAGER, action: "Part payment ₹3,00,000 recorded" },
+      { at: "1 Aug 16:20", by: MANAGER, action: "Part payment recorded" },
     ],
   },
   {
     id: "PAY-3103", projectId: "PRJ-LKO-02", store: "Clean Craft Lucknow", owner: "Sunil Mishra",
     phoneMasked: "+91 99XXXXXX08", coordinator: "Rahul Sharma", type: "Machine Payment",
-    purpose: "Machine balance before dispatch", amount: 520000, due: "3 Aug 2026", daysOverdue: 0,
+    purpose: "Machine balance before dispatch", target: 1, due: "3 Aug 2026", daysOverdue: 0,
     status: "Verification Pending", requestedOn: "24 Jul 2026",
     instructions: "RTGS to Clean Craft current account (masked).", vyaparInvoice: "VY-INV-2277",
-    invoiceDate: "24 Jul 2026", invoiceAmount: 520000, clearanceRequired: true,
+    invoiceDate: "24 Jul 2026", clearanceRequired: true,
     launchDate: "16 Aug 2026", nextAction: "Verify RTGS payment", nextActionDue: "4 Aug 2026",
     txns: [{
-      id: "TXN-8812", date: "3 Aug 2026", amount: 520000, mode: "Bank Transfer",
+      id: "TXN-8812", date: "3 Aug 2026", mode: "Bank Transfer",
       accountMasked: "ICICI ••••9032", refMasked: "XXXXXX3390", proof: "utr_lucknow.jpg",
       receipt: "RCP-1201", recordedBy: MANAGER, reviewed: false,
     }],
     follows: [{
       at: "31 Jul 2026, 10:00", person: "Sunil Mishra", method: "WhatsApp", outcome: "Payment Promised",
-      promiseDate: "3 Aug 2026", promiseAmount: 520000, note: "Owner arranging RTGS",
+      promiseDate: "3 Aug 2026", note: "Owner arranging RTGS",
       nextAction: "Confirm receipt", nextAt: "3 Aug 2026, 17:00",
     }],
     history: [
@@ -201,15 +196,15 @@ const SEED: Pay[] = [
   {
     id: "PAY-3105", projectId: "PRJ-BPL-04", store: "Clean Craft Bhopal", owner: "Alok Jain",
     phoneMasked: "+91 88XXXXXX32", coordinator: "Anita Rao", type: "Training Fee",
-    purpose: "Owner and manpower training batch", amount: 85000, due: "29 Jul 2026", daysOverdue: 6,
+    purpose: "Owner and manpower training batch", target: 1, due: "29 Jul 2026", daysOverdue: 6,
     status: "Follow-up Scheduled", requestedOn: "20 Jul 2026",
     instructions: "UPI or NEFT accepted.", vyaparInvoice: "VY-INV-2248", invoiceDate: "20 Jul 2026",
-    invoiceAmount: 85000, clearanceRequired: false, launchDate: "10 Aug 2026", launchAtRisk: true,
+    clearanceRequired: false, launchDate: "10 Aug 2026", launchAtRisk: true,
     nextAction: "Call owner — promise date missed", nextActionDue: "Today",
     txns: [],
     follows: [{
       at: "1 Aug 2026, 11:00", person: "Alok Jain", method: "Call", outcome: "Payment Promised",
-      promiseDate: "2 Aug 2026", promiseAmount: 85000, comments: "Will pay after batch confirmation",
+      promiseDate: "2 Aug 2026", comments: "Will pay after batch confirmation",
       nextAction: "Follow up again", nextAt: "3 Aug 2026, 11:00",
     }],
     history: [{ at: "20 Jul 14:00", by: MANAGER, action: "Payment requested" }],
@@ -217,30 +212,30 @@ const SEED: Pay[] = [
   {
     id: "PAY-3104", projectId: "PRJ-SUR-05", store: "Clean Craft Surat", owner: "Bhavesh Patel",
     phoneMasked: "+91 90XXXXXX66", coordinator: "Deepak Yadav", type: "Consumables Payment",
-    purpose: "Opening consumables kit", amount: 145000, due: "31 Jul 2026", daysOverdue: 0,
+    purpose: "Opening consumables kit", target: 1, due: "31 Jul 2026", daysOverdue: 0,
     status: "Verified", requestedOn: "22 Jul 2026", instructions: "UPI accepted.",
-    vyaparInvoice: "VY-INV-2260", invoiceDate: "22 Jul 2026", invoiceAmount: 145000,
+    vyaparInvoice: "VY-INV-2260", invoiceDate: "22 Jul 2026",
     clearanceRequired: true, launchDate: "28 Aug 2026",
     nextAction: "Send dispatch clearance", nextActionDue: "Today",
     txns: [{
-      id: "TXN-8790", date: "30 Jul 2026", amount: 145000, mode: "UPI", accountMasked: "SBI ••••7710",
+      id: "TXN-8790", date: "30 Jul 2026", mode: "UPI", accountMasked: "SBI ••••7710",
       refMasked: "XXXXXX9014", proof: "surat_consumables.pdf", receipt: "RCP-1176",
       recordedBy: MANAGER, reviewed: true,
     }],
     follows: [],
-    verification: { amount: 145000, by: MANAGER, at: "30 Jul 2026, 17:05", receipt: "RCP-1176", note: "Bank record matched", clearanceRequired: true },
+    verification: { by: MANAGER, at: "30 Jul 2026, 17:05", receipt: "RCP-1176", note: "Bank record matched", clearanceRequired: true },
     history: [{ at: "30 Jul 17:05", by: MANAGER, action: "Payment verified — ready for dispatch clearance" }],
   },
   {
     id: "PAY-3106", projectId: "PRJ-NAG-01", store: "Clean Craft Nagpur", owner: "Kavita Deshmukh",
     phoneMasked: "+91 93XXXXXX77", coordinator: "Neha Gupta", type: "App or POS Fee",
-    purpose: "POS licence and setup fee", amount: 46000, due: "2 Aug 2026", daysOverdue: 2,
+    purpose: "POS licence and setup fee", target: 1, due: "2 Aug 2026", daysOverdue: 2,
     status: "Verification Rejected", requestedOn: "25 Jul 2026", instructions: "UPI accepted.",
-    vyaparInvoice: "VY-INV-2284", invoiceDate: "25 Jul 2026", invoiceAmount: 46000,
+    vyaparInvoice: "VY-INV-2284", invoiceDate: "25 Jul 2026",
     clearanceRequired: false, launchDate: "5 Sep 2026",
     nextAction: "Get correct UTR from franchise", nextActionDue: "5 Aug 2026",
     txns: [{
-      id: "TXN-8805", date: "2 Aug 2026", amount: 46000, mode: "UPI", accountMasked: "ICICI ••••9032",
+      id: "TXN-8805", date: "2 Aug 2026", mode: "UPI", accountMasked: "ICICI ••••9032",
       refMasked: "XXXXXX3390", proof: "nagpur_pos.jpg", receipt: "RCP-1194", recordedBy: MANAGER, reviewed: true,
     }],
     follows: [],
@@ -253,9 +248,9 @@ const SEED: Pay[] = [
   {
     id: "PAY-3112", projectId: "PRJ-PUN-08", store: "Clean Craft Kothrud", owner: "Snehal Kulkarni",
     phoneMasked: "+91 90XXXXXX18", coordinator: "Anita Rao", type: "Security Deposit",
-    purpose: "Refundable security deposit", amount: 100000, due: "12 Aug 2026", daysOverdue: 0,
+    purpose: "Refundable security deposit", target: 1, due: "12 Aug 2026", daysOverdue: 0,
     status: "Payment Requested", requestedOn: "3 Aug 2026", instructions: "Bank transfer preferred.",
-    vyaparInvoice: "VY-INV-2302", invoiceDate: "3 Aug 2026", invoiceAmount: 100000,
+    vyaparInvoice: "VY-INV-2302", invoiceDate: "3 Aug 2026",
     clearanceRequired: false, launchDate: "18 Sep 2026",
     nextAction: "First follow-up call", nextActionDue: "7 Aug 2026",
     txns: [], follows: [],
@@ -264,9 +259,9 @@ const SEED: Pay[] = [
   {
     id: "PAY-3098", projectId: "PRJ-PAT-03", store: "Clean Craft Patna", owner: "Ramesh Prasad",
     phoneMasked: "+91 96XXXXXX24", coordinator: "Suresh Patel", type: "Machine Payment",
-    purpose: "Machine balance", amount: 410000, due: "28 Jul 2026", daysOverdue: 7,
+    purpose: "Machine balance", target: 1, due: "28 Jul 2026", daysOverdue: 7,
     status: "Disputed", requestedOn: "18 Jul 2026", instructions: "RTGS preferred.",
-    vyaparInvoice: "VY-INV-2239", invoiceDate: "18 Jul 2026", invoiceAmount: 410000,
+    vyaparInvoice: "VY-INV-2239", invoiceDate: "18 Jul 2026",
     clearanceRequired: true, launchDate: "20 Aug 2026", launchAtRisk: true,
     nextAction: "Reconcile invoice with COO", nextActionDue: "5 Aug 2026",
     txns: [],
@@ -299,8 +294,9 @@ const tone = (s: PayStatus) => {
   return "bg-blue-100 text-blue-700";
 };
 
-const received = (p: Pay) => p.txns.reduce((s, t) => s + t.amount, 0);
-const balance = (p: Pay) => p.amount - received(p);
+const received = (p: Pay) => p.txns.length;
+const balance = (p: Pay) => Math.max(0, p.target - received(p));
+const progressPct = (p: Pay) => Math.min(100, Math.round((received(p) / p.target) * 100));
 const lastFollow = (p: Pay) => p.follows.at(-1);
 
 export function AmFollowups() {
@@ -326,16 +322,13 @@ export function AmFollowups() {
   const [fMode, setFMode] = useState("all");
   const [fClearance, setFClearance] = useState("all");
   const [fDue, setFDue] = useState("");
-  const [fAmt, setFAmt] = useState("all");
 
   // payment request form
   const [rDate, setRDate] = useState("");
-  const [rAmount, setRAmount] = useState("");
   const [rDue, setRDue] = useState("");
   const [rInstr, setRInstr] = useState("");
   const [rInvoice, setRInvoice] = useState("");
   const [rInvDate, setRInvDate] = useState("");
-  const [rInvAmt, setRInvAmt] = useState("");
   const [rMethod, setRMethod] = useState("Call");
   const [rMsg, setRMsg] = useState("");
   const [rNext, setRNext] = useState("");
@@ -346,7 +339,6 @@ export function AmFollowups() {
   const [fuMethod, setFuMethod] = useState("Call");
   const [fuOutcome, setFuOutcome] = useState<(typeof OUTCOMES)[number]>("Payment Promised");
   const [fuPromiseDate, setFuPromiseDate] = useState("");
-  const [fuPromiseAmt, setFuPromiseAmt] = useState("");
   const [fuComments, setFuComments] = useState("");
   const [fuNote, setFuNote] = useState("");
   const [fuNextAction, setFuNextAction] = useState("");
@@ -354,7 +346,6 @@ export function AmFollowups() {
 
   // payment received form
   const [pDate, setPDate] = useState("");
-  const [pAmt, setPAmt] = useState("");
   const [pMode, setPMode] = useState<(typeof PAYMENT_MODES)[number]>("Bank Transfer");
   const [pAccount, setPAccount] = useState("");
   const [pRef, setPRef] = useState("");
@@ -363,7 +354,6 @@ export function AmFollowups() {
   const [pOverride, setPOverride] = useState(false);
 
   // verify form
-  const [vAmount, setVAmount] = useState("");
   const [vReceipt, setVReceipt] = useState("");
   const [vNote, setVNote] = useState("");
   const [vClearance, setVClearance] = useState("yes");
@@ -392,7 +382,7 @@ export function AmFollowups() {
     dueToday: pays.filter((p) => lastFollow(p)?.nextAt?.includes("Today") || p.nextActionDue === "Today").length,
     overdue: pays.filter((p) => p.daysOverdue > 0 && !["Verified", "Cancelled"].includes(p.status)).length,
     partial: pays.filter((p) => p.status === "Partially Paid").length,
-    receivedAmt: pays.reduce((s, p) => s + received(p), 0),
+    receivedCount: pays.filter((p) => received(p) > 0).length,
     verifyPending: pays.filter((p) => p.status === "Verification Pending").length,
     verifiedToday: pays.filter((p) => p.status === "Verified").length,
   };
@@ -405,10 +395,9 @@ export function AmFollowups() {
 
   const alerts = [
     ...pays.filter((p) => p.daysOverdue > 0 && !["Verified", "Cancelled"].includes(p.status)).map((p) => ({ level: "red", t: `${p.id} — Payment overdue by ${p.daysOverdue} day(s)` })),
-    ...pays.filter((p) => { const f = lastFollow(p); return f?.promiseDate && received(p) < p.amount && f.promiseDate < "3 Aug 2026"; }).map((p) => ({ level: "red", t: `${p.id} — Promise-to-pay date missed (${lastFollow(p)?.promiseDate})` })),
+    ...pays.filter((p) => { const f = lastFollow(p); return f?.promiseDate && received(p) < p.target && f.promiseDate < "3 Aug 2026"; }).map((p) => ({ level: "red", t: `${p.id} — Promise-to-pay date missed (${lastFollow(p)?.promiseDate})` })),
     ...pays.filter((p) => p.nextActionDue === "Today" || p.nextActionDue === "3 Aug 2026").map((p) => ({ level: "amber", t: `${p.id} — Follow-up overdue: ${p.nextAction}` })),
-    ...pays.filter((p) => p.status === "Verification Pending" && p.amount >= 500000).map((p) => ({ level: "red", t: `${p.id} — Large payment ${inr(p.amount)} awaiting verification` })),
-    ...dupRefs.map(([ref, ids]) => ({ level: "red", t: `Duplicate transaction reference ${ref} on ${Array.from(new Set(ids)).join(", ")}` })),
+        ...dupRefs.map(([ref, ids]) => ({ level: "red", t: `Duplicate transaction reference ${ref} on ${Array.from(new Set(ids)).join(", ")}` })),
     ...pays.filter((p) => p.txns.some((t) => !t.reviewed)).map((p) => ({ level: "amber", t: `${p.id} — Payment proof received but not reviewed` })),
     ...pays.filter((p) => p.status === "Partially Paid" && !p.nextPaymentDue).map((p) => ({ level: "amber", t: `${p.id} — Partial payment without next due date` })),
     ...pays.filter((p) => p.status === "Verification Rejected").map((p) => ({ level: "red", t: `${p.id} — Verification rejected: ${p.rejection?.reason}` })),
@@ -449,9 +438,6 @@ export function AmFollowups() {
       if (fMode !== "all" && !p.txns.some((t) => t.mode === fMode)) return false;
       if (fClearance !== "all" && String(p.clearanceRequired) !== fClearance) return false;
       if (fDue && !p.due.toLowerCase().includes(fDue.toLowerCase())) return false;
-      if (fAmt === "lt1" && p.amount >= 100000) return false;
-      if (fAmt === "1to5" && (p.amount < 100000 || p.amount > 500000)) return false;
-      if (fAmt === "gt5" && p.amount <= 500000) return false;
       return true;
     })
     .sort((a, b) => rank(a) - rank(b));
@@ -464,14 +450,11 @@ export function AmFollowups() {
     setOpenId(id);
     setChecks({});
     if (p) {
-      setVAmount(String(received(p)));
       setVReceipt(p.txns.at(-1)?.receipt ?? "");
       setVClearance(p.clearanceRequired ? "yes" : "no");
-      setRAmount(String(balance(p)));
       setRDue(p.due);
       setRInvoice(p.vyaparInvoice);
       setRInvDate(p.invoiceDate);
-      setRInvAmt(String(p.invoiceAmount));
       setFuPerson(p.owner);
       setPtNextDue(p.nextPaymentDue ?? "");
       setPtDispatch(p.dispatchOnPartial ? "yes" : "no");
@@ -498,7 +481,7 @@ export function AmFollowups() {
         <StatCard label="Follow-ups Due Today" value={String(kpi.dueToday)} tone="warn" />
         <StatCard label="Overdue Payments" value={String(kpi.overdue)} tone="bad" />
         <StatCard label="Partially Paid" value={String(kpi.partial)} tone="warn" />
-        <StatCard label="Payment Received" value={inr(kpi.receivedAmt)} tone="good" />
+        <StatCard label="Payments Recorded" value={String(kpi.receivedCount)} tone="good" />
         <StatCard label="Verification Pending" value={String(kpi.verifyPending)} tone="warn" />
         <StatCard label="Verified Today" value={String(kpi.verifiedToday)} tone="good" />
       </div>
@@ -543,23 +526,11 @@ export function AmFollowups() {
             </Select>
           </div>
           <div>
-            <Label className="text-[11px] text-muted-foreground">Amount range</Label>
-            <Select value={fAmt} onValueChange={setFAmt}>
-              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="lt1">Below ₹1L</SelectItem>
-                <SelectItem value="1to5">₹1L – ₹5L</SelectItem>
-                <SelectItem value="gt5">Above ₹5L</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <Label className="text-[11px] text-muted-foreground">Due date</Label>
             <Input className="h-9" placeholder="e.g. Aug" value={fDue} onChange={(e) => setFDue(e.target.value)} />
           </div>
           <div className="flex items-end">
-            <Button variant="ghost" size="sm" onClick={() => { setFCoord("all"); setFProject("all"); setFOwner("all"); setFType("all"); setFStatus("all"); setFMode("all"); setFClearance("all"); setFAmt("all"); setFDue(""); }}>Clear filters</Button>
+            <Button variant="ghost" size="sm" onClick={() => { setFCoord("all"); setFProject("all"); setFOwner("all"); setFType("all"); setFStatus("all"); setFMode("all"); setFClearance("all"); setFDue(""); }}>Clear filters</Button>
           </div>
         </CardContent>
       </Card>
@@ -574,9 +545,7 @@ export function AmFollowups() {
                   <TableHead>Request</TableHead>
                   <TableHead>Owner / project</TableHead>
                   <TableHead>Purpose</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Received</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead className="text-right">Progress</TableHead>
                   <TableHead>Due</TableHead>
                   <TableHead>Last / next follow-up</TableHead>
                   <TableHead>Status</TableHead>
@@ -592,9 +561,7 @@ export function AmFollowups() {
                       <div className="text-xs text-muted-foreground">{p.store} · {p.projectId}</div>
                     </TableCell>
                     <TableCell className="text-xs max-w-[200px]">{p.purpose}</TableCell>
-                    <TableCell className="text-right tabular-nums">{inr(p.amount)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{inr(received(p))}</TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">{inr(balance(p))}</TableCell>
+                    <TableCell className="text-right tabular-nums">{received(p)}/{p.target} · {progressPct(p)}%</TableCell>
                     <TableCell className="text-sm">
                       {p.due}
                       {p.daysOverdue > 0 && <div className="text-xs text-rose-600">{p.daysOverdue}d overdue</div>}
@@ -610,7 +577,7 @@ export function AmFollowups() {
                   </TableRow>
                 ))}
                 {list.length === 0 && (
-                  <TableRow><TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">Nothing in this tab.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">Nothing in this tab.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -626,7 +593,7 @@ export function AmFollowups() {
                 <div className="text-sm">{p.owner} · {p.store}</div>
                 <div className="text-xs text-muted-foreground">{p.purpose}</div>
                 <div className="text-sm tabular-nums">
-                  Total {inr(p.amount)} · Received {inr(received(p))} · <span className="font-semibold">Balance {inr(balance(p))}</span>
+                  <span className="font-semibold">{received(p)}/{p.target} instalments · {progressPct(p)}% of target</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Due {p.due}{p.daysOverdue > 0 ? ` · ${p.daysOverdue}d overdue` : ""} · Last {lastFollow(p)?.at ?? "—"} · Next {lastFollow(p)?.nextAt ?? p.nextActionDue}
@@ -669,11 +636,9 @@ export function AmFollowups() {
                   <F label="Project" v={`${open.projectId} · ${open.store}`} />
                   <F label="Project Coordinator" v={open.coordinator} />
                   <F label="Payment purpose" v={open.purpose} />
-                  <F label="Total amount" v={inr(open.amount)} />
-                  <F label="Amount received" v={inr(received(open))} />
-                  <F label="Balance due" v={inr(balance(open))} />
+                  <F label="Collection progress" v={`${received(open)}/${open.target} instalments (${progressPct(open)}% of target)`} />
                   <F label="Payment due date" v={open.due} />
-                  <F label="Vyapar invoice" v={`${open.vyaparInvoice} · ${open.invoiceDate} · ${inr(open.invoiceAmount)}`} />
+                  <F label="Vyapar invoice" v={`${open.vyaparInvoice} · ${open.invoiceDate}`} />
                   <F label="Dispatch clearance required" v={open.clearanceRequired ? "Yes" : "No"} />
                   <F label="Next action" v={`${open.nextAction} (due ${open.nextActionDue})`} />
                   <F label="Planned launch" v={open.launchDate} />
@@ -690,10 +655,7 @@ export function AmFollowups() {
                   <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs space-y-2">
                     <div className="font-medium text-amber-900">Partial payment</div>
                     <div className="grid grid-cols-2 gap-2">
-                      <F label="Total" v={inr(open.amount)} />
-                      <F label="Received" v={inr(received(open))} />
-                      <F label="Verified" v={inr(open.verification?.amount ?? 0)} />
-                      <F label="Balance remaining" v={inr(balance(open))} />
+                      <F label="Collection progress" v={`${received(open)}/${open.target} instalments (${progressPct(open)}% of target)`} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
@@ -718,7 +680,7 @@ export function AmFollowups() {
                       size="sm"
                       onClick={() => {
                         if (ptDispatch === "yes" && !ptApproval.trim()) return toast.error("Authorised approval is required to allow dispatch on partial payment");
-                        update(open.id, (p) => log({ ...p, status: "Partially Paid", nextPaymentDue: ptNextDue, dispatchOnPartial: ptDispatch === "yes", partialApproval: ptApproval }, `Partial payment updated — balance ${inr(balance(p))}, dispatch on partial: ${ptDispatch}`));
+                        update(open.id, (p) => log({ ...p, status: "Partially Paid", nextPaymentDue: ptNextDue, dispatchOnPartial: ptDispatch === "yes", partialApproval: ptApproval }, `Partial payment updated — ${received(p)}/${p.target} instalments collected, dispatch on partial: ${ptDispatch}`));
                         toast.success("Partial payment details saved");
                       }}
                     >
@@ -734,7 +696,6 @@ export function AmFollowups() {
                     {open.txns.map((t) => (
                       <div key={t.id} className="rounded-md border p-2 text-xs grid grid-cols-2 gap-2">
                         <F label="Transaction" v={`${t.id} · ${t.date}`} />
-                        <F label="Amount" v={inr(t.amount)} />
                         <F label="Mode" v={t.mode} />
                         <F label="Bank / account" v={t.accountMasked} />
                         <F label="Transaction / UTR" v={t.refMasked} />
@@ -770,7 +731,7 @@ export function AmFollowups() {
                 {open.verification && (
                   <div className="rounded-md border p-3 text-xs bg-emerald-50/60 space-y-1">
                     <div className="font-medium text-emerald-800">Verified</div>
-                    <div>{inr(open.verification.amount)} verified by {open.verification.by} on {open.verification.at}</div>
+                    <div>Verified by {open.verification.by} on {open.verification.at}</div>
                     <div>Vyapar receipt: {open.verification.receipt || "—"} · Dispatch clearance required: {open.verification.clearanceRequired ? "Yes" : "No"}</div>
                     {open.verification.note && <div>Note: {open.verification.note}</div>}
                     <Button
@@ -809,7 +770,7 @@ export function AmFollowups() {
                       <div key={i} className="rounded-md border p-2 text-xs space-y-0.5">
                         <div className="font-medium">{f.at} · {f.method} · {f.outcome}</div>
                         <div>Contacted: {f.person}</div>
-                        {f.promiseDate && <div>Promise to pay {inr(f.promiseAmount ?? 0)} by {f.promiseDate}</div>}
+                        {f.promiseDate && <div>Payment promised by {f.promiseDate}</div>}
                         {f.comments && <div>Franchise: {f.comments}</div>}
                         {f.note && <div>Accounts note: {f.note}</div>}
                         <div className="text-muted-foreground">Next: {f.nextAction} on {f.nextAt}</div>
@@ -841,11 +802,9 @@ export function AmFollowups() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Request date</Label><Input value={rDate} onChange={(e) => setRDate(e.target.value)} placeholder="4 Aug 2026" /></div>
-            <div><Label className="text-xs">Amount requested</Label><Input value={rAmount} onChange={(e) => setRAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Due date</Label><Input value={rDue} onChange={(e) => setRDue(e.target.value)} /></div>
             <div><Label className="text-xs">Vyapar invoice number</Label><Input value={rInvoice} onChange={(e) => setRInvoice(e.target.value)} /></div>
             <div><Label className="text-xs">Invoice date</Label><Input value={rInvDate} onChange={(e) => setRInvDate(e.target.value)} /></div>
-            <div><Label className="text-xs">Invoice amount</Label><Input value={rInvAmt} onChange={(e) => setRInvAmt(e.target.value)} /></div>
             <div>
               <Label className="text-xs">Communication method</Label>
               <Select value={rMethod} onValueChange={setRMethod}>
@@ -862,13 +821,13 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                if (!rAmount || !rDue) return toast.error("Amount and due date are required");
+                if (!rDue) return toast.error("Due date is required");
                 update(open.id, (p) => log({
                   ...p, status: p.status === "Payment Requested" ? "Follow-up Scheduled" : p.status,
                   due: rDue, instructions: rInstr || p.instructions, vyaparInvoice: rInvoice || p.vyaparInvoice,
-                  invoiceDate: rInvDate || p.invoiceDate, invoiceAmount: Number(rInvAmt) || p.invoiceAmount,
+                  invoiceDate: rInvDate || p.invoiceDate,
                   nextAction: "Follow up on payment request", nextActionDue: rNext || p.nextActionDue,
-                }, `Payment of ${inr(Number(rAmount))} requested via ${rMethod}${rMsg ? ` — ${rMsg}` : ""}`));
+                }, `Payment requested via ${rMethod}${rMsg ? ` — ${rMsg}` : ""}`));
                 toast.success("Payment request recorded");
                 setReqOpen(false);
               }}
@@ -901,7 +860,6 @@ export function AmFollowups() {
               </Select>
             </div>
             <div><Label className="text-xs">Promise-to-pay date</Label><Input value={fuPromiseDate} onChange={(e) => setFuPromiseDate(e.target.value)} /></div>
-            <div><Label className="text-xs">Promised amount</Label><Input value={fuPromiseAmt} onChange={(e) => setFuPromiseAmt(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Franchise comments</Label><Textarea rows={2} value={fuComments} onChange={(e) => setFuComments(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Accounts Manager note</Label><Textarea rows={2} value={fuNote} onChange={(e) => setFuNote(e.target.value)} /></div>
             <div><Label className="text-xs">Next action</Label><Input value={fuNextAction} onChange={(e) => setFuNextAction(e.target.value)} /></div>
@@ -915,7 +873,7 @@ export function AmFollowups() {
                 if (!fuNextAction.trim() || !fuNextAt.trim()) return toast.error("Every active payment needs a next action and due date");
                 const entry: FollowUp = {
                   at: fuAt || "4 Aug 2026", person: fuPerson || open.owner, method: fuMethod, outcome: fuOutcome,
-                  promiseDate: fuPromiseDate || undefined, promiseAmount: fuPromiseAmt ? Number(fuPromiseAmt) : undefined,
+                  promiseDate: fuPromiseDate || undefined,
                   comments: fuComments || undefined, note: fuNote || undefined,
                   nextAction: fuNextAction.trim(), nextAt: fuNextAt.trim(),
                 };
@@ -926,7 +884,7 @@ export function AmFollowups() {
                 }, `Follow-up (${fuMethod}) — ${fuOutcome}`));
                 toast.success("Follow-up recorded");
                 setFollowOpen(false);
-                setFuAt(""); setFuPromiseDate(""); setFuPromiseAmt(""); setFuComments(""); setFuNote(""); setFuNextAction(""); setFuNextAt("");
+                setFuAt(""); setFuPromiseDate(""); setFuComments(""); setFuNote(""); setFuNextAction(""); setFuNextAt("");
               }}
             >
               Save follow-up
@@ -941,12 +899,11 @@ export function AmFollowups() {
           <DialogHeader>
             <DialogTitle>Record payment received</DialogTitle>
             <DialogDescription>
-              {open ? `${open.id} · ${open.owner} · balance ${inr(balance(open))}` : ""} — never enter passwords, OTPs, CVV or UPI PINs.
+              {open ? `${open.id} · ${open.owner} · ${received(open)}/${open.target} instalments collected` : ""} — never enter passwords, OTPs, CVV or UPI PINs.
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Payment date</Label><Input value={pDate} onChange={(e) => setPDate(e.target.value)} placeholder="4 Aug 2026" /></div>
-            <div><Label className="text-xs">Amount received</Label><Input value={pAmt} onChange={(e) => setPAmt(e.target.value)} /></div>
             <div>
               <Label className="text-xs">Payment mode</Label>
               <Select value={pMode} onValueChange={(v) => setPMode(v as (typeof PAYMENT_MODES)[number])}>
@@ -969,24 +926,22 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                const amt = Number(pAmt);
-                if (!amt || amt <= 0) return toast.error("Enter a valid amount");
                 if (!pRef.trim()) return toast.error("Transaction or UTR number is required");
                 const masked = maskRef(pRef);
                 const exists = pays.some((p) => p.txns.some((t) => t.refMasked === masked));
                 if (exists && !pOverride) return toast.error("This transaction reference already exists — authorised review is required");
                 const txn: Txn = {
-                  id: `TXN-${8900 + open.txns.length + 1}`, date: pDate || "4 Aug 2026", amount: amt, mode: pMode,
+                  id: `TXN-${8900 + open.txns.length + 1}`, date: pDate || "4 Aug 2026", mode: pMode,
                   accountMasked: pAccount || "Bank ••••0000", refMasked: masked, proof: pProof || "Not uploaded",
                   receipt: pReceipt || "—", recordedBy: MANAGER, reviewed: false,
                 };
                 update(open.id, (p) => {
-                  const total = received(p) + amt;
-                  return log({ ...p, txns: [...p.txns, txn], status: total >= p.amount ? "Verification Pending" : "Partially Paid", nextAction: total >= p.amount ? "Verify payment" : "Collect balance", nextActionDue: "Today" }, `Payment ${inr(amt)} recorded (${pMode}, ref ${masked})`);
+                  const total = received(p) + 1;
+                  return log({ ...p, txns: [...p.txns, txn], status: total >= p.target ? "Verification Pending" : "Partially Paid", nextAction: total >= p.target ? "Verify payment" : "Collect balance", nextActionDue: "Today" }, `Payment recorded (${pMode}, ref ${masked})`);
                 });
-                toast.success(`${inr(amt)} recorded under ${open.id}`);
+                toast.success(`Payment recorded under ${open.id}`);
                 setPayOpen(false);
-                setPAmt(""); setPRef(""); setPProof(""); setPReceipt(""); setPAccount(""); setPDate(""); setPOverride(false);
+                setPRef(""); setPProof(""); setPReceipt(""); setPAccount(""); setPDate(""); setPOverride(false);
               }}
             >
               Save payment
@@ -1003,7 +958,6 @@ export function AmFollowups() {
             <DialogDescription>Verified machine or consumable payments become available in Dispatch Clearance.</DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">Verified amount</Label><Input value={vAmount} onChange={(e) => setVAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Verified by</Label><Input value={MANAGER} readOnly /></div>
             <div><Label className="text-xs">Vyapar receipt reference</Label><Input value={vReceipt} onChange={(e) => setVReceipt(e.target.value)} /></div>
             <div>
@@ -1020,20 +974,18 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                const amt = Number(vAmount);
-                if (!amt) return toast.error("Verified amount is required");
-                const partial = amt < open.amount;
+                const partial = received(open) < open.target;
                 if (partial && vClearance === "yes" && !open.partialApproval) {
                   return toast.error("Dispatch clearance on partial payment needs a recorded authorised approval");
                 }
                 update(open.id, (p) => log({
                   ...p,
                   status: vClearance === "yes" ? "Ready for Dispatch Clearance" : "Verified",
-                  verification: { amount: amt, by: MANAGER, at: "4 Aug 2026, now", receipt: vReceipt, note: vNote, clearanceRequired: vClearance === "yes" },
+                  verification: { by: MANAGER, at: "4 Aug 2026, now", receipt: vReceipt, note: vNote, clearanceRequired: vClearance === "yes" },
                   txns: p.txns.map((t) => ({ ...t, reviewed: true })),
                   nextAction: vClearance === "yes" ? "Send dispatch clearance" : "Close payment",
                   nextActionDue: "Today",
-                }, `Payment verified — ${inr(amt)}${vClearance === "yes" ? ", sent to Dispatch Clearance" : ""}`));
+                }, `Payment verified${vClearance === "yes" ? ", sent to Dispatch Clearance" : ""}`));
                 toast.success(vClearance === "yes" ? "Verified — available in Dispatch Clearance" : "Payment verified");
                 setVerifyOpen(false);
               }}

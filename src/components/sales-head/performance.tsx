@@ -20,7 +20,7 @@ import {
 } from "recharts";
 import {
   TrendingUp, Info, Download, Users, Phone, CalendarClock, FileText,
-  Trophy, IndianRupee, Percent, Clock, AlertTriangle, Target, Eye,
+  Trophy, Percent, Clock, AlertTriangle, Target, Eye,
   Lightbulb, ShieldCheck, ArrowUp, ArrowDown,
 } from "lucide-react";
 
@@ -40,15 +40,12 @@ type ExecPerf = {
   meetings: number;
   proposals: number;
   won: number;
-  revenue: number; // rupees
-  target: number;
-  pipelineValue: number;
-  weightedPipeline: number;
+  target: number; // count of expected conversions in the period
   overdueActions: number;
   avgCycleDays: number;
-  stalledValue: number;
-  paymentPending: number;
-  trend: { m: string; revenue: number }[];
+  stalledCount: number;
+  paymentPendingCount: number;
+  trend: { m: string; won: number }[];
   history: { at: string; note: string }[];
 };
 
@@ -57,45 +54,45 @@ const EXECS: ExecPerf[] = [
     name: "Ravi Sharma", territory: "Rajasthan", unit: "Franchise",
     assigned: 92, contacted: 86, firstResponseMin: 7, calls: 214, callsConnected: 158,
     followupsDue: 74, followupsOnTime: 68, meetings: 26, proposals: 19, won: 7,
-    revenue: 1260000, target: 1500000, pipelineValue: 8200000, weightedPipeline: 3150000,
-    overdueActions: 3, avgCycleDays: 22, stalledValue: 900000, paymentPending: 600000,
-    trend: [{ m: "Apr", revenue: 9 }, { m: "May", revenue: 11 }, { m: "Jun", revenue: 10 }, { m: "Jul", revenue: 12.6 }],
-    history: [{ at: "12 Jul", note: "3 leads transferred in from Amit Bansal (revenue credit retained by original owner)" }],
+    target: 8,
+    overdueActions: 3, avgCycleDays: 22, stalledCount: 4, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 5 }, { m: "May", won: 6 }, { m: "Jun", won: 6 }, { m: "Jul", won: 7 }],
+    history: [{ at: "12 Jul", note: "3 leads transferred in from Amit Bansal (conversion credit retained by original owner)" }],
   },
   {
     name: "Neha Kulkarni", territory: "Maharashtra", unit: "Franchise",
     assigned: 84, contacted: 71, firstResponseMin: 19, calls: 168, callsConnected: 102,
     followupsDue: 66, followupsOnTime: 47, meetings: 18, proposals: 13, won: 4,
-    revenue: 760000, target: 1500000, pipelineValue: 6400000, weightedPipeline: 2050000,
-    overdueActions: 9, avgCycleDays: 31, stalledValue: 1900000, paymentPending: 450000,
-    trend: [{ m: "Apr", revenue: 8 }, { m: "May", revenue: 9.5 }, { m: "Jun", revenue: 8.2 }, { m: "Jul", revenue: 7.6 }],
+    target: 8,
+    overdueActions: 9, avgCycleDays: 31, stalledCount: 8, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 4 }, { m: "May", won: 5 }, { m: "Jun", won: 4 }, { m: "Jul", won: 4 }],
     history: [{ at: "04 Jul", note: "Nagpur cluster reassigned from Deepak Verma" }],
   },
   {
     name: "Amit Bansal", territory: "Delhi NCR", unit: "Master Franchise",
     assigned: 108, contacted: 101, firstResponseMin: 5, calls: 248, callsConnected: 191,
     followupsDue: 88, followupsOnTime: 84, meetings: 34, proposals: 27, won: 11,
-    revenue: 2140000, target: 1800000, pipelineValue: 10400000, weightedPipeline: 4380000,
-    overdueActions: 1, avgCycleDays: 18, stalledValue: 620000, paymentPending: 900000,
-    trend: [{ m: "Apr", revenue: 14 }, { m: "May", revenue: 16 }, { m: "Jun", revenue: 19 }, { m: "Jul", revenue: 21.4 }],
+    target: 10,
+    overdueActions: 1, avgCycleDays: 18, stalledCount: 3, paymentPendingCount: 3,
+    trend: [{ m: "Apr", won: 8 }, { m: "May", won: 9 }, { m: "Jun", won: 10 }, { m: "Jul", won: 11 }],
     history: [{ at: "12 Jul", note: "3 leads transferred out to Ravi Sharma" }],
   },
   {
     name: "Deepak Verma", territory: "Madhya Pradesh", unit: "Franchise",
     assigned: 68, contacted: 60, firstResponseMin: 14, calls: 141, callsConnected: 94,
     followupsDue: 52, followupsOnTime: 43, meetings: 15, proposals: 11, won: 5,
-    revenue: 940000, target: 1200000, pipelineValue: 5100000, weightedPipeline: 1720000,
-    overdueActions: 4, avgCycleDays: 26, stalledValue: 1100000, paymentPending: 300000,
-    trend: [{ m: "Apr", revenue: 7 }, { m: "May", revenue: 8 }, { m: "Jun", revenue: 8.8 }, { m: "Jul", revenue: 9.4 }],
+    target: 7,
+    overdueActions: 4, avgCycleDays: 26, stalledCount: 5, paymentPendingCount: 1,
+    trend: [{ m: "Apr", won: 3 }, { m: "May", won: 4 }, { m: "Jun", won: 4 }, { m: "Jul", won: 5 }],
     history: [{ at: "04 Jul", note: "Nagpur cluster transferred to Neha Kulkarni" }],
   },
   {
     name: "Sneha Iyer", territory: "Karnataka", unit: "Corporate Tie-up",
     assigned: 76, contacted: 70, firstResponseMin: 9, calls: 182, callsConnected: 128,
     followupsDue: 61, followupsOnTime: 55, meetings: 22, proposals: 16, won: 6,
-    revenue: 1180000, target: 1400000, pipelineValue: 6900000, weightedPipeline: 2460000,
-    overdueActions: 2, avgCycleDays: 24, stalledValue: 780000, paymentPending: 520000,
-    trend: [{ m: "Apr", revenue: 9 }, { m: "May", revenue: 10.2 }, { m: "Jun", revenue: 11 }, { m: "Jul", revenue: 11.8 }],
+    target: 8,
+    overdueActions: 2, avgCycleDays: 24, stalledCount: 4, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 4 }, { m: "May", won: 5 }, { m: "Jun", won: 5 }, { m: "Jul", won: 6 }],
     history: [],
   },
 ];
@@ -113,26 +110,26 @@ type PeriodKey = keyof typeof PERIODS;
 const UNITS = ["Franchise", "Master Franchise", "Corporate Tie-up"];
 
 const SOURCE_ROWS = [
-  { group: "Lead Source", name: "Google Ads", leads: 148, won: 14, revenue: 2680000 },
-  { group: "Lead Source", name: "Meta Ads", leads: 122, won: 8, revenue: 1520000 },
-  { group: "Lead Source", name: "Referral", leads: 46, won: 9, revenue: 1740000 },
-  { group: "Lead Source", name: "Website Enquiry", leads: 68, won: 2, revenue: 380000 },
-  { group: "Lead Source", name: "Exhibition", leads: 44, won: 0, revenue: 0 },
-  { group: "Campaign", name: "Franchise India Jul", leads: 96, won: 11, revenue: 2100000 },
-  { group: "Campaign", name: "Tier-2 Expansion", leads: 84, won: 7, revenue: 1340000 },
-  { group: "Campaign", name: "Retargeting — Warm", leads: 62, won: 6, revenue: 1180000 },
-  { group: "City", name: "Delhi NCR", leads: 108, won: 11, revenue: 2140000 },
-  { group: "City", name: "Jaipur", leads: 62, won: 5, revenue: 900000 },
-  { group: "City", name: "Pune", leads: 58, won: 4, revenue: 760000 },
-  { group: "City", name: "Bengaluru", leads: 54, won: 6, revenue: 1180000 },
-  { group: "City", name: "Indore", leads: 46, won: 3, revenue: 560000 },
-  { group: "Business Unit", name: "Franchise", leads: 244, won: 16, revenue: 2960000 },
-  { group: "Business Unit", name: "Master Franchise", leads: 108, won: 11, revenue: 2140000 },
-  { group: "Business Unit", name: "Corporate Tie-up", leads: 76, won: 6, revenue: 1180000 },
-  { group: "Lead Score", name: "80–100 (Hot)", leads: 96, won: 21, revenue: 4020000 },
-  { group: "Lead Score", name: "60–79 (Warm)", leads: 142, won: 9, revenue: 1720000 },
-  { group: "Lead Score", name: "40–59 (Cold)", leads: 128, won: 3, revenue: 540000 },
-  { group: "Lead Score", name: "Below 40", leads: 62, won: 0, revenue: 0 },
+  { group: "Lead Source", name: "Google Ads", leads: 148, won: 14 },
+  { group: "Lead Source", name: "Meta Ads", leads: 122, won: 8 },
+  { group: "Lead Source", name: "Referral", leads: 46, won: 9 },
+  { group: "Lead Source", name: "Website Enquiry", leads: 68, won: 2 },
+  { group: "Lead Source", name: "Exhibition", leads: 44, won: 0 },
+  { group: "Campaign", name: "Franchise India Jul", leads: 96, won: 11 },
+  { group: "Campaign", name: "Tier-2 Expansion", leads: 84, won: 7 },
+  { group: "Campaign", name: "Retargeting — Warm", leads: 62, won: 6 },
+  { group: "City", name: "Delhi NCR", leads: 108, won: 11 },
+  { group: "City", name: "Jaipur", leads: 62, won: 5 },
+  { group: "City", name: "Pune", leads: 58, won: 4 },
+  { group: "City", name: "Bengaluru", leads: 54, won: 6 },
+  { group: "City", name: "Indore", leads: 46, won: 3 },
+  { group: "Business Unit", name: "Franchise", leads: 244, won: 16 },
+  { group: "Business Unit", name: "Master Franchise", leads: 108, won: 11 },
+  { group: "Business Unit", name: "Corporate Tie-up", leads: 76, won: 6 },
+  { group: "Lead Score", name: "80–100 (Hot)", leads: 96, won: 21 },
+  { group: "Lead Score", name: "60–79 (Warm)", leads: 142, won: 9 },
+  { group: "Lead Score", name: "40–59 (Cold)", leads: 128, won: 3 },
+  { group: "Lead Score", name: "Below 40", leads: 62, won: 0 },
 ];
 
 const ACTIVITY_QUALITY = [
@@ -234,7 +231,6 @@ export function SalesHeadPerformancePage() {
       meetings: scale(e.meetings, f),
       proposals: scale(e.proposals, f),
       won: scale(e.won, f),
-      revenue: Math.round(e.revenue * f),
       target: Math.round(e.target * (period === "quarter" ? 3 : period === "month" ? 1 : f)),
     }));
   }, [unit, f, period]);
@@ -242,7 +238,6 @@ export function SalesHeadPerformancePage() {
   const team = useMemo(() => {
     const sum = (k: keyof ExecPerf) => rows.reduce((a, r) => a + (r[k] as number), 0);
     const assigned = sum("assigned");
-    const revenue = sum("revenue");
     const target = sum("target");
     const won = sum("won");
     return {
@@ -255,12 +250,9 @@ export function SalesHeadPerformancePage() {
       meetings: sum("meetings"),
       proposals: sum("proposals"),
       won,
-      revenue,
       target,
-      pipeline: sum("pipelineValue"),
-      weighted: sum("weightedPipeline"),
-      stalled: sum("stalledValue"),
-      paymentPending: sum("paymentPending"),
+      stalled: sum("stalledCount"),
+      paymentPending: sum("paymentPendingCount"),
       overdue: sum("overdueActions"),
       avgFirstResponse: Math.round(rows.reduce((a, r) => a + r.firstResponseMin, 0) / Math.max(1, rows.length)),
       avgCycle: Math.round(rows.reduce((a, r) => a + r.avgCycleDays, 0) / Math.max(1, rows.length)),
@@ -270,10 +262,9 @@ export function SalesHeadPerformancePage() {
 
   // records in the selected period represent ~72% of the month's working days elapsed
   const elapsedShare = 0.72;
-  const projected = Math.round((period === "month" ? team.revenue / elapsedShare : team.revenue));
-  const avgDeal = team.won > 0 ? team.revenue / team.won : 1800000;
+  const projected = Math.round((period === "month" ? team.won / elapsedShare : team.won));
   const gap = Math.max(0, team.target - projected);
-  const salesNeeded = Math.ceil(Math.max(0, team.target - team.revenue) / Math.max(1, avgDeal));
+  const salesNeeded = Math.max(0, team.target - team.won);
 
   const funnel = useMemo(() => {
     const a = team.assigned;
@@ -303,18 +294,18 @@ export function SalesHeadPerformancePage() {
       { tone: "red", title: "Response time needs correction", body: `${slowest?.name} is averaging ${slowest?.firstResponseMin} min first response against the 10-minute standard. Review their morning call block.` },
       { tone: "amber", title: "Low meeting-to-win conversion", body: `${lowMeetingConv?.name} converts only ${pct(lowMeetingConv?.won ?? 0, lowMeetingConv?.meetings ?? 1)}% of completed meetings. Sit in on the next two meetings.` },
       { tone: "red", title: "Excessive overdue follow-ups", body: `${mostOverdue?.name} has ${mostOverdue?.overdueActions} overdue actions. Clear the backlog before new leads are assigned.` },
-      { tone: "green", title: "Strongest lead source", body: `${bestSource?.name} converts at ${pct(bestSource?.won ?? 0, bestSource?.leads ?? 1)}% and contributed ${inr(bestSource?.revenue ?? 0)}. Push more budget here.` },
+      { tone: "green", title: "Strongest lead source", body: `${bestSource?.name} converts at ${pct(bestSource?.won ?? 0, bestSource?.leads ?? 1)}% and contributed ${bestSource?.won ?? 0} wins. Push more budget here.` },
       { tone: "amber", title: "Biggest funnel leak", body: worstStage.from ? `Largest drop-off is ${worstStage.from} → ${worstStage.to} (${worstStage.drop} leads lost). Fix this stage first.` : "Funnel movement is balanced this period." },
     ];
   }, [rows, funnel]);
 
   const exportReport = () => {
-    const header = ["Executive", "Assigned", "Contacted", "First Response (min)", "Calls", "Connect %", "On-time Follow-up %", "Meetings", "Proposals", "Won", "Revenue", "Conversion %", "Target %", "Pipeline", "Overdue"];
+    const header = ["Executive", "Assigned", "Contacted", "First Response (min)", "Calls", "Connect %", "On-time Follow-up %", "Meetings", "Proposals", "Won", "Target", "Conversion %", "Target %", "Overdue"];
     const lines = rows.map((r) => [
       r.name, r.assigned, r.contacted, r.firstResponseMin, r.calls,
       pct(r.callsConnected, r.calls), pct(r.followupsOnTime, r.followupsDue),
-      r.meetings, r.proposals, r.won, r.revenue, pct(r.won, r.assigned),
-      pct(r.revenue, r.target), r.pipelineValue, r.overdueActions,
+      r.meetings, r.proposals, r.won, r.target, pct(r.won, r.assigned),
+      pct(r.won, r.target), r.overdueActions,
     ].join(","));
     const csv = [header.join(","), ...lines].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
@@ -397,8 +388,8 @@ export function SalesHeadPerformancePage() {
             tip="Proposal-sent events recorded in Sales Pipeline stage history." />
           <Metric label="Sales Won" value={`${team.won}`} icon={Trophy} tone="green" delta={compare ? 12 : undefined}
             tip="Opportunities moved to Won in Sales Pipeline history." />
-          <Metric label="Revenue Achieved" value={inr(team.revenue)} icon={IndianRupee} tone="green" delta={compare ? 14 : undefined}
-            tip="Booking value of Won opportunities only. Pipeline and pending payments are excluded." />
+          <Metric label="Target Achievement" value={`${pct(team.won, team.target)}%`} sub={`${team.won} of ${team.target} target`} icon={Target} tone={pct(team.won, team.target) >= 100 ? "green" : "amber"} delta={compare ? 14 : undefined}
+            tip="Conversions (Won) achieved against the count target for the period." />
           <Metric label="Team Conversion Rate" value={`${team.conversion}%`} sub="Won ÷ Assigned" icon={Percent}
             tone={team.conversion >= 8 ? "green" : "amber"} delta={compare ? 1.2 : undefined}
             tip="Won opportunities divided by leads assigned in the same period." />
@@ -409,16 +400,15 @@ export function SalesHeadPerformancePage() {
           <CardContent className="p-4 space-y-3">
             <SectionTitle title="Target Progress" tip="Targets are set by authorised administrators only; they cannot be edited from this page." />
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-              <Cell label="Monthly Team Target" value={inr(team.target)} />
-              <Cell label="Revenue Achieved" value={inr(team.revenue)} tone="green" />
-              <Cell label="Remaining Target" value={inr(Math.max(0, team.target - team.revenue))} tone="amber" />
-              <Cell label="Target Achievement" value={`${pct(team.revenue, team.target)}%`} tone={pct(team.revenue, team.target) >= 100 ? "green" : pct(team.revenue, team.target) >= 70 ? "amber" : "red"} />
-              <Cell label="Expected Month-End Revenue" value={inr(projected)} tone={projected >= team.target ? "green" : "amber"} />
-              <Cell label="Revenue Gap (projected)" value={gap === 0 ? "On track" : inr(gap)} tone={gap === 0 ? "green" : "red"} />
-              <Cell label="Sales Required to Reach Target" value={`${salesNeeded} bookings`} />
-              <Cell label="Average Deal Value" value={inr(avgDeal)} />
+              <Cell label="Monthly Team Target" value={`${team.target} bookings`} />
+              <Cell label="Conversions Achieved" value={`${team.won}`} tone="green" />
+              <Cell label="Remaining To Target" value={`${Math.max(0, team.target - team.won)}`} tone="amber" />
+              <Cell label="Target Achievement" value={`${pct(team.won, team.target)}%`} tone={pct(team.won, team.target) >= 100 ? "green" : pct(team.won, team.target) >= 70 ? "amber" : "red"} />
+              <Cell label="Expected Month-End Conversions" value={`${projected}`} tone={projected >= team.target ? "green" : "amber"} />
+              <Cell label="Conversion Gap (projected)" value={gap === 0 ? "On track" : `${gap}`} tone={gap === 0 ? "green" : "red"} />
+              <Cell label="Bookings Needed to Reach Target" value={`${salesNeeded} bookings`} />
             </div>
-            <Progress value={Math.min(100, pct(team.revenue, team.target))} />
+            <Progress value={Math.min(100, pct(team.won, team.target))} />
           </CardContent>
         </Card>
 
@@ -430,14 +420,14 @@ export function SalesHeadPerformancePage() {
               <table className="w-full text-sm min-w-[1100px]">
                 <thead>
                   <tr className="text-xs text-muted-foreground border-b">
-                    {["Executive", "Assigned", "Contacted", "1st Resp.", "Calls", "Connect %", "On-time FU %", "Meetings", "Proposals", "Won", "Revenue", "Conv %", "Target %", "Pipeline", "Overdue", ""].map((h) => (
+                    {["Executive", "Assigned", "Contacted", "1st Resp.", "Calls", "Connect %", "On-time FU %", "Meetings", "Proposals", "Won", "Conv %", "Target %", "Overdue", ""].map((h) => (
                       <th key={h} className="text-left font-medium py-2 px-2 whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((r) => {
-                    const tAch = pct(r.revenue, r.target);
+                    const tAch = pct(r.won, r.target);
                     const fu = pct(r.followupsOnTime, r.followupsDue);
                     return (
                       <tr key={r.name} className="border-b last:border-0 hover:bg-muted/40">
@@ -454,10 +444,8 @@ export function SalesHeadPerformancePage() {
                         <td className="px-2">{r.meetings}</td>
                         <td className="px-2">{r.proposals}</td>
                         <td className="px-2 font-medium">{r.won}</td>
-                        <td className="px-2 whitespace-nowrap">{inr(r.revenue)}</td>
                         <td className="px-2">{pct(r.won, r.assigned)}%</td>
                         <td className={cn("px-2", tAch >= 100 ? "text-emerald-600 dark:text-emerald-400" : tAch >= 70 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400")}>{tAch}%</td>
-                        <td className="px-2 whitespace-nowrap">{inr(r.pipelineValue)}</td>
                         <td className={cn("px-2", r.overdueActions > 5 ? "text-red-600 dark:text-red-400" : r.overdueActions > 2 ? "text-amber-600 dark:text-amber-400" : "")}>{r.overdueActions}</td>
                         <td className="px-2">
                           <Button size="sm" variant="outline" onClick={() => setOpenExec(r)}>
@@ -513,25 +501,23 @@ export function SalesHeadPerformancePage() {
             <CardContent className="p-4 space-y-3">
               <SectionTitle title="Pipeline Performance" tip="Weighted pipeline applies stage probability from Sales Pipeline. Revenue at risk = stalled + payment-pending value." />
               <div className="grid grid-cols-2 gap-3">
-                <Cell label="Total Pipeline Value" value={inr(team.pipeline)} />
-                <Cell label="Weighted Pipeline" value={inr(team.weighted)} />
                 <Cell label="Average Sales Cycle" value={`${team.avgCycle} days`} />
-                <Cell label="Stalled Opportunity Value" value={inr(team.stalled)} tone="amber" />
-                <Cell label="Payment-Pending Value" value={inr(team.paymentPending)} tone="amber" />
+                <Cell label="Stalled Opportunities" value={`${team.stalled}`} tone="amber" />
+                <Cell label="Payment-Pending Opportunities" value={`${team.paymentPending}`} tone="amber" />
                 <Cell label="Expected Closures This Month" value={`${Math.max(1, Math.round(team.proposals * 0.35))} deals`} />
-                <Cell label="Revenue at Risk" value={inr(team.stalled + team.paymentPending)} tone="red" />
+                <Cell label="Opportunities at Risk" value={`${team.stalled + team.paymentPending}`} tone="red" />
                 <Cell label="Overdue Actions" value={`${team.overdue}`} tone={team.overdue > 10 ? "red" : "amber"} />
               </div>
               <div className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={rows.map((r) => ({ name: r.name.split(" ")[0], Pipeline: Math.round(r.pipelineValue / 100000), Weighted: Math.round(r.weightedPipeline / 100000) }))}>
+                  <BarChart data={rows.map((r) => ({ name: r.name.split(" ")[0], Won: r.won, Target: r.target }))}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} unit="L" />
-                    <RTooltip formatter={(v: number) => `₹${v}L`} />
+                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                    <RTooltip />
                     <Legend wrapperStyle={{ fontSize: 11 }} />
-                    <Bar dataKey="Pipeline" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Weighted" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Won" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Target" fill="hsl(var(--muted-foreground))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -561,7 +547,7 @@ export function SalesHeadPerformancePage() {
         {/* source performance */}
         <Card>
           <CardContent className="p-4 space-y-3">
-            <SectionTitle title="Source Performance" tip="Conversion and revenue attributed to the lead's original source, campaign, city, business unit and score band." />
+            <SectionTitle title="Source Performance" tip="Conversion attributed to the lead's original source, campaign, city, business unit and score band." />
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {["Lead Source", "Campaign", "City", "Business Unit", "Lead Score"].map((g) => (
                 <div key={g}>
@@ -575,7 +561,6 @@ export function SalesHeadPerformancePage() {
                           <span className="flex items-center gap-3 shrink-0 text-muted-foreground">
                             <span>{s.leads} leads</span>
                             <span className={cn(c >= 12 ? "text-emerald-600 dark:text-emerald-400" : c >= 5 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400")}>{c}%</span>
-                            <span className="text-foreground font-medium">{inr(s.revenue)}</span>
                           </span>
                         </div>
                       );
@@ -626,7 +611,7 @@ function Cell({ label, value, tone }: { label: string; value: string; tone?: str
 
 function ExecSheet({ exec, onClose }: { exec: ExecPerf | null; onClose: () => void }) {
   if (!exec) return null;
-  const tAch = pct(exec.revenue, exec.target);
+  const tAch = pct(exec.won, exec.target);
   const fu = pct(exec.followupsOnTime, exec.followupsDue);
 
   return (
@@ -639,8 +624,8 @@ function ExecSheet({ exec, onClose }: { exec: ExecPerf | null; onClose: () => vo
           <div className="text-xs text-muted-foreground">{exec.territory} · {exec.unit}</div>
 
           <div className="grid grid-cols-2 gap-2">
-            <Cell label="Revenue Achieved" value={inr(exec.revenue)} tone="green" />
             <Cell label="Target Achievement" value={`${tAch}%`} tone={tAch >= 100 ? "green" : tAch >= 70 ? "amber" : "red"} />
+            <Cell label="Target" value={`${exec.target} bookings`} />
             <Cell label="Leads Assigned" value={`${exec.assigned}`} />
             <Cell label="Leads Contacted" value={`${exec.contacted}`} />
             <Cell label="First-Response Time" value={`${exec.firstResponseMin} min`} tone={exec.firstResponseMin <= 10 ? "green" : "red"} />
@@ -650,23 +635,23 @@ function ExecSheet({ exec, onClose }: { exec: ExecPerf | null; onClose: () => vo
             <Cell label="Proposals Sent" value={`${exec.proposals}`} />
             <Cell label="Sales Won" value={`${exec.won}`} />
             <Cell label="Conversion Rate" value={`${pct(exec.won, exec.assigned)}%`} />
-            <Cell label="Active Pipeline" value={inr(exec.pipelineValue)} />
+            <Cell label="Stalled Opportunities" value={`${exec.stalledCount}`} />
             <Cell label="Average Sales Cycle" value={`${exec.avgCycleDays} days`} />
             <Cell label="Overdue Actions" value={`${exec.overdueActions}`} tone={exec.overdueActions > 5 ? "red" : exec.overdueActions > 2 ? "amber" : "green"} />
           </div>
 
           <div>
             <div className="text-sm font-medium mb-2 flex items-center gap-1">
-              <TrendingUp className="h-4 w-4" /> Revenue trend (₹L)
+              <TrendingUp className="h-4 w-4" /> Conversions trend
             </div>
             <div className="h-40">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={exec.trend}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="m" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} unit="L" />
-                  <RTooltip formatter={(v: number) => `₹${v}L`} />
-                  <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <RTooltip />
+                  <Line type="monotone" dataKey="won" stroke="hsl(var(--primary))" strokeWidth={2} dot />
                 </LineChart>
               </ResponsiveContainer>
             </div>

@@ -15,7 +15,6 @@ export type LineageRow = {
   franchise_booking_id: string | null;
   franchise_code: string | null;
   franchisee_name: string | null;
-  booking_amount: number | null;
   project_id: string | null;
   project_code: string | null;
   project_name: string | null;
@@ -142,7 +141,7 @@ export function RecordLineage({ leadId }: { leadId: string }) {
             label="Franchise"
             code={row.franchise_code}
             title={row.franchisee_name}
-            meta={row.booking_amount != null ? `₹${row.booking_amount}` : null}
+            meta={null}
             done={!!row.franchise_booking_id}
             action={
               !row.franchise_booking_id ? (

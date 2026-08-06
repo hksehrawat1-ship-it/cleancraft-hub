@@ -163,7 +163,7 @@ export const CORRECTIONS: Correction[] = [
     version: "v1",
     priority: "High",
     points: [
-      "Offer text says ₹4.5L — should be ₹4.9L",
+      "Offer text does not match the approved offer creative",
       "Add subtitles to the 15s variation",
       "Logo animation ends too fast on the 6s bumper",
     ],

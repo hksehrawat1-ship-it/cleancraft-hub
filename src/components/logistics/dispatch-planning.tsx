@@ -47,7 +47,6 @@ import {
   PLATFORMS,
   REQUIRED_DOCS,
   TODAY,
-  inr,
   maskRef,
   type DocKey,
   type PlanRecord,
@@ -585,14 +584,12 @@ function DetailDialog({ r, onClose }: { r: PlanRecord; onClose: () => void }) {
                 <Field label="Booking date" value={r.booking.bookingDate} />
                 <Field label="Pickup" value={r.booking.pickupAt ?? "—"} />
                 <Field label="Expected delivery" value={r.booking.expectedDelivery ?? "—"} />
-                <Field label="Freight reference" value={r.booking.freightRef ? inr(r.booking.freightRef) : "—"} />
-                <Field label="Payment responsibility" value={r.booking.freightPaidBy ?? "—"} />
+<Field label="Payment responsibility" value={r.booking.freightPaidBy ?? "—"} />
                 <Field label="Tracking" value={r.booking.trackingUrl ? <a href={r.booking.trackingUrl} target="_blank" rel="noreferrer" className="text-primary">Open platform</a> : "—"} />
               </div>
               {r.booking.notes && <p className="mt-2 text-xs text-muted-foreground">{r.booking.notes}</p>}
               <p className="mt-2 text-xs text-muted-foreground">
-                Driver details are visible only to authorised operational users. Freight is a reference only —
-                financial and banking information stays with Accounts.
+                Driver details are visible only to authorised operational users.
               </p>
             </div>
           )}
@@ -642,7 +639,6 @@ function BookingDialog({
   const [plannedDispatch, setPlanned] = useState(b?.plannedDispatch ?? r.plannedDispatch ?? "");
   const [expected, setExpected] = useState(b?.expectedDelivery ?? r.expectedDelivery ?? "");
   const [tracking, setTracking] = useState(b?.trackingUrl ?? "");
-  const [freight, setFreight] = useState(b?.freightRef ? String(b.freightRef) : "");
   const [paidBy, setPaidBy] = useState<"Company" | "Franchise" | "To Pay">(b?.freightPaidBy ?? "Company");
   const [notes, setNotes] = useState("");
 
@@ -667,7 +663,6 @@ function BookingDialog({
         plannedDispatch: plannedDispatch || undefined,
         expectedDelivery: expected || undefined,
         trackingUrl: tracking.trim() || undefined,
-        freightRef: freight ? Number(freight) : undefined,
         freightPaidBy: paidBy,
         notes: notes.trim() || undefined,
       },
@@ -714,7 +709,6 @@ function BookingDialog({
             <div><Label>Planned dispatch date</Label><Input type="date" value={plannedDispatch} onChange={(e) => setPlanned(e.target.value)} /></div>
             <div><Label>Expected delivery date</Label><Input type="date" value={expected} onChange={(e) => setExpected(e.target.value)} /></div>
             <div><Label>External tracking URL</Label><Input value={tracking} onChange={(e) => setTracking(e.target.value)} /></div>
-            <div><Label>Freight amount reference</Label><Input type="number" value={freight} onChange={(e) => setFreight(e.target.value)} /></div>
             <div>
               <Label>Payment responsibility</Label>
               <Select value={paidBy} onValueChange={(v) => setPaidBy(v as typeof paidBy)}>

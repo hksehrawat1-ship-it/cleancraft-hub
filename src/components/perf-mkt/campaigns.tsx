@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import {
   AlertTriangle,
-  BadgeIndianRupee,
   CheckCircle2,
   ChevronRight,
   Filter,
@@ -10,6 +9,7 @@ import {
   Plus,
   Search,
   Sparkles,
+  Target,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -40,22 +40,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-import { inr, toneClasses } from "./data";
+import { toneClasses } from "./data";
 import {
   APPROVAL_CHECKLIST,
   CAMPAIGNS_FULL,
   CAMPAIGN_TODAY,
   OBJECTIVES,
-  budgetUsedPct,
   campaignAlerts,
   campaignStageMeta,
   conversion,
-  cpc,
-  cpl,
-  cpql,
-  cps,
   ctr,
-  roas,
+  targetAchievedPct,
   type CampaignRecord,
   type CampaignStage,
 } from "./campaigns-data";
@@ -141,7 +136,7 @@ export function PerfMktCampaigns() {
   const [status, setStatus] = useState("all");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-  const [budgetBand, setBudgetBand] = useState("all");
+  const [targetBand, setTargetBand] = useState("all");
   const [perf, setPerf] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -176,11 +171,11 @@ export function PerfMktCampaigns() {
       if (platform !== "all" && c.platform !== platform) return false;
       if (objective !== "all" && c.objective !== objective) return false;
       if (status !== "all" && c.stage !== status) return false;
-      if (fromDate && c.budget.startDate < fromDate) return false;
-      if (toDate && c.budget.endDate > toDate) return false;
-      if (budgetBand === "low" && c.budget.total >= 20000) return false;
-      if (budgetBand === "mid" && (c.budget.total < 20000 || c.budget.total > 40000)) return false;
-      if (budgetBand === "high" && c.budget.total <= 40000) return false;
+      if (fromDate && c.targets.startDate < fromDate) return false;
+      if (toDate && c.targets.endDate > toDate) return false;
+      if (targetBand === "low" && targetAchievedPct(c) >= 50) return false;
+      if (targetBand === "mid" && (targetAchievedPct(c) < 50 || targetAchievedPct(c) > 90)) return false;
+      if (targetBand === "high" && targetAchievedPct(c) <= 90) return false;
       if (perf === "healthy" && alerts.length > 0) return false;
       if (perf === "attention" && alerts.length === 0) return false;
 
@@ -194,11 +189,11 @@ export function PerfMktCampaigns() {
         return false;
       return true;
     });
-  }, [campaigns, tab, store, rm, exec, platform, objective, status, fromDate, toDate, budgetBand, perf, query]);
+  }, [campaigns, tab, store, rm, exec, platform, objective, status, fromDate, toDate, targetBand, perf, query]);
 
   const header = useMemo(() => {
     const monthDone = campaigns.filter(
-      (c) => DONE.includes(c.stage) && c.budget.endDate >= "2026-08-01",
+      (c) => DONE.includes(c.stage) && c.targets.endDate >= "2026-08-01",
     ).length;
     return {
       active: campaigns.filter((c) => c.stage === "active").length,
@@ -219,7 +214,7 @@ export function PerfMktCampaigns() {
     setStatus("all");
     setFromDate("");
     setToDate("");
-    setBudgetBand("all");
+    setTargetBand("all");
     setPerf("all");
   };
 
@@ -332,13 +327,13 @@ export function PerfMktCampaigns() {
                 <Label className="text-xs text-muted-foreground">End on or before</Label>
                 <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
               </div>
-              <Select value={budgetBand} onValueChange={setBudgetBand}>
-                <SelectTrigger><SelectValue placeholder="Budget range" /></SelectTrigger>
+              <Select value={targetBand} onValueChange={setTargetBand}>
+                <SelectTrigger><SelectValue placeholder="Target achieved" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Any budget</SelectItem>
-                  <SelectItem value="low">Below ₹20,000</SelectItem>
-                  <SelectItem value="mid">₹20,000 – ₹40,000</SelectItem>
-                  <SelectItem value="high">Above ₹40,000</SelectItem>
+                  <SelectItem value="all">Any target progress</SelectItem>
+                  <SelectItem value="low">Below 50% of target</SelectItem>
+                  <SelectItem value="mid">50% – 90% of target</SelectItem>
+                  <SelectItem value="high">Above 90% of target</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={perf} onValueChange={setPerf}>
@@ -367,10 +362,10 @@ export function PerfMktCampaigns() {
                   <th className="px-4 py-2">Campaign</th>
                   <th className="px-4 py-2">Store</th>
                   <th className="px-4 py-2">Platform / Objective</th>
-                  <th className="px-4 py-2">Budget &amp; spend</th>
+                  <th className="px-4 py-2">Target progress</th>
                   <th className="px-4 py-2">Dates</th>
                   <th className="px-4 py-2">Leads / Qualified</th>
-                  <th className="px-4 py-2">Orders / Sales</th>
+                  <th className="px-4 py-2">Orders</th>
                   <th className="px-4 py-2">Status</th>
                   <th className="px-4 py-2" />
                 </tr>
@@ -401,22 +396,19 @@ export function PerfMktCampaigns() {
                         <p className="text-xs text-muted-foreground">{c.objective}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <p>{inr(c.spend)} <span className="text-xs text-muted-foreground">of {inr(c.budget.total)}</span></p>
-                        <Progress value={budgetUsedPct(c)} className="mt-1 h-1.5 w-28" />
-                        <p className="text-xs text-muted-foreground">{c.budget.type === "daily" ? `${inr(c.budget.daily)}/day` : "Total budget"}</p>
+                        <p>{c.metrics.leads} <span className="text-xs text-muted-foreground">of {c.targets.leadTarget} lead target</span></p>
+                        <Progress value={targetAchievedPct(c)} className="mt-1 h-1.5 w-28" />
+                        <p className="text-xs text-muted-foreground">{targetAchievedPct(c)}% of target achieved</p>
                       </td>
                       <td className="px-4 py-3 text-xs">
-                        {c.budget.startDate}<br />to {c.budget.endDate}
+                        {c.targets.startDate}<br />to {c.targets.endDate}
                       </td>
                       <td className="px-4 py-3">
                         {c.metrics.leads} / {c.metrics.qualified}
-                        <p className="text-xs text-muted-foreground">CPL {c.metrics.leads ? inr(Math.round(cpl(c))) : "—"}</p>
+                        <p className="text-xs text-muted-foreground">Conversion {conversion(c).toFixed(1)}%</p>
                       </td>
                       <td className="px-4 py-3">
-                        {c.metrics.orders} / {inr(c.metrics.salesAmount)}
-                        {!c.metrics.salesVerified && c.metrics.orders > 0 ? (
-                          <p className="text-xs text-amber-600">Sales unverified</p>
-                        ) : null}
+                        {c.metrics.orders} <span className="text-xs text-muted-foreground">of {c.targets.orderTarget} order target</span>
                       </td>
                       <td className="px-4 py-3"><StageBadge stage={c.stage} /></td>
                       <td className="px-4 py-3">
@@ -458,12 +450,12 @@ export function PerfMktCampaigns() {
                 <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                   <span>{c.platform}</span>
                   <span>{c.objective}</span>
-                  <span>Spend {inr(c.spend)} / {inr(c.budget.total)}</span>
-                  <span>{c.budget.startDate} → {c.budget.endDate}</span>
+                  <span>Target {targetAchievedPct(c)}% achieved</span>
+                  <span>{c.targets.startDate} → {c.targets.endDate}</span>
                   <span>Leads {c.metrics.leads} · Qualified {c.metrics.qualified}</span>
-                  <span>Orders {c.metrics.orders} · {inr(c.metrics.salesAmount)}</span>
+                  <span>Orders {c.metrics.orders} of {c.targets.orderTarget}</span>
                 </div>
-                <Progress value={budgetUsedPct(c)} className="h-1.5" />
+                <Progress value={targetAchievedPct(c)} className="h-1.5" />
                 {alerts.length ? (
                   <Badge variant="outline" className={cn("text-[11px]", toneClasses.overdue)}>
                     <AlertTriangle className="mr-1 h-3 w-3" /> {alerts[0]}
@@ -686,25 +678,19 @@ function CampaignSheet({ campaign, onClose }: { campaign: CampaignRecord | null;
   if (!campaign) return null;
   const c = campaign;
   const alerts = campaignAlerts(c);
-  const r = roas(c);
 
   const metricRows: { label: string; value: string }[] = [
     { label: "Impressions", value: c.metrics.impressions.toLocaleString("en-IN") },
     { label: "Reach", value: c.metrics.reach.toLocaleString("en-IN") },
     { label: "Clicks", value: c.metrics.clicks.toLocaleString("en-IN") },
     { label: "Click-through rate", value: `${ctr(c.metrics).toFixed(2)}%` },
-    { label: "Cost per click", value: c.metrics.clicks ? inr(Math.round(cpc(c))) : "—" },
     { label: "Leads", value: String(c.metrics.leads) },
-    { label: "Cost per lead", value: c.metrics.leads ? inr(Math.round(cpl(c))) : "—" },
     { label: "Qualified leads", value: String(c.metrics.qualified) },
-    { label: "Cost per qualified lead", value: c.metrics.qualified ? inr(Math.round(cpql(c))) : "—" },
     { label: "Calls", value: String(c.metrics.calls) },
     { label: "WhatsApp enquiries", value: String(c.metrics.whatsapp) },
     { label: "Orders", value: String(c.metrics.orders) },
-    { label: "Sales amount", value: inr(c.metrics.salesAmount) },
-    { label: "Cost per sale", value: c.metrics.orders ? inr(Math.round(cps(c))) : "—" },
     { label: "Conversion rate", value: `${conversion(c).toFixed(1)}%` },
-    { label: "Return on ad spend", value: r ? `${r.toFixed(2)}x (verified)` : "Not shown — sales not verified" },
+    { label: "Target achieved", value: `${targetAchievedPct(c)}%` },
   ];
 
   return (
@@ -756,28 +742,23 @@ function CampaignSheet({ campaign, onClose }: { campaign: CampaignRecord | null;
 
           <section className="space-y-2">
             <h3 className="flex items-center gap-2 text-sm font-semibold">
-              <BadgeIndianRupee className="h-4 w-4" /> Budget and dates
+              <Target className="h-4 w-4" /> Targets and dates
             </h3>
             <div className="grid grid-cols-2 gap-3 rounded-lg border p-3">
-              <Field label="Budget type" value={c.budget.type === "daily" ? "Daily" : "Total"} />
-              <Field label="Daily budget" value={inr(c.budget.daily)} />
-              <Field label="Total budget" value={inr(c.budget.total)} />
-              <Field label="Approved budget" value={c.budget.approved ? inr(c.budget.approved) : "Not approved"} />
-              <Field label="Amount spent" value={inr(c.spend)} />
-              <Field label="Budget approver" value={c.budget.approver} />
-              <Field label="Start date" value={c.budget.startDate} />
-              <Field label="End date" value={c.budget.endDate} />
-              <Field label="Expected cost per lead" value={inr(c.budget.expectedCpl)} />
-              <Field label="Lead target" value={c.budget.leadTarget} />
-              <Field label="Sales target" value={inr(c.budget.salesTarget)} />
+              <Field label="Approved" value={c.targets.approved ? "Yes" : "No"} />
+              <Field label="Approver" value={c.targets.approver} />
+              <Field label="Start date" value={c.targets.startDate} />
+              <Field label="End date" value={c.targets.endDate} />
+              <Field label="Lead target" value={c.targets.leadTarget} />
+              <Field label="Order target" value={c.targets.orderTarget} />
               <div className="col-span-2">
-                <Progress value={budgetUsedPct(c)} className="h-2" />
-                <p className="mt-1 text-xs text-muted-foreground">{budgetUsedPct(c)}% of budget used</p>
+                <Progress value={targetAchievedPct(c)} className="h-2" />
+                <p className="mt-1 text-xs text-muted-foreground">{targetAchievedPct(c)}% of lead target achieved</p>
               </div>
             </div>
-            {c.budget.approved === 0 ? (
+            {!c.targets.approved ? (
               <p className="rounded-md border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-600">
-                Launch blocked — budget approval is required before this campaign can go live.
+                Launch blocked — target approval is required before this campaign can go live.
               </p>
             ) : null}
           </section>
@@ -895,7 +876,7 @@ function CampaignSheet({ campaign, onClose }: { campaign: CampaignRecord | null;
                 <div key={d.date} className="rounded-lg border p-3 text-sm">
                   <p className="font-medium">{d.date}</p>
                   <p className="text-xs text-muted-foreground">
-                    Spend {inr(d.spend)} · Leads {d.leads} · Qualified {d.qualified} · Orders {d.orders} · Sales {inr(d.sales)}
+                    Leads {d.leads} · Qualified {d.qualified} · Orders {d.orders}
                   </p>
                   <p className="mt-1">{d.observation}</p>
                   <p className="text-xs text-muted-foreground">Action: {d.action} · Next review {d.nextReview}</p>
@@ -927,7 +908,7 @@ function CampaignSheet({ campaign, onClose }: { campaign: CampaignRecord | null;
                   <p className="font-medium">{o.date} — {o.problem}</p>
                   <p>{o.change}</p>
                   <p className="text-xs text-muted-foreground">
-                    {[o.budgetChange, o.audienceChange, o.creativeChange, o.bidChange].filter(Boolean).join(" · ") || "No setting change recorded"}
+                    {[o.targetChange, o.audienceChange, o.creativeChange].filter(Boolean).join(" · ") || "No setting change recorded"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Expected: {o.expected} · Review {o.reviewDate} · Outcome: {o.outcome ?? "Pending"}
@@ -941,14 +922,10 @@ function CampaignSheet({ campaign, onClose }: { campaign: CampaignRecord | null;
             <h3 className="text-sm font-semibold">Campaign completion report</h3>
             {c.report ? (
               <div className="grid grid-cols-2 gap-3 rounded-lg border p-3">
-                <Field label="Total spend" value={inr(c.report.spend)} />
                 <Field label="Total leads" value={c.report.leads} />
                 <Field label="Qualified leads" value={c.report.qualified} />
                 <Field label="Orders" value={c.report.orders} />
-                <Field label="Sales amount" value={inr(c.report.salesAmount)} />
-                <Field label="Cost per lead" value={inr(Math.round(c.report.spend / Math.max(1, c.report.leads)))} />
-                <Field label="Cost per sale" value={inr(Math.round(c.report.spend / Math.max(1, c.report.orders)))} />
-                <Field label="Verified ROAS" value={r ? `${r.toFixed(2)}x` : "Not verified"} />
+                <Field label="Conversion rate" value={`${c.report.leads ? ((c.report.orders / c.report.leads) * 100).toFixed(1) : "0.0"}%`} />
                 <Field label="Best-performing creative" value={c.report.bestCreative} />
                 <Field label="Best-performing audience" value={c.report.bestAudience} />
                 <Field label="Key learning" value={c.report.learning} />

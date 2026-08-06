@@ -3,7 +3,6 @@ export type Clearance = {
   projectCode: string;
   store: string;
   city: string;
-  amountVerified: number;
   clearedOn: string;
   launchDate: string;
   items: number;
@@ -29,7 +28,6 @@ export type DispatchPlan = {
   transporter: string;
   vehicle: string;
   boxes: number;
-  freight: number;
   plannedOn: string;
   eta: string;
   status: "planned" | "dispatched" | "in_transit" | "delivered";
@@ -60,11 +58,11 @@ export type IssueRow = {
 };
 
 export const CLEARANCES: Clearance[] = [
-  { id: "CLR-1041", projectCode: "PRJ-000018", store: "Clean Craft Jaipur", city: "Jaipur", amountVerified: 1250000, clearedOn: "2026-08-03", launchDate: "2026-08-18", items: 42, status: "new" },
-  { id: "CLR-1042", projectCode: "PRJ-000019", store: "Clean Craft Indore", city: "Indore", amountVerified: 980000, clearedOn: "2026-08-04", launchDate: "2026-08-14", items: 36, status: "new" },
-  { id: "CLR-1039", projectCode: "PRJ-000015", store: "Clean Craft Lucknow", city: "Lucknow", amountVerified: 1120000, clearedOn: "2026-08-01", launchDate: "2026-08-12", items: 39, status: "accepted" },
-  { id: "CLR-1037", projectCode: "PRJ-000013", store: "Clean Craft Surat", city: "Surat", amountVerified: 860000, clearedOn: "2026-07-29", launchDate: "2026-08-09", items: 28, status: "accepted" },
-  { id: "CLR-1035", projectCode: "PRJ-000011", store: "Clean Craft Nagpur", city: "Nagpur", amountVerified: 740000, clearedOn: "2026-07-27", launchDate: "2026-08-20", items: 24, status: "returned" },
+  { id: "CLR-1041", projectCode: "PRJ-000018", store: "Clean Craft Jaipur", city: "Jaipur", clearedOn: "2026-08-03", launchDate: "2026-08-18", items: 42, status: "new" },
+  { id: "CLR-1042", projectCode: "PRJ-000019", store: "Clean Craft Indore", city: "Indore", clearedOn: "2026-08-04", launchDate: "2026-08-14", items: 36, status: "new" },
+  { id: "CLR-1039", projectCode: "PRJ-000015", store: "Clean Craft Lucknow", city: "Lucknow", clearedOn: "2026-08-01", launchDate: "2026-08-12", items: 39, status: "accepted" },
+  { id: "CLR-1037", projectCode: "PRJ-000013", store: "Clean Craft Surat", city: "Surat", clearedOn: "2026-07-29", launchDate: "2026-08-09", items: 28, status: "accepted" },
+  { id: "CLR-1035", projectCode: "PRJ-000011", store: "Clean Craft Nagpur", city: "Nagpur", clearedOn: "2026-07-27", launchDate: "2026-08-20", items: 24, status: "returned" },
 ];
 
 export const PACKING_TASKS: PackingTask[] = [
@@ -75,10 +73,10 @@ export const PACKING_TASKS: PackingTask[] = [
 ];
 
 export const DISPATCH_PLANS: DispatchPlan[] = [
-  { id: "DSP-3301", clearanceId: "CLR-1039", store: "Clean Craft Lucknow", city: "Lucknow", transporter: "VRL Logistics", vehicle: "RJ14-GA-2291", boxes: 14, freight: 18400, plannedOn: "2026-08-06", eta: "2026-08-09", status: "dispatched", lrNumber: "VRL-77120" },
-  { id: "DSP-3302", clearanceId: "CLR-1037", store: "Clean Craft Surat", city: "Surat", transporter: "TCI Freight", vehicle: "GJ05-KL-1188", boxes: 11, freight: 14200, plannedOn: "2026-08-05", eta: "2026-08-07", status: "in_transit", lrNumber: "TCI-40911" },
-  { id: "DSP-3303", clearanceId: "CLR-1035", store: "Clean Craft Nagpur", city: "Nagpur", transporter: "Safexpress", vehicle: "MH31-CD-7742", boxes: 9, freight: 11800, plannedOn: "2026-08-02", eta: "2026-08-05", status: "delivered", lrNumber: "SFX-22087" },
-  { id: "DSP-3304", clearanceId: "CLR-1042", store: "Clean Craft Indore", city: "Indore", transporter: "Gati", vehicle: "MP09-AB-3310", boxes: 12, freight: 15600, plannedOn: "2026-08-07", eta: "2026-08-10", status: "planned", lrNumber: "—" },
+  { id: "DSP-3301", clearanceId: "CLR-1039", store: "Clean Craft Lucknow", city: "Lucknow", transporter: "VRL Logistics", vehicle: "RJ14-GA-2291", boxes: 14, plannedOn: "2026-08-06", eta: "2026-08-09", status: "dispatched", lrNumber: "VRL-77120" },
+  { id: "DSP-3302", clearanceId: "CLR-1037", store: "Clean Craft Surat", city: "Surat", transporter: "TCI Freight", vehicle: "GJ05-KL-1188", boxes: 11, plannedOn: "2026-08-05", eta: "2026-08-07", status: "in_transit", lrNumber: "TCI-40911" },
+  { id: "DSP-3303", clearanceId: "CLR-1035", store: "Clean Craft Nagpur", city: "Nagpur", transporter: "Safexpress", vehicle: "MH31-CD-7742", boxes: 9, plannedOn: "2026-08-02", eta: "2026-08-05", status: "delivered", lrNumber: "SFX-22087" },
+  { id: "DSP-3304", clearanceId: "CLR-1042", store: "Clean Craft Indore", city: "Indore", transporter: "Gati", vehicle: "MP09-AB-3310", boxes: 12, plannedOn: "2026-08-07", eta: "2026-08-10", status: "planned", lrNumber: "—" },
 ];
 
 export const DELIVERIES: DeliveryRow[] = [
@@ -94,9 +92,6 @@ export const ISSUES: IssueRow[] = [
   { id: "ISS-5503", planId: "DSP-3303", store: "Clean Craft Nagpur", type: "damage", detail: "Outer carton dented, machine panel scratched.", raisedOn: "2026-08-05", owner: "Packing", status: "resolved" },
   { id: "ISS-5504", planId: "DSP-3301", store: "Clean Craft Lucknow", type: "wrong_item", detail: "Steam iron model mismatch vs packing list.", raisedOn: "2026-08-07", owner: "Stores", status: "open" },
 ];
-
-export const inr = (n: number) =>
-  `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
 
 export const maskRef = (ref: string) =>
   ref.length <= 4 ? ref : `${ref.slice(0, 3)}••••${ref.slice(-3)}`;

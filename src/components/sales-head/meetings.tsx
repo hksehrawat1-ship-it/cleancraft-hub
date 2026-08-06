@@ -63,7 +63,6 @@ type Meeting = {
   link: string;
   owner: string;
   stage: Stage;
-  value: number;
   startAt: string; // ISO
   durationMin: number;
   confirmation: Confirmation;
@@ -84,8 +83,7 @@ type Meeting = {
     interest: "High" | "Medium" | "Low";
     objections: string;
     stage: Stage;
-    value: number;
-    nextAction: string;
+      nextAction: string;
     nextDueAt: string;
     reason?: string;
     recordedAt: string;
@@ -117,7 +115,6 @@ const sameDay = (iso: string, d: Date) => {
   const a = new Date(iso);
   return a.getFullYear() === d.getFullYear() && a.getMonth() === d.getMonth() && a.getDate() === d.getDate();
 };
-const inr = (n: number) => `₹${(n / 100000).toFixed(1)}L`;
 const minsFromNow = (iso: string, now: number) => Math.round((new Date(iso).getTime() - now) / 60000);
 
 /* ------------------------------ sample data ------------------------------ */
@@ -127,13 +124,13 @@ const SEED: Meeting[] = [
     id: "MTG-1041", leadId: "LD-2291", leadName: "Rakesh Sharma", city: "Jaipur", unit: "Franchise",
     phone: "+91 98290 11221", type: "Franchise Consultation", mode: "Online",
     link: "https://meet.cleancraft.internal/rakesh-1041", owner: "Ravi Sharma",
-    stage: "Qualified", value: 1800000, startAt: at(0, 11, 30), durationMin: 45,
+    stage: "Qualified", startAt: at(0, 11, 30), durationMin: 45,
     confirmation: "Confirmed",
     objective: "Walk through unit economics and finalise the Jaipur Vaishali Nagar location.",
     prepNotes: "Carry ROI sheet v3 and the Jaipur cluster performance data.",
     managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(-3, 16), note: "Meeting created by Ravi Sharma" }],
-    qualification: { budget: "₹18–22L", city: "Jaipur", timeline: "30–45 days", summary: "Owns retail space, self-funded, decision maker." },
+    qualification: { budget: "Confirmed", city: "Jaipur", timeline: "30–45 days", summary: "Owns retail space, self-funded, decision maker." },
     interactions: [
       { at: at(-6, 12), note: "Discovery call — strong interest in franchise model" },
       { at: at(-3, 16), note: "Shared FEA document and brochure" },
@@ -146,19 +143,19 @@ const SEED: Meeting[] = [
     id: "MTG-1042", leadId: "LD-2310", leadName: "Neha Agarwal", city: "Pune", unit: "Master Franchise",
     phone: "+91 98220 44112", type: "Payment Discussion", mode: "Online",
     link: "https://meet.cleancraft.internal/neha-1042", owner: "Neha Kulkarni",
-    stage: "Payment Pending", value: 4200000, startAt: at(0, 15, 0), durationMin: 30,
+    stage: "Payment Pending", startAt: at(0, 15, 0), durationMin: 30,
     confirmation: "Awaiting Confirmation",
     objective: "Confirm booking amount transfer date and agreement signing window.",
-    prepNotes: "", managerJoining: true, managerNotes: [], instructions: ["Sales Head to join — high value"],
+    prepNotes: "", managerJoining: true, managerNotes: [], instructions: ["Sales Head to join — key negotiation"],
     rescheduleCount: 1,
     history: [
       { at: at(-5, 11), note: "Meeting created by Neha Kulkarni" },
       { at: at(-1, 10), note: "Rescheduled from yesterday 3:00 PM — client travel" },
     ],
-    qualification: { budget: "₹40–45L", city: "Pune", timeline: "Immediate", summary: "Master franchise for Pune West, funding approved." },
+    qualification: { budget: "Confirmed", city: "Pune", timeline: "Immediate", summary: "Master franchise for Pune West, funding approved." },
     interactions: [
       { at: at(-9, 15), note: "Office meeting — master franchise territory discussed" },
-      { at: at(-4, 12), note: "Proposal sent — ₹42L" },
+      { at: at(-4, 12), note: "Proposal sent" },
     ],
     questions: ["Can the booking be split in two tranches?"],
     resources: ["Master Franchise Agreement", "Territory map"],
@@ -168,7 +165,7 @@ const SEED: Meeting[] = [
     id: "MTG-1043", leadId: "LD-2288", leadName: "Sandeep Rao", city: "Bengaluru", unit: "B2B Laundry",
     phone: "+91 99001 78554", type: "Store Visit", mode: "In-person",
     link: "Cleancraft Indiranagar Store, Bengaluru", owner: "Sneha Iyer",
-    stage: "Negotiation", value: 2600000, startAt: at(0, 17, 30), durationMin: 60,
+    stage: "Negotiation", startAt: at(0, 17, 30), durationMin: 60,
     confirmation: "Confirmed",
     objective: "Live store walkthrough followed by commercial negotiation.",
     prepNotes: "Store manager briefed. Keep peak-hour footfall data ready.",
@@ -178,7 +175,7 @@ const SEED: Meeting[] = [
       { at: at(-5, 10), note: "Rescheduled — client unavailable" },
       { at: at(-2, 10), note: "Rescheduled — store audit clash" },
     ],
-    qualification: { budget: "₹24–28L", city: "Bengaluru", timeline: "60 days", summary: "Runs a dry-clean outlet, wants brand conversion." },
+    qualification: { budget: "Confirmed", city: "Bengaluru", timeline: "60 days", summary: "Runs a dry-clean outlet, wants brand conversion." },
     interactions: [{ at: at(-12, 11), note: "Online presentation completed" }],
     questions: ["Conversion support for existing staff?", "Royalty structure?"],
     resources: ["Conversion playbook", "Royalty sheet"],
@@ -188,13 +185,13 @@ const SEED: Meeting[] = [
     id: "MTG-1039", leadId: "LD-2260", leadName: "Vikas Mehta", city: "Delhi", unit: "Corporate Tie-up",
     phone: "+91 98110 33221", type: "Proposal Discussion", mode: "Online",
     link: "https://meet.cleancraft.internal/vikas-1039", owner: "Amit Bansal",
-    stage: "Proposal Sent", value: 3100000, startAt: at(0, 9, 30), durationMin: 45,
+    stage: "Proposal Sent", startAt: at(0, 9, 30), durationMin: 45,
     confirmation: "Confirmed",
     objective: "Discuss proposal clauses and corporate SLA expectations.",
     prepNotes: "SLA annexure printed.",
     managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(-4, 14), note: "Meeting created by Amit Bansal" }],
-    qualification: { budget: "₹30–35L", city: "Delhi NCR", timeline: "45 days", summary: "Corporate tie-up for 4 hotel properties." },
+    qualification: { budget: "Confirmed", city: "Delhi NCR", timeline: "45 days", summary: "Corporate tie-up for 4 hotel properties." },
     interactions: [{ at: at(-4, 14), note: "Proposal shared over email" }],
     questions: ["Penalty clause for delayed pickup?"],
     resources: ["Corporate SLA template"],
@@ -204,19 +201,19 @@ const SEED: Meeting[] = [
     id: "MTG-1036", leadId: "LD-2244", leadName: "Pooja Shah", city: "Indore", unit: "Franchise",
     phone: "+91 90390 55441", type: "Discovery Call", mode: "Online",
     link: "https://meet.cleancraft.internal/pooja-1036", owner: "Deepak Verma",
-    stage: "Meeting Completed", value: 1500000, startAt: at(0, 8, 30), durationMin: 30,
+    stage: "Meeting Completed", startAt: at(0, 8, 30), durationMin: 30,
     confirmation: "Confirmed",
     objective: "Understand investment appetite and preferred location.",
     prepNotes: "First interaction — qualification focus.",
     managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(-2, 9), note: "Meeting created by Deepak Verma" }],
-    qualification: { budget: "₹14–16L", city: "Indore", timeline: "90 days", summary: "First-time investor, needs financing guidance." },
+    qualification: { budget: "Confirmed", city: "Indore", timeline: "90 days", summary: "First-time investor, needs financing guidance." },
     interactions: [{ at: at(-2, 9), note: "Inbound enquiry from website" }],
     questions: ["Is bank funding supported?"],
     resources: ["Financing partners list"],
     outcome: {
       result: "Completed", summary: "Good fit. Wants a financing referral before proceeding.",
-      interest: "Medium", objections: "Needs 60% bank funding", stage: "Qualified", value: 1500000,
+      interest: "Medium", objections: "Needs 60% bank funding", stage: "Qualified",
       nextAction: "Share financing partner contacts and book consultation",
       nextDueAt: at(1, 11), recordedAt: at(0, 9, 15),
     },
@@ -226,17 +223,17 @@ const SEED: Meeting[] = [
     id: "MTG-1030", leadId: "LD-2201", leadName: "Imran Qureshi", city: "Nagpur", unit: "Franchise",
     phone: "+91 88880 22110", type: "Office Meeting", mode: "In-person",
     link: "Clean Craft HO, Jaipur", owner: "Neha Kulkarni",
-    stage: "Qualified", value: 1900000, startAt: at(-1, 12, 0), durationMin: 60,
+    stage: "Qualified", startAt: at(-1, 12, 0), durationMin: 60,
     confirmation: "Confirmed",
     objective: "Agreement walkthrough at head office.",
     prepNotes: "", managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(-6, 12), note: "Meeting created by Neha Kulkarni" }],
-    qualification: { budget: "₹18–20L", city: "Nagpur", timeline: "45 days", summary: "Partner-funded, awaiting family approval." },
+    qualification: { budget: "Confirmed", city: "Nagpur", timeline: "45 days", summary: "Partner-funded, awaiting family approval." },
     interactions: [{ at: at(-6, 12), note: "Franchise consultation done" }],
     questions: [], resources: ["Franchise Agreement"],
     outcome: {
       result: "No-Show", summary: "Client did not arrive and did not respond to calls.",
-      interest: "Low", objections: "—", stage: "Qualified", value: 1900000,
+      interest: "Low", objections: "—", stage: "Qualified",
       nextAction: "", nextDueAt: "", reason: "Client unreachable on the meeting day",
       recordedAt: at(-1, 14),
     },
@@ -246,13 +243,13 @@ const SEED: Meeting[] = [
     id: "MTG-1028", leadId: "LD-2190", leadName: "Kavita Nair", city: "Kochi", unit: "B2B Laundry",
     phone: "+91 94470 66332", type: "Online Presentation", mode: "Online",
     link: "https://meet.cleancraft.internal/kavita-1028", owner: "Sneha Iyer",
-    stage: "Contacted", value: 1200000, startAt: at(-1, 16, 0), durationMin: 40,
+    stage: "Contacted", startAt: at(-1, 16, 0), durationMin: 40,
     confirmation: "Confirmed",
     objective: "Brand and process presentation for hospital laundry contract.",
     prepNotes: "Hospital compliance deck ready.",
     managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(-7, 10), note: "Meeting created by Sneha Iyer" }],
-    qualification: { budget: "₹10–14L", city: "Kochi", timeline: "120 days", summary: "Hospital chain vendor evaluation." },
+    qualification: { budget: "Confirmed", city: "Kochi", timeline: "120 days", summary: "Hospital chain vendor evaluation." },
     interactions: [{ at: at(-7, 10), note: "Cold outreach — responded positively" }],
     questions: ["Turnaround guarantee?"], resources: ["Compliance deck"],
     followUpTaskCreated: false, createdBy: "Executive",
@@ -261,12 +258,12 @@ const SEED: Meeting[] = [
     id: "MTG-1050", leadId: "LD-2325", leadName: "Harpreet Singh", city: "Ludhiana", unit: "Franchise",
     phone: "+91 98150 77441", type: "Negotiation", mode: "Online",
     link: "https://meet.cleancraft.internal/harpreet-1050", owner: "Amit Bansal",
-    stage: "Negotiation", value: 2200000, startAt: at(1, 12, 30), durationMin: 45,
+    stage: "Negotiation", startAt: at(1, 12, 30), durationMin: 45,
     confirmation: "Awaiting Confirmation",
     objective: "Close the royalty and territory exclusivity discussion.",
     prepNotes: "", managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(0, 10), note: "Meeting created by Amit Bansal" }],
-    qualification: { budget: "₹20–24L", city: "Ludhiana", timeline: "30 days", summary: "Serious buyer, comparing with a competing brand." },
+    qualification: { budget: "Confirmed", city: "Ludhiana", timeline: "30 days", summary: "Serious buyer, comparing with a competing brand." },
     interactions: [{ at: at(-1, 17), note: "Proposal discussion — asked for 1% royalty cut" }],
     questions: ["Exclusivity radius?"], resources: ["Royalty sheet", "Competitor comparison"],
     followUpTaskCreated: false, createdBy: "Executive",
@@ -275,13 +272,13 @@ const SEED: Meeting[] = [
     id: "MTG-1051", leadId: "LD-2331", leadName: "Ganesh Pillai", city: "Mysuru", unit: "Franchise",
     phone: "+91 90080 33112", type: "Follow-up Meeting", mode: "Online",
     link: "https://meet.cleancraft.internal/ganesh-1051", owner: "Sneha Iyer",
-    stage: "Proposal Sent", value: 1600000, startAt: at(2, 11, 0), durationMin: 30,
+    stage: "Proposal Sent", startAt: at(2, 11, 0), durationMin: 30,
     confirmation: "Confirmed",
     objective: "Follow up on proposal feedback and lock the site visit.",
     prepNotes: "Send reminder a day before.",
     managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
     history: [{ at: at(0, 9), note: "Meeting created by Sales Head" }],
-    qualification: { budget: "₹15–18L", city: "Mysuru", timeline: "60 days", summary: "Retired banker, low risk appetite." },
+    qualification: { budget: "Confirmed", city: "Mysuru", timeline: "60 days", summary: "Retired banker, low risk appetite." },
     interactions: [{ at: at(-2, 15), note: "Proposal sent" }],
     questions: ["Support during first 90 days?"], resources: ["Launch support SOP"],
     followUpTaskCreated: false, createdBy: "Sales Head",
@@ -290,7 +287,7 @@ const SEED: Meeting[] = [
     id: "MTG-1052", leadId: "LD-2338", leadName: "Farhan Ali", city: "Bhopal", unit: "Franchise",
     phone: "+91 93000 11445", type: "Discovery Call", mode: "Online",
     link: "https://meet.cleancraft.internal/farhan-1052", owner: "Deepak Verma",
-    stage: "New Lead", value: 900000, startAt: at(3, 10, 30), durationMin: 30,
+    stage: "New Lead", startAt: at(3, 10, 30), durationMin: 30,
     confirmation: "Awaiting Confirmation",
     objective: "Qualify budget, location and timeline.",
     prepNotes: "", managerJoining: false, managerNotes: [], instructions: [], rescheduleCount: 0,
@@ -311,7 +308,6 @@ function flagsFor(m: Meeting, now: number): Flag[] {
   const mins = minsFromNow(m.startAt, now);
   if (!m.outcome && mins > 0 && mins <= 60) f.push({ label: "Starts within 1 hour", tone: "blue" });
   if (!m.outcome && m.confirmation === "Awaiting Confirmation") f.push({ label: "Awaiting confirmation", tone: "amber" });
-  if (!m.outcome && m.value >= 2000000 && !m.prepNotes.trim()) f.push({ label: "High value, no prep notes", tone: "amber" });
   if (!m.outcome && mins < -(m.durationMin + 120)) f.push({ label: "Outcome not recorded (2h+)", tone: "red" });
   if (m.outcome?.result === "No-Show" && !m.followUpTaskCreated) f.push({ label: "No-show without follow-up", tone: "red" });
   if (m.rescheduleCount >= 2) f.push({ label: `Rescheduled ${m.rescheduleCount}×`, tone: "amber" });
@@ -545,7 +541,7 @@ export function SalesHeadMeetingsPage() {
                 leadId: payload.leadId || `LD-${Math.floor(Math.random() * 9000 + 1000)}`,
                 leadName: payload.leadName, city: payload.city || "—", unit: payload.unit,
                 phone: "—", type: payload.type, mode: payload.mode, link: payload.link,
-                owner: payload.owner, stage: "Meeting Scheduled", value: payload.value,
+                owner: payload.owner, stage: "Meeting Scheduled",
                 startAt: payload.startAt, durationMin: payload.durationMin,
                 confirmation: "Awaiting Confirmation", objective: payload.objective,
                 prepNotes: payload.prepNotes, managerJoining: payload.managerJoining,
@@ -572,7 +568,6 @@ export function SalesHeadMeetingsPage() {
             update(outcomeFor.id, (m) => ({
               ...m,
               stage: o.stage,
-              value: o.value,
               outcome: { ...o, recordedAt: new Date().toISOString() },
               followUpTaskCreated: !!o.nextAction,
               history: [...m.history, { at: new Date().toISOString(), note: `Outcome recorded by Sales Head: ${o.result}` }],
@@ -638,7 +633,6 @@ function MeetingCard({
               <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" />{fmtDay(m.startAt)} · {fmtTime(m.startAt)} · {m.durationMin}m</span>
               <span className="inline-flex items-center gap-1"><Users className="w-3 h-3" />{m.owner}</span>
               <span>{m.stage}</span>
-              <span>{inr(m.value)}</span>
               <span className="inline-flex items-center gap-1">
                 {m.mode === "Online" ? <Video className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}{m.link}
               </span>
@@ -737,7 +731,6 @@ function DetailSheet({
               {m.outcome ? m.outcome.result : m.confirmation}
             </Badge>
             <Badge variant="outline">{m.stage}</Badge>
-            <Badge variant="outline">{inr(m.value)}</Badge>
             <Badge variant="outline">{m.mode}</Badge>
           </div>
 
@@ -753,7 +746,7 @@ function DetailSheet({
           <Separator />
           <Block title="Meeting preparation">
             <Info label="Qualification" value={m.qualification.summary} />
-            <Info label="Investment budget" value={m.qualification.budget} />
+            <Info label="Investment readiness" value={m.qualification.budget} />
             <Info label="Preferred city" value={m.qualification.city} />
             <Info label="Purchase timeline" value={m.qualification.timeline} />
             <Info label="Objective" value={m.objective} />
@@ -867,7 +860,7 @@ function DetailSheet({
 
 type SchedulePayload = {
   leadId: string; leadName: string; city: string; unit: string; type: MeetingType;
-  mode: "Online" | "In-person"; link: string; owner: string; value: number;
+  mode: "Online" | "In-person"; link: string; owner: string;
   startAt: string; durationMin: number; objective: string; prepNotes: string; managerJoining: boolean;
 };
 
@@ -888,7 +881,6 @@ function ScheduleDialog({
   const [mode, setMode] = useState<"Online" | "In-person">(existing?.mode ?? "Online");
   const [link, setLink] = useState(existing?.link ?? "");
   const [owner, setOwner] = useState(existing?.owner ?? EXECUTIVES[0].name);
-  const [value, setValue] = useState(String(existing?.value ?? 1500000));
   const [date, setDate] = useState(`${base.getFullYear()}-${pad(base.getMonth() + 1)}-${pad(base.getDate())}`);
   const [time, setTime] = useState(`${pad(base.getHours())}:${pad(base.getMinutes())}`);
   const [duration, setDuration] = useState(String(existing?.durationMin ?? 30));
@@ -904,7 +896,7 @@ function ScheduleDialog({
     if (existing && !reason.trim()) { toast.error("Reason for rescheduling is required"); return; }
     onSave({
       leadId, leadName, city, unit, type, mode, link: link || (mode === "Online" ? "Online meeting room" : "To be confirmed"),
-      owner, value: Number(value) || 0, startAt: new Date(`${date}T${time}:00`).toISOString(),
+      owner, startAt: new Date(`${date}T${time}:00`).toISOString(),
       durationMin: Number(duration) || 30, objective: existing ? `${objective}` : objective,
       prepNotes: existing ? prepNotes : prepNotes, managerJoining,
     }, existing);
@@ -934,7 +926,6 @@ function ScheduleDialog({
           <Field label="Date"><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
           <Field label="Time"><Input type="time" value={time} onChange={(e) => setTime(e.target.value)} /></Field>
           <Field label="Duration (minutes)"><Input value={duration} onChange={(e) => setDuration(e.target.value)} /></Field>
-          <Field label="Opportunity value (₹)"><Input value={value} onChange={(e) => setValue(e.target.value)} /></Field>
           <div className="sm:col-span-2">
             <Field label="Meeting objective"><Textarea rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} /></Field>
           </div>
@@ -979,7 +970,6 @@ function OutcomeDialog({
   const [interest, setInterest] = useState<"High" | "Medium" | "Low">("High");
   const [objections, setObjections] = useState("");
   const [stage, setStage] = useState<Stage>(m.stage);
-  const [value, setValue] = useState(String(m.value));
   const [nextAction, setNextAction] = useState("");
   const [nextDate, setNextDate] = useState("");
   const [nextTime, setNextTime] = useState("");
@@ -993,7 +983,7 @@ function OutcomeDialog({
     if (!nextAction.trim()) { toast.error("Next action is required"); return; }
     if (!nextDate || !nextTime) { toast.error("Next action due date and time are required"); return; }
     onSave({
-      result, summary, interest, objections, stage, value: Number(value) || 0,
+      result, summary, interest, objections, stage,
       nextAction, nextDueAt: new Date(`${nextDate}T${nextTime}:00`).toISOString(),
       reason: reason || undefined,
     });
@@ -1022,7 +1012,6 @@ function OutcomeDialog({
           </div>
           <Sel label="Updated pipeline stage" value={stage} onChange={(v) => setStage(v as Stage)}
             options={STAGES.map((s) => [s, s] as [string, string])} />
-          <Field label="Updated opportunity value (₹)"><Input value={value} onChange={(e) => setValue(e.target.value)} /></Field>
           <div className="sm:col-span-2">
             <Field label="Next action"><Input value={nextAction} onChange={(e) => setNextAction(e.target.value)} placeholder="Send revised proposal…" /></Field>
           </div>
