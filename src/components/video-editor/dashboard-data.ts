@@ -127,7 +127,7 @@ export const VE_RECORDS: VeRecord[] = [
     status: "Correction Required",
     thumbnail: "🎬",
     brief:
-      "Rebuild the offer card with the approved ₹4.9L figure. Keep hook under 3s, burned-in subtitles on every variant, end card with franchise CTA.",
+      "Rebuild the offer card with the approved figure. Keep hook under 3s, burned-in subtitles on every variant, end card with franchise CTA.",
     briefComplete: true,
     rawFiles: [
       { name: "CC-VID-1042_offer_master.mp4", size: "1.8 GB" },
@@ -143,7 +143,7 @@ export const VE_RECORDS: VeRecord[] = [
         deadline: "Today, 4:00 PM",
         urgent: true,
         points: [
-          "Offer text says ₹4.5L — must read ₹4.9L",
+          "Offer text does not match the approved offer creative",
           "Add subtitles to the 15s variation",
           "Logo animation ends too fast on the 6s bumper",
         ],

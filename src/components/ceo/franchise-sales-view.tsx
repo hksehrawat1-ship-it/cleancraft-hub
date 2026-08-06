@@ -42,9 +42,9 @@ function seriesFor(name: string) {
   for (let i = 0; i < name.length; i++) seed = (seed * 31 + name.charCodeAt(i)) >>> 0;
   return MONTHS.map((m, i) => {
     seed = (seed * 1103515245 + 12345) >>> 0;
-    const base = 180000 + ((seed % 220000) | 0);
-    const trend = i * (8000 + (seed % 4000));
-    return { month: m, sales: Math.round((base + trend) / 1000) * 1000 };
+    const base = 18 + ((seed % 22) | 0);
+    const trend = Math.round(i * (0.8 + (seed % 4) * 0.1));
+    return { month: m, orders: base + trend };
   });
 }
 
@@ -59,7 +59,7 @@ export function FranchiseSalesView() {
   );
 
   const data = useMemo(() => (selected ? seriesFor(selected) : []), [selected]);
-  const total = data.reduce((a, b) => a + b.sales, 0);
+  const totalOrders = data.reduce((a, b) => a + b.orders, 0);
 
   return (
     <Card>
@@ -69,7 +69,7 @@ export function FranchiseSalesView() {
           Franchise Sales · By Store
         </CardTitle>
         <p className="text-xs text-muted-foreground">
-          Pick a store to see its monthly sales trend.
+          Pick a store to see its monthly order volume trend.
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -127,9 +127,9 @@ export function FranchiseSalesView() {
         {selected ? (
           <div className="border rounded-md p-3 bg-muted/10">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm font-medium">{selected} — Monthly Sales</div>
+              <div className="text-sm font-medium">{selected} — Monthly Orders</div>
               <div className="text-xs text-muted-foreground">
-                FY Total ₹{(total / 100000).toFixed(1)}L
+                FY Total {totalOrders.toLocaleString("en-IN")} orders
               </div>
             </div>
             <div className="h-64 w-full">
@@ -137,16 +137,13 @@ export function FranchiseSalesView() {
                 <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border/50" />
                   <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis
-                    tick={{ fontSize: 11 }}
-                    tickFormatter={(v) => `${Math.round(v / 1000)}k`}
-                  />
+                  <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip
-                    formatter={(v: number) => [`₹${v.toLocaleString("en-IN")}`, "Sales"]}
+                    formatter={(v: number) => [`${v.toLocaleString("en-IN")}`, "Orders"]}
                   />
                   <Line
                     type="monotone"
-                    dataKey="sales"
+                    dataKey="orders"
                     stroke="hsl(var(--primary))"
                     strokeWidth={2}
                     dot={{ r: 3 }}
@@ -158,7 +155,7 @@ export function FranchiseSalesView() {
           </div>
         ) : (
           <div className="border rounded-md p-6 text-center text-sm text-muted-foreground bg-muted/10">
-            Select a store above to view its monthly sales graph.
+            Select a store above to view its monthly order volume graph.
           </div>
         )}
       </CardContent>

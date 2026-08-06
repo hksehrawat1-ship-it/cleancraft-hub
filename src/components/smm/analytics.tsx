@@ -148,11 +148,11 @@ const TYPE_ROWS = [
 ];
 
 const CAMPAIGN_ROWS = [
-  { name: "Franchise Aug — Reel Ads", published: 9, reach: 421000, engagement: 31200, enquiries: 58, qualified: 34, accepted: 27, won: 6, revenue: 4200000, cpl: null, roas: null, paid: true },
-  { name: "Service Awareness", published: 12, reach: 388000, engagement: 22800, enquiries: 31, qualified: 11, accepted: 8, won: 2, revenue: 260000, cpl: null, roas: null, paid: false },
-  { name: "B2B Corporate Laundry", published: 7, reach: 158000, engagement: 9100, enquiries: 24, qualified: 16, accepted: 14, won: 3, revenue: 1850000, cpl: null, roas: null, paid: false },
-  { name: "Webinar Promo", published: 6, reach: 196000, engagement: 8400, enquiries: 29, qualified: 18, accepted: 13, won: 4, revenue: 420000, cpl: null, roas: null, paid: true },
-  { name: "Machine Tour Organic", published: 5, reach: 121000, engagement: 6600, enquiries: 26, qualified: 17, accepted: 9, won: 1, revenue: 700000, cpl: null, roas: null, paid: false },
+  { name: "Franchise Aug — Reel Ads", published: 9, reach: 421000, engagement: 31200, enquiries: 58, qualified: 34, accepted: 27, won: 6, paid: true },
+  { name: "Service Awareness", published: 12, reach: 388000, engagement: 22800, enquiries: 31, qualified: 11, accepted: 8, won: 2, paid: false },
+  { name: "B2B Corporate Laundry", published: 7, reach: 158000, engagement: 9100, enquiries: 24, qualified: 16, accepted: 14, won: 3, paid: false },
+  { name: "Webinar Promo", published: 6, reach: 196000, engagement: 8400, enquiries: 29, qualified: 18, accepted: 13, won: 4, paid: true },
+  { name: "Machine Tour Organic", published: 5, reach: 121000, engagement: 6600, enquiries: 26, qualified: 17, accepted: 9, won: 1, paid: false },
 ];
 
 const ATTRIBUTION = [
@@ -163,7 +163,6 @@ const ATTRIBUTION = [
   { label: "Accepted by Sales Head", value: 71, tip: "Accepted in the Sales CRM and assigned to an executive." },
   { label: "Meetings generated", value: 39, tip: "Meetings logged in the Sales CRM against a social-sourced lead." },
   { label: "Sales won", value: 16, tip: "Won opportunities in the Sales CRM linked to a social Lead ID." },
-  { label: "Revenue attributed", value: 7430000, tip: "Only verified Won opportunity value from the Sales CRM. Never estimated.", money: true },
 ];
 
 const AUDIENCE = {
@@ -222,10 +221,6 @@ function fmtCompact(n: number) {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}K`;
   return String(n);
 }
-function fmtMoney(n: number) {
-  return `₹${(n / 100000).toFixed(1)}L`;
-}
-
 function Metric({ tip }: { tip: string }) {
   return (
     <UiTooltip>
@@ -638,14 +633,14 @@ export function SmmAnalyticsPage() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base flex items-center gap-1">
-              Campaign Analytics <Metric tip="Cost per lead and ROAS stay blank until verified advertising spend and Sales CRM revenue are connected." />
+              Campaign Analytics <Metric tip="Sales outcomes attributed to each campaign, tracked from enquiry through to won opportunities." />
             </CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto">
             <table className="w-full text-xs min-w-[900px]">
               <thead className="text-muted-foreground">
                 <tr className="border-b">
-                  {["Campaign", "Published", "Reach", "Engagement", "Enquiries", "Qualified", "Accepted", "Sales won", "Revenue attributed", "Cost per lead", "ROAS"].map((h) => (
+                  {["Campaign", "Published", "Reach", "Engagement", "Enquiries", "Qualified", "Accepted", "Sales won"].map((h) => (
                     <th key={h} className="text-left py-2 pr-3 font-medium whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -663,16 +658,10 @@ export function SmmAnalyticsPage() {
                     <td className="py-2 pr-3">{c.qualified}</td>
                     <td className="py-2 pr-3">{c.accepted}</td>
                     <td className="py-2 pr-3 font-medium">{c.won}</td>
-                    <td className="py-2 pr-3">{fmtMoney(c.revenue)}</td>
-                    <td className="py-2 pr-3 text-muted-foreground">Awaiting verified spend</td>
-                    <td className="py-2 pr-3 text-muted-foreground">Awaiting verified spend</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <p className="text-[11px] text-muted-foreground mt-2">
-              Revenue shown comes only from Won opportunities in the Sales CRM. Advertising ROI is not calculated without verified spend.
-            </p>
           </CardContent>
         </Card>
 
@@ -692,7 +681,7 @@ export function SmmAnalyticsPage() {
                     {a.label} <Metric tip={a.tip} />
                   </div>
                   <div className="text-xl font-bold tabular-nums">
-                    {a.money ? fmtMoney(a.value) : fmtInt(a.value)}
+                    {fmtInt(a.value)}
                   </div>
                 </div>
               ))}

@@ -180,8 +180,8 @@ export const LIBRARY_ASSETS: LibraryAsset[] = [
     uploadedBy: "Social Media Account Manager",
     archived: false,
     history: [
-      { version: "v5", status: "Approved", on: "Yesterday", by: "SMM", note: "New ₹4.9L offer card" },
-      { version: "v4", status: "Replaced", on: "Jul 2026", by: "SMM", note: "Old ₹4.5L card — do not use" },
+      { version: "v5", status: "Approved", on: "Yesterday", by: "SMM", note: "New offer card" },
+      { version: "v4", status: "Replaced", on: "Jul 2026", by: "SMM", note: "Old card — do not use" },
     ],
   },
   {

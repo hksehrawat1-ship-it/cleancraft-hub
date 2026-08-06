@@ -40,7 +40,6 @@ export type PlanBooking = {
   plannedDispatch?: string;
   expectedDelivery?: string;
   trackingUrl?: string;
-  freightRef?: number;
   freightPaidBy?: "Company" | "Franchise" | "To Pay";
   notes?: string;
 };
@@ -297,7 +296,6 @@ export const PLANS: PlanRecord[] = [
       plannedDispatch: "2026-08-05",
       expectedDelivery: "2026-08-07",
       trackingUrl: "https://shiprocket.co/tracking/AWB-4471203399",
-      freightRef: 4200,
       freightPaidBy: "Company",
       notes: "Courier pickup slot confirmed for evening.",
     },
@@ -349,7 +347,6 @@ export const PLANS: PlanRecord[] = [
       plannedDispatch: "2026-08-05",
       expectedDelivery: "2026-08-06",
       trackingUrl: "https://wheelseye.com/track/LR-WE-771204",
-      freightRef: 11800,
       freightPaidBy: "Company",
       notes: "Driver reaching warehouse gate 2.",
     },
@@ -403,7 +400,6 @@ export const PLANS: PlanRecord[] = [
       plannedDispatch: "2026-08-03",
       expectedDelivery: "2026-08-05",
       trackingUrl: "https://vrlgroup.in/track/LR-VRL-77120",
-      freightRef: 9400,
       freightPaidBy: "Company",
       notes: "Handed over at warehouse dock 1.",
     },
@@ -572,7 +568,6 @@ export const PLANS: PlanRecord[] = [
       plannedDispatch: "2026-08-03",
       expectedDelivery: "2026-08-05",
       trackingUrl: "https://tcil.com/track/LR-TCI-40911",
-      freightRef: 7600,
       freightPaidBy: "To Pay",
       notes: "Vehicle did not report for pickup on planned date.",
     },

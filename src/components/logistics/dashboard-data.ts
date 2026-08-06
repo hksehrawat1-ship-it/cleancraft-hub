@@ -38,7 +38,6 @@ export type ExternalBooking = {
   bookingDate: string;
   dispatchDate?: string;
   trackingUrl: string;
-  freightRef: number;
   expectedDelivery: string;
 };
 
@@ -235,7 +234,6 @@ export const DISPATCHES: DispatchRecord[] = [
       driverMobile: "98•••••210",
       bookingDate: "2026-08-04",
       trackingUrl: "https://shiprocket.co/tracking/AWB-4471290055",
-      freightRef: 12400,
       expectedDelivery: "2026-08-08",
     },
     deliveredOn: null,
@@ -273,7 +271,6 @@ export const DISPATCHES: DispatchRecord[] = [
       bookingDate: "2026-08-01",
       dispatchDate: "2026-08-02",
       trackingUrl: "https://wheelseye.com/track/WE-5520117",
-      freightRef: 11800,
       expectedDelivery: "2026-08-05",
     },
     deliveredOn: null,
@@ -309,7 +306,6 @@ export const DISPATCHES: DispatchRecord[] = [
       bookingDate: "2026-07-29",
       dispatchDate: "2026-07-30",
       trackingUrl: "https://tcil.com/track/40911",
-      freightRef: 14200,
       expectedDelivery: "2026-08-02",
     },
     deliveredOn: "2026-08-02",
@@ -344,7 +340,6 @@ export const DISPATCHES: DispatchRecord[] = [
       bookingDate: "2026-07-26",
       dispatchDate: "2026-07-27",
       trackingUrl: "https://shiprocket.co/tracking/AWB-4470119923",
-      freightRef: 9600,
       expectedDelivery: "2026-07-30",
     },
     deliveredOn: "2026-07-30",
@@ -455,7 +450,6 @@ export const DISPATCHES: DispatchRecord[] = [
       bookingDate: "2026-07-16",
       dispatchDate: "2026-07-17",
       trackingUrl: "https://wheelseye.com/track/WE-5510008",
-      freightRef: 8800,
       expectedDelivery: "2026-07-20",
     },
     deliveredOn: null,
@@ -490,7 +484,6 @@ export const DISPATCHES: DispatchRecord[] = [
       bookingDate: "2026-07-13",
       dispatchDate: "2026-07-14",
       trackingUrl: "https://shiprocket.co/tracking/AWB-4468881100",
-      freightRef: 10200,
       expectedDelivery: "2026-07-18",
     },
     deliveredOn: "2026-07-18",

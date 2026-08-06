@@ -40,7 +40,6 @@ import {
   Lock,
 } from "lucide-react";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 const MANAGER = "Priya Nair";
 const TODAY = "4 August 2026";
 
@@ -106,7 +105,6 @@ type Clearance = {
   projectId: string;
   store: string;
   items: string;
-  amountVerified: number;
   verifiedOn: string;
   priority: "Urgent" | "High" | "Normal";
   logistics: "Not Sent" | "Sent — Awaiting Acceptance" | "Accepted" | "Returned";
@@ -134,7 +132,7 @@ const SEED_REQ: Req[] = [
       { at: "26 Jul 11:00", by: "Anita Rao", action: "Request submitted" },
       { at: "27 Jul 09:30", by: MANAGER, action: "Request accepted" },
       { at: "27 Jul 10:00", by: MANAGER, action: "Payment requested from franchise" },
-      { at: "1 Aug 16:20", by: MANAGER, action: "Part payment ₹3,00,000 received" },
+      { at: "1 Aug 16:20", by: MANAGER, action: "Part payment received" },
     ],
   },
   {
@@ -221,22 +219,22 @@ const SEED_REQ: Req[] = [
 const SEED_CLR: Clearance[] = [
   {
     id: "CLR-908", reqId: "PAY-3104", projectId: "PRJ-SUR-05", store: "Clean Craft Surat",
-    items: "Consumables kit — 12 cartons", amountVerified: 145000, verifiedOn: "30 Jul",
+    items: "Consumables kit — 12 cartons", verifiedOn: "30 Jul",
     priority: "Normal", logistics: "Not Sent",
   },
   {
     id: "CLR-909", reqId: "PAY-3108", projectId: "PRJ-RAI-02", store: "Clean Craft Raipur",
-    items: "Full machine set (washer, dryer, steam iron, boiler)", amountVerified: 690000,
+    items: "Full machine set (washer, dryer, steam iron, boiler)",
     verifiedOn: "27 Jul", priority: "Urgent", logistics: "Sent — Awaiting Acceptance",
   },
   {
     id: "CLR-907", reqId: "PAY-3099", projectId: "PRJ-AGR-01", store: "Clean Craft Agra",
-    items: "Full machine set", amountVerified: 710000, verifiedOn: "22 Jul",
+    items: "Full machine set", verifiedOn: "22 Jul",
     priority: "High", logistics: "Accepted",
   },
   {
     id: "CLR-906", reqId: "PAY-3095", projectId: "PRJ-PAT-03", store: "Clean Craft Patna",
-    items: "POS + counter kit", amountVerified: 52000, verifiedOn: "19 Jul",
+    items: "POS + counter kit", verifiedOn: "19 Jul",
     priority: "Normal", logistics: "Returned", returnReason: "Delivery address incomplete — need site contact",
   },
 ];
@@ -280,7 +278,7 @@ export function AmDashboard() {
     pending: reqs.filter((r) => ["Accepted", "Payment Requested", "Follow-up Due", "Partially Paid", "Information Required"].includes(r.status)).length,
     followToday: reqs.filter((r) => r.nextFollowUp === "Today").length,
     overdue: reqs.filter((r) => r.daysOverdue > 0).length,
-    received: reqs.filter((r) => r.received > 0).reduce((s, r) => s + r.received, 0),
+    receivedCount: reqs.filter((r) => r.received > 0).length,
     verifyPending: reqs.filter((r) => r.status === "Verification Pending").length,
     readyClear: clrs.filter((c) => c.logistics === "Not Sent").length,
     awaitLog: clrs.filter((c) => c.logistics === "Sent — Awaiting Acceptance").length,
@@ -290,15 +288,15 @@ export function AmDashboard() {
     ...reqs.filter((r) => r.status === "Request Submitted").map((r) => ({ tag: "New request to accept", tone: "blue", r })),
     ...reqs.filter((r) => r.status === "Verification Pending").map((r) => ({ tag: "Payment received, not verified", tone: "amber", r })),
     ...reqs.filter((r) => r.daysOverdue > 0).map((r) => ({ tag: `Overdue ${r.daysOverdue} day(s) — follow up`, tone: "red", r })),
-    ...reqs.filter((r) => r.status === "Partially Paid").map((r) => ({ tag: `Partial — balance ${inr(r.amount - r.received)}`, tone: "amber", r })),
+    ...reqs.filter((r) => r.status === "Partially Paid").map((r) => ({ tag: `Partial — ${Math.round((r.received / r.amount) * 100)}% collected`, tone: "amber", r })),
   ].slice(0, 6);
 
   const alerts = [
     ...reqs.filter((r) => r.status === "Request Submitted").map((r) => ({ level: "amber", text: `${r.id} — Project request not accepted yet (${r.city})` })),
-    ...reqs.filter((r) => r.due === "Today").map((r) => ({ level: "amber", text: `${r.id} — Payment of ${inr(r.amount)} due today` })),
+    ...reqs.filter((r) => r.due === "Today").map((r) => ({ level: "amber", text: `${r.id} — Payment due today` })),
     ...reqs.filter((r) => r.daysOverdue > 0).map((r) => ({ level: "red", text: `${r.id} — Payment overdue by ${r.daysOverdue} day(s)` })),
-    ...reqs.filter((r) => r.status === "Verification Pending" && r.amount >= 500000).map((r) => ({ level: "red", text: `${r.id} — Large payment ${inr(r.amount)} awaiting verification` })),
-    ...reqs.filter((r) => r.received > 0 && r.received < r.amount).map((r) => ({ level: "amber", text: `${r.id} — Proof amount ${inr(r.received)} does not match expected ${inr(r.amount)}` })),
+    ...reqs.filter((r) => r.status === "Verification Pending" && r.amount >= 500000).map((r) => ({ level: "red", text: `${r.id} — Large payment awaiting verification` })),
+    ...reqs.filter((r) => r.received > 0 && r.received < r.amount).map((r) => ({ level: "amber", text: `${r.id} — Only ${Math.round((r.received / r.amount) * 100)}% of the expected amount was matched — verify` })),
     ...duplicateRefs(reqs).map((t) => ({ level: "red", text: t })),
     ...clrs.filter((c) => c.logistics === "Not Sent").map((c) => ({ level: "amber", text: `${c.reqId} — Payment verified but dispatch clearance not sent` })),
     ...clrs.filter((c) => c.logistics === "Sent — Awaiting Acceptance").map((c) => ({ level: "amber", text: `${c.id} — Logistics has not accepted the clearance` })),
@@ -320,7 +318,7 @@ export function AmDashboard() {
       case "Accepted": return "Send the payment request to the franchise owner";
       case "Payment Requested":
       case "Follow-up Due": return "Call the franchise owner and record the follow-up";
-      case "Partially Paid": return `Collect balance of ${inr(r.amount - r.received)}`;
+      case "Partially Paid": return `Collect balance — ${Math.round((r.received / r.amount) * 100)}% of target collected`;
       case "Payment Received":
       case "Verification Pending": return "Verify amount, reference and proof of payment";
       case "Verified": return "Create and send dispatch clearance to Logistics";
@@ -355,7 +353,7 @@ export function AmDashboard() {
         <StatCard label="Payment Requests Pending" value={String(k.pending)} />
         <StatCard label="Follow-ups Due Today" value={String(k.followToday)} tone="warn" />
         <StatCard label="Overdue Payments" value={String(k.overdue)} tone="bad" />
-        <StatCard label="Payments Received" value={inr(k.received)} tone="good" />
+        <StatCard label="Payments Received" value={String(k.receivedCount)} tone="good" />
         <StatCard label="Verification Pending" value={String(k.verifyPending)} tone="warn" />
         <StatCard label="Ready for Dispatch Clearance" value={String(k.readyClear)} />
         <StatCard label="Clearance Awaiting Logistics" value={String(k.awaitLog)} tone="warn" />
@@ -375,8 +373,7 @@ export function AmDashboard() {
               <Field label="Franchise / project" value={`${next.store} · ${next.projectId}`} />
               <Field label="Franchise owner" value={next.owner} />
               <Field label="Purpose" value={next.purpose} />
-              <Field label="Amount due" value={inr(next.amount - next.received)} />
-              <Field label="Amount received" value={inr(next.received)} />
+              <Field label="Collection progress" value={`${Math.round((next.received / next.amount) * 100)}% of target`} />
               <Field label="Due date" value={next.due} />
               <Field label="Requested by" value={next.requestedBy} />
             </div>
@@ -417,7 +414,7 @@ export function AmDashboard() {
                     {p.tag}
                   </Badge>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">{p.r.type} · {inr(p.r.amount)} · due {p.r.due}</div>
+                <div className="text-xs text-muted-foreground mt-1">{p.r.type} · due {p.r.due}</div>
               </button>
             ))}
             {priorities.length === 0 && <div className="text-sm text-muted-foreground">Nothing urgent right now.</div>}
@@ -479,7 +476,6 @@ export function AmDashboard() {
                   <TableHead>City</TableHead>
                   <TableHead>Requested by</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
                   <TableHead>Due</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead />
@@ -494,7 +490,6 @@ export function AmDashboard() {
                     <TableCell className="text-sm">{r.city}</TableCell>
                     <TableCell className="text-xs">{r.requestedBy}</TableCell>
                     <TableCell className="text-sm">{r.type}</TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">{inr(r.amount)}</TableCell>
                     <TableCell className="text-sm">{r.due}</TableCell>
                     <TableCell><Badge className={tone(r.status)}>{r.status}</Badge></TableCell>
                     <TableCell className="text-right">
@@ -513,7 +508,7 @@ export function AmDashboard() {
                   <Badge className={tone(r.status)}>{r.status}</Badge>
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">{r.owner} · {r.type} · {r.projectId}</div>
-                <div className="text-sm font-semibold tabular-nums mt-1">{inr(r.amount)} · due {r.due}</div>
+                <div className="text-sm font-medium mt-1">Due {r.due}</div>
               </button>
             ))}
           </div>
@@ -533,7 +528,7 @@ export function AmDashboard() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="tabular-nums font-semibold">{inr(r.amount - r.received)}</span>
+                <span className="tabular-nums font-semibold">{Math.round((r.received / r.amount) * 100)}% collected</span>
                 {r.daysOverdue > 0 && <Badge className="bg-rose-100 text-rose-700">{r.daysOverdue}d overdue</Badge>}
                 <Button size="sm" variant="outline" onClick={() => setOpenId(r.id)}>Follow Up</Button>
               </div>
@@ -555,8 +550,7 @@ export function AmDashboard() {
                 <Badge className={tone(r.status)}>{r.status}</Badge>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                <Field label="Expected" value={inr(r.amount)} />
-                <Field label="Received" value={inr(r.received)} />
+                <Field label="Collection progress" value={`${Math.round((r.received / r.amount) * 100)}% of target`} />
                 <Field label="Payment date" value={r.payDate ?? "—"} />
                 <Field label="Mode" value={r.mode ?? "—"} />
                 <Field label="Transaction ref" value={r.txnMasked ?? "—"} />
@@ -600,7 +594,6 @@ export function AmDashboard() {
                 <Field label="Payment request" value={c.reqId} />
                 <Field label="Project" value={c.projectId} />
                 <Field label="Items cleared" value={c.items} />
-                <Field label="Amount verified" value={inr(c.amountVerified)} />
                 <Field label="Verified on" value={c.verifiedOn} />
               </div>
               {c.returnReason && <div className="text-xs text-rose-700">Returned by Logistics: {c.returnReason}</div>}
@@ -690,9 +683,7 @@ export function AmDashboard() {
                   <Field label="Franchise owner" value={`${open.owner} · ${open.ownerPhoneMasked}`} />
                   <Field label="Payment type" value={open.type} />
                   <Field label="Purpose" value={open.purpose} />
-                  <Field label="Amount" value={inr(open.amount)} />
-                  <Field label="Received" value={inr(open.received)} />
-                  <Field label="Balance" value={inr(open.amount - open.received)} />
+                  <Field label="Collection progress" value={`${Math.round((open.received / open.amount) * 100)}% of target`} />
                   <Field label="Due date" value={open.due} />
                   <Field label="Requested by" value={open.requestedBy} />
                   <Field label="Vyapar invoice" value={open.vyaparInvoice ?? "—"} />
@@ -716,7 +707,7 @@ export function AmDashboard() {
                     onClick={() => {
                       const id = `CLR-${910 + clrs.length}`;
                       setClrs((cs) => [
-                        { id, reqId: open.id, projectId: open.projectId, store: open.store, items: open.type, amountVerified: open.received, verifiedOn: "Today", priority: "High", logistics: "Not Sent" },
+                        { id, reqId: open.id, projectId: open.projectId, store: open.store, items: open.type, verifiedOn: "Today", priority: "High", logistics: "Not Sent" },
                         ...cs,
                       ]);
                       update(open.id, (x) => log({ ...x, status: "Dispatch Clearance Ready" }, `Dispatch clearance ${id} created`));
@@ -809,7 +800,7 @@ export function AmDashboard() {
                 <SelectTrigger><SelectValue placeholder="Select request" /></SelectTrigger>
                 <SelectContent>
                   {reqs.map((r) => (
-                    <SelectItem key={r.id} value={r.id}>{r.id} · {r.owner} · {inr(r.amount - r.received)} due</SelectItem>
+                    <SelectItem key={r.id} value={r.id}>{r.id} · {r.owner} · balance due</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -867,10 +858,10 @@ export function AmDashboard() {
                       vyaparInvoice: rpInvoice || x.vyaparInvoice,
                       status: received >= x.amount ? "Verification Pending" : "Partially Paid",
                     },
-                    `Payment ${inr(amt)} recorded (${rpMode})`,
+                    `Payment recorded (${rpMode})`,
                   ),
                 );
-                toast.success(`${inr(amt)} recorded against ${target.id}`);
+                toast.success(`Payment recorded against ${target.id}`);
                 setRecordOpen(false);
                 setRpAmt(""); setRpRef(""); setRpInvoice(""); setRpReq("");
               }}

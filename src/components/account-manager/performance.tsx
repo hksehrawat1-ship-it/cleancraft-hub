@@ -19,8 +19,6 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
 import { Download, Info, Lightbulb, ShieldCheck } from "lucide-react";
 
-const inr = (n: number) => (n >= 100000 ? `₹${(n / 100000).toFixed(2)}L` : `₹${n.toLocaleString("en-IN")}`);
-
 const PERIODS = ["Today", "This Week", "This Month", "This Quarter", "Custom Date Range"] as const;
 type Period = (typeof PERIODS)[number];
 
@@ -52,9 +50,6 @@ type Snapshot = {
   requested: number;
   received: number;
   verifiedAmount: number;
-  partial: number;
-  outstanding: number;
-  overdueAmount: number;
   avgDaysToPayment: number;
 
   paymentsReceived: number;
@@ -109,8 +104,7 @@ const build = (label: string, m: number): Snapshot => {
     requestsSent: r(38), followupsScheduled: r(92), followupsOnTime: r(84), followupsLate: r(6),
     followupsOverdue: r(2), promises: r(29), missedPromises: r(5), unreachable: r(3), avgCollectionDays: 7.8,
 
-    requested, received, verifiedAmount: verified, partial: Math.round(940000 * m),
-    outstanding: requested - received, overdueAmount: Math.round(520000 * m), avgDaysToPayment: 7.8,
+    requested, received, verifiedAmount: verified, avgDaysToPayment: 7.8,
 
     paymentsReceived: r(41), paymentsVerified: r(38), avgVerifyHrs: 5.2, awaitingVerification: r(3),
     verificationRejected: r(2), duplicateTxn: r(2), reversals: r(1), corrections: r(3),
@@ -254,7 +248,6 @@ export function AmPerformance() {
           <StatCard label="Payment Requests Received" value={String(d.requestsReceived)} />
           <StatCard label="Requests Accepted on Time" value={`${onTimeRate}%`} tone={onTimeRate >= 90 ? "good" : "warn"} />
           <StatCard label="Follow-ups Completed on Time" value={`${followupRate}%`} tone={followupRate >= 90 ? "good" : "warn"} />
-          <StatCard label="Amount Collected (verified)" value={inr(d.verifiedAmount)} tone="good" />
           <StatCard label="Average Verification Time" value={`${d.avgVerifyHrs} hrs`} tone={d.avgVerifyHrs <= 8 ? "good" : "warn"} />
           <StatCard label="Payments Verified" value={String(d.paymentsVerified)} />
           <StatCard label="Dispatch Clearances Sent" value={String(d.clearancesIssued)} />
@@ -266,7 +259,7 @@ export function AmPerformance() {
             <CardHeader className="pb-2"><CardTitle className="text-base">Compared with {p.label}</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               <div>Requests received: <b>{d.requestsReceived}</b> <Delta now={d.requestsReceived} prev={p.requestsReceived} /></div>
-              <div>Verified collection: <b>{inr(d.verifiedAmount)}</b> <Delta now={d.verifiedAmount} prev={p.verifiedAmount} /></div>
+              <div>Payments verified: <b>{d.paymentsVerified}</b> <Delta now={d.paymentsVerified} prev={p.paymentsVerified} /></div>
               <div>Verification time: <b>{d.avgVerifyHrs} hrs</b> <Delta now={d.avgVerifyHrs} prev={p.avgVerifyHrs} invert /></div>
               <div>Clearance turnaround: <b>{d.avgClearanceHrs} hrs</b> <Delta now={d.avgClearanceHrs} prev={p.avgClearanceHrs} invert /></div>
             </CardContent>
@@ -306,13 +299,8 @@ export function AmPerformance() {
           <CardHeader className="pb-2"><CardTitle className="text-base">Payment collection summary</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-              <Metric label="Total requested" value={inr(d.requested)} tip="Sum of accepted payment request amounts." />
-              <Metric label="Total received" value={inr(d.received)} tip="Amounts recorded as received, verified or not." />
-              <Metric label="Total verified" value={inr(d.verifiedAmount)} tone="good" tip="Only verified payments matched to Vyapar references count as collected." />
-              <Metric label="Partial payments" value={inr(d.partial)} tone="warn" tip="Partial receipts. Partial payments are never counted as full collections." />
-              <Metric label="Outstanding" value={inr(d.outstanding)} tone="warn" tip="Requested amount not yet received." />
-              <Metric label="Overdue amount" value={inr(d.overdueAmount)} tone="bad" tip="Outstanding amount past the agreed payment date." />
               <Metric label="Collection rate" value={`${collectionRate}%`} tone={collectionRate >= 80 ? "good" : "warn"} tip="Verified collected amount divided by total requested amount." />
+              <Metric label="Payments verified" value={String(d.paymentsVerified)} tone="good" tip="Payments matched to Vyapar references and counted as collected." />
               <Metric label="Average days to payment" value={`${d.avgDaysToPayment} days`} tip="Average time franchise owners take to pay after the request is sent." />
             </div>
             <div className="overflow-x-auto">
@@ -320,11 +308,7 @@ export function AmPerformance() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Payment type</TableHead>
-                    <TableHead className="text-right">Requested</TableHead>
-                    <TableHead className="text-right">Received</TableHead>
-                    <TableHead className="text-right">Verified</TableHead>
-                    <TableHead className="text-right">Outstanding</TableHead>
-                    <TableHead className="w-[160px]">Verified rate</TableHead>
+                    <TableHead className="w-[220px]">Verified rate</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -333,10 +317,6 @@ export function AmPerformance() {
                     return (
                       <TableRow key={c.name}>
                         <TableCell className="font-medium">{c.name}</TableCell>
-                        <TableCell className="text-right tabular-nums">{inr(c.requested)}</TableCell>
-                        <TableCell className="text-right tabular-nums">{inr(c.received)}</TableCell>
-                        <TableCell className="text-right tabular-nums text-emerald-700">{inr(c.verified)}</TableCell>
-                        <TableCell className="text-right tabular-nums text-amber-700">{inr(c.outstanding)}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Progress value={rate} className="h-2" />

@@ -57,12 +57,10 @@ type Meeting = {
   notes: string;
   status: MeetingStatus;
   // prep
-  budget: string;
   preferredCity: string;
   timeline: string;
   lastInteraction: string;
   objections: string;
-  opportunityValue: number;
   expectedOutcome: string;
   resources: string[];
   // outcome
@@ -70,7 +68,6 @@ type Meeting = {
     summary: string;
     interest: string;
     objections: string;
-    value: number;
     stage: string;
     nextAction: string;
     nextDueAt: string;
@@ -97,9 +94,9 @@ const SEED: Meeting[] = [
     participants: "Ankit Bansal, Spouse", objective: "Explain franchise model and unit economics",
     agenda: "Brand intro • Investment breakup • ROI • Support model • Next steps",
     reminder: "30 min before", confirmation: "Confirmed", notes: "Prefers Hindi conversation.",
-    status: "Scheduled", budget: "₹18–22L", preferredCity: "Jaipur", timeline: "30–45 days",
+    status: "Scheduled", preferredCity: "Jaipur", timeline: "30–45 days",
     lastInteraction: "Call on 2 days ago — asked for ROI sheet",
-    objections: "Worried about manpower availability", opportunityValue: 1800000,
+    objections: "Worried about manpower availability",
     expectedOutcome: "Agreement to receive proposal",
     resources: ["Franchise Brochure", "ROI Calculator", "Store Walkthrough Video"],
     history: [{ at: iso(-3, 11), text: "Meeting scheduled" }],
@@ -111,9 +108,9 @@ const SEED: Meeting[] = [
     participants: "Meera Nair", objective: "Understand budget and timeline",
     agenda: "Background • Budget • Location preference • Timeline",
     reminder: "15 min before", confirmation: "Awaiting Confirmation", notes: "",
-    status: "Scheduled", budget: "₹15–18L", preferredCity: "Kochi", timeline: "60 days",
+    status: "Scheduled", preferredCity: "Kochi", timeline: "60 days",
     lastInteraction: "WhatsApp yesterday — shared brochure",
-    objections: "None yet", opportunityValue: 1500000, expectedOutcome: "Qualify the lead",
+    objections: "None yet", expectedOutcome: "Qualify the lead",
     resources: ["Franchise Brochure", "FAQ Sheet"],
     history: [{ at: iso(-1, 10), text: "Meeting scheduled" }],
   },
@@ -125,9 +122,9 @@ const SEED: Meeting[] = [
     objective: "Walk through proposal and close commercial terms",
     agenda: "Proposal walkthrough • Fee structure • Territory • Timeline",
     reminder: "1 day before", confirmation: "Confirmed", notes: "Bring printed proposal.",
-    status: "Scheduled", budget: "₹20–25L", preferredCity: "Pune", timeline: "30 days",
+    status: "Scheduled", preferredCity: "Pune", timeline: "30 days",
     lastInteraction: "Proposal emailed 3 days ago",
-    objections: "Fee seems high vs competitor", opportunityValue: 2200000,
+    objections: "Fee seems high vs competitor",
     expectedOutcome: "Move to Negotiation",
     resources: ["Proposal PDF", "Competitor Comparison", "Case Study — Pune 1"],
     history: [{ at: iso(-4, 15), text: "Meeting scheduled" }],
@@ -139,9 +136,8 @@ const SEED: Meeting[] = [
     participants: "Farhan Qureshi", objective: "Confirm booking amount and payment date",
     agenda: "Booking amount • Payment mode • Agreement signing date",
     reminder: "1 hour before", confirmation: "Awaiting Confirmation", notes: "",
-    status: "Scheduled", budget: "₹18L", preferredCity: "Indore", timeline: "15 days",
-    lastInteraction: "Negotiation meeting last week", objections: "Wants EMI on booking fee",
-    opportunityValue: 1800000, expectedOutcome: "Move to Payment Pending",
+    status: "Scheduled", preferredCity: "Indore", timeline: "15 days",
+    lastInteraction: "Negotiation meeting last week", objections: "Wants EMI on booking fee", expectedOutcome: "Move to Payment Pending",
     resources: ["Payment Terms Sheet", "Engagement Letter Draft"],
     history: [{ at: iso(-2, 16), text: "Meeting scheduled" }],
   },
@@ -151,13 +147,12 @@ const SEED: Meeting[] = [
     durationMin: 60, linkOrLocation: "Clean Craft HO, Delhi", owner: "Sneha Kulkarni",
     participants: "Divya Raghav, Father", objective: "Present franchise model in person",
     agenda: "Model • Investment • Support", reminder: "1 day before", confirmation: "Confirmed",
-    notes: "", status: "Completed", budget: "₹16L", preferredCity: "Delhi", timeline: "45 days",
-    lastInteraction: "Office meeting yesterday", objections: "Wanted a smaller format store",
-    opportunityValue: 1600000, expectedOutcome: "Proposal request",
+    notes: "", status: "Completed", preferredCity: "Delhi", timeline: "45 days",
+    lastInteraction: "Office meeting yesterday", objections: "Wanted a smaller format store", expectedOutcome: "Proposal request",
     resources: ["Brochure", "Small Format Deck"],
     outcome: {
       summary: "Positive meeting. Family aligned. Asked for small format proposal.",
-      interest: "High", objections: "Store size", value: 1600000, stage: "Proposal Sent",
+      interest: "High", objections: "Store size", stage: "Proposal Sent",
       nextAction: "Send small format proposal", nextDueAt: iso(0, 18),
     },
     history: [{ at: iso(-6, 12), text: "Meeting scheduled" }, { at: iso(-1, 16), text: "Marked Completed" }],
@@ -168,12 +163,12 @@ const SEED: Meeting[] = [
     durationMin: 30, linkOrLocation: "https://meet.cleancraft.in/rohit-1024", owner: "Amit Verma",
     participants: "Rohit Sethi", objective: "Present the franchise deck",
     agenda: "Deck walkthrough", reminder: "30 min before", confirmation: "Confirmed", notes: "",
-    status: "No-Show", budget: "₹12–15L", preferredCity: "Nagpur", timeline: "90 days",
-    lastInteraction: "No response on meeting day", objections: "—", opportunityValue: 1300000,
+    status: "No-Show", preferredCity: "Nagpur", timeline: "90 days",
+    lastInteraction: "No response on meeting day", objections: "—",
     expectedOutcome: "Qualify", resources: ["Franchise Deck"],
     outcome: {
       summary: "Lead did not join the call and did not respond.", interest: "Low",
-      objections: "—", value: 1300000, stage: "Contacted", nextAction: "Call to reschedule",
+      objections: "—", stage: "Contacted", nextAction: "Call to reschedule",
       nextDueAt: iso(0, 11), reason: "Lead unreachable at meeting time",
     },
     history: [
@@ -188,9 +183,8 @@ const SEED: Meeting[] = [
     participants: "Kavita Joshi, Husband", objective: "Show live store operations",
     agenda: "Store tour • Machine demo • Owner interaction", reminder: "1 day before",
     confirmation: "Awaiting Confirmation", notes: "Confirm store owner availability.",
-    status: "Scheduled", budget: "₹18–20L", preferredCity: "Surat", timeline: "60 days",
-    lastInteraction: "Call 2 days ago", objections: "Doubts on daily footfall",
-    opportunityValue: 1900000, expectedOutcome: "Confidence build → proposal",
+    status: "Scheduled", preferredCity: "Surat", timeline: "60 days",
+    lastInteraction: "Call 2 days ago", objections: "Doubts on daily footfall", expectedOutcome: "Confidence build → proposal",
     resources: ["Store Visit Checklist", "Footfall Data Sheet"],
     history: [{ at: iso(-1, 17), text: "Meeting scheduled" }],
   },
@@ -200,9 +194,9 @@ const SEED: Meeting[] = [
     durationMin: 30, linkOrLocation: "https://meet.cleancraft.in/imran-1080", owner: "Rahul Mehta",
     participants: "Imran Shaikh", objective: "Clarify pending questions",
     agenda: "Open questions • Next steps", reminder: "30 min before",
-    confirmation: "Confirmed", notes: "", status: "Scheduled", budget: "₹20L",
+    confirmation: "Confirmed", notes: "", status: "Scheduled",
     preferredCity: "Mumbai", timeline: "45 days", lastInteraction: "Consultation last week",
-    objections: "Location approval process", opportunityValue: 2000000,
+    objections: "Location approval process",
     expectedOutcome: "Proposal acceptance", resources: ["Site Selection Guide"],
     history: [{ at: iso(-2, 9), text: "Meeting scheduled" }],
   },
@@ -210,7 +204,6 @@ const SEED: Meeting[] = [
 
 /* ------------------------------ helpers ------------------------------ */
 
-const inr = (n: number) => `₹${(n / 100000).toFixed(1)}L`;
 const fmtTime = (s: string) =>
   new Date(s).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 const fmtDate = (s: string) =>
@@ -300,7 +293,6 @@ export function Meetings() {
       ...x,
       status,
       stage: data.stage,
-      opportunityValue: data.value,
       outcome: data,
       history: [
         ...x.history,
@@ -693,7 +685,6 @@ function MeetingDetail({
         <Badge variant="outline" className={cls.chip}>{m.status === "Scheduled" ? cls.label : m.status}</Badge>
         <Badge variant="outline">{m.stage}</Badge>
         <Badge variant="outline">{m.mode}</Badge>
-        <Badge variant="outline">{inr(m.opportunityValue)}</Badge>
       </div>
 
       <Block title="Meeting" icon={CalendarDays}>
@@ -705,7 +696,6 @@ function MeetingDetail({
       </Block>
 
       <Block title="Meeting preparation" icon={Target}>
-        <KV k="Investment budget" v={m.budget} />
         <KV k="Preferred city" v={m.preferredCity} />
         <KV k="Purchase timeline" v={m.timeline} />
         <KV k="Previous interaction" v={m.lastInteraction} />
@@ -732,7 +722,6 @@ function MeetingDetail({
           <KV k="Summary" v={m.outcome.summary} />
           <KV k="Interest level" v={m.outcome.interest} />
           <KV k="Objections" v={m.outcome.objections} />
-          <KV k="Opportunity value" v={inr(m.outcome.value)} />
           <KV k="Updated stage" v={m.outcome.stage} />
           <KV k="Next action" v={`${m.outcome.nextAction} · ${fmtDate(m.outcome.nextDueAt)} ${fmtTime(m.outcome.nextDueAt)}`} />
           {m.outcome.reason && <KV k="Reason" v={m.outcome.reason} />}
@@ -791,7 +780,7 @@ function KV({ k, v }: { k: string; v: string }) {
 
 const LEAD_OPTIONS = SEED.map((s) => ({
   leadId: s.leadId, leadName: s.leadName, phone: s.phone, city: s.city, stage: s.stage,
-  budget: s.budget, timeline: s.timeline,
+  timeline: s.timeline,
 }));
 
 function ScheduleDialog({
@@ -825,8 +814,8 @@ function ScheduleDialog({
       city: lead.city, stage: "Meeting Scheduled", type, mode, startAt,
       durationMin: Number(duration), linkOrLocation: where, owner, participants,
       objective, agenda, reminder, confirmation, notes, status: "Scheduled",
-      budget: lead.budget, preferredCity: lead.city, timeline: lead.timeline,
-      lastInteraction: "—", objections: "—", opportunityValue: 1500000,
+      preferredCity: lead.city, timeline: lead.timeline,
+      lastInteraction: "—", objections: "—",
       expectedOutcome: objective, resources: ["Franchise Brochure"],
       history: [{ at: new Date().toISOString(), text: "Meeting scheduled" }],
     });
@@ -940,7 +929,6 @@ function OutcomeDialog({
   const [summary, setSummary] = useState("");
   const [interest, setInterest] = useState<string>("High");
   const [objections, setObjections] = useState("");
-  const [value, setValue] = useState("");
   const [stage, setStage] = useState("");
   const [nextAction, setNextAction] = useState("");
   const [nextDate, setNextDate] = useState("");
@@ -973,7 +961,6 @@ function OutcomeDialog({
         summary,
         interest,
         objections: objections || "—",
-        value: value ? Number(value) * 100000 : m.opportunityValue,
         stage: stage || (status === "Completed" ? suggestedStage : m.stage),
         nextAction: nextAction || (status === "No-Show" ? "Call to reschedule meeting" : "Follow up"),
         nextDueAt,
@@ -981,7 +968,7 @@ function OutcomeDialog({
       },
       status,
     );
-    setSummary(""); setObjections(""); setValue(""); setStage(""); setNextAction("");
+    setSummary(""); setObjections(""); setStage(""); setNextAction("");
     setNextDate(""); setReason(""); setStatus("Completed");
   }
 
@@ -1019,9 +1006,6 @@ function OutcomeDialog({
           </Field>
           <Field label="Objections raised" full>
             <Input value={objections} onChange={(e) => setObjections(e.target.value)} />
-          </Field>
-          <Field label="Updated opportunity value (₹ lakh)">
-            <Input type="number" value={value} onChange={(e) => setValue(e.target.value)} placeholder={String(meeting.opportunityValue / 100000)} />
           </Field>
           <Field label="Updated pipeline stage">
             <Select value={stage || suggestedStage} onValueChange={setStage}>

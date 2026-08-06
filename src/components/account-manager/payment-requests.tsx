@@ -29,7 +29,6 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
 import { AlertTriangle, FilePlus2, Search, ShieldCheck } from "lucide-react";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 const MANAGER = "Priya Nair";
 
 const PAYMENT_TYPES = [
@@ -437,7 +436,6 @@ export function AmPaymentRequests() {
                   <TableHead>Franchise / owner</TableHead>
                   <TableHead>City</TableHead>
                   <TableHead>Payment type</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
                   <TableHead>Due</TableHead>
                   <TableHead>Requested by</TableHead>
                   <TableHead>Priority</TableHead>
@@ -459,7 +457,6 @@ export function AmPaymentRequests() {
                     </TableCell>
                     <TableCell className="text-sm">{r.city}</TableCell>
                     <TableCell className="text-sm">{r.type}</TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">{inr(r.amount)}</TableCell>
                     <TableCell className="text-sm">{r.due}</TableCell>
                     <TableCell className="text-xs">{r.coordinator}</TableCell>
                     <TableCell><Badge className={prioTone(r.priority)}>{r.priority}</Badge></TableCell>
@@ -486,7 +483,7 @@ export function AmPaymentRequests() {
                 </div>
                 <div className="text-sm">{r.store} · {r.city}</div>
                 <div className="text-xs text-muted-foreground">{r.projectId} · {r.owner} · {r.type}</div>
-                <div className="text-sm font-semibold tabular-nums">{inr(r.amount)} · due {r.due}</div>
+                <div className="text-sm font-medium">Due {r.due}</div>
                 <div className="flex items-center justify-between gap-2 pt-1">
                   <div className="flex gap-1">
                     <Badge className={prioTone(r.priority)}>{r.priority}</Badge>
@@ -545,7 +542,6 @@ export function AmPaymentRequests() {
                   <F label="Payment type" v={open.type} />
                   <F label="Payment purpose" v={open.purpose} />
                   <F label="Item or service description" v={open.items} />
-                  <F label="Amount" v={inr(open.amount)} />
                   <F label="Tax information reference" v={open.taxRef} />
                   <F label="Payment due date" v={open.due} />
                   <F label="Required clearance type" v={open.clearanceType} />
@@ -598,7 +594,7 @@ export function AmPaymentRequests() {
                 {open.acceptance && (
                   <div className="rounded-md border p-3 text-xs space-y-1 bg-emerald-50/60">
                     <div className="font-medium text-emerald-800">Accepted — now in Payment Follow-ups &amp; Verification</div>
-                    <div>Accepted by {open.acceptance.by} · {inr(open.acceptance.amount)} · due {open.acceptance.due}</div>
+                    <div>Accepted by {open.acceptance.by} · due {open.acceptance.due}</div>
                     <div>Vyapar invoice: {open.acceptance.vyapar || "to be created"} · First follow-up: {open.acceptance.firstFollowUp || "—"}</div>
                     <div>Dispatch clearance required: {open.acceptance.clearanceRequired ? "Yes" : "No"}</div>
                     {open.acceptance.instructions && <div>Payment instructions: {open.acceptance.instructions}</div>}
@@ -661,7 +657,7 @@ export function AmPaymentRequests() {
                         instructions: aInstr, firstFollowUp: aFollow, clearanceRequired: aClearance === "yes",
                       },
                     },
-                    `Request accepted — ${inr(Number(aAmount) || 0)}, moved to Payment Follow-ups & Verification`,
+                    `Request accepted — moved to Payment Follow-ups & Verification`,
                   ),
                 );
                 toast.success(`${open.id} accepted and moved to Follow-ups & Verification`);
@@ -800,7 +796,7 @@ export function AmPaymentRequests() {
             </div>
             <div className="col-span-2"><Label className="text-xs">Purpose</Label><Input value={nPurpose} onChange={(e) => setNPurpose(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Machine or consumable items (if applicable)</Label><Textarea rows={2} value={nItems} onChange={(e) => setNItems(e.target.value)} /></div>
-            <div><Label className="text-xs">Approved amount (₹)</Label><Input value={nAmount} onChange={(e) => setNAmount(e.target.value)} /></div>
+            <div><Label className="text-xs">Approved amount</Label><Input value={nAmount} onChange={(e) => setNAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Due date</Label><Input value={nDue} onChange={(e) => setNDue(e.target.value)} placeholder="e.g. 12 Aug 2026" /></div>
             <div><Label className="text-xs">Planned launch date</Label><Input value={nLaunch} onChange={(e) => setNLaunch(e.target.value)} placeholder="e.g. 20 Sep 2026" /></div>
             <div><Label className="text-xs">Quotation / approval reference</Label><Input value={nQuote} onChange={(e) => setNQuote(e.target.value)} /></div>

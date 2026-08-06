@@ -126,7 +126,6 @@ function LeadDetailsPage() {
 
         <SectionCard title="Qualification Details">
           <Row k="Decision Maker" v={lead.decision_maker_status} />
-          <Row k="Budget" v={lead.budget_range} />
           <Row k="Timeline" v={lead.timeline} />
           <Row k="Partnership" v={lead.partnership_status} />
           <Row k="Location" v={lead.location_status} />
@@ -148,7 +147,6 @@ function LeadDetailsPage() {
           <Row k="Engagement Letter Sent" v={lead.engagement_letter_sent_date} />
           <Row k="EL Fee Status" v={lead.engagement_letter_fee_status} />
           <Row k="EL Fee Received" v={lead.engagement_letter_fee_received_date} />
-          <Row k="EL Fee Amount" v={lead.engagement_letter_fee_amount != null ? `₹${lead.engagement_letter_fee_amount}` : null} />
           <Row k="Booking Date" v={lead.booking_date} />
         </SectionCard>
 

@@ -43,13 +43,9 @@ async function loadMetrics() {
     sb.from("projects").select("id", { count: "exact", head: true }).eq("status", "delayed"),
     sb.from("complaints").select("id", { count: "exact", head: true }).in("status", ["open", "in_progress"]),
     sb.from("stores").select("id", { count: "exact", head: true }).eq("status", "red"),
-    sb.from("payments").select("id, amount", { count: "exact" }).in("status", ["pending", "overdue"]),
+    sb.from("payments").select("id", { count: "exact", head: true }).in("status", ["pending", "overdue"]),
     sb.from("tasks").select("department").neq("status", "completed").neq("status", "cancelled"),
   ]);
-
-  const pendingAmount = (pendingPayments.data ?? []).reduce(
-    (a: number, b: any) => a + Number(b.amount ?? 0), 0
-  );
 
   const deptMap: Record<string, number> = {};
   for (const t of tasksByDept.data ?? []) {
@@ -67,7 +63,6 @@ async function loadMetrics() {
     openComplaints: openComplaints.count ?? 0,
     redStores: redStores.count ?? 0,
     pendingPaymentsCount: pendingPayments.count ?? 0,
-    pendingPaymentsAmount: pendingAmount,
     deptMap,
   };
 }
@@ -125,8 +120,7 @@ function Dashboard() {
         <Metric
           icon={Wallet}
           label="Pending payments"
-          value={isLoading ? "…" : `₹${data!.pendingPaymentsAmount.toLocaleString()}`}
-          hint={isLoading ? "" : `${data!.pendingPaymentsCount} entries`}
+          value={isLoading ? "…" : data!.pendingPaymentsCount}
           tone="danger"
         />
         <Metric icon={ListChecks} label="Departments active" value={isLoading ? "…" : Object.keys(data!.deptMap).length} />

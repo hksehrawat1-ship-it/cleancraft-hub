@@ -29,7 +29,6 @@ import { SectionHead, StatCard } from "@/components/smm/ui";
 import { toast } from "sonner";
 import { AlertTriangle, FileText, PackagePlus, Search, ShieldCheck, Truck } from "lucide-react";
 
-const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 const MANAGER = "Priya Nair";
 const TODAY = "4 Aug 2026";
 
@@ -491,7 +490,7 @@ export function AmDispatchClearance() {
             {pendingVerified.map((v) => (
               <div key={v.payId} className="rounded-md border p-3 text-xs space-y-1">
                 <div className="font-medium text-sm">{v.payId} · {v.store}</div>
-                <div className="text-muted-foreground">{v.projectId} · verified {v.verifiedOn} · {inr(v.amount)}</div>
+                <div className="text-muted-foreground">{v.projectId} · verified {v.verifiedOn}</div>
                 {v.partial && <Badge className="bg-amber-100 text-amber-700">Partial payment — approval needed</Badge>}
                 <Button size="sm" variant="outline" className="w-full mt-1" onClick={() => { setCPay(v.payId); setCAddress(v.address); setCContact(v.siteContact); setCreateOpen(true); }}>
                   Create clearance
@@ -550,7 +549,6 @@ export function AmDispatchClearance() {
                   <TableHead>Payment / project</TableHead>
                   <TableHead>Franchise / city</TableHead>
                   <TableHead>Items cleared</TableHead>
-                  <TableHead className="text-right">Verified amount</TableHead>
                   <TableHead>Verified on</TableHead>
                   <TableHead>Launch</TableHead>
                   <TableHead>Priority</TableHead>
@@ -565,7 +563,6 @@ export function AmDispatchClearance() {
                     <TableCell className="text-xs">{c.payId}<div className="text-muted-foreground">{c.projectId}</div></TableCell>
                     <TableCell className="text-sm">{c.store}<div className="text-xs text-muted-foreground">{c.owner} · {c.city}</div></TableCell>
                     <TableCell className="text-xs max-w-[220px]">{c.lines.map((l) => `${l.name} ×${l.qty}`).join(", ")}</TableCell>
-                    <TableCell className="text-right tabular-nums font-semibold">{inr(c.verifiedAmount)}</TableCell>
                     <TableCell className="text-sm">{c.verificationDate}</TableCell>
                     <TableCell className="text-sm">{c.launchDate}</TableCell>
                     <TableCell><Badge className={prioTone(c.priority)}>{c.priority}</Badge></TableCell>
@@ -588,7 +585,7 @@ export function AmDispatchClearance() {
                 <div className="text-sm">{c.store} · {c.city}</div>
                 <div className="text-xs text-muted-foreground">{c.payId} · {c.projectId} · {c.owner}</div>
                 <div className="text-xs">{c.lines.map((l) => `${l.name} ×${l.qty}`).join(", ")}</div>
-                <div className="text-sm font-semibold tabular-nums">{inr(c.verifiedAmount)} · verified {c.verificationDate}</div>
+                <div className="text-sm font-medium">Verified {c.verificationDate}</div>
                 <div className="flex items-center justify-between gap-2 pt-1">
                   <Badge className={prioTone(c.priority)}>{c.priority}</Badge>
                   <Button size="sm" variant="outline" onClick={() => openClr(c.id)}>View Clearance</Button>
@@ -649,7 +646,6 @@ export function AmDispatchClearance() {
                   <F label="Store city" v={open.city} />
                   <F label="Delivery address" v={open.address} />
                   <F label="Site contact" v={open.siteContact} />
-                  <F label="Verified amount" v={inr(open.verifiedAmount)} />
                   <F label="Verification date" v={open.verificationDate} />
                   <F label="Vyapar invoice / receipt" v={`${open.vyaparInvoice} · ${open.vyaparReceipt}`} />
                   <F label="Required delivery date" v={open.requiredDelivery} />
@@ -803,7 +799,7 @@ export function AmDispatchClearance() {
                 <SelectTrigger><SelectValue placeholder="Select verified payment" /></SelectTrigger>
                 <SelectContent>
                   {pendingVerified.map((v) => (
-                    <SelectItem key={v.payId} value={v.payId}>{v.payId} · {v.store} · {inr(v.amount)}</SelectItem>
+                    <SelectItem key={v.payId} value={v.payId}>{v.payId} · {v.store}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -812,7 +808,6 @@ export function AmDispatchClearance() {
               <>
                 <F label="Project ID" v={selectedPay.projectId} />
                 <F label="Franchise / store" v={`${selectedPay.store} · ${selectedPay.owner}`} />
-                <F label="Verified amount" v={inr(selectedPay.amount)} />
                 <F label="Vyapar invoice / receipt" v={`${selectedPay.invoice} · ${selectedPay.receipt}`} />
                 <div className="col-span-2">
                   <Label className="text-xs">Item list and approved quantities</Label>
