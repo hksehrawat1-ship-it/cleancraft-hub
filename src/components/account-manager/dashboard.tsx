@@ -78,7 +78,7 @@ type Req = {
   ownerPhoneMasked: string;
   type: (typeof PAYMENT_TYPES)[number];
   purpose: string;
-  amount: number;
+  target: number;
   received: number;
   due: string;
   daysOverdue: number;
@@ -115,7 +115,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3101", projectId: "PRJ-JAI-07", store: "Clean Craft Jaipur", city: "Jaipur",
     owner: "Rajesh Agarwal", ownerPhoneMasked: "+91 98XXXXXX21", type: "Machine Payment",
-    purpose: "60% machine advance before dispatch", amount: 750000, received: 0, due: "Today",
+    purpose: "60% machine advance before dispatch", target: 1, received: 0, due: "Today",
     daysOverdue: 0, requestedBy: "Rahul Sharma (Project Coordinator)", status: "Request Submitted",
     raisedOn: "3 Aug", launchAtRisk: true,
     history: [{ at: "3 Aug 10:12", by: "Rahul Sharma", action: "Request submitted" }],
@@ -123,7 +123,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3102", projectId: "PRJ-IND-03", store: "Clean Craft Indore", city: "Indore",
     owner: "Meena Joshi", ownerPhoneMasked: "+91 97XXXXXX40", type: "Franchise Fee",
-    purpose: "Second franchise instalment", amount: 600000, received: 300000, due: "2 Aug",
+    purpose: "Second franchise instalment", target: 2, received: 1, due: "2 Aug",
     daysOverdue: 2, requestedBy: "Anita Rao (Project Coordinator)", status: "Partially Paid",
     raisedOn: "26 Jul", lastFollowUp: "3 Aug", nextFollowUp: "Today",
     payDate: "1 Aug", mode: "NEFT", txnMasked: "XXXXXX7741", proof: "receipt_indore_1.pdf",
@@ -138,7 +138,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3103", projectId: "PRJ-LKO-02", store: "Clean Craft Lucknow", city: "Lucknow",
     owner: "Sunil Mishra", ownerPhoneMasked: "+91 99XXXXXX08", type: "Machine Payment",
-    purpose: "Machine balance before dispatch", amount: 520000, received: 520000, due: "3 Aug",
+    purpose: "Machine balance before dispatch", target: 1, received: 1, due: "3 Aug",
     daysOverdue: 0, requestedBy: "Rahul Sharma (Project Coordinator)", status: "Verification Pending",
     raisedOn: "24 Jul", payDate: "3 Aug", mode: "RTGS", txnMasked: "XXXXXX3390",
     proof: "utr_lucknow.jpg", vyaparInvoice: "VY-INV-2277", vyaparParty: "Sunil Mishra (Lucknow)",
@@ -152,7 +152,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3104", projectId: "PRJ-SUR-05", store: "Clean Craft Surat", city: "Surat",
     owner: "Bhavesh Patel", ownerPhoneMasked: "+91 90XXXXXX66", type: "Consumables Payment",
-    purpose: "Opening consumables kit", amount: 145000, received: 145000, due: "31 Jul",
+    purpose: "Opening consumables kit", target: 1, received: 1, due: "31 Jul",
     daysOverdue: 0, requestedBy: "Deepak Yadav (Project Coordinator)", status: "Verified",
     raisedOn: "22 Jul", payDate: "30 Jul", mode: "UPI", txnMasked: "XXXXXX9014",
     proof: "surat_consumables.pdf", vyaparInvoice: "VY-INV-2260", vyaparParty: "Bhavesh Patel (Surat)",
@@ -166,7 +166,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3105", projectId: "PRJ-BPL-04", store: "Clean Craft Bhopal", city: "Bhopal",
     owner: "Alok Jain", ownerPhoneMasked: "+91 88XXXXXX32", type: "Training Fee",
-    purpose: "Owner and manpower training batch", amount: 85000, received: 0, due: "29 Jul",
+    purpose: "Owner and manpower training batch", target: 1, received: 0, due: "29 Jul",
     daysOverdue: 6, requestedBy: "Anita Rao (Project Coordinator)", status: "Follow-up Due",
     raisedOn: "20 Jul", lastFollowUp: "1 Aug", nextFollowUp: "Today", launchAtRisk: true,
     vyaparInvoice: "VY-INV-2248", vyaparParty: "Alok Jain (Bhopal)", invoiceDate: "20 Jul",
@@ -179,7 +179,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3106", projectId: "PRJ-NAG-01", store: "Clean Craft Nagpur", city: "Nagpur",
     owner: "Kavita Deshmukh", ownerPhoneMasked: "+91 93XXXXXX77", type: "Software or POS Fee",
-    purpose: "POS licence and setup fee", amount: 46000, received: 46000, due: "2 Aug",
+    purpose: "POS licence and setup fee", target: 1, received: 1, due: "2 Aug",
     daysOverdue: 0, requestedBy: "Neha Gupta (Project Coordinator)", status: "Verification Rejected",
     raisedOn: "25 Jul", payDate: "2 Aug", mode: "UPI", txnMasked: "XXXXXX3390",
     proof: "nagpur_pos.jpg", vyaparInvoice: "VY-INV-2284", vyaparParty: "Kavita Deshmukh (Nagpur)",
@@ -192,7 +192,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3107", projectId: "PRJ-KNP-06", store: "Clean Craft Kanpur", city: "Kanpur",
     owner: "Shalini Verma", ownerPhoneMasked: "+91 95XXXXXX12", type: "Franchise Fee",
-    purpose: "Franchise booking amount", amount: 300000, received: 0, due: "6 Aug",
+    purpose: "Franchise booking amount", target: 1, received: 0, due: "6 Aug",
     daysOverdue: 0, requestedBy: "Suresh Patel (Project Coordinator)", status: "Information Required",
     raisedOn: "2 Aug",
     history: [
@@ -203,7 +203,7 @@ const SEED_REQ: Req[] = [
   {
     id: "PAY-3108", projectId: "PRJ-RAI-02", store: "Clean Craft Raipur", city: "Raipur",
     owner: "Komal Sahu", ownerPhoneMasked: "+91 91XXXXXX55", type: "Machine Payment",
-    purpose: "Machine full payment", amount: 690000, received: 690000, due: "28 Jul",
+    purpose: "Machine full payment", target: 1, received: 1, due: "28 Jul",
     daysOverdue: 0, requestedBy: "Rahul Sharma (Project Coordinator)", status: "Clearance Sent",
     raisedOn: "18 Jul", payDate: "27 Jul", mode: "RTGS", txnMasked: "XXXXXX6620",
     proof: "raipur_rtgs.pdf", vyaparInvoice: "VY-INV-2231", vyaparParty: "Komal Sahu (Raipur)",
@@ -257,7 +257,6 @@ export function AmDashboard() {
 
   // record payment form
   const [rpReq, setRpReq] = useState("");
-  const [rpAmt, setRpAmt] = useState("");
   const [rpMode, setRpMode] = useState("NEFT");
   const [rpDate, setRpDate] = useState("");
   const [rpRef, setRpRef] = useState("");
@@ -288,15 +287,14 @@ export function AmDashboard() {
     ...reqs.filter((r) => r.status === "Request Submitted").map((r) => ({ tag: "New request to accept", tone: "blue", r })),
     ...reqs.filter((r) => r.status === "Verification Pending").map((r) => ({ tag: "Payment received, not verified", tone: "amber", r })),
     ...reqs.filter((r) => r.daysOverdue > 0).map((r) => ({ tag: `Overdue ${r.daysOverdue} day(s) — follow up`, tone: "red", r })),
-    ...reqs.filter((r) => r.status === "Partially Paid").map((r) => ({ tag: `Partial — ${Math.round((r.received / r.amount) * 100)}% collected`, tone: "amber", r })),
+    ...reqs.filter((r) => r.status === "Partially Paid").map((r) => ({ tag: `Partial — ${Math.round((r.received / r.target) * 100)}% collected`, tone: "amber", r })),
   ].slice(0, 6);
 
   const alerts = [
     ...reqs.filter((r) => r.status === "Request Submitted").map((r) => ({ level: "amber", text: `${r.id} — Project request not accepted yet (${r.city})` })),
     ...reqs.filter((r) => r.due === "Today").map((r) => ({ level: "amber", text: `${r.id} — Payment due today` })),
     ...reqs.filter((r) => r.daysOverdue > 0).map((r) => ({ level: "red", text: `${r.id} — Payment overdue by ${r.daysOverdue} day(s)` })),
-    ...reqs.filter((r) => r.status === "Verification Pending" && r.amount >= 500000).map((r) => ({ level: "red", text: `${r.id} — Large payment awaiting verification` })),
-    ...reqs.filter((r) => r.received > 0 && r.received < r.amount).map((r) => ({ level: "amber", text: `${r.id} — Only ${Math.round((r.received / r.amount) * 100)}% of the expected amount was matched — verify` })),
+    ...reqs.filter((r) => r.received > 0 && r.received < r.amount).map((r) => ({ level: "amber", text: `${r.id} — Only ${Math.round((r.received / r.target) * 100)}% of the expected target was matched — verify` })),
     ...duplicateRefs(reqs).map((t) => ({ level: "red", text: t })),
     ...clrs.filter((c) => c.logistics === "Not Sent").map((c) => ({ level: "amber", text: `${c.reqId} — Payment verified but dispatch clearance not sent` })),
     ...clrs.filter((c) => c.logistics === "Sent — Awaiting Acceptance").map((c) => ({ level: "amber", text: `${c.id} — Logistics has not accepted the clearance` })),
@@ -318,7 +316,7 @@ export function AmDashboard() {
       case "Accepted": return "Send the payment request to the franchise owner";
       case "Payment Requested":
       case "Follow-up Due": return "Call the franchise owner and record the follow-up";
-      case "Partially Paid": return `Collect balance — ${Math.round((r.received / r.amount) * 100)}% of target collected`;
+      case "Partially Paid": return `Collect balance — ${Math.round((r.received / r.target) * 100)}% of target collected`;
       case "Payment Received":
       case "Verification Pending": return "Verify amount, reference and proof of payment";
       case "Verified": return "Create and send dispatch clearance to Logistics";
@@ -373,7 +371,7 @@ export function AmDashboard() {
               <Field label="Franchise / project" value={`${next.store} · ${next.projectId}`} />
               <Field label="Franchise owner" value={next.owner} />
               <Field label="Purpose" value={next.purpose} />
-              <Field label="Collection progress" value={`${Math.round((next.received / next.amount) * 100)}% of target`} />
+              <Field label="Collection progress" value={`${Math.round((next.received / next.target) * 100)}% of target`} />
               <Field label="Due date" value={next.due} />
               <Field label="Requested by" value={next.requestedBy} />
             </div>
@@ -528,7 +526,7 @@ export function AmDashboard() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="tabular-nums font-semibold">{Math.round((r.received / r.amount) * 100)}% collected</span>
+                <span className="tabular-nums font-semibold">{Math.round((r.received / r.target) * 100)}% collected</span>
                 {r.daysOverdue > 0 && <Badge className="bg-rose-100 text-rose-700">{r.daysOverdue}d overdue</Badge>}
                 <Button size="sm" variant="outline" onClick={() => setOpenId(r.id)}>Follow Up</Button>
               </div>
@@ -550,7 +548,7 @@ export function AmDashboard() {
                 <Badge className={tone(r.status)}>{r.status}</Badge>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                <Field label="Collection progress" value={`${Math.round((r.received / r.amount) * 100)}% of target`} />
+                <Field label="Collection progress" value={`${Math.round((r.received / r.target) * 100)}% of target`} />
                 <Field label="Payment date" value={r.payDate ?? "—"} />
                 <Field label="Mode" value={r.mode ?? "—"} />
                 <Field label="Transaction ref" value={r.txnMasked ?? "—"} />
@@ -683,7 +681,7 @@ export function AmDashboard() {
                   <Field label="Franchise owner" value={`${open.owner} · ${open.ownerPhoneMasked}`} />
                   <Field label="Payment type" value={open.type} />
                   <Field label="Purpose" value={open.purpose} />
-                  <Field label="Collection progress" value={`${Math.round((open.received / open.amount) * 100)}% of target`} />
+                  <Field label="Collection progress" value={`${Math.round((open.received / open.target) * 100)}% of target`} />
                   <Field label="Due date" value={open.due} />
                   <Field label="Requested by" value={open.requestedBy} />
                   <Field label="Vyapar invoice" value={open.vyaparInvoice ?? "—"} />
@@ -807,10 +805,6 @@ export function AmDashboard() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Amount received</Label>
-                <Input value={rpAmt} onChange={(e) => setRpAmt(e.target.value)} placeholder="e.g. 300000" />
-              </div>
-              <div>
                 <Label className="text-xs">Payment date</Label>
                 <Input type="date" value={rpDate} onChange={(e) => setRpDate(e.target.value)} />
               </div>
@@ -840,13 +834,11 @@ export function AmDashboard() {
             <Button
               onClick={() => {
                 const target = reqs.find((r) => r.id === rpReq);
-                const amt = Number(rpAmt);
                 if (!target) return toast.error("Select a payment request");
-                if (!amt || amt <= 0) return toast.error("Enter a valid amount");
                 if (rpRef && reqs.some((r) => r.txnMasked === maskRef(rpRef))) {
                   return toast.error("Duplicate transaction reference — verify before recording");
                 }
-                const received = target.received + amt;
+                const received = Math.min(target.target, target.received + 1);
                 update(target.id, (x) =>
                   log(
                     {
@@ -856,14 +848,14 @@ export function AmDashboard() {
                       mode: rpMode,
                       txnMasked: rpRef ? maskRef(rpRef) : x.txnMasked,
                       vyaparInvoice: rpInvoice || x.vyaparInvoice,
-                      status: received >= x.amount ? "Verification Pending" : "Partially Paid",
+                      status: received >= x.target ? "Verification Pending" : "Partially Paid",
                     },
                     `Payment recorded (${rpMode})`,
                   ),
                 );
                 toast.success(`Payment recorded against ${target.id}`);
                 setRecordOpen(false);
-                setRpAmt(""); setRpRef(""); setRpInvoice(""); setRpReq("");
+                setRpRef(""); setRpInvoice(""); setRpReq("");
               }}
             >
               <CheckCircle2 className="h-4 w-4 mr-2" /> Save

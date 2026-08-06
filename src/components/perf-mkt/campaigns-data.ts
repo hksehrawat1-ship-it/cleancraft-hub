@@ -804,35 +804,22 @@ export const CAMPAIGNS_FULL: CampaignRecord[] = [
 ];
 
 export const ctr = (m: Metrics) => (m.impressions ? (m.clicks / m.impressions) * 100 : 0);
-export const cpc = (c: CampaignRecord) => (c.metrics.clicks ? c.spend / c.metrics.clicks : 0);
-export const cpl = (c: CampaignRecord) => (c.metrics.leads ? c.spend / c.metrics.leads : 0);
-export const cpql = (c: CampaignRecord) => (c.metrics.qualified ? c.spend / c.metrics.qualified : 0);
-export const cps = (c: CampaignRecord) => (c.metrics.orders ? c.spend / c.metrics.orders : 0);
 export const conversion = (c: CampaignRecord) =>
   c.metrics.leads ? (c.metrics.orders / c.metrics.leads) * 100 : 0;
-/** ROAS is only shown when both spend and sales are verified. */
-export const roas = (c: CampaignRecord) =>
-  c.metrics.salesVerified && c.spend > 0 ? c.metrics.salesAmount / c.spend : null;
-export const budgetUsedPct = (c: CampaignRecord) =>
-  c.budget.total ? Math.min(100, Math.round((c.spend / c.budget.total) * 100)) : 0;
+export const targetAchievedPct = (c: CampaignRecord) =>
+  c.targets.leadTarget ? Math.min(100, Math.round((c.metrics.leads / c.targets.leadTarget) * 100)) : 0;
 
 const LIVE_STAGES: CampaignStage[] = ["active", "optimisation_required", "budget_exhausted"];
 
 export function campaignAlerts(c: CampaignRecord): string[] {
   const a: string[] = [];
-  if (LIVE_STAGES.includes(c.stage) && c.spend > 3000 && c.metrics.leads === 0)
-    a.push("Campaign spending without leads");
-  if (c.metrics.leads > 0 && cpl(c) > c.budget.expectedCpl) a.push("Cost per lead above approved target");
-  if (budgetUsedPct(c) >= 85 && budgetUsedPct(c) < 100) a.push("Budget nearly exhausted");
-  if (c.spend > c.budget.approved && c.budget.approved > 0) a.push("Campaign overspending");
   if (c.metrics.leads - c.leadsContacted >= 5) a.push("Leads not being contacted");
   if (c.metrics.leads >= 10 && c.metrics.qualified / c.metrics.leads < 0.5)
     a.push("Low qualified-lead rate");
-  if (c.metrics.orders > 0 && !c.metrics.salesVerified) a.push("Sales not linked to campaign (unverified)");
   if (c.creatives.some((cr) => cr.approval === "rejected" || cr.approval === "correction"))
     a.push("Creative rejected / correction required");
   if (!c.linkPassed) a.push("Destination link not working");
-  if (c.budget.endDate < CAMPAIGN_TODAY && LIVE_STAGES.includes(c.stage))
+  if (c.targets.endDate < CAMPAIGN_TODAY && LIVE_STAGES.includes(c.stage))
     a.push("Campaign end date passed");
   if (["completed"].includes(c.stage) && !c.report) a.push("Campaign report missing");
   if (LIVE_STAGES.includes(c.stage) && c.metrics.orders > 0 && conversion(c) < 20)

@@ -73,7 +73,6 @@ type Clearance = {
   coordinator: string;
   logisticsExec: string;
   lines: Line[];
-  verifiedAmount: number;
   verificationDate: string;
   vyaparInvoice: string;
   vyaparReceipt: string;
@@ -107,7 +106,6 @@ type VerifiedPayment = {
   address: string;
   siteContact: string;
   coordinator: string;
-  amount: number;
   verifiedOn: string;
   invoice: string;
   receipt: string;
@@ -122,7 +120,7 @@ const VERIFIED_POOL: VerifiedPayment[] = [
     payId: "PAY-3104", projectId: "PRJ-SUR-05", store: "Clean Craft Surat", owner: "Bhavesh Patel",
     city: "Surat", address: "Shop 4, Ring Road Commercial Complex, Surat, Gujarat 395002",
     siteContact: "Bhavesh Patel · +91 90XXXXXX66", coordinator: "Deepak Yadav",
-    amount: 145000, verifiedOn: "30 Jul 2026", invoice: "VY-INV-2260", receipt: "RCP-1176",
+    verifiedOn: "30 Jul 2026", invoice: "VY-INV-2260", receipt: "RCP-1176",
     launchDate: "28 Aug 2026",
     suggestedLines: [
       { name: "Detergent concentrate 20L", type: "Chemicals", qty: 10, approvedQty: 10 },
@@ -134,7 +132,7 @@ const VERIFIED_POOL: VerifiedPayment[] = [
     payId: "PAY-3103", projectId: "PRJ-LKO-02", store: "Clean Craft Lucknow", owner: "Sunil Mishra",
     city: "Lucknow", address: "Plot 22, Gomti Nagar Extension, Lucknow, Uttar Pradesh 226010",
     siteContact: "Sunil Mishra · +91 99XXXXXX08", coordinator: "Rahul Sharma",
-    amount: 520000, verifiedOn: "4 Aug 2026", invoice: "VY-INV-2277", receipt: "RCP-1201",
+    verifiedOn: "4 Aug 2026", invoice: "VY-INV-2277", receipt: "RCP-1201",
     launchDate: "16 Aug 2026",
     suggestedLines: [
       { name: "Washer extractor 15kg", type: "Laundry Machine", qty: 1, approvedQty: 1 },
@@ -145,7 +143,7 @@ const VERIFIED_POOL: VerifiedPayment[] = [
     payId: "PAY-3102", projectId: "PRJ-IND-03", store: "Clean Craft Indore", owner: "Meena Joshi",
     city: "Indore", address: "Unit 7, Vijay Nagar Square, Indore, Madhya Pradesh 452010",
     siteContact: "Meena Joshi · +91 97XXXXXX40", coordinator: "Anita Rao",
-    amount: 300000, verifiedOn: "1 Aug 2026", invoice: "VY-INV-2291", receipt: "RCP-1188",
+    verifiedOn: "1 Aug 2026", invoice: "VY-INV-2291", receipt: "RCP-1188",
     launchDate: "12 Sep 2026", partial: true, partialApproval: "",
     suggestedLines: [{ name: "Steam finishing table", type: "Finishing Equipment", qty: 1, approvedQty: 1 }],
   },
@@ -163,7 +161,7 @@ const SEED: Clearance[] = [
       { name: "Steam boiler", type: "Finishing Equipment", qty: 1, approvedQty: 1 },
       { name: "Steam iron station", type: "Finishing Equipment", qty: 2, approvedQty: 2 },
     ],
-    verifiedAmount: 690000, verificationDate: "27 Jul 2026", vyaparInvoice: "VY-INV-2231",
+    verificationDate: "27 Jul 2026", vyaparInvoice: "VY-INV-2231",
     vyaparReceipt: "RCP-1150", priority: "Urgent", requiredDelivery: "9 Aug 2026",
     launchDate: "20 Aug 2026", handling: "Fragile — boiler must travel upright",
     notesForLogistics: "Site lift available till 6 pm only.", status: "Clearance Sent to Logistics",
@@ -181,7 +179,7 @@ const SEED: Clearance[] = [
       { name: "Dry-cleaning machine 12kg", type: "Dry-Cleaning Machine", qty: 1, approvedQty: 1 },
       { name: "POS terminal kit", type: "POS Equipment", qty: 1, approvedQty: 1 },
     ],
-    verifiedAmount: 710000, verificationDate: "22 Jul 2026", vyaparInvoice: "VY-INV-2210",
+    verificationDate: "22 Jul 2026", vyaparInvoice: "VY-INV-2210",
     vyaparReceipt: "RCP-1122", priority: "High", requiredDelivery: "5 Aug 2026",
     launchDate: "14 Aug 2026", handling: "Unload with hydraulic pallet truck",
     notesForLogistics: "Coordinate with site engineer before arrival.", status: "Dispatched",
@@ -203,7 +201,7 @@ const SEED: Clearance[] = [
       { name: "Consumables opening kit", type: "Consumables", qty: 1, approvedQty: 1 },
       { name: "Packaging rolls", type: "Packaging Materials", qty: 20, approvedQty: 20 },
     ],
-    verifiedAmount: 132000, verificationDate: "12 Jul 2026", vyaparInvoice: "VY-INV-2188",
+    verificationDate: "12 Jul 2026", vyaparInvoice: "VY-INV-2188",
     vyaparReceipt: "RCP-1090", priority: "Normal", requiredDelivery: "22 Jul 2026",
     launchDate: "6 Aug 2026", handling: "Keep chemicals away from heat",
     notesForLogistics: "", status: "Delivered", itemAvailability: "Confirmed",
@@ -221,7 +219,7 @@ const SEED: Clearance[] = [
     addressComplete: false, siteContact: "Site contact missing", coordinator: "Suresh Patel",
     logisticsExec: "Farhan Qureshi",
     lines: [{ name: "POS counter kit", type: "POS Equipment", qty: 1, approvedQty: 1 }],
-    verifiedAmount: 52000, verificationDate: "19 Jul 2026", vyaparInvoice: "VY-INV-2199",
+    verificationDate: "19 Jul 2026", vyaparInvoice: "VY-INV-2199",
     vyaparReceipt: "RCP-1101", priority: "Normal", requiredDelivery: "28 Jul 2026",
     launchDate: "20 Aug 2026", handling: "", notesForLogistics: "",
     status: "Logistics Returned",
@@ -240,7 +238,7 @@ const SEED: Clearance[] = [
     addressComplete: true, siteContact: "Arindam Bose · +91 98XXXXXX19", coordinator: "Anita Rao",
     logisticsExec: "Imran Sheikh",
     lines: [{ name: "Washer extractor 20kg", type: "Laundry Machine", qty: 1, approvedQty: 1 }],
-    verifiedAmount: 480000, verificationDate: "8 Jul 2026", vyaparInvoice: "VY-INV-2170",
+    verificationDate: "8 Jul 2026", vyaparInvoice: "VY-INV-2170",
     vyaparReceipt: "RCP-1076", priority: "High", requiredDelivery: "18 Jul 2026",
     launchDate: "12 Aug 2026", handling: "", notesForLogistics: "",
     status: "Clearance Suspended", paymentReversed: true, packingStarted: true,
@@ -260,7 +258,7 @@ const SEED: Clearance[] = [
       { name: "Washer extractor 25kg", type: "Laundry Machine", qty: 1, approvedQty: 1 },
       { name: "Tumble dryer 20kg", type: "Laundry Machine", qty: 1, approvedQty: 1 },
     ],
-    verifiedAmount: 750000, verificationDate: "3 Aug 2026", vyaparInvoice: "VY-INV-2298",
+    verificationDate: "3 Aug 2026", vyaparInvoice: "VY-INV-2298",
     vyaparReceipt: "RCP-1210", priority: "Urgent", requiredDelivery: "10 Aug 2026",
     launchDate: "22 Aug 2026", handling: "Machine advance cleared — balance on delivery",
     notesForLogistics: "Launch is date-critical.", status: "Clearance Ready",
@@ -272,7 +270,7 @@ const SEED: Clearance[] = [
     addressComplete: true, siteContact: "Prakash Pawar · +91 90XXXXXX07", coordinator: "Neha Gupta",
     logisticsExec: "Farhan Qureshi",
     lines: [{ name: "Spare motor assembly", type: "Spare Parts", qty: 2, approvedQty: 3 }],
-    verifiedAmount: 38000, verificationDate: "28 Jul 2026", vyaparInvoice: "VY-INV-2255",
+    verificationDate: "28 Jul 2026", vyaparInvoice: "VY-INV-2255",
     vyaparReceipt: "RCP-1168", priority: "Normal", requiredDelivery: "8 Aug 2026",
     launchDate: "30 Aug 2026", handling: "", notesForLogistics: "",
     status: "Dispatch Planned", itemAvailability: "Partially Available", plannedDispatch: "7 Aug 2026",
@@ -862,7 +860,7 @@ export function AmDispatchClearance() {
                     id, payId: selectedPay.payId, projectId: selectedPay.projectId, store: selectedPay.store,
                     owner: selectedPay.owner, city: selectedPay.city, address: cAddress.trim(), addressComplete: true,
                     siteContact: cContact.trim(), coordinator: selectedPay.coordinator, logisticsExec: cExec,
-                    lines: selectedPay.suggestedLines, verifiedAmount: selectedPay.amount,
+                    lines: selectedPay.suggestedLines,
                     verificationDate: selectedPay.verifiedOn, vyaparInvoice: selectedPay.invoice,
                     vyaparReceipt: selectedPay.receipt, priority: cPriority, requiredDelivery: cRequired.trim(),
                     launchDate: selectedPay.launchDate, handling: cHandling.trim(),

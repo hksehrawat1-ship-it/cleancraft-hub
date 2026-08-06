@@ -335,14 +335,12 @@ export function SalesHeadPipelinePage() {
               options={[["all", "All campaigns"], ...CAMPAIGNS.map((c) => [c, c] as [string, string])]} />
             <Sel label="City / state" value={f.place} onChange={(v) => setF({ ...f, place: v })}
               options={[["all", "All states"], ...Array.from(new Set(SEED.map((o) => o.state))).sort().map((s) => [s, s] as [string, string])]} />
-            <Sel label="Opportunity value" value={f.value} onChange={(v) => setF({ ...f, value: v })}
-              options={[["all", "Any value"], ["lt10", "Below ₹10L"], ["10to20", "₹10L – ₹20L"], ["gt20", "Above ₹20L"]]} />
             <Sel label="Expected closing" value={f.close} onChange={(v) => setF({ ...f, close: v })}
               options={[["all", "Any date"], ["week", "Next 7 days"], ["month", "This month"], ["overdue", "Past due"]]} />
             <Sel label="Created" value={f.created} onChange={(v) => setF({ ...f, created: v })}
               options={[["all", "Any time"], ["7", "Last 7 days"], ["30", "Last 30 days"]]} />
             <div className="flex items-end">
-              <Button variant="ghost" size="sm" onClick={() => setF({ exec: "all", unit: "all", stage: "all", priority: "all", score: "all", source: "all", campaign: "all", place: "all", value: "all", close: "all", created: "all", q: "" })}>
+              <Button variant="ghost" size="sm" onClick={() => setF({ exec: "all", unit: "all", stage: "all", priority: "all", score: "all", source: "all", campaign: "all", place: "all", close: "all", created: "all", q: "" })}>
                 <X className="h-4 w-4 mr-1" /> Clear filters
               </Button>
             </div>
@@ -429,8 +427,7 @@ function Kanban({
       <div className="flex gap-3 min-w-max">
         {PIPE_STAGES.map((stage, idx) => {
           const items = rows.filter((o) => o.stage === stage);
-          const value = items.reduce((s, o) => s + o.value, 0);
-          const weighted = (value * probs[stage]) / 100;
+          const weightedCount = items.length * (probs[stage] / 100);
           const avgDays = items.length ? Math.round(items.reduce((s, o) => s + daysSince(o.stageSince), 0) / items.length) : 0;
           const prevCount = idx === 0 ? items.length : rows.filter((o) => o.stage === PIPE_STAGES[idx - 1]).length;
           const conv = prevCount ? Math.round((items.length / prevCount) * 100) : 0;
@@ -448,8 +445,7 @@ function Kanban({
                   <Badge variant="secondary">{items.length}</Badge>
                 </div>
                 <div className="mt-2 grid grid-cols-2 gap-1 text-[11px] text-muted-foreground">
-                  <div>Value <span className="block font-medium text-foreground">{inr(value)}</span></div>
-                  <div>Weighted <span className="block font-medium text-foreground">{inr(weighted)}</span></div>
+                  <div>Weighted count <span className="block font-medium text-foreground">{weightedCount.toFixed(1)}</span></div>
                   <div>Avg in stage <span className="block font-medium text-foreground">{avgDays}d</span></div>
                   <div>Conversion <span className="block font-medium text-foreground">{idx === 0 ? "—" : `${conv}%`}</span></div>
                 </div>
@@ -490,7 +486,6 @@ function OpportunityCard({ o, onOpen, onDragStart }: { o: Opportunity; onOpen: (
           <Badge variant="outline" className={cn("border text-[10px]", prioTone(o.priority))}>{o.priority}</Badge>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold tabular-nums">{inr(o.value)}</span>
           <span className="text-xs text-muted-foreground">Score {o.score}</span>
         </div>
         <div className="text-[11px] text-muted-foreground space-y-0.5">
@@ -524,7 +519,6 @@ function TableView({ rows, probs, onOpen }: { rows: Opportunity[]; probs: Record
               <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground border-b">
                 <th className="py-2 px-3">Lead</th>
                 <th className="py-2 px-3">Stage</th>
-                <th className="py-2 px-3">Value</th>
                 <th className="py-2 px-3">Weighted</th>
                 <th className="py-2 px-3">Score</th>
                 <th className="py-2 px-3">Priority</th>
@@ -550,8 +544,7 @@ function TableView({ rows, probs, onOpen }: { rows: Opportunity[]; probs: Record
                         <span className={cn("h-2 w-2 rounded-full", STAGE_TONE[o.stage])} />{o.stage}
                       </span>
                     </td>
-                    <td className="py-2 px-3 tabular-nums">{inr(o.value)}</td>
-                    <td className="py-2 px-3 tabular-nums text-muted-foreground">{inr((o.value * probs[o.stage]) / 100)}</td>
+                    <td className="py-2 px-3 tabular-nums text-muted-foreground">{(probs[o.stage] / 100).toFixed(2)}</td>
                     <td className="py-2 px-3 tabular-nums">{o.score}</td>
                     <td className="py-2 px-3">
                       <Badge variant="outline" className={cn("border", prioTone(o.priority))}>{o.priority}</Badge>
@@ -588,11 +581,11 @@ function Forecast({
   target: number;
 }) {
   const open = rows.filter((o) => !["Won", "Lost"].includes(o.stage));
-  const committed = open.filter((o) => probs[o.stage] >= 75).reduce((s, o) => s + o.value, 0);
-  const best = open.reduce((s, o) => s + o.value, 0);
-  const weighted = open.reduce((s, o) => s + (o.value * probs[o.stage]) / 100, 0);
-  const atRisk = open.filter((o) => risksOf(o).length > 0).reduce((s, o) => s + o.value, 0);
-  const won = rows.filter((o) => o.stage === "Won").reduce((s, o) => s + (o.wonAmount ?? o.value), 0);
+  const committed = open.filter((o) => probs[o.stage] >= 75).length;
+  const best = open.length;
+  const weighted = open.reduce((s, o) => s + probs[o.stage] / 100, 0);
+  const atRisk = open.filter((o) => risksOf(o).length > 0).length;
+  const won = rows.filter((o) => o.stage === "Won").length;
 
   const weeks = [0, 1, 2, 3].map((w) => {
     const from = now + w * 7 * 86400000;
@@ -601,7 +594,7 @@ function Forecast({
       const t = new Date(o.expectedCloseAt).getTime();
       return t >= from && t < to;
     });
-    return { label: `Week ${w + 1}`, count: items.length, value: items.reduce((s, o) => s + o.value, 0) };
+    return { label: `Week ${w + 1}`, count: items.length };
   });
 
   const byPerson = PIPE_EXECUTIVES.map((p) => {
@@ -609,8 +602,8 @@ function Forecast({
     return {
       name: p,
       count: mine.length,
-      weighted: mine.reduce((s, o) => s + (o.value * probs[o.stage]) / 100, 0),
-      won: rows.filter((o) => o.owner === p && o.stage === "Won").reduce((s, o) => s + (o.wonAmount ?? o.value), 0),
+      weighted: mine.reduce((s, o) => s + probs[o.stage] / 100, 0),
+      won: rows.filter((o) => o.owner === p && o.stage === "Won").length,
     };
   });
 
@@ -619,26 +612,26 @@ function Forecast({
   return (
     <div className="space-y-4">
       <p className="text-xs text-muted-foreground">
-        All forecast numbers are estimates derived from configurable stage probabilities — not committed revenue.
+        All forecast numbers are estimates derived from configurable stage probabilities — expected deal counts, not committed revenue.
       </p>
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <Stat label="Committed revenue" value={inr(committed)} hint="Payment Pending & above" />
-        <Stat label="Best-case revenue" value={inr(best)} hint="All open opportunities" />
-        <Stat label="Weighted pipeline" value={inr(weighted)} hint="Probability adjusted" />
-        <Stat label="Revenue at risk" value={inr(atRisk)} hint="Opportunities with warnings" tone="text-red-600" />
-        <Stat label="Won so far" value={inr(won)} tone="text-emerald-600" />
+        <Stat label="Committed deals" value={String(committed)} hint="Payment Pending & above" />
+        <Stat label="Best-case deals" value={String(best)} hint="All open opportunities" />
+        <Stat label="Weighted pipeline" value={weighted.toFixed(1)} hint="Probability adjusted" />
+        <Stat label="Deals at risk" value={String(atRisk)} hint="Opportunities with warnings" tone="text-red-600" />
+        <Stat label="Won so far" value={String(won)} tone="text-emerald-600" />
       </div>
 
       <Card>
         <CardHeader className="pb-3"><CardTitle className="text-base">Target vs forecast</CardTitle></CardHeader>
         <CardContent className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span>Forecast {inr(forecastTotal)}</span>
-            <span className="text-muted-foreground">Target {inr(target)}</span>
+            <span>Forecast {forecastTotal.toFixed(1)} deals</span>
+            <span className="text-muted-foreground">Target {target} deals</span>
           </div>
           <Progress value={Math.min(100, (forecastTotal / target) * 100)} />
           <div className="text-xs text-muted-foreground">
-            Won {inr(won)} + weighted pipeline {inr(weighted)} = {Math.round((forecastTotal / target) * 100)}% of target.
+            Won {won} + weighted pipeline {weighted.toFixed(1)} = {Math.round((forecastTotal / target) * 100)}% of target.
           </div>
         </CardContent>
       </Card>
@@ -650,8 +643,8 @@ function Forecast({
             {weeks.map((w) => (
               <div key={w.label} className="flex items-center gap-3 text-sm">
                 <span className="w-16 text-muted-foreground">{w.label}</span>
-                <Progress className="flex-1" value={Math.min(100, (w.value / (best || 1)) * 100 * 3)} />
-                <span className="w-24 text-right tabular-nums">{w.count} · {inr(w.value)}</span>
+                <Progress className="flex-1" value={Math.min(100, (w.count / (best || 1)) * 100 * 3)} />
+                <span className="w-24 text-right tabular-nums">{w.count} deals</span>
               </div>
             ))}
           </CardContent>
@@ -671,8 +664,8 @@ function Forecast({
                   <tr key={p.name} className="border-b last:border-0">
                     <td className="py-1.5">{p.name}</td>
                     <td className="py-1.5 tabular-nums">{p.count}</td>
-                    <td className="py-1.5 tabular-nums">{inr(p.weighted)}</td>
-                    <td className="py-1.5 tabular-nums text-emerald-600">{inr(p.won)}</td>
+                    <td className="py-1.5 tabular-nums">{p.weighted.toFixed(1)}</td>
+                    <td className="py-1.5 tabular-nums text-emerald-600">{p.won}</td>
                   </tr>
                 ))}
               </tbody>
@@ -712,15 +705,14 @@ function Analysis({ rows, all, probs }: { rows: Opportunity[]; all: Opportunity[
     const cycle = wonMine.length ? Math.round(wonMine.reduce((s, o) => s + daysSince(o.createdAt), 0) / wonMine.length) : 0;
     return {
       name: p,
-      pipeline: openMine.reduce((s, o) => s + o.value, 0),
       count: openMine.length,
-      won: wonMine.reduce((s, o) => s + (o.wonAmount ?? o.value), 0),
-      lost: mine.filter((o) => o.stage === "Lost").reduce((s, o) => s + o.value, 0),
-      stalled: openMine.filter((o) => daysSince(o.stageSince) > STAGE_MAX_DAYS[o.stage]).reduce((s, o) => s + o.value, 0),
+      won: wonMine.length,
+      lost: mine.filter((o) => o.stage === "Lost").length,
+      stalled: openMine.filter((o) => daysSince(o.stageSince) > STAGE_MAX_DAYS[o.stage]).length,
       cycle,
     };
   });
-  const maxPipeline = Math.max(1, ...byExec.map((b) => b.pipeline));
+  const maxPipeline = Math.max(1, ...byExec.map((b) => b.count));
 
   const wonAll = all.filter((o) => o.stage === "Won");
   const avgCycle = wonAll.length ? Math.round(wonAll.reduce((s, o) => s + daysSince(o.createdAt), 0) / wonAll.length) : 0;
@@ -734,22 +726,22 @@ function Analysis({ rows, all, probs }: { rows: Opportunity[]; all: Opportunity[
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Average sales cycle" value={`${avgCycle} days`} hint="Created → Won" />
         <Stat label="Expected monthly closures" value={String(monthlyClosures)} />
-        <Stat label="Won revenue" value={inr(byExec.reduce((s, b) => s + b.won, 0))} tone="text-emerald-600" />
-        <Stat label="Lost opportunity value" value={inr(byExec.reduce((s, b) => s + b.lost, 0))} tone="text-red-600" />
+        <Stat label="Deals won" value={String(byExec.reduce((s, b) => s + b.won, 0))} tone="text-emerald-600" />
+        <Stat label="Deals lost" value={String(byExec.reduce((s, b) => s + b.lost, 0))} tone="text-red-600" />
       </div>
 
       <Card>
-        <CardHeader className="pb-3"><CardTitle className="text-base">Pipeline value by executive</CardTitle></CardHeader>
+        <CardHeader className="pb-3"><CardTitle className="text-base">Open opportunities by executive</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           {byExec.map((b) => (
             <div key={b.name} className="space-y-1">
               <div className="flex justify-between text-sm">
-                <span>{b.name} <span className="text-muted-foreground text-xs">· {b.count} open · cycle {b.cycle}d</span></span>
-                <span className="tabular-nums">{inr(b.pipeline)}</span>
+                <span>{b.name} <span className="text-muted-foreground text-xs">· cycle {b.cycle}d</span></span>
+                <span className="tabular-nums">{b.count} open</span>
               </div>
-              <Progress value={(b.pipeline / maxPipeline) * 100} />
+              <Progress value={(b.count / maxPipeline) * 100} />
               <div className="text-[11px] text-muted-foreground">
-                Won {inr(b.won)} · Lost {inr(b.lost)} · Stalled {inr(b.stalled)}
+                Won {b.won} · Lost {b.lost} · Stalled {b.stalled}
               </div>
             </div>
           ))}
@@ -763,7 +755,7 @@ function Analysis({ rows, all, probs }: { rows: Opportunity[]; all: Opportunity[
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-left text-xs uppercase text-muted-foreground border-b">
-                  <th className="py-2">Stage</th><th className="py-2">Count</th><th className="py-2">Value</th>
+                  <th className="py-2">Stage</th><th className="py-2">Count</th>
                   <th className="py-2">Weighted</th><th className="py-2">Avg in stage</th><th className="py-2">Conversion</th>
                 </tr>
               </thead>
@@ -771,7 +763,6 @@ function Analysis({ rows, all, probs }: { rows: Opportunity[]; all: Opportunity[
                 {PIPE_STAGES.map((s, i) => {
                   const items = rows.filter((o) => o.stage === s);
                   const prev = i === 0 ? items.length : rows.filter((o) => o.stage === PIPE_STAGES[i - 1]).length;
-                  const value = items.reduce((a, o) => a + o.value, 0);
                   const avg = items.length ? Math.round(items.reduce((a, o) => a + daysSince(o.stageSince), 0) / items.length) : 0;
                   return (
                     <tr key={s} className="border-b last:border-0">
@@ -779,8 +770,7 @@ function Analysis({ rows, all, probs }: { rows: Opportunity[]; all: Opportunity[
                         <span className="inline-flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full", STAGE_TONE[s])} />{s}</span>
                       </td>
                       <td className="py-2 tabular-nums">{items.length}</td>
-                      <td className="py-2 tabular-nums">{inr(value)}</td>
-                      <td className="py-2 tabular-nums text-muted-foreground">{inr((value * probs[s]) / 100)}</td>
+                      <td className="py-2 tabular-nums text-muted-foreground">{(items.length * probs[s] / 100).toFixed(1)}</td>
                       <td className="py-2 tabular-nums">{avg}d</td>
                       <td className="py-2 tabular-nums">{i === 0 || !prev ? "—" : `${Math.round((items.length / prev) * 100)}%`}</td>
                     </tr>
@@ -822,7 +812,7 @@ function PipelineHealth({ rows, onOpen }: { rows: Opportunity[]; onOpen: (o: Opp
                     className="w-full text-left text-xs text-muted-foreground hover:text-foreground flex justify-between gap-2"
                   >
                     <span className="truncate">{o.name} · {o.stage}</span>
-                    <span className="tabular-nums shrink-0">{inr(o.value)}</span>
+                    <span className="tabular-nums shrink-0">{o.priority}</span>
                   </button>
                 ))}
                 {items.length > 3 && <div className="text-[11px] text-muted-foreground">+{items.length - 3} more</div>}
@@ -870,7 +860,6 @@ function OpportunityDetail({
         <div className="flex flex-wrap gap-2">
           <Badge variant="outline"><span className={cn("h-2 w-2 rounded-full mr-1.5", STAGE_TONE[o.stage])} />{o.stage}</Badge>
           <Badge variant="outline" className={cn("border", prioTone(o.priority))}>{o.priority}</Badge>
-          <Badge variant="outline">{inr(o.value)}</Badge>
           <Badge variant="outline">Score {o.score}</Badge>
         </div>
 
@@ -885,9 +874,7 @@ function OpportunityDetail({
           <F k="Next action" v={o.nextAction ?? "Not set"} />
           <F k="Expected close" v={fmtDate(o.expectedCloseAt)} />
           <F k="Close date changes" v={String(o.closeDateChanges)} />
-          {o.proposalAmount ? <F k="Proposal amount" v={inr(o.proposalAmount)} /> : null}
-          {o.paymentAmount ? <F k="Payment committed" v={`${inr(o.paymentAmount)} by ${fmtDate(o.paymentDueAt ?? null)}`} /> : null}
-          {o.wonAmount ? <F k="Won revenue" v={inr(o.wonAmount)} /> : null}
+          {o.paymentDueAt ? <F k="Payment committed by" v={fmtDate(o.paymentDueAt)} /> : null}
           {o.lostReason ? <F k="Loss reason" v={o.lostReason} /> : null}
         </div>
 
@@ -1003,13 +990,10 @@ const GATES: Partial<Record<PipeStage, { field: string; label: string; type: str
     { field: "meetingMode", label: "Meeting mode", type: "select", options: ["In person", "Video call", "Store visit"] },
   ],
   "Meeting Completed": [{ field: "outcome", label: "Meeting outcome", type: "textarea" }],
-  "Proposal Sent": [{ field: "proposalAmount", label: "Proposal amount (₹)", type: "number" }],
   "Negotiation": [{ field: "expectedCloseAt", label: "Expected closing date", type: "date" }],
   "Payment Pending": [
-    { field: "paymentAmount", label: "Payment amount (₹)", type: "number" },
     { field: "paymentDueAt", label: "Expected payment date", type: "date" },
   ],
-  "Won": [{ field: "wonAmount", label: "Final revenue amount (₹)", type: "number" }],
   "Lost": [{ field: "lostReason", label: "Loss reason", type: "select", options: LOSS_REASONS }],
 };
 
