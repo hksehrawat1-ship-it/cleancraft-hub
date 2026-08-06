@@ -149,7 +149,6 @@ type Opportunity = {
   campaign: string;
   owner: string;
   stage: Stage;
-  value: number;
   score: number;
   scoreReasons: string[];
   priority: Priority;
@@ -158,16 +157,14 @@ type Opportunity = {
   nextAction: string;
   followupDue: string | null;
   qualification: {
-    budget: string;
     timeline: string;
     decisionMaker: string;
     preference: string;
   } | null;
   meeting: { at: string; mode: string; confirmed: boolean } | null;
-  proposal: { value: number; sentAt: string } | null;
+  proposal: { sentAt: string } | null;
   expectedCloseDate: string | null;
-  payment: { amount: number; expectedAt: string; status: "Pending" | "Received" } | null;
-  finalAmount?: number;
+  payment: { expectedAt: string; status: "Pending" | "Received" } | null;
   lossReason?: string;
   stageHistory: StageEvent[];
   timeline: TimelineItem[];
@@ -198,12 +195,6 @@ function fmtDateTime(s: string) {
   const d = new Date(s);
   return `${d.toLocaleDateString("en-IN", { day: "2-digit", month: "short" })} · ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
 }
-function inr(n: number) {
-  if (n >= 10000000) return `₹${(n / 10000000).toFixed(2)}Cr`;
-  if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
-  if (n >= 1000) return `₹${Math.round(n / 1000)}K`;
-  return `₹${n}`;
-}
 function daysBetween(a: string, b = new Date().toISOString()) {
   return Math.floor((new Date(b).getTime() - new Date(a).getTime()) / 86400000);
 }
@@ -223,7 +214,7 @@ function noNextAction(o: Opportunity) {
   return !isClosed(o.stage) && !o.nextAction.trim();
 }
 function isStaleHighValue(o: Opportunity) {
-  return !isClosed(o.stage) && o.value >= 1500000 && daysBetween(o.lastInteraction) >= 7;
+  return !isClosed(o.stage) && (o.priority === "Urgent" || o.priority === "High") && daysBetween(o.lastInteraction) >= 7;
 }
 function thisMonth(s?: string | null) {
   if (!s) return false;
@@ -243,7 +234,6 @@ function mk(
   city: string,
   state: string,
   stage: Stage,
-  value: number,
   score: number,
   priority: Priority,
   opts: Partial<Opportunity> = {},
@@ -261,7 +251,6 @@ function mk(
     campaign: CAMPAIGNS[i % CAMPAIGNS.length],
     owner: OWNERS[i % OWNERS.length],
     stage,
-    value,
     score,
     scoreReasons: [
       score >= 75 ? "Budget confirmed" : "Budget not confirmed",
@@ -296,7 +285,6 @@ function mk(
 }
 
 const QUAL = {
-  budget: "₹18L – ₹25L",
   timeline: "Within 60 days",
   decisionMaker: "Yes — self",
   preference: "High street",

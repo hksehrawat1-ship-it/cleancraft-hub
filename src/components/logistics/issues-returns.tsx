@@ -401,7 +401,6 @@ function IssueDetail({
   const [note, setNote] = useState("");
   const [resp, setResp] = useState(record.responsibility);
   const [owner, setOwner] = useState(record.owner);
-  const [showRestricted, setShowRestricted] = useState(false);
 
   const [action, setAction] = useState(ACTION_OPTIONS[0]);
   const [actionOpen, setActionOpen] = useState(false);
@@ -733,9 +732,6 @@ function IssueDetail({
             <Field label="Expected resolution" value={record.claim.expectedResolution} />
             <Field label="Final outcome" value={record.claim.outcome} />
             <div className="sm:col-span-2 flex flex-wrap items-center gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowRestricted((v) => !v)}>
-                <Lock className="mr-2 h-3.5 w-3.5" /> {showRestricted ? "Hide" : "Reveal"} restricted financial reference
-              </Button>
               <span className="text-xs text-muted-foreground">
                 {record.claim.platform} remains the official platform for external claim handling.
               </span>

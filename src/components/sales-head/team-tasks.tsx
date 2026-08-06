@@ -62,7 +62,6 @@ export type TeamTask = {
   type: TaskType;
   leadId?: string;
   leadName?: string;
-  leadValue?: number;
   owner: string;
   createdBy: string;
   priority: Priority;
@@ -136,8 +135,8 @@ function attentionFlags(t: TeamTask): string[] {
   if (t.rescheduleCount >= 2) f.push(`Rescheduled ${t.rescheduleCount} times`);
   if (t.status === "Awaiting Review" && t.reviewSubmittedAt && Date.now() - new Date(t.reviewSubmittedAt).getTime() > 24 * 3_600_000)
     f.push("Awaiting review for more than 1 business day");
-  if ((t.leadValue ?? 0) >= 1500000 && t.progressNotes.length === 0 && t.status === "Not Started")
-    f.push("High-value lead task with no progress");
+  if (t.priority === "Critical" && t.progressNotes.length === 0 && t.status === "Not Started")
+    f.push("Critical lead task with no progress");
   return f;
 }
 
@@ -149,7 +148,7 @@ const INITIAL: TeamTask[] = [
     title: "Prepare franchise proposal — Jaipur (Vaishali Nagar)",
     description: "Build the proposal deck with revised CAPEX, ROI sheet and 3-year projection. Share for review before sending.",
     type: "Proposal Preparation",
-    leadId: "LD-2201", leadName: "Mahesh Agarwal — Jaipur", leadValue: 1800000,
+    leadId: "LD-2201", leadName: "Mahesh Agarwal — Jaipur",
     owner: "Ravi Sharma", createdBy: "Sales Head",
     priority: "Critical", status: "In Progress",
     startDate: dateOnly(-1), dueAt: iso(0, NOW.getHours() + 1),
@@ -170,7 +169,7 @@ const INITIAL: TeamTask[] = [
     title: "Collect KYC + bank documents — Pune lead",
     description: "Franchise partner to share PAN, Aadhaar, GST and cancelled cheque for the booking file.",
     type: "Document Collection",
-    leadId: "LD-2244", leadName: "Sanjay Deshpande — Pune", leadValue: 1500000,
+    leadId: "LD-2244", leadName: "Sanjay Deshpande — Pune",
     owner: "Neha Kulkarni", createdBy: "Sales Head",
     priority: "High", status: "Not Started",
     startDate: dateOnly(-2), dueAt: iso(-2, 18),
@@ -214,7 +213,7 @@ const INITIAL: TeamTask[] = [
     title: "Meeting prep — Indore store visit (Thu)",
     description: "Prepare the site-visit pack: location study, competitor map, sample P&L and store photos.",
     type: "Meeting Preparation",
-    leadId: "LD-2260", leadName: "Rakesh Jain — Indore", leadValue: 1600000,
+    leadId: "LD-2260", leadName: "Rakesh Jain — Indore",
     owner: "Deepak Verma", createdBy: "Sales Head",
     priority: "High", status: "In Progress",
     startDate: dateOnly(0), dueAt: iso(1, 11),
@@ -233,9 +232,9 @@ const INITIAL: TeamTask[] = [
   {
     id: "TSK-1045",
     title: "Coordinate booking payment — Bengaluru (Whitefield)",
-    description: "Follow up on the ₹3L booking amount, share account details and confirm UTR with accounts.",
+    description: "Follow up on the booking amount, share account details and confirm UTR with accounts.",
     type: "Payment Coordination",
-    leadId: "LD-2288", leadName: "Vinay Rao — Bengaluru", leadValue: 2000000,
+    leadId: "LD-2288", leadName: "Vinay Rao — Bengaluru",
     owner: "Sneha Iyer", createdBy: "Sales Head",
     priority: "Critical", status: "In Progress",
     startDate: dateOnly(-1), dueAt: iso(0, 17),
@@ -258,7 +257,7 @@ const INITIAL: TeamTask[] = [
     title: "Resolve pricing complaint — Nagpur partner",
     description: "Partner unhappy about revised royalty slab. Understand concern and propose a resolution.",
     type: "Customer Issue",
-    leadId: "LD-2299", leadName: "Anil Thakre — Nagpur", leadValue: 1200000,
+    leadId: "LD-2299", leadName: "Anil Thakre — Nagpur",
     owner: "Neha Kulkarni", createdBy: "Sales Head",
     priority: "High", status: "Not Started",
     startDate: dateOnly(0), dueAt: iso(0, 19),
@@ -815,7 +814,6 @@ function TaskSheet({
             <Field label="Time" value={r.label} tone={r.overdue ? "text-red-600 dark:text-red-400" : ""} />
             <Field label="Reminder" value={task.reminder} />
             {task.leadName && <Field label="Linked lead" value={`${task.leadName} (${task.leadId})`} />}
-            {task.leadValue && <Field label="Opportunity" value={`₹${(task.leadValue / 100000).toFixed(1)}L`} />}
           </div>
 
           {task.checklist.length > 0 && (

@@ -1583,11 +1583,10 @@ function AudioLibraryView() {
 
 const PERF_TARGETS = {
   winRate: 25, // %
-  pipelineCoverage: 3, // x of monthly quota
+  pipelineCoverage: 3, // x of monthly closure quota (in lead counts)
   responseWithin1h: 80, // %
   responseWithin24h: 95, // %
   monthlyClosures: 5, // KRA
-  avgDealSize: 250000, // ₹
 };
 
 const PERF_FEEDBACK_KEY = "ccos.sales-perf-feedback.v1";
@@ -1718,22 +1717,14 @@ function PerformanceView({
       ? Math.round((respMs.filter((m) => m <= 86400000).length / respMs.length) * 100)
       : 0;
 
-    // Average deal size
-    const dealValues = won
-      .map((l) => Number(l.engagement_letter_fee_amount) || 0)
-      .filter((n) => n > 0);
-    const avgDeal = dealValues.length
-      ? Math.round(dealValues.reduce((s, n) => s + n, 0) / dealValues.length)
-      : 0;
-
-    // Pipeline coverage — open pipeline value vs monthly quota (KRA: 5 * avg deal target)
+    // Weighted expected conversions — probability (win rate) × open lead count
     const openLeads = scoped.filter((l) => !isTerminal(l.lead_stage) && l.lead_stage !== "Lost");
-    const openValue = openLeads.reduce(
-      (s, l) => s + (Number(l.engagement_letter_fee_amount) || PERF_TARGETS.avgDealSize),
-      0,
-    );
-    const monthlyQuota = PERF_TARGETS.monthlyClosures * PERF_TARGETS.avgDealSize;
-    const coverage = monthlyQuota ? +(openValue / monthlyQuota).toFixed(1) : 0;
+    const winProbability = (winRate || PERF_TARGETS.winRate) / 100;
+    const weightedExpectedConversions = Math.round(openLeads.length * winProbability);
+
+    // Pipeline coverage — open lead count vs monthly closure quota
+    const monthlyQuota = PERF_TARGETS.monthlyClosures;
+    const coverage = monthlyQuota ? +(openLeads.length / monthlyQuota).toFixed(1) : 0;
 
     // Sales cycle length — created_at → converted_to_franchise_at (days)
     const cycleDays: number[] = [];
@@ -1761,23 +1752,23 @@ function PerformanceView({
       (l) => l.proposal_sent_date && l.proposal_sent_date >= weekStart,
     ).length;
 
-    // Weekly revenue & growth — engagement letter fee received this week vs last week
-    const revWeek = scoped
-      .filter(
-        (l) =>
-          l.engagement_letter_fee_received_date &&
-          l.engagement_letter_fee_received_date >= weekStart,
-      )
-      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const revPrev = scoped
-      .filter(
-        (l) =>
-          l.engagement_letter_fee_received_date &&
-          l.engagement_letter_fee_received_date >= prevWeekStart &&
-          l.engagement_letter_fee_received_date < weekStart,
-      )
-      .reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
-    const growth = revPrev ? Math.round(((revWeek - revPrev) / revPrev) * 100) : revWeek ? 100 : 0;
+    // Weekly conversions & growth — engagement letter fee received this week vs last week (counts)
+    const convWeek = scoped.filter(
+      (l) =>
+        l.engagement_letter_fee_received_date &&
+        l.engagement_letter_fee_received_date >= weekStart,
+    ).length;
+    const convPrev = scoped.filter(
+      (l) =>
+        l.engagement_letter_fee_received_date &&
+        l.engagement_letter_fee_received_date >= prevWeekStart &&
+        l.engagement_letter_fee_received_date < weekStart,
+    ).length;
+    const growth = convPrev
+      ? Math.round(((convWeek - convPrev) / convPrev) * 100)
+      : convWeek
+        ? 100
+        : 0;
 
     // Additional revenue (placeholder — upsell flag not in schema yet)
     const upsell = scoped.filter(
@@ -1800,10 +1791,8 @@ function PerformanceView({
       avgRespHrs,
       within1h,
       within24h,
-      avgDeal,
-      dealValues,
+      weightedExpectedConversions,
       openLeads,
-      openValue,
       monthlyQuota,
       coverage,
       avgCycle,
@@ -1811,8 +1800,8 @@ function PerformanceView({
       followupsWk,
       meetingsWk,
       proposalsWk,
-      revWeek,
-      revPrev,
+      convWeek,
+      convPrev,
       growth,
       upsell,
     };

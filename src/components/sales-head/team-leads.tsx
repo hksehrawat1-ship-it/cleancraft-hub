@@ -42,7 +42,6 @@ export type TeamLead = {
   scoreReasons: string[];
   owner: string | null;
   ownerSince: string; // ISO
-  value: number; // opportunity value in INR
   lastInteraction: string; // ISO
   nextAction: string | null;
   followupAt: string | null;
@@ -116,9 +115,6 @@ function since(dt: string) {
   if (hrs >= 1) return `${hrs}h`;
   return `${Math.max(1, Math.floor((Date.now() - new Date(dt).getTime()) / 60000))}m`;
 }
-function money(v: number) {
-  return `₹${(v / 100000).toFixed(1)}L`;
-}
 
 /* ------------------------------ sample data ------------------------------ */
 
@@ -127,9 +123,9 @@ function mk(p: Partial<TeamLead> & Pick<TeamLead, "id" | "name">): TeamLead {
     phone: "+91 98000 00000", email: "lead@example.com", city: "Jaipur", state: "Rajasthan",
     unit: "Franchise", source: "Website", campaign: "Franchise Q3", stage: "New Lead",
     priority: "Medium", score: 60, scoreReasons: ["Budget confirmed", "Responded to first call"],
-    owner: null, ownerSince: iso(-3), value: 500000, lastInteraction: iso(-1, 15),
+    owner: null, ownerSince: iso(-3), lastInteraction: iso(-1, 15),
     nextAction: "First qualification call", followupAt: iso(0, 16), expectedCloseAt: iso(20),
-    createdAt: iso(-5), budget: "₹5-7L", cityPreference: "Jaipur", purchaseTimeline: "1-2 months",
+    createdAt: iso(-5), budget: "Confirmed", cityPreference: "Jaipur", purchaseTimeline: "1-2 months",
     noAnswerCount: 0, reassignCount: 0,
     history: [{ at: iso(-5), kind: "Created", note: "Lead captured" }],
     calls: [], followups: [], meetings: [], tasks: [],
@@ -143,10 +139,10 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1042", name: "Rohit Agarwal", phone: "+91 98290 11234", email: "rohit.agarwal@gmail.com",
     city: "Jaipur", state: "Rajasthan", source: "Meta Ads", stage: "Proposal Sent", priority: "Urgent",
-    score: 96, owner: "Ravi Sharma", ownerSince: iso(-9), value: 650000, lastInteraction: iso(-2, 12),
+    score: 96, owner: "Ravi Sharma", ownerSince: iso(-9), lastInteraction: iso(-2, 12),
     nextAction: "Proposal follow-up call", followupAt: iso(-1, 16), expectedCloseAt: iso(8),
-    budget: "₹6-8L", purchaseTimeline: "Within 30 days",
-    scoreReasons: ["Budget confirmed ₹6-8L", "Decision maker", "Site shortlisted", "Two meetings done"],
+    budget: "Confirmed", purchaseTimeline: "Within 30 days",
+    scoreReasons: ["Budget confirmed", "Decision maker", "Site shortlisted", "Two meetings done"],
     calls: [{ at: iso(-2, 12), outcome: "Connected", note: "Reviewing proposal with family" }],
     followups: [{ at: iso(-1, 16), what: "Proposal follow-up", done: false }],
     meetings: [{ title: "Franchise pitch", at: iso(-4, 11), mode: "In-person" }],
@@ -158,9 +154,9 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1051", name: "Neha Agarwal", phone: "+91 99110 88221", email: "neha.a@indoremail.com",
     city: "Indore", state: "Madhya Pradesh", source: "Google Ads", stage: "Payment Pending",
-    priority: "Urgent", score: 91, owner: "Deepak Verma", ownerSince: iso(-21), value: 650000,
+    priority: "Urgent", score: 91, owner: "Deepak Verma", ownerSince: iso(-21),
     lastInteraction: iso(-3, 17), nextAction: "Collect EL fee", followupAt: iso(-2, 11),
-    expectedCloseAt: iso(4), budget: "₹6-7L", purchaseTimeline: "Immediate", noAnswerCount: 1, reassignCount: 2,
+    expectedCloseAt: iso(4), budget: "Confirmed", purchaseTimeline: "Immediate", noAnswerCount: 1, reassignCount: 2,
     scoreReasons: ["EL fee agreed", "Site finalised", "Competitor quote received"],
     calls: [{ at: iso(-3, 17), outcome: "Connected", note: "Wants revised payment terms" }],
     followups: [{ at: iso(-2, 11), what: "EL fee collection", done: false }],
@@ -175,9 +171,9 @@ const SAMPLE: TeamLead[] = [
     id: "CC-1063", name: "Sandeep Rao", phone: "+91 90210 44556", email: "sandeep.rao@pune.in",
     city: "Pune", state: "Maharashtra", source: "Referral", campaign: "Referral Drive",
     stage: "Meeting Scheduled", priority: "High", score: 82, owner: "Neha Kulkarni",
-    ownerSince: iso(-6), value: 550000, lastInteraction: minsAgo(400),
+    ownerSince: iso(-6), lastInteraction: minsAgo(400),
     nextAction: "Showroom visit", followupAt: iso(1, 11), expectedCloseAt: iso(15),
-    budget: "₹5-6L", purchaseTimeline: "2-3 months",
+    budget: "Confirmed", purchaseTimeline: "2-3 months",
     meetings: [{ title: "Showroom visit", at: iso(1, 11), mode: "In-person" }],
     calls: [{ at: minsAgo(400), outcome: "Connected", note: "Confirmed visit" }],
     pipelineHistory: [{ stage: "New Lead", at: iso(-9) }, { stage: "Qualified", at: iso(-6) }, { stage: "Meeting Scheduled", at: iso(-2) }],
@@ -186,10 +182,10 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1070", name: "Imran Qureshi", phone: "+91 97330 22110", email: "imran.q@lucknowbiz.com",
     city: "Lucknow", state: "Uttar Pradesh", source: "IndiaMART", stage: "Negotiation",
-    priority: "High", score: 78, owner: "Amit Bansal", ownerSince: iso(-30), value: 700000,
+    priority: "High", score: 78, owner: "Amit Bansal", ownerSince: iso(-30),
     lastInteraction: iso(-2, 10), nextAction: null, followupAt: null, expectedCloseAt: iso(10),
-    budget: "₹7L+", purchaseTimeline: "1 month", noAnswerCount: 3,
-    scoreReasons: ["High budget", "Multiple no-answers", "Long time in stage"],
+    budget: "Confirmed", purchaseTimeline: "1 month", noAnswerCount: 3,
+    scoreReasons: ["High readiness", "Multiple no-answers", "Long time in stage"],
     pipelineHistory: [{ stage: "Proposal Sent", at: iso(-22) }, { stage: "Negotiation", at: iso(-16) }],
     history: [{ at: iso(-2, 10), kind: "Call", note: "No answer (3rd attempt)" }],
     calls: [{ at: iso(-2, 10), outcome: "No Answer", note: "3rd attempt" }],
@@ -197,9 +193,9 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1078", name: "Priya Menon", phone: "+91 98450 77123", email: "priya.menon@kochi.in",
     city: "Kochi", state: "Kerala", source: "Website", stage: "New Lead", priority: "Medium",
-    score: 54, owner: null, ownerSince: minsAgo(25), value: 400000, lastInteraction: minsAgo(25),
+    score: 54, owner: null, ownerSince: minsAgo(25), lastInteraction: minsAgo(25),
     nextAction: null, followupAt: null, expectedCloseAt: iso(35), createdAt: minsAgo(25),
-    budget: "₹4-5L", purchaseTimeline: "3-6 months", cityPreference: "Kochi",
+    budget: "Confirmed", purchaseTimeline: "3-6 months", cityPreference: "Kochi",
     scoreReasons: ["Enquiry form filled", "Budget not verified"],
     history: [{ at: minsAgo(25), kind: "Created", note: "Website enquiry" }],
     pipelineHistory: [{ stage: "New Lead", at: minsAgo(25) }],
@@ -207,9 +203,8 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1079", name: "Vikram Singh", phone: "+91 99790 33445", email: "vikram.singh@surat.co",
     city: "Surat", state: "Gujarat", source: "Exhibition", campaign: "City Expansion",
-    stage: "New Lead", priority: "High", score: 71, owner: null, ownerSince: minsAgo(8),
-    value: 600000, lastInteraction: minsAgo(8), nextAction: null, followupAt: null,
-    createdAt: minsAgo(8), budget: "₹5-7L", purchaseTimeline: "Within 45 days",
+    stage: "New Lead", priority: "High", score: 71, owner: null, ownerSince: minsAgo(8), lastInteraction: minsAgo(8), nextAction: null, followupAt: null,
+    createdAt: minsAgo(8), budget: "Confirmed", purchaseTimeline: "Within 45 days",
     scoreReasons: ["Exhibition walk-in", "Owns commercial space"],
     history: [{ at: minsAgo(8), kind: "Created", note: "Exhibition lead" }],
     pipelineHistory: [{ stage: "New Lead", at: minsAgo(8) }],
@@ -217,16 +212,15 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1085", name: "Anil Chowdhury", phone: "+91 90880 55667", email: "anil.c@bengaluru.in",
     city: "Bengaluru", state: "Karnataka", unit: "B2B Laundry", source: "Referral",
-    stage: "Qualified", priority: "Medium", score: 66, owner: "Sneha Iyer", ownerSince: iso(-4),
-    value: 900000, lastInteraction: iso(-1, 18), nextAction: "Share B2B rate card",
-    followupAt: iso(0, 18), expectedCloseAt: iso(25), budget: "₹8-10L", purchaseTimeline: "2 months",
+    stage: "Qualified", priority: "Medium", score: 66, owner: "Sneha Iyer", ownerSince: iso(-4), lastInteraction: iso(-1, 18), nextAction: "Share B2B rate card",
+    followupAt: iso(0, 18), expectedCloseAt: iso(25), budget: "Confirmed", purchaseTimeline: "2 months",
     history: [{ at: iso(-1, 18), kind: "Call", note: "Rate card requested" }],
     pipelineHistory: [{ stage: "New Lead", at: iso(-7) }, { stage: "Qualified", at: iso(-4) }],
   }),
   mk({
     id: "CC-1090", name: "Meera Joshi", phone: "+91 98600 12398", email: "meera.j@nagpur.in",
     city: "Nagpur", state: "Maharashtra", source: "Meta Ads", stage: "Contacted",
-    priority: "Low", score: 41, owner: "Neha Kulkarni", ownerSince: iso(-11), value: 450000,
+    priority: "Low", score: 41, owner: "Neha Kulkarni", ownerSince: iso(-11),
     lastInteraction: iso(-6, 13), nextAction: "Re-qualify budget", followupAt: iso(-4, 12),
     expectedCloseAt: iso(45), budget: "Not verified", purchaseTimeline: "6+ months", noAnswerCount: 2,
     history: [{ at: iso(-6, 13), kind: "Call", note: "Budget unclear" }],
@@ -235,25 +229,24 @@ const SAMPLE: TeamLead[] = [
   mk({
     id: "CC-1094", name: "Rakesh Sharma", phone: "+91 94140 66554", email: "rakesh.s@jaipur.in",
     city: "Jaipur", state: "Rajasthan", source: "Walk-in", stage: "Won", priority: "Low",
-    score: 100, owner: "Ravi Sharma", ownerSince: iso(-40), value: 650000, lastInteraction: iso(-2, 15),
+    score: 100, owner: "Ravi Sharma", ownerSince: iso(-40), lastInteraction: iso(-2, 15),
     nextAction: "Handover to Project Coordinator", followupAt: iso(1, 10), expectedCloseAt: iso(-2),
-    budget: "₹6.5L", purchaseTimeline: "Closed",
+    budget: "Confirmed", purchaseTimeline: "Closed",
     pipelineHistory: [{ stage: "Proposal Sent", at: iso(-20) }, { stage: "Payment Pending", at: iso(-9) }, { stage: "Won", at: iso(-2) }],
-    history: [{ at: iso(-2, 15), kind: "Booking", note: "Franchise booked ₹6.5L" }],
+    history: [{ at: iso(-2, 15), kind: "Booking", note: "Franchise booked" }],
   }),
   mk({
     id: "CC-1096", name: "Farhan Sheikh", phone: "+91 97020 99887", email: "farhan.s@delhi.in",
     city: "Delhi", state: "Delhi NCR", unit: "Corporate Tie-up", source: "Google Ads",
-    stage: "Lost", priority: "Low", score: 22, owner: "Amit Bansal", ownerSince: iso(-35),
-    value: 500000, lastInteraction: iso(-12, 16), nextAction: null, followupAt: null,
-    expectedCloseAt: null, budget: "₹3L", purchaseTimeline: "Undecided",
+    stage: "Lost", priority: "Low", score: 22, owner: "Amit Bansal", ownerSince: iso(-35), lastInteraction: iso(-12, 16), nextAction: null, followupAt: null,
+    expectedCloseAt: null, budget: "Confirmed", purchaseTimeline: "Undecided",
     history: [{ at: iso(-12, 16), kind: "Lost", note: "Budget mismatch" }],
     pipelineHistory: [{ stage: "Qualified", at: iso(-28) }, { stage: "Lost", at: iso(-12) }],
   }),
   mk({
     id: "CC-1097", name: "Rohit Agarwal (dup)", phone: "+91 98290 11234", email: "rohit.agarwal@gmail.com",
     city: "Jaipur", state: "Rajasthan", source: "Website", stage: "New Lead", priority: "Low",
-    score: 30, owner: null, ownerSince: minsAgo(90), value: 650000, lastInteraction: minsAgo(90),
+    score: 30, owner: null, ownerSince: minsAgo(90), lastInteraction: minsAgo(90),
     nextAction: null, followupAt: null, createdAt: minsAgo(90),
     history: [{ at: minsAgo(90), kind: "Created", note: "Duplicate website enquiry" }],
     pipelineHistory: [{ stage: "New Lead", at: minsAgo(90) }],
@@ -273,8 +266,8 @@ function warningsFor(l: TeamLead): Warning[] {
   if (l.followupAt && new Date(l.followupAt).getTime() < now && isActive)
     w.push({ label: "Follow-up overdue", tone: "red" });
   if (!l.nextAction && isActive) w.push({ label: "No next action", tone: "amber" });
-  if (l.value >= 600000 && now - new Date(l.lastInteraction).getTime() > 24 * 3600000 && isActive)
-    w.push({ label: "High-value inactive 24h+", tone: "red" });
+  if (l.score >= 85 && now - new Date(l.lastInteraction).getTime() > 24 * 3600000 && isActive)
+    w.push({ label: "High-priority lead inactive 24h+", tone: "red" });
   if (l.stage === "Payment Pending" && now - new Date(l.lastInteraction).getTime() > 48 * 3600000)
     w.push({ label: "Payment pending, no activity", tone: "red" });
   if (l.noAnswerCount >= 3) w.push({ label: `No answer x${l.noAnswerCount}`, tone: "amber" });
@@ -432,7 +425,7 @@ export function TeamLeadsPage() {
       EXECUTIVES.map((e) => {
         const own = leads.filter((l) => l.owner === e.name && l.stage !== "Won" && l.stage !== "Lost");
         const overdue = own.filter((l) => l.followupAt && new Date(l.followupAt).getTime() < Date.now());
-        return { ...e, active: own.length, overdue: overdue.length, value: own.reduce((s, l) => s + l.value, 0) };
+        return { ...e, active: own.length, overdue: overdue.length };
       }),
     [leads],
   );
@@ -627,7 +620,6 @@ export function TeamLeadsPage() {
                 <th className="py-2 px-2">Source</th>
                 <th className="py-2 px-2">Stage</th>
                 <th className="py-2 px-2">Score</th>
-                <th className="py-2 px-2">Value</th>
                 <th className="py-2 px-2">Executive</th>
                 <th className="py-2 px-2">Last interaction</th>
                 <th className="py-2 px-2">Next action</th>
@@ -658,7 +650,6 @@ export function TeamLeadsPage() {
                     <td className="py-2 px-2">{l.source}</td>
                     <td className="py-2 px-2"><Badge variant="outline" className={stageClass(l.stage)}>{l.stage}</Badge></td>
                     <td className="py-2 px-2"><ScoreChip score={l.score} /></td>
-                    <td className="py-2 px-2 tabular-nums">{money(l.value)}</td>
                     <td className="py-2 px-2">{l.owner ?? <span className="text-amber-600 font-medium">Unassigned</span>}</td>
                     <td className="py-2 px-2 whitespace-nowrap text-muted-foreground">{fmt(l.lastInteraction)}</td>
                     <td className="py-2 px-2">{l.nextAction ?? <span className="text-red-500">Not set</span>}</td>
@@ -686,7 +677,7 @@ export function TeamLeadsPage() {
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={16} className="py-8 text-center text-muted-foreground">No leads match these filters.</td></tr>
+                <tr><td colSpan={15} className="py-8 text-center text-muted-foreground">No leads match these filters.</td></tr>
               )}
             </tbody>
           </table>
@@ -710,7 +701,6 @@ export function TeamLeadsPage() {
                 <div className="flex flex-wrap gap-2 text-xs">
                   <Badge variant="outline" className={stageClass(l.stage)}>{l.stage}</Badge>
                   <span className="text-muted-foreground">Score <ScoreChip score={l.score} /></span>
-                  <span className="text-muted-foreground">{money(l.value)}</span>
                   <span className="text-muted-foreground">{l.owner ?? "Unassigned"}</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
@@ -789,7 +779,6 @@ export function TeamLeadsPage() {
                   </div>
                 </div>
                 <Progress className="mt-2" value={Math.min(100, (w.active / 8) * 100)} />
-                <div className="text-[11px] text-muted-foreground mt-1">Pipeline {money(w.value)}</div>
               </div>
             ))}
           </div>
@@ -860,7 +849,6 @@ function LeadDrawer({
             <Info label="Investment budget" value={lead.budget} />
             <Info label="Preferred city" value={lead.cityPreference} />
             <Info label="Purchase timeline" value={lead.purchaseTimeline} />
-            <Info label="Opportunity value" value={money(lead.value)} />
             <Info label="Assigned executive" value={lead.owner ?? "Unassigned"} />
             <Info label="Expected close" value={fmtDate(lead.expectedCloseAt)} />
           </div>
