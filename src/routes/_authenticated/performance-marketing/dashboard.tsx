@@ -20,10 +20,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/dash
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Dashboard"
-      description="Marketing for your assigned franchise stores — enquiries, orders and sales growth."
-    />
-  ),
+  component: PerfMktDashboard,
+
 });
