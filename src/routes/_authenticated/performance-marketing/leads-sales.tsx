@@ -16,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/lead
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Leads & Sales Results"
-      description="Enquiries, orders and sales per store — one shared lead record, no copies."
-    />
-  ),
+  component: LeadsSalesPage,
 });
+
