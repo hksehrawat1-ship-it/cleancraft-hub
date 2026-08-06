@@ -27,7 +27,6 @@ import {
   X,
   Target,
   Clock,
-  DollarSign,
   Trophy,
   Activity,
   MessageSquare,
@@ -1993,31 +1992,29 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* D. Average deal size */}
+        {/* D. Weighted expected conversions */}
         <MetricBlock
-          icon={DollarSign}
-          name="Average deal size"
-          why="A low average deal size may indicate the rep discounts too aggressively or doesn't follow up on high-value leads."
-          impl="Average engagement-letter fee across won deals."
+          icon={Target}
+          name="Weighted expected conversions"
+          why="Applies the current win rate to the open pipeline to forecast how many leads are likely to convert."
+          impl="Open pipeline count × win probability (win rate)."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <TargetStat
-              label="Avg deal"
-              value={`₹${metrics.avgDeal.toLocaleString("en-IN")}`}
-              target={PERF_TARGETS.avgDealSize}
-              actual={metrics.avgDeal}
-              sub={`Target ₹${PERF_TARGETS.avgDealSize.toLocaleString("en-IN")}`}
-              onClick={() => openDrill("Won deals (by value)", metrics.won)}
+            <ClickStat
+              label="Expected conversions"
+              value={metrics.weightedExpectedConversions}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <ClickStat
-              label="Deals counted"
-              value={metrics.dealValues.length}
-              onClick={() => openDrill("Won deals", metrics.won)}
+              label="Open pipeline leads"
+              value={metrics.openLeads.length}
+              onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
-            <Stat
-              label="Total won value"
-              value={`₹${metrics.dealValues.reduce((s, n) => s + n, 0).toLocaleString("en-IN")}`}
+            <ClickStat
+              label="Won leads"
+              value={metrics.won.length}
               tone="text-emerald-700"
+              onClick={() => openDrill("Won deals", metrics.won)}
             />
           </div>
         </MetricBlock>
@@ -2060,8 +2057,8 @@ function PerformanceView({
         <MetricBlock
           icon={Target}
           name="Sales pipeline coverage"
-          why="High-performing teams maintain pipeline coverage of 3×–5× their revenue target."
-          impl="Open pipeline value ÷ monthly quota. Coloured against target."
+          why="High-performing teams maintain pipeline coverage of 3×–5× their monthly closure target."
+          impl="Open pipeline lead count ÷ monthly closure quota. Coloured against target."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <TargetStat
@@ -2073,14 +2070,14 @@ function PerformanceView({
               onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <ClickStat
-              label="Open pipeline value"
-              value={`₹${metrics.openValue.toLocaleString("en-IN")}`}
+              label="Open pipeline leads"
+              value={metrics.openLeads.length}
               onClick={() => openDrill("Open pipeline", metrics.openLeads)}
             />
             <Stat
               label="Monthly quota"
-              value={`₹${metrics.monthlyQuota.toLocaleString("en-IN")}`}
-              sub={`${PERF_TARGETS.monthlyClosures} closures × avg deal`}
+              value={metrics.monthlyQuota}
+              sub={`${PERF_TARGETS.monthlyClosures} closures target`}
             />
           </div>
         </MetricBlock>
@@ -2165,20 +2162,16 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* I. Weekly revenue & growth */}
+        {/* I. Weekly conversions & growth */}
         <MetricBlock
           icon={TrendingUp}
-          name="Weekly sales revenue & growth"
-          why="A weekly view of closed revenue motivates the team and alerts leaders if momentum is slowing."
-          impl="Total engagement-letter fee received this week vs last week."
+          name="Weekly conversions & growth"
+          why="A weekly view of closed conversions motivates the team and alerts leaders if momentum is slowing."
+          impl="Total engagement-letter fee conversions this week vs last week."
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Stat
-              label="This week"
-              value={`₹${metrics.revWeek.toLocaleString("en-IN")}`}
-              tone="text-emerald-700"
-            />
-            <Stat label="Last week" value={`₹${metrics.revPrev.toLocaleString("en-IN")}`} />
+            <Stat label="This week" value={metrics.convWeek} tone="text-emerald-700" />
+            <Stat label="Last week" value={metrics.convPrev} />
             <Stat
               label="Growth"
               value={`${metrics.growth >= 0 ? "+" : ""}${metrics.growth}%`}
@@ -2187,10 +2180,10 @@ function PerformanceView({
           </div>
         </MetricBlock>
 
-        {/* J. Additional revenue opportunities */}
+        {/* J. Additional growth opportunities */}
         <MetricBlock
-          icon={DollarSign}
-          name="Additional revenue opportunities"
+          icon={Users}
+          name="Additional growth opportunities"
           why="Tracks upsell, cross-sell and repeat business — highlights whether reps nurture existing customers."
           impl="Counts leads tagged 'upsell' or 'repeat' in remarks."
         >
@@ -2298,11 +2291,6 @@ function PerformanceView({
                         {l.lead_classification}
                       </Badge>
                     )}
-                    {l.engagement_letter_fee_amount ? (
-                      <div className="text-sm tabular-nums">
-                        ₹{Number(l.engagement_letter_fee_amount).toLocaleString("en-IN")}
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </Link>

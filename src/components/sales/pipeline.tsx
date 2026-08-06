@@ -292,125 +292,123 @@ const QUAL = {
 
 function seed(): Opportunity[] {
   return [
-    mk(1, "Rakesh Agarwal", "Jaipur", "Rajasthan", "New Lead", 1800000, 62, "High", {
+    mk(1, "Rakesh Agarwal", "Jaipur", "Rajasthan", "New Lead", 62, "High", {
       nextAction: "First call",
       followupDue: dateOnly(0),
     }),
-    mk(2, "Neha Bhatia", "Indore", "Madhya Pradesh", "New Lead", 1500000, 48, "Medium", {
+    mk(2, "Neha Bhatia", "Indore", "Madhya Pradesh", "New Lead", 48, "Medium", {
       nextAction: "",
       followupDue: dateOnly(1),
     }),
-    mk(3, "Sandeep Rao", "Nagpur", "Maharashtra", "Attempting Contact", 1600000, 55, "High", {
+    mk(3, "Sandeep Rao", "Nagpur", "Maharashtra", "Attempting Contact", 55, "High", {
       nextAction: "Retry call (3rd attempt)",
       followupDue: dateOnly(-1),
     }),
-    mk(4, "Vikram Singh", "Lucknow", "Uttar Pradesh", "Attempting Contact", 1400000, 41, "Low", {
+    mk(4, "Vikram Singh", "Lucknow", "Uttar Pradesh", "Attempting Contact", 41, "Low", {
       nextAction: "WhatsApp intro",
       followupDue: dateOnly(2),
     }),
-    mk(5, "Farhan Qureshi", "Surat", "Gujarat", "Contacted", 1900000, 68, "High", {
+    mk(5, "Farhan Qureshi", "Surat", "Gujarat", "Contacted", 68, "High", {
       nextAction: "Send brochure",
       followupDue: dateOnly(0),
     }),
-    mk(6, "Deepa Nair", "Kochi", "Kerala", "Contacted", 1700000, 58, "Medium", {
+    mk(6, "Deepa Nair", "Kochi", "Kerala", "Contacted", 58, "Medium", {
       nextAction: "Qualification call",
       followupDue: dateOnly(3),
     }),
-    mk(7, "Arvind Kulkarni", "Pune", "Maharashtra", "Qualified", 2200000, 81, "Urgent", {
+    mk(7, "Arvind Kulkarni", "Pune", "Maharashtra", "Qualified", 81, "Urgent", {
       qualification: QUAL,
       nextAction: "Fix meeting slot",
       followupDue: dateOnly(-2),
     }),
-    mk(8, "Shalini Gupta", "Bhopal", "Madhya Pradesh", "Qualified", 2000000, 76, "High", {
+    mk(8, "Shalini Gupta", "Bhopal", "Madhya Pradesh", "Qualified", 76, "High", {
       qualification: QUAL,
       nextAction: "Share location checklist",
       followupDue: dateOnly(1),
     }),
-    mk(9, "Mohit Jain", "Ahmedabad", "Gujarat", "Meeting Scheduled", 2400000, 84, "Urgent", {
+    mk(9, "Mohit Jain", "Ahmedabad", "Gujarat", "Meeting Scheduled", 84, "Urgent", {
       qualification: QUAL,
       meeting: { at: daysAheadISO(1), mode: "Google Meet", confirmed: false },
       nextAction: "Confirm meeting",
       followupDue: dateOnly(0),
     }),
-    mk(10, "Priyanka Desai", "Vadodara", "Gujarat", "Meeting Scheduled", 2100000, 79, "High", {
+    mk(10, "Priyanka Desai", "Vadodara", "Gujarat", "Meeting Scheduled", 79, "High", {
       qualification: QUAL,
       meeting: { at: daysAheadISO(3), mode: "Store Visit", confirmed: true },
       nextAction: "Send location pin",
       followupDue: dateOnly(2),
     }),
-    mk(11, "Harish Menon", "Coimbatore", "Tamil Nadu", "Meeting Completed", 2300000, 82, "High", {
+    mk(11, "Harish Menon", "Coimbatore", "Tamil Nadu", "Meeting Completed", 82, "High", {
       qualification: QUAL,
       meeting: { at: daysAgoISO(3), mode: "Store Visit", confirmed: true },
       nextAction: "Prepare proposal",
       followupDue: dateOnly(-3),
       stageSince: daysAgoISO(9),
     }),
-    mk(12, "Kavita Sharma", "Kanpur", "Uttar Pradesh", "Proposal Sent", 2600000, 86, "Urgent", {
+    mk(12, "Kavita Sharma", "Kanpur", "Uttar Pradesh", "Proposal Sent", 86, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 2600000, sentAt: daysAgoISO(5) },
+      proposal: { sentAt: daysAgoISO(5) },
       nextAction: "Proposal follow-up",
       followupDue: dateOnly(0),
     }),
-    mk(13, "Rohit Malhotra", "Ludhiana", "Punjab", "Proposal Sent", 2500000, 74, "High", {
+    mk(13, "Rohit Malhotra", "Ludhiana", "Punjab", "Proposal Sent", 74, "High", {
       qualification: QUAL,
-      proposal: { value: 2500000, sentAt: daysAgoISO(12) },
+      proposal: { sentAt: daysAgoISO(12) },
       nextAction: "",
       followupDue: dateOnly(-4),
       stageSince: daysAgoISO(12),
       lastInteraction: daysAgoISO(11),
     }),
-    mk(14, "Sunil Patil", "Nashik", "Maharashtra", "Negotiation", 2800000, 89, "Urgent", {
+    mk(14, "Sunil Patil", "Nashik", "Maharashtra", "Negotiation", 89, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 2800000, sentAt: daysAgoISO(16) },
+      proposal: { sentAt: daysAgoISO(16) },
       expectedCloseDate: dateOnly(6),
       nextAction: "Discuss royalty terms",
       followupDue: dateOnly(1),
     }),
-    mk(15, "Anita Reddy", "Vijayawada", "Andhra Pradesh", "Negotiation", 2700000, 83, "High", {
+    mk(15, "Anita Reddy", "Vijayawada", "Andhra Pradesh", "Negotiation", 83, "High", {
       qualification: QUAL,
-      proposal: { value: 2700000, sentAt: daysAgoISO(20) },
+      proposal: { sentAt: daysAgoISO(20) },
       expectedCloseDate: dateOnly(12),
       nextAction: "Send revised quote",
       followupDue: dateOnly(-1),
       stageSince: daysAgoISO(14),
     }),
-    mk(16, "Gaurav Tiwari", "Patna", "Bihar", "Payment Pending", 3000000, 92, "Urgent", {
+    mk(16, "Gaurav Tiwari", "Patna", "Bihar", "Payment Pending", 92, "Urgent", {
       qualification: QUAL,
-      proposal: { value: 3000000, sentAt: daysAgoISO(24) },
+      proposal: { sentAt: daysAgoISO(24) },
       expectedCloseDate: dateOnly(4),
-      payment: { amount: 500000, expectedAt: dateOnly(2), status: "Pending" },
+      payment: { expectedAt: dateOnly(2), status: "Pending" },
       nextAction: "Payment follow-up",
       followupDue: dateOnly(0),
     }),
-    mk(17, "Meera Iyer", "Mysuru", "Karnataka", "Payment Pending", 2900000, 88, "High", {
+    mk(17, "Meera Iyer", "Mysuru", "Karnataka", "Payment Pending", 88, "High", {
       qualification: QUAL,
-      proposal: { value: 2900000, sentAt: daysAgoISO(28) },
+      proposal: { sentAt: daysAgoISO(28) },
       expectedCloseDate: dateOnly(9),
-      payment: { amount: 400000, expectedAt: dateOnly(5), status: "Pending" },
+      payment: { expectedAt: dateOnly(5), status: "Pending" },
       nextAction: "Share payment link",
       followupDue: dateOnly(3),
     }),
-    mk(18, "Ajay Chauhan", "Jodhpur", "Rajasthan", "Won", 3200000, 95, "High", {
+    mk(18, "Ajay Chauhan", "Jodhpur", "Rajasthan", "Won", 95, "High", {
       qualification: QUAL,
-      proposal: { value: 3200000, sentAt: daysAgoISO(34) },
-      payment: { amount: 600000, expectedAt: dateOnly(-6), status: "Received" },
-      finalAmount: 3200000,
+      proposal: { sentAt: daysAgoISO(34) },
+      payment: { expectedAt: dateOnly(-6), status: "Received" },
       nextAction: "Handover to Project Coordinator",
       followupDue: null,
       expectedCloseDate: dateOnly(-4),
       stageSince: daysAgoISO(4),
     }),
-    mk(19, "Swati Kapoor", "Raipur", "Chhattisgarh", "Won", 2750000, 91, "Medium", {
+    mk(19, "Swati Kapoor", "Raipur", "Chhattisgarh", "Won", 91, "Medium", {
       qualification: QUAL,
-      proposal: { value: 2750000, sentAt: daysAgoISO(40) },
-      payment: { amount: 550000, expectedAt: dateOnly(-11), status: "Received" },
-      finalAmount: 2750000,
+      proposal: { sentAt: daysAgoISO(40) },
+      payment: { expectedAt: dateOnly(-11), status: "Received" },
       nextAction: "Handover to Project Coordinator",
       followupDue: null,
       expectedCloseDate: dateOnly(-9),
       stageSince: daysAgoISO(9),
     }),
-    mk(20, "Imran Shaikh", "Aurangabad", "Maharashtra", "Lost", 1600000, 44, "Low", {
+    mk(20, "Imran Shaikh", "Aurangabad", "Maharashtra", "Lost", 44, "Low", {
       lossReason: "Budget too low",
       nextAction: "",
       followupDue: null,
