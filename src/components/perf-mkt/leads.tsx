@@ -53,7 +53,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-import { inr, toneClasses } from "./data";
+import { toneClasses } from "./data";
 import {
   CAMPAIGN_RESULTS,
   DATE_RANGES,
@@ -67,13 +67,10 @@ import {
   OFFLINE_RESULTS,
   SOURCE_RESULTS,
   STORE_RESULTS,
-  cpa,
-  cpl,
   leadAlerts,
   maskPhone,
   pct,
   qualityMeta,
-  roas,
   salesStatusMeta,
   statusMeta,
   type DateRangeId,
@@ -169,13 +166,11 @@ export function LeadsSalesPage() {
   const alerts = useMemo(() => leadAlerts(), []);
 
   const totals = useMemo(() => {
-    const spend = SOURCE_RESULTS.reduce((s, r) => s + r.spend, 0);
     const leads = SOURCE_RESULTS.reduce((s, r) => s + r.leads, 0);
     const qualified = SOURCE_RESULTS.reduce((s, r) => s + r.qualified, 0);
     const orders = SOURCE_RESULTS.reduce((s, r) => s + r.orders, 0);
-    const sales = SOURCE_RESULTS.reduce((s, r) => s + r.sales, 0);
     const unassigned = LEADS.filter((l) => !l.assignedTo).length;
-    return { spend, leads, qualified, orders, sales, unassigned };
+    return { leads, qualified, orders, unassigned };
   }, []);
 
   const cities = useMemo(() => [...new Set(STORE_RESULTS.map((s) => s.city))], []);
@@ -298,14 +293,10 @@ export function LeadsSalesPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-8">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
         <Metric label="Total Leads" value={String(totals.leads)} sub="All sources" tone="active" onClick={() => { setTab("leads"); resetFilters(); }} />
         <Metric label="Qualified Leads" value={String(totals.qualified)} sub={`${pct(totals.qualified, totals.leads)}% of leads`} tone="healthy" onClick={() => { setTab("leads"); setFQuality("Qualified"); }} />
         <Metric label="Orders" value={String(totals.orders)} sub={`${pct(totals.orders, totals.leads)}% conversion`} tone="healthy" onClick={() => { setTab("leads"); setFOutcome("won"); }} />
-        <Metric label="Sales Value" value={inr(totals.sales)} sub="Verified only" tone="healthy" onClick={() => setTab("stores")} />
-        <Metric label="Cost per Lead" value={`₹${cpl(totals.spend, totals.leads).toLocaleString("en-IN")}`} sub="Spend ÷ leads" tone="active" onClick={() => setTab("sources")} />
-        <Metric label="Cost per Acquisition" value={`₹${cpa(totals.spend, totals.orders).toLocaleString("en-IN")}`} sub="Spend ÷ orders" tone="attention" onClick={() => setTab("stores")} />
-        <Metric label="Return on Ad Spend" value={`${roas(totals.sales, totals.spend)}x`} sub="Sales ÷ spend" tone="healthy" onClick={() => setTab("campaigns")} />
         <Metric label="Unassigned Leads" value={String(totals.unassigned)} sub="Waiting with Sales Head" tone="overdue" onClick={() => { setTab("leads"); setFOutcome("unassigned"); }} />
       </div>
 
@@ -385,7 +376,7 @@ export function LeadsSalesPage() {
             <CardContent className="space-y-3">
               {FUNNEL.map((stage, i) => {
                 const prevStage = i > 0 ? FUNNEL[i - 1] : null;
-                const conv = prevStage && !stage.isCurrency ? pct(stage.value, prevStage.value) : null;
+                const conv = prevStage ? pct(stage.value, prevStage.value) : null;
                 const change = pct(stage.value - stage.previous, stage.previous);
                 const width = Math.max(12, 100 - i * 14);
                 return (
@@ -394,7 +385,7 @@ export function LeadsSalesPage() {
                       <span className="font-medium">{stage.label}</span>
                       <span className="flex items-center gap-2">
                         <span className="font-semibold">
-                          {stage.isCurrency ? inr(stage.value) : stage.value.toLocaleString("en-IN")}
+                          {stage.value.toLocaleString("en-IN")}
                         </span>
                         <Badge variant="outline" className={cn("text-[10px]", change >= 0 ? toneClasses.healthy : toneClasses.overdue)}>
                           {change >= 0 ? <TrendingUp className="mr-1 inline h-3 w-3" /> : <TrendingDown className="mr-1 inline h-3 w-3" />}
