@@ -1769,7 +1769,7 @@ function PerformanceView({
         ? 100
         : 0;
 
-    // Additional revenue (placeholder — upsell flag not in schema yet)
+    // Additional growth opportunities (placeholder — upsell flag not in schema yet)
     const upsell = scoped.filter(
       (l) =>
         (l.remarks || "").toLowerCase().includes("upsell") ||

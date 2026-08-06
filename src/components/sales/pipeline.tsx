@@ -438,7 +438,6 @@ export function SalesPipeline() {
     priority: "all",
     score: "all",
     closeMonth: "all",
-    value: "all",
     stage: "all",
     q: "",
   });
@@ -463,9 +462,6 @@ export function SalesPipeline() {
         if (f.score === "high" && o.score < 80) return false;
         if (f.score === "mid" && (o.score < 50 || o.score >= 80)) return false;
         if (f.score === "low" && o.score >= 50) return false;
-        if (f.value === "gt25" && o.value < 2500000) return false;
-        if (f.value === "15to25" && (o.value < 1500000 || o.value >= 2500000)) return false;
-        if (f.value === "lt15" && o.value >= 1500000) return false;
         if (f.closeMonth !== "all" && monthKey(o.expectedCloseDate) !== f.closeMonth) return false;
         if (f.q.trim()) {
           const q = f.q.toLowerCase();
@@ -477,12 +473,9 @@ export function SalesPipeline() {
   );
 
   const active = filtered.filter((o) => !isClosed(o.stage));
-  const totalValue = active.reduce((s, o) => s + o.value, 0);
-  const weighted = active.reduce((s, o) => s + (o.value * PROBABILITY[o.stage]) / 100, 0);
+  const weightedConversions = active.reduce((s, o) => s + PROBABILITY[o.stage] / 100, 0);
   const closuresThisMonth = active.filter((o) => thisMonth(o.expectedCloseDate)).length;
-  const wonRevenue = filtered
-    .filter((o) => o.stage === "Won" && thisMonth(o.stageSince))
-    .reduce((s, o) => s + (o.finalAmount ?? o.value), 0);
+  const wonThisMonth = filtered.filter((o) => o.stage === "Won" && thisMonth(o.stageSince)).length;
 
   const detail = opps.find((o) => o.id === detailId) ?? null;
 
