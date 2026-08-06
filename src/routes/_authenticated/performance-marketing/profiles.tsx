@@ -16,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/prof
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Google Business & Social Profiles"
-      description="Profile health and updates per store, linked by Store ID."
-    />
-  ),
+  component: ProfilesPage,
+
 });
