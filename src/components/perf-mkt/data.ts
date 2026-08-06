@@ -52,8 +52,8 @@ export type StoreCard = {
   marketingStatus: "healthy" | "attention" | "declining" | "setup";
   activeCampaigns: number;
   leadsThisMonth: number;
-  salesGenerated: number;
-  adSpend: number;
+  ordersThisMonth: number;
+  targetAchievedPct: number;
   pendingRequests: number;
 };
 
@@ -64,11 +64,13 @@ export type Campaign = {
   store: string;
   platform: "Google Ads" | "Meta Ads";
   objective: string;
-  budget: number;
-  spend: number;
+  reach: number;
+  clicks: number;
   leads: number;
   qualified: number;
-  sales: number;
+  orders: number;
+  leadTarget: number;
+  targetAchievedPct: number;
   status:
     | "running"
     | "awaiting_approval"
@@ -94,8 +96,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 3,
     leadsThisMonth: 142,
-    salesGenerated: 486000,
-    adSpend: 62000,
+    ordersThisMonth: 51,
+    targetAchievedPct: 95,
     pendingRequests: 1,
   },
   {
@@ -106,8 +108,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 2,
     leadsThisMonth: 118,
-    salesGenerated: 372000,
-    adSpend: 48500,
+    ordersThisMonth: 39,
+    targetAchievedPct: 88,
     pendingRequests: 2,
   },
   {
@@ -118,8 +120,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "attention",
     activeCampaigns: 2,
     leadsThisMonth: 64,
-    salesGenerated: 158000,
-    adSpend: 51000,
+    ordersThisMonth: 18,
+    targetAchievedPct: 46,
     pendingRequests: 3,
   },
   {
@@ -130,8 +132,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "declining",
     activeCampaigns: 1,
     leadsThisMonth: 38,
-    salesGenerated: 96000,
-    adSpend: 44000,
+    ordersThisMonth: 9,
+    targetAchievedPct: 32,
     pendingRequests: 2,
   },
   {
@@ -142,8 +144,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 3,
     leadsThisMonth: 176,
-    salesGenerated: 612000,
-    adSpend: 88000,
+    ordersThisMonth: 68,
+    targetAchievedPct: 104,
     pendingRequests: 0,
   },
   {
@@ -154,8 +156,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "setup",
     activeCampaigns: 0,
     leadsThisMonth: 12,
-    salesGenerated: 0,
-    adSpend: 8000,
+    ordersThisMonth: 0,
+    targetAchievedPct: 12,
     pendingRequests: 2,
   },
   {
@@ -166,8 +168,8 @@ export const STORES: StoreCard[] = [
     marketingStatus: "healthy",
     activeCampaigns: 2,
     leadsThisMonth: 91,
-    salesGenerated: 264000,
-    adSpend: 39000,
+    ordersThisMonth: 30,
+    targetAchievedPct: 78,
     pendingRequests: 1,
   },
 ];
@@ -462,7 +464,7 @@ export const LEADS_SUMMARY = {
   contacted: 344,
   orders: 212,
   salesAmount: 1988000,
-  adSpend: 341000,
+    targetAchievedPct: 78,
 };
 
 export const derived = {

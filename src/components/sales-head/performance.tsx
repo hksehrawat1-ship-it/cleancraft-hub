@@ -57,7 +57,7 @@ const EXECS: ExecPerf[] = [
     target: 8,
     overdueActions: 3, avgCycleDays: 22, stalledCount: 4, paymentPendingCount: 2,
     trend: [{ m: "Apr", won: 5 }, { m: "May", won: 6 }, { m: "Jun", won: 6 }, { m: "Jul", won: 7 }],
-    history: [{ at: "12 Jul", note: "3 leads transferred in from Amit Bansal (revenue credit retained by original owner)" }],
+    history: [{ at: "12 Jul", note: "3 leads transferred in from Amit Bansal (conversion credit retained by original owner)" }],
   },
   {
     name: "Neha Kulkarni", territory: "Maharashtra", unit: "Franchise",
@@ -110,26 +110,26 @@ type PeriodKey = keyof typeof PERIODS;
 const UNITS = ["Franchise", "Master Franchise", "Corporate Tie-up"];
 
 const SOURCE_ROWS = [
-  { group: "Lead Source", name: "Google Ads", leads: 148, won: 14, revenue: 2680000 },
-  { group: "Lead Source", name: "Meta Ads", leads: 122, won: 8, revenue: 1520000 },
-  { group: "Lead Source", name: "Referral", leads: 46, won: 9, revenue: 1740000 },
-  { group: "Lead Source", name: "Website Enquiry", leads: 68, won: 2, revenue: 380000 },
-  { group: "Lead Source", name: "Exhibition", leads: 44, won: 0, revenue: 0 },
-  { group: "Campaign", name: "Franchise India Jul", leads: 96, won: 11, revenue: 2100000 },
-  { group: "Campaign", name: "Tier-2 Expansion", leads: 84, won: 7, revenue: 1340000 },
-  { group: "Campaign", name: "Retargeting — Warm", leads: 62, won: 6, revenue: 1180000 },
-  { group: "City", name: "Delhi NCR", leads: 108, won: 11, revenue: 2140000 },
-  { group: "City", name: "Jaipur", leads: 62, won: 5, revenue: 900000 },
-  { group: "City", name: "Pune", leads: 58, won: 4, revenue: 760000 },
-  { group: "City", name: "Bengaluru", leads: 54, won: 6, revenue: 1180000 },
-  { group: "City", name: "Indore", leads: 46, won: 3, revenue: 560000 },
-  { group: "Business Unit", name: "Franchise", leads: 244, won: 16, revenue: 2960000 },
-  { group: "Business Unit", name: "Master Franchise", leads: 108, won: 11, revenue: 2140000 },
-  { group: "Business Unit", name: "Corporate Tie-up", leads: 76, won: 6, revenue: 1180000 },
-  { group: "Lead Score", name: "80–100 (Hot)", leads: 96, won: 21, revenue: 4020000 },
-  { group: "Lead Score", name: "60–79 (Warm)", leads: 142, won: 9, revenue: 1720000 },
-  { group: "Lead Score", name: "40–59 (Cold)", leads: 128, won: 3, revenue: 540000 },
-  { group: "Lead Score", name: "Below 40", leads: 62, won: 0, revenue: 0 },
+  { group: "Lead Source", name: "Google Ads", leads: 148, won: 14 },
+  { group: "Lead Source", name: "Meta Ads", leads: 122, won: 8 },
+  { group: "Lead Source", name: "Referral", leads: 46, won: 9 },
+  { group: "Lead Source", name: "Website Enquiry", leads: 68, won: 2 },
+  { group: "Lead Source", name: "Exhibition", leads: 44, won: 0 },
+  { group: "Campaign", name: "Franchise India Jul", leads: 96, won: 11 },
+  { group: "Campaign", name: "Tier-2 Expansion", leads: 84, won: 7 },
+  { group: "Campaign", name: "Retargeting — Warm", leads: 62, won: 6 },
+  { group: "City", name: "Delhi NCR", leads: 108, won: 11 },
+  { group: "City", name: "Jaipur", leads: 62, won: 5 },
+  { group: "City", name: "Pune", leads: 58, won: 4 },
+  { group: "City", name: "Bengaluru", leads: 54, won: 6 },
+  { group: "City", name: "Indore", leads: 46, won: 3 },
+  { group: "Business Unit", name: "Franchise", leads: 244, won: 16 },
+  { group: "Business Unit", name: "Master Franchise", leads: 108, won: 11 },
+  { group: "Business Unit", name: "Corporate Tie-up", leads: 76, won: 6 },
+  { group: "Lead Score", name: "80–100 (Hot)", leads: 96, won: 21 },
+  { group: "Lead Score", name: "60–79 (Warm)", leads: 142, won: 9 },
+  { group: "Lead Score", name: "40–59 (Cold)", leads: 128, won: 3 },
+  { group: "Lead Score", name: "Below 40", leads: 62, won: 0 },
 ];
 
 const ACTIVITY_QUALITY = [
@@ -231,7 +231,6 @@ export function SalesHeadPerformancePage() {
       meetings: scale(e.meetings, f),
       proposals: scale(e.proposals, f),
       won: scale(e.won, f),
-      revenue: Math.round(e.revenue * f),
       target: Math.round(e.target * (period === "quarter" ? 3 : period === "month" ? 1 : f)),
     }));
   }, [unit, f, period]);
@@ -239,7 +238,6 @@ export function SalesHeadPerformancePage() {
   const team = useMemo(() => {
     const sum = (k: keyof ExecPerf) => rows.reduce((a, r) => a + (r[k] as number), 0);
     const assigned = sum("assigned");
-    const revenue = sum("revenue");
     const target = sum("target");
     const won = sum("won");
     return {
@@ -252,12 +250,9 @@ export function SalesHeadPerformancePage() {
       meetings: sum("meetings"),
       proposals: sum("proposals"),
       won,
-      revenue,
       target,
-      pipeline: sum("pipelineValue"),
-      weighted: sum("weightedPipeline"),
-      stalled: sum("stalledValue"),
-      paymentPending: sum("paymentPending"),
+      stalled: sum("stalledCount"),
+      paymentPending: sum("paymentPendingCount"),
       overdue: sum("overdueActions"),
       avgFirstResponse: Math.round(rows.reduce((a, r) => a + r.firstResponseMin, 0) / Math.max(1, rows.length)),
       avgCycle: Math.round(rows.reduce((a, r) => a + r.avgCycleDays, 0) / Math.max(1, rows.length)),
@@ -267,10 +262,9 @@ export function SalesHeadPerformancePage() {
 
   // records in the selected period represent ~72% of the month's working days elapsed
   const elapsedShare = 0.72;
-  const projected = Math.round((period === "month" ? team.revenue / elapsedShare : team.revenue));
-  const avgDeal = team.won > 0 ? team.revenue / team.won : 1800000;
+  const projected = Math.round((period === "month" ? team.won / elapsedShare : team.won));
   const gap = Math.max(0, team.target - projected);
-  const salesNeeded = Math.ceil(Math.max(0, team.target - team.revenue) / Math.max(1, avgDeal));
+  const salesNeeded = Math.max(0, team.target - team.won);
 
   const funnel = useMemo(() => {
     const a = team.assigned;
@@ -300,18 +294,18 @@ export function SalesHeadPerformancePage() {
       { tone: "red", title: "Response time needs correction", body: `${slowest?.name} is averaging ${slowest?.firstResponseMin} min first response against the 10-minute standard. Review their morning call block.` },
       { tone: "amber", title: "Low meeting-to-win conversion", body: `${lowMeetingConv?.name} converts only ${pct(lowMeetingConv?.won ?? 0, lowMeetingConv?.meetings ?? 1)}% of completed meetings. Sit in on the next two meetings.` },
       { tone: "red", title: "Excessive overdue follow-ups", body: `${mostOverdue?.name} has ${mostOverdue?.overdueActions} overdue actions. Clear the backlog before new leads are assigned.` },
-      { tone: "green", title: "Strongest lead source", body: `${bestSource?.name} converts at ${pct(bestSource?.won ?? 0, bestSource?.leads ?? 1)}% and contributed ${inr(bestSource?.revenue ?? 0)}. Push more budget here.` },
+      { tone: "green", title: "Strongest lead source", body: `${bestSource?.name} converts at ${pct(bestSource?.won ?? 0, bestSource?.leads ?? 1)}% and contributed ${bestSource?.won ?? 0} wins. Push more budget here.` },
       { tone: "amber", title: "Biggest funnel leak", body: worstStage.from ? `Largest drop-off is ${worstStage.from} → ${worstStage.to} (${worstStage.drop} leads lost). Fix this stage first.` : "Funnel movement is balanced this period." },
     ];
   }, [rows, funnel]);
 
   const exportReport = () => {
-    const header = ["Executive", "Assigned", "Contacted", "First Response (min)", "Calls", "Connect %", "On-time Follow-up %", "Meetings", "Proposals", "Won", "Revenue", "Conversion %", "Target %", "Pipeline", "Overdue"];
+    const header = ["Executive", "Assigned", "Contacted", "First Response (min)", "Calls", "Connect %", "On-time Follow-up %", "Meetings", "Proposals", "Won", "Target", "Conversion %", "Target %", "Overdue"];
     const lines = rows.map((r) => [
       r.name, r.assigned, r.contacted, r.firstResponseMin, r.calls,
       pct(r.callsConnected, r.calls), pct(r.followupsOnTime, r.followupsDue),
-      r.meetings, r.proposals, r.won, r.revenue, pct(r.won, r.assigned),
-      pct(r.revenue, r.target), r.pipelineValue, r.overdueActions,
+      r.meetings, r.proposals, r.won, r.target, pct(r.won, r.assigned),
+      pct(r.won, r.target), r.overdueActions,
     ].join(","));
     const csv = [header.join(","), ...lines].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));

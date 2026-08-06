@@ -114,11 +114,9 @@ export type LeadRecord = {
   quality: LeadQuality;
   qualityReason?: string;
   orderStatus: "Order Placed" | "No Order" | "Pending";
-  orderValue: number;
   lostReason?: string;
   lastCrmUpdate?: string;
   salesNotes?: string;
-  expectedValue?: number;
   contacted: boolean;
   manualEntry?: boolean;
   touchHistory: { at: string; source: LeadSource; detail: string }[];
@@ -148,7 +146,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "assigned",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-08-06 09:45",
     contacted: false,
     touchHistory: [{ at: "2026-08-06 09:42", source: "Google Ads", detail: "Search ad — form fill" }],
@@ -172,7 +169,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "awaiting_assignment",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     contacted: false,
     touchHistory: [
       { at: "2026-08-06 08:10", source: "Meta Ads", detail: "Instant form — monsoon offer" },
@@ -192,7 +188,7 @@ export const LEADS: LeadRecord[] = [
     latestSource: "Google Ads",
     campaignId: "CMP-8802",
     campaignName: "Franchise Enquiry — Company Search",
-    requirement: "Franchise enquiry — Delhi NCR, budget ₹25L",
+    requirement: "Franchise enquiry — Delhi NCR, large-format opportunity",
     assignedTo: "Ashish Rathore (Sales Head)",
     assignedRole: "Sales Head",
     handoverAt: "2026-08-05 16:26",
@@ -200,8 +196,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "contacted",
     quality: "Qualified",
     orderStatus: "Pending",
-    orderValue: 0,
-    expectedValue: 2500000,
     lastCrmUpdate: "2026-08-06 11:05",
     salesNotes: "Site shortlisting in Dwarka; second call on 08 Aug.",
     contacted: true,
@@ -229,7 +223,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 8400,
     lastCrmUpdate: "2026-08-05 18:40",
     salesNotes: "Promo code AAROHI10 used at billing.",
     contacted: true,
@@ -256,7 +249,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "no_update",
     quality: "Pending Qualification",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-08-03 10:40",
     contacted: false,
     touchHistory: [{ at: "2026-08-03 10:31", source: "Google Business Profile", detail: "Call button tap" }],
@@ -284,7 +276,6 @@ export const LEADS: LeadRecord[] = [
     quality: "Unqualified",
     qualityReason: "Outside service area — 22 km from store",
     orderStatus: "No Order",
-    orderValue: 0,
     lostReason: "Out of service area",
     lastCrmUpdate: "2026-08-03 12:10",
     contacted: true,
@@ -309,7 +300,6 @@ export const LEADS: LeadRecord[] = [
     quality: "Spam",
     qualityReason: "Invalid number pattern, repeated submissions",
     orderStatus: "No Order",
-    orderValue: 0,
     contacted: false,
     touchHistory: [{ at: "2026-08-01 14:12", source: "Meta Ads", detail: "Form fill — invalid data" }],
   },
@@ -332,7 +322,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 12600,
     lastCrmUpdate: "2026-08-01 17:20",
     salesNotes: "Converted to monthly package; referred by existing customer.",
     contacted: true,
@@ -362,7 +351,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 5900,
     lastCrmUpdate: "2026-07-31 10:02",
     contacted: true,
     touchHistory: [{ at: "2026-07-29 17:05", source: "Google Ads", detail: "Search ad — curtain cleaning" }],
@@ -386,7 +374,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "follow_up",
     quality: "Unable to Contact",
     orderStatus: "Pending",
-    orderValue: 0,
     lastCrmUpdate: "2026-07-30 16:15",
     salesNotes: "Three call attempts, phone unreachable.",
     contacted: true,
@@ -414,7 +401,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "won",
     quality: "Qualified",
     orderStatus: "Order Placed",
-    orderValue: 15400,
     lastCrmUpdate: "2026-07-28 12:40",
     contacted: true,
     touchHistory: [{ at: "2026-07-25 09:20", source: "Meta Ads", detail: "Lead form — premium care" }],
@@ -438,7 +424,6 @@ export const LEADS: LeadRecord[] = [
     salesStatus: "lost",
     quality: "Qualified",
     orderStatus: "No Order",
-    orderValue: 0,
     lostReason: "Price higher than local competitor",
     lastCrmUpdate: "2026-07-24 11:30",
     contacted: true,

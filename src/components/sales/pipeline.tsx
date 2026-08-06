@@ -1232,7 +1232,7 @@ function PipelineHealth({ opps, onOpen }: { opps: Opportunity[]; onOpen: (id: st
                         {o.name} · {o.city}
                       </span>
                       <span className="text-muted-foreground tabular-nums ml-2">
-                        {inr(o.value)}
+                        {PROBABILITY[o.stage]}%
                       </span>
                     </button>
                   ))}
@@ -1615,15 +1615,13 @@ function DetailBody({
         <KV k="Source" v={o.source} />
         <KV k="Campaign" v={o.campaign} />
         <KV k="Assigned to" v={o.owner} />
-        <KV k="Budget" v={o.qualification?.budget} />
         <KV k="Timeline" v={o.qualification?.timeline} />
         <KV k="Decision maker" v={o.qualification?.decisionMaker} />
         <KV k="Preference" v={o.qualification?.preference} />
       </Block>
 
       <Block title="Opportunity & score">
-        <KV k="Opportunity value" v={inr(o.value)} />
-        <KV k="Weighted value (est.)" v={inr(Math.round((o.value * PROBABILITY[o.stage]) / 100))} />
+        <KV k="Stage probability" v={`${PROBABILITY[o.stage]}%`} />
         <KV k="Expected closing" v={fmtDate(o.expectedCloseDate)} />
         <KV k="Lead score" v={`${o.score}/100`} />
         <div className="pt-1 space-y-1">
@@ -1636,12 +1634,9 @@ function DetailBody({
       </Block>
 
       <Block title="Proposal & payment">
-        <KV k="Proposal value" v={o.proposal ? inr(o.proposal.value) : undefined} />
         <KV k="Proposal sent" v={o.proposal ? fmtDate(o.proposal.sentAt) : undefined} />
-        <KV k="Payment amount" v={o.payment ? inr(o.payment.amount) : undefined} />
         <KV k="Payment expected" v={o.payment ? fmtDate(o.payment.expectedAt) : undefined} />
         <KV k="Payment status" v={o.payment?.status} />
-        <KV k="Final amount" v={o.finalAmount ? inr(o.finalAmount) : undefined} />
         <KV k="Loss reason" v={o.lossReason} />
       </Block>
 

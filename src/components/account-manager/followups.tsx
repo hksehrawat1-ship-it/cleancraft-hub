@@ -294,8 +294,9 @@ const tone = (s: PayStatus) => {
   return "bg-blue-100 text-blue-700";
 };
 
-const received = (p: Pay) => p.txns.reduce((s, t) => s + t.amount, 0);
-const balance = (p: Pay) => p.amount - received(p);
+const received = (p: Pay) => p.txns.length;
+const balance = (p: Pay) => Math.max(0, p.target - received(p));
+const progressPct = (p: Pay) => Math.min(100, Math.round((received(p) / p.target) * 100));
 const lastFollow = (p: Pay) => p.follows.at(-1);
 
 export function AmFollowups() {
@@ -321,16 +322,13 @@ export function AmFollowups() {
   const [fMode, setFMode] = useState("all");
   const [fClearance, setFClearance] = useState("all");
   const [fDue, setFDue] = useState("");
-  const [fAmt, setFAmt] = useState("all");
 
   // payment request form
   const [rDate, setRDate] = useState("");
-  const [rAmount, setRAmount] = useState("");
   const [rDue, setRDue] = useState("");
   const [rInstr, setRInstr] = useState("");
   const [rInvoice, setRInvoice] = useState("");
   const [rInvDate, setRInvDate] = useState("");
-  const [rInvAmt, setRInvAmt] = useState("");
   const [rMethod, setRMethod] = useState("Call");
   const [rMsg, setRMsg] = useState("");
   const [rNext, setRNext] = useState("");
@@ -341,7 +339,6 @@ export function AmFollowups() {
   const [fuMethod, setFuMethod] = useState("Call");
   const [fuOutcome, setFuOutcome] = useState<(typeof OUTCOMES)[number]>("Payment Promised");
   const [fuPromiseDate, setFuPromiseDate] = useState("");
-  const [fuPromiseAmt, setFuPromiseAmt] = useState("");
   const [fuComments, setFuComments] = useState("");
   const [fuNote, setFuNote] = useState("");
   const [fuNextAction, setFuNextAction] = useState("");
@@ -349,7 +346,6 @@ export function AmFollowups() {
 
   // payment received form
   const [pDate, setPDate] = useState("");
-  const [pAmt, setPAmt] = useState("");
   const [pMode, setPMode] = useState<(typeof PAYMENT_MODES)[number]>("Bank Transfer");
   const [pAccount, setPAccount] = useState("");
   const [pRef, setPRef] = useState("");
@@ -358,7 +354,6 @@ export function AmFollowups() {
   const [pOverride, setPOverride] = useState(false);
 
   // verify form
-  const [vAmount, setVAmount] = useState("");
   const [vReceipt, setVReceipt] = useState("");
   const [vNote, setVNote] = useState("");
   const [vClearance, setVClearance] = useState("yes");
@@ -400,10 +395,9 @@ export function AmFollowups() {
 
   const alerts = [
     ...pays.filter((p) => p.daysOverdue > 0 && !["Verified", "Cancelled"].includes(p.status)).map((p) => ({ level: "red", t: `${p.id} — Payment overdue by ${p.daysOverdue} day(s)` })),
-    ...pays.filter((p) => { const f = lastFollow(p); return f?.promiseDate && received(p) < p.amount && f.promiseDate < "3 Aug 2026"; }).map((p) => ({ level: "red", t: `${p.id} — Promise-to-pay date missed (${lastFollow(p)?.promiseDate})` })),
+    ...pays.filter((p) => { const f = lastFollow(p); return f?.promiseDate && received(p) < p.target && f.promiseDate < "3 Aug 2026"; }).map((p) => ({ level: "red", t: `${p.id} — Promise-to-pay date missed (${lastFollow(p)?.promiseDate})` })),
     ...pays.filter((p) => p.nextActionDue === "Today" || p.nextActionDue === "3 Aug 2026").map((p) => ({ level: "amber", t: `${p.id} — Follow-up overdue: ${p.nextAction}` })),
-    ...pays.filter((p) => p.status === "Verification Pending" && p.amount >= 500000).map((p) => ({ level: "red", t: `${p.id} — Large payment awaiting verification` })),
-    ...dupRefs.map(([ref, ids]) => ({ level: "red", t: `Duplicate transaction reference ${ref} on ${Array.from(new Set(ids)).join(", ")}` })),
+        ...dupRefs.map(([ref, ids]) => ({ level: "red", t: `Duplicate transaction reference ${ref} on ${Array.from(new Set(ids)).join(", ")}` })),
     ...pays.filter((p) => p.txns.some((t) => !t.reviewed)).map((p) => ({ level: "amber", t: `${p.id} — Payment proof received but not reviewed` })),
     ...pays.filter((p) => p.status === "Partially Paid" && !p.nextPaymentDue).map((p) => ({ level: "amber", t: `${p.id} — Partial payment without next due date` })),
     ...pays.filter((p) => p.status === "Verification Rejected").map((p) => ({ level: "red", t: `${p.id} — Verification rejected: ${p.rejection?.reason}` })),
@@ -444,9 +438,6 @@ export function AmFollowups() {
       if (fMode !== "all" && !p.txns.some((t) => t.mode === fMode)) return false;
       if (fClearance !== "all" && String(p.clearanceRequired) !== fClearance) return false;
       if (fDue && !p.due.toLowerCase().includes(fDue.toLowerCase())) return false;
-      if (fAmt === "lt1" && p.amount >= 100000) return false;
-      if (fAmt === "1to5" && (p.amount < 100000 || p.amount > 500000)) return false;
-      if (fAmt === "gt5" && p.amount <= 500000) return false;
       return true;
     })
     .sort((a, b) => rank(a) - rank(b));
@@ -459,14 +450,11 @@ export function AmFollowups() {
     setOpenId(id);
     setChecks({});
     if (p) {
-      setVAmount(String(received(p)));
       setVReceipt(p.txns.at(-1)?.receipt ?? "");
       setVClearance(p.clearanceRequired ? "yes" : "no");
-      setRAmount(String(balance(p)));
       setRDue(p.due);
       setRInvoice(p.vyaparInvoice);
       setRInvDate(p.invoiceDate);
-      setRInvAmt(String(p.invoiceAmount));
       setFuPerson(p.owner);
       setPtNextDue(p.nextPaymentDue ?? "");
       setPtDispatch(p.dispatchOnPartial ? "yes" : "no");

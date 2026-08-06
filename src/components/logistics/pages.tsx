@@ -24,7 +24,6 @@ import {
   DISPATCH_PLANS,
   ISSUES,
   PACKING_TASKS,
-  inr,
   maskRef,
   type Clearance,
   type DeliveryRow,
@@ -110,7 +109,6 @@ export function LogDashboard({ onGo }: { onGo: (k: string) => void }) {
   ).length;
   const awaitingPod = DELIVERIES.filter((d) => d.status === "awaiting").length;
   const openIssues = ISSUES.filter((i) => i.status !== "resolved").length;
-  const freight = DISPATCH_PLANS.reduce((s, p) => s + p.freight, 0);
 
   const alerts = [
     ...CLEARANCES.filter((c) => c.status === "new").map(
@@ -140,7 +138,6 @@ export function LogDashboard({ onGo }: { onGo: (k: string) => void }) {
         <Stat label="Awaiting POD" value={awaitingPod} icon={PackageCheck} tone="warn" />
         <Stat label="Open issues / returns" value={openIssues} icon={AlertTriangle} tone={openIssues ? "bad" : "good"} />
         <Stat label="Delivered this month" value={DELIVERIES.filter((d) => d.status === "confirmed").length} icon={CheckCircle2} tone="good" />
-        <Stat label="Freight cost (month)" value={inr(freight)} icon={TrendingUp} />
         <Stat label="Avg dispatch TAT" value="1.8 days" sub="Target < 2 days" icon={Clock} tone="good" />
       </div>
 
@@ -155,7 +152,7 @@ export function LogDashboard({ onGo }: { onGo: (k: string) => void }) {
                 Accept clearance {next.id} — {next.store}
               </div>
               <div className="text-xs text-muted-foreground">
-                {next.items} items · payment verified {inr(next.amountVerified)} · launch {next.launchDate}
+                {next.items} items · payment verified · launch {next.launchDate}
               </div>
             </div>
             <Button size="sm" onClick={() => onGo("clearances")}>
@@ -285,7 +282,6 @@ export function LogClearances() {
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                 <div>Items: <span className="text-foreground">{c.items}</span></div>
-                <div>Verified: <span className="text-foreground">{inr(c.amountVerified)}</span></div>
                 <div>Cleared: <span className="text-foreground">{c.clearedOn}</span></div>
                 <div>Launch: <span className="text-foreground">{c.launchDate}</span></div>
               </div>
@@ -431,7 +427,6 @@ export function LogPackingTasks() {
 
 export function LogDispatchPlanning() {
   const [sel, setSel] = useState<DispatchPlan | null>(null);
-  const totalFreight = useMemo(() => DISPATCH_PLANS.reduce((s, p) => s + p.freight, 0), []);
 
   return (
     <div className="space-y-5">
@@ -440,11 +435,10 @@ export function LogDispatchPlanning() {
         desc="Pick transporter, vehicle and route for packed shipments, record LR details and lock the ETA against the store launch date."
       />
 
-      <div className="grid gap-3 sm:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-3">
         <Stat label="Planned" value={DISPATCH_PLANS.filter((p) => p.status === "planned").length} tone="warn" />
         <Stat label="Dispatched" value={DISPATCH_PLANS.filter((p) => p.status === "dispatched").length} tone="info" />
         <Stat label="In transit" value={DISPATCH_PLANS.filter((p) => p.status === "in_transit").length} />
-        <Stat label="Freight cost" value={inr(totalFreight)} />
       </div>
 
       <div className="overflow-x-auto rounded-lg border">
@@ -706,7 +700,6 @@ export function LogPerformance() {
     { label: "On-time delivery", value: "89%", sub: "16 of 18 shipments", tone: "good" as const },
     { label: "POD completion", value: "92%", sub: "2 pending", tone: "warn" as const },
     { label: "Issues closed", value: "11", sub: "Avg 2.1 days", tone: "good" as const },
-    { label: "Freight cost / shipment", value: inr(14800), sub: "Down 6% vs last month", tone: "good" as const },
   ];
 
   const insights = [
