@@ -541,7 +541,7 @@ export function SalesHeadMeetingsPage() {
                 leadId: payload.leadId || `LD-${Math.floor(Math.random() * 9000 + 1000)}`,
                 leadName: payload.leadName, city: payload.city || "—", unit: payload.unit,
                 phone: "—", type: payload.type, mode: payload.mode, link: payload.link,
-                owner: payload.owner, stage: "Meeting Scheduled", value: payload.value,
+                owner: payload.owner, stage: "Meeting Scheduled",
                 startAt: payload.startAt, durationMin: payload.durationMin,
                 confirmation: "Awaiting Confirmation", objective: payload.objective,
                 prepNotes: payload.prepNotes, managerJoining: payload.managerJoining,
@@ -568,7 +568,6 @@ export function SalesHeadMeetingsPage() {
             update(outcomeFor.id, (m) => ({
               ...m,
               stage: o.stage,
-              value: o.value,
               outcome: { ...o, recordedAt: new Date().toISOString() },
               followUpTaskCreated: !!o.nextAction,
               history: [...m.history, { at: new Date().toISOString(), note: `Outcome recorded by Sales Head: ${o.result}` }],
@@ -634,7 +633,6 @@ function MeetingCard({
               <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" />{fmtDay(m.startAt)} · {fmtTime(m.startAt)} · {m.durationMin}m</span>
               <span className="inline-flex items-center gap-1"><Users className="w-3 h-3" />{m.owner}</span>
               <span>{m.stage}</span>
-              <span>{inr(m.value)}</span>
               <span className="inline-flex items-center gap-1">
                 {m.mode === "Online" ? <Video className="w-3 h-3" /> : <MapPin className="w-3 h-3" />}{m.link}
               </span>
@@ -733,7 +731,6 @@ function DetailSheet({
               {m.outcome ? m.outcome.result : m.confirmation}
             </Badge>
             <Badge variant="outline">{m.stage}</Badge>
-            <Badge variant="outline">{inr(m.value)}</Badge>
             <Badge variant="outline">{m.mode}</Badge>
           </div>
 
@@ -749,7 +746,7 @@ function DetailSheet({
           <Separator />
           <Block title="Meeting preparation">
             <Info label="Qualification" value={m.qualification.summary} />
-            <Info label="Investment budget" value={m.qualification.budget} />
+            <Info label="Investment readiness" value={m.qualification.budget} />
             <Info label="Preferred city" value={m.qualification.city} />
             <Info label="Purchase timeline" value={m.qualification.timeline} />
             <Info label="Objective" value={m.objective} />
@@ -863,7 +860,7 @@ function DetailSheet({
 
 type SchedulePayload = {
   leadId: string; leadName: string; city: string; unit: string; type: MeetingType;
-  mode: "Online" | "In-person"; link: string; owner: string; value: number;
+  mode: "Online" | "In-person"; link: string; owner: string;
   startAt: string; durationMin: number; objective: string; prepNotes: string; managerJoining: boolean;
 };
 
@@ -884,7 +881,6 @@ function ScheduleDialog({
   const [mode, setMode] = useState<"Online" | "In-person">(existing?.mode ?? "Online");
   const [link, setLink] = useState(existing?.link ?? "");
   const [owner, setOwner] = useState(existing?.owner ?? EXECUTIVES[0].name);
-  const [value, setValue] = useState(String(existing?.value ?? 1500000));
   const [date, setDate] = useState(`${base.getFullYear()}-${pad(base.getMonth() + 1)}-${pad(base.getDate())}`);
   const [time, setTime] = useState(`${pad(base.getHours())}:${pad(base.getMinutes())}`);
   const [duration, setDuration] = useState(String(existing?.durationMin ?? 30));
@@ -900,7 +896,7 @@ function ScheduleDialog({
     if (existing && !reason.trim()) { toast.error("Reason for rescheduling is required"); return; }
     onSave({
       leadId, leadName, city, unit, type, mode, link: link || (mode === "Online" ? "Online meeting room" : "To be confirmed"),
-      owner, value: Number(value) || 0, startAt: new Date(`${date}T${time}:00`).toISOString(),
+      owner, startAt: new Date(`${date}T${time}:00`).toISOString(),
       durationMin: Number(duration) || 30, objective: existing ? `${objective}` : objective,
       prepNotes: existing ? prepNotes : prepNotes, managerJoining,
     }, existing);
@@ -930,7 +926,6 @@ function ScheduleDialog({
           <Field label="Date"><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
           <Field label="Time"><Input type="time" value={time} onChange={(e) => setTime(e.target.value)} /></Field>
           <Field label="Duration (minutes)"><Input value={duration} onChange={(e) => setDuration(e.target.value)} /></Field>
-          <Field label="Opportunity value (₹)"><Input value={value} onChange={(e) => setValue(e.target.value)} /></Field>
           <div className="sm:col-span-2">
             <Field label="Meeting objective"><Textarea rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} /></Field>
           </div>
@@ -975,7 +970,6 @@ function OutcomeDialog({
   const [interest, setInterest] = useState<"High" | "Medium" | "Low">("High");
   const [objections, setObjections] = useState("");
   const [stage, setStage] = useState<Stage>(m.stage);
-  const [value, setValue] = useState(String(m.value));
   const [nextAction, setNextAction] = useState("");
   const [nextDate, setNextDate] = useState("");
   const [nextTime, setNextTime] = useState("");
@@ -989,7 +983,7 @@ function OutcomeDialog({
     if (!nextAction.trim()) { toast.error("Next action is required"); return; }
     if (!nextDate || !nextTime) { toast.error("Next action due date and time are required"); return; }
     onSave({
-      result, summary, interest, objections, stage, value: Number(value) || 0,
+      result, summary, interest, objections, stage,
       nextAction, nextDueAt: new Date(`${nextDate}T${nextTime}:00`).toISOString(),
       reason: reason || undefined,
     });
@@ -1018,7 +1012,6 @@ function OutcomeDialog({
           </div>
           <Sel label="Updated pipeline stage" value={stage} onChange={(v) => setStage(v as Stage)}
             options={STAGES.map((s) => [s, s] as [string, string])} />
-          <Field label="Updated opportunity value (₹)"><Input value={value} onChange={(e) => setValue(e.target.value)} /></Field>
           <div className="sm:col-span-2">
             <Field label="Next action"><Input value={nextAction} onChange={(e) => setNextAction(e.target.value)} placeholder="Send revised proposal…" /></Field>
           </div>
