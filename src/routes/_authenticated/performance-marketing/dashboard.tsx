@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { PerfMktDashboard } from "@/components/perf-mkt/dashboard";
+
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/dashboard")({
   head: () => ({
