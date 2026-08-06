@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { MyWorkQueue } from "@/components/work/my-work-queue";
+import { TeamWorkQueue } from "@/components/work/team-work-queue";
+import { NotificationBell } from "@/components/work/notification-bell";
 import { useEffect, useState } from "react";
 import {
   Dialog,
