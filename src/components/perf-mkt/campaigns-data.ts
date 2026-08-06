@@ -101,17 +101,13 @@ export type Audience = {
   retargeting?: string;
 };
 
-export type BudgetPlan = {
-  type: "daily" | "total";
-  daily: number;
-  total: number;
-  approved: number;
+export type Targets = {
+  approved: boolean;
   approver: string;
   startDate: string;
   endDate: string;
-  expectedCpl: number;
   leadTarget: number;
-  salesTarget: number;
+  orderTarget: number;
 };
 
 export type CreativeBlock = {
@@ -150,17 +146,14 @@ export type Metrics = {
   calls: number;
   whatsapp: number;
   orders: number;
-  salesAmount: number;
-  salesVerified: boolean;
+  ordersVerified: boolean;
 };
 
 export type DailyUpdate = {
   date: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   observation: string;
   action: string;
   nextReview: string;
@@ -170,21 +163,18 @@ export type OptimisationEntry = {
   date: string;
   problem: string;
   change: string;
-  budgetChange?: string;
+  targetChange?: string;
   audienceChange?: string;
   creativeChange?: string;
-  bidChange?: string;
   expected: string;
   reviewDate: string;
   outcome?: string;
 };
 
 export type CampaignReport = {
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  salesAmount: number;
   bestCreative: string;
   bestAudience: string;
   learning: string;
@@ -208,8 +198,7 @@ export type CampaignRecord = {
   serviceArea: string;
   problem: string;
   outcome: string;
-  spend: number;
-  budget: BudgetPlan;
+  targets: Targets;
   audience: Audience;
   creatives: CreativeBlock[];
   handover: LeadHandover;
