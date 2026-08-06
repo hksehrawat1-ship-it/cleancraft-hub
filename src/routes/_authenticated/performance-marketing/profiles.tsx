@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { ProfilesPage } from "@/components/perf-mkt/profiles";
+
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/profiles")({
   head: () => ({
@@ -15,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/prof
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Google Business & Social Profiles"
-      description="Profile health and updates per store, linked by Store ID."
-    />
-  ),
+  component: ProfilesPage,
+
 });
