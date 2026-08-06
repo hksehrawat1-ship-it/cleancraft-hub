@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { LeadsSalesPage } from "@/components/perf-mkt/leads";
+
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/leads-sales")({
   head: () => ({
@@ -15,10 +16,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/lead
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Leads & Sales Results"
-      description="Enquiries, orders and sales per store — one shared lead record, no copies."
-    />
-  ),
+  component: LeadsSalesPage,
 });
+
