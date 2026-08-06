@@ -958,7 +958,6 @@ export function AmFollowups() {
             <DialogDescription>Verified machine or consumable payments become available in Dispatch Clearance.</DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">Verified amount</Label><Input value={vAmount} onChange={(e) => setVAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Verified by</Label><Input value={MANAGER} readOnly /></div>
             <div><Label className="text-xs">Vyapar receipt reference</Label><Input value={vReceipt} onChange={(e) => setVReceipt(e.target.value)} /></div>
             <div>
@@ -975,16 +974,14 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                const amt = Number(vAmount);
-                if (!amt) return toast.error("Verified amount is required");
-                const partial = amt < open.amount;
+                const partial = received(open) < open.target;
                 if (partial && vClearance === "yes" && !open.partialApproval) {
                   return toast.error("Dispatch clearance on partial payment needs a recorded authorised approval");
                 }
                 update(open.id, (p) => log({
                   ...p,
                   status: vClearance === "yes" ? "Ready for Dispatch Clearance" : "Verified",
-                  verification: { amount: amt, by: MANAGER, at: "4 Aug 2026, now", receipt: vReceipt, note: vNote, clearanceRequired: vClearance === "yes" },
+                  verification: { by: MANAGER, at: "4 Aug 2026, now", receipt: vReceipt, note: vNote, clearanceRequired: vClearance === "yes" },
                   txns: p.txns.map((t) => ({ ...t, reviewed: true })),
                   nextAction: vClearance === "yes" ? "Send dispatch clearance" : "Close payment",
                   nextActionDue: "Today",
