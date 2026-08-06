@@ -170,7 +170,7 @@ const LOSS_REASONS = ["Budget constraint", "Chose competitor", "Location unavail
 type Risk = { key: string; label: string; test: (o: Opportunity) => boolean };
 
 const RISKS: Risk[] = [
-  { key: "hv-idle", label: "High-value, no recent activity", test: (o) => o.value >= 1500000 && hoursSince(o.lastInteraction) >= 24 && !["Won", "Lost"].includes(o.stage) },
+  { key: "hv-idle", label: "High-priority, no recent activity", test: (o) => (o.priority === "Urgent" || o.score >= 85) && hoursSince(o.lastInteraction) >= 24 && !["Won", "Lost"].includes(o.stage) },
   { key: "no-next", label: "No next action assigned", test: (o) => !o.nextAction && !["Won", "Lost"].includes(o.stage) },
   { key: "overdue-fu", label: "Overdue follow-up", test: (o) => !!o.followupAt && new Date(o.followupAt).getTime() < now && !["Won", "Lost"].includes(o.stage) },
   { key: "stalled", label: "Stalled beyond stage duration", test: (o) => daysSince(o.stageSince) > STAGE_MAX_DAYS[o.stage] },
@@ -197,7 +197,7 @@ export function SalesHeadPipelinePage() {
 
   const [f, setF] = useState({
     exec: "all", unit: "all", stage: "all", priority: "all", score: "all",
-    source: "all", campaign: "all", place: "all", value: "all", close: "all", created: "all", q: "",
+    source: "all", campaign: "all", place: "all", close: "all", created: "all", q: "",
   });
 
   const filtered = useMemo(
@@ -213,9 +213,6 @@ export function SalesHeadPipelinePage() {
         if (f.source !== "all" && o.source !== f.source) return false;
         if (f.campaign !== "all" && o.campaign !== f.campaign) return false;
         if (f.place !== "all" && o.state !== f.place) return false;
-        if (f.value === "lt10" && o.value >= 1000000) return false;
-        if (f.value === "10to20" && (o.value < 1000000 || o.value > 2000000)) return false;
-        if (f.value === "gt20" && o.value <= 2000000) return false;
         const cd = (new Date(o.expectedCloseAt).getTime() - now) / 86400000;
         if (f.close === "week" && (cd < 0 || cd > 7)) return false;
         if (f.close === "month" && (cd < 0 || cd > 31)) return false;
@@ -232,22 +229,20 @@ export function SalesHeadPipelinePage() {
   );
 
   const open = filtered.filter((o) => !["Won", "Lost"].includes(o.stage));
-  const totalValue = open.reduce((s, o) => s + o.value, 0);
-  const weighted = open.reduce((s, o) => s + (o.value * probs[o.stage]) / 100, 0);
+  const weightedConversions = open.reduce((s, o) => s + probs[o.stage] / 100, 0);
   const thisMonth = (iso: string) => {
     const d = new Date(iso), n = new Date(now);
     return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear();
   };
-  const expectedThisMonth = open.filter((o) => thisMonth(o.expectedCloseAt)).reduce((s, o) => s + (o.value * probs[o.stage]) / 100, 0);
-  const wonThisMonth = filtered.filter((o) => o.stage === "Won" && thisMonth(o.expectedCloseAt)).reduce((s, o) => s + (o.wonAmount ?? o.value), 0);
-  const achievement = Math.round((wonThisMonth / MONTH_TARGET) * 100);
+  const expectedThisMonth = open.filter((o) => thisMonth(o.expectedCloseAt)).reduce((s, o) => s + probs[o.stage] / 100, 0);
+  const wonThisMonth = filtered.filter((o) => o.stage === "Won" && thisMonth(o.expectedCloseAt)).length;
+  const achievement = Math.round((wonThisMonth / MONTH_TARGET_DEALS) * 100);
 
   const kpis = [
     { label: "Active Opportunities", value: String(open.length) },
-    { label: "Total Pipeline Value", value: inr(totalValue) },
-    { label: "Weighted Pipeline Value", value: inr(weighted) },
-    { label: "Expected Revenue This Month", value: inr(expectedThisMonth) },
-    { label: "Revenue Won This Month", value: inr(wonThisMonth), tone: "text-emerald-600" },
+    { label: "Weighted Expected Conversions", value: weightedConversions.toFixed(1) },
+    { label: "Expected Conversions This Month", value: expectedThisMonth.toFixed(1) },
+    { label: "Deals Won This Month", value: String(wonThisMonth), tone: "text-emerald-600" },
     { label: "Target Achievement", value: `${achievement}%`, tone: achievement >= 80 ? "text-emerald-600" : "text-amber-600" },
   ];
 
@@ -271,11 +266,8 @@ export function SalesHeadPipelinePage() {
       stageSince: new Date().toISOString(),
       qualified: to === "Qualified" ? true : x.qualified,
       meetingOutcome: data.outcome ?? x.meetingOutcome,
-      proposalAmount: data.proposalAmount ? Number(data.proposalAmount) : x.proposalAmount,
-      paymentAmount: data.paymentAmount ? Number(data.paymentAmount) : x.paymentAmount,
       paymentDueAt: data.paymentDueAt ? new Date(data.paymentDueAt).toISOString() : x.paymentDueAt,
       expectedCloseAt: data.expectedCloseAt ? new Date(data.expectedCloseAt).toISOString() : x.expectedCloseAt,
-      wonAmount: data.wonAmount ? Number(data.wonAmount) : x.wonAmount,
       lostReason: data.lostReason ?? x.lostReason,
       history: [{ at: new Date().toISOString(), note: `Stage ${x.stage} → ${to} (approved by Sales Head)` }, ...x.history],
     }));
@@ -299,7 +291,7 @@ export function SalesHeadPipelinePage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
         {kpis.map((k) => (
           <Card key={k.label}>
             <CardContent className="p-4">
@@ -372,7 +364,7 @@ export function SalesHeadPipelinePage() {
         />
       )}
       {view === "table" && <TableView rows={filtered} probs={probs} onOpen={setDetail} />}
-      {view === "forecast" && <Forecast rows={filtered} probs={probs} setProbs={setProbs} target={MONTH_TARGET} />}
+      {view === "forecast" && <Forecast rows={filtered} probs={probs} setProbs={setProbs} target={MONTH_TARGET_DEALS} />}
       {view === "analysis" && <Analysis rows={filtered} all={rows} probs={probs} />}
 
       <PipelineHealth rows={filtered} onOpen={setDetail} />
