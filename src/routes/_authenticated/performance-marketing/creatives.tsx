@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PerfMktPlaceholder } from "@/components/perf-mkt/placeholder";
+import { PerfMktCreatives } from "@/components/perf-mkt/creatives";
 
 export const Route = createFileRoute("/_authenticated/performance-marketing/creatives")({
   head: () => ({
@@ -15,10 +15,6 @@ export const Route = createFileRoute("/_authenticated/performance-marketing/crea
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
-    <PerfMktPlaceholder
-      title="Creatives & Graphics"
-      description="Creative and graphic assets per store, linked by Store ID."
-    />
-  ),
+  component: PerfMktCreatives,
 });
+
