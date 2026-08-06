@@ -488,27 +488,25 @@ export type CampaignResult = {
   objective: string;
   startDate: string;
   endDate?: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   status: "Running" | "Paused" | "Completed" | "Needs Review";
 };
 
 export const CAMPAIGN_RESULTS: CampaignResult[] = [
-  { campaignId: "CMP-8821", name: "Jaipur Dry Cleaning — Search", storeId: "STR-1042", platform: "Google Ads", objective: "Lead generation", startDate: "2026-07-01", spend: 42000, leads: 96, qualified: 64, orders: 38, sales: 342000, status: "Running" },
-  { campaignId: "CMP-8829", name: "Mumbai Premium Care — Leads", storeId: "STR-1121", platform: "Meta Ads", objective: "Lead generation", startDate: "2026-07-05", spend: 38000, leads: 74, qualified: 48, orders: 27, sales: 318000, status: "Running" },
-  { campaignId: "CMP-8834", name: "Indore Monsoon Offer — Leads", storeId: "STR-1067", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-10", endDate: "2026-08-15", spend: 31500, leads: 82, qualified: 52, orders: 29, sales: 262000, status: "Running" },
-  { campaignId: "CMP-8840", name: "Surat Reopen Offer — Leads", storeId: "STR-1103", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-18", spend: 28000, leads: 34, qualified: 11, orders: 4, sales: 82000, status: "Needs Review" },
-  { campaignId: "CMP-8845", name: "Nagpur Awareness — Reach", storeId: "STR-1134", platform: "Meta Ads", objective: "Store awareness", startDate: "2026-07-20", spend: 18000, leads: 26, qualified: 8, orders: 3, sales: 46000, status: "Paused" },
-  { campaignId: "CMP-8802", name: "Franchise Enquiry — Company Search", storeId: "COMPANY", platform: "Google Ads", objective: "Franchise enquiries", startDate: "2026-06-01", spend: 86000, leads: 64, qualified: 38, orders: 6, sales: 1080000, status: "Running" },
-  { campaignId: "CMP-8788", name: "Kanpur Launch — Search", storeId: "STR-1149", platform: "Google Ads", objective: "Lead generation", startDate: "2026-06-20", endDate: "2026-07-31", spend: 26000, leads: 18, qualified: 4, orders: 0, sales: 0, status: "Completed" },
+  { campaignId: "CMP-8821", name: "Jaipur Dry Cleaning — Search", storeId: "STR-1042", platform: "Google Ads", objective: "Lead generation", startDate: "2026-07-01", leads: 96, qualified: 64, orders: 38, status: "Running" },
+  { campaignId: "CMP-8829", name: "Mumbai Premium Care — Leads", storeId: "STR-1121", platform: "Meta Ads", objective: "Lead generation", startDate: "2026-07-05", leads: 74, qualified: 48, orders: 27, status: "Running" },
+  { campaignId: "CMP-8834", name: "Indore Monsoon Offer — Leads", storeId: "STR-1067", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-10", endDate: "2026-08-15", leads: 82, qualified: 52, orders: 29, status: "Running" },
+  { campaignId: "CMP-8840", name: "Surat Reopen Offer — Leads", storeId: "STR-1103", platform: "Meta Ads", objective: "Offer promotion", startDate: "2026-07-18", leads: 34, qualified: 11, orders: 4, status: "Needs Review" },
+  { campaignId: "CMP-8845", name: "Nagpur Awareness — Reach", storeId: "STR-1134", platform: "Meta Ads", objective: "Store awareness", startDate: "2026-07-20", leads: 26, qualified: 8, orders: 3, status: "Paused" },
+  { campaignId: "CMP-8802", name: "Franchise Enquiry — Company Search", storeId: "COMPANY", platform: "Google Ads", objective: "Franchise enquiries", startDate: "2026-06-01", leads: 64, qualified: 38, orders: 6, status: "Running" },
+  { campaignId: "CMP-8788", name: "Kanpur Launch — Search", storeId: "STR-1149", platform: "Google Ads", objective: "Lead generation", startDate: "2026-06-20", endDate: "2026-07-31", leads: 18, qualified: 4, orders: 0, status: "Completed" },
 ];
 
 /* ------------------------------------------------------------------- funnel */
 
-export type FunnelStage = { label: string; value: number; previous: number; isCurrency?: boolean };
+export type FunnelStage = { label: string; value: number; previous: number };
 
 export const FUNNEL: FunnelStage[] = [
   { label: "Reach", value: 486000, previous: 442000 },
@@ -516,7 +514,6 @@ export const FUNNEL: FunnelStage[] = [
   { label: "Enquiries", value: 628, previous: 574 },
   { label: "Qualified Leads", value: 354, previous: 318 },
   { label: "Orders", value: 194, previous: 168 },
-  { label: "Sales Value", value: 1769000, previous: 1584000, isCurrency: true },
 ];
 
 /* ----------------------------------------------------------- offline entries */
@@ -526,7 +523,6 @@ export type OfflineResult = {
   storeId: string;
   reference: string;
   orderDate: string;
-  orderValue: number;
   leadId?: string;
   sourceOrPromo: string;
   proof: string;
@@ -536,9 +532,9 @@ export type OfflineResult = {
 };
 
 export const OFFLINE_RESULTS: OfflineResult[] = [
-  { id: "OFF-3011", storeId: "STR-1042", reference: "INV-JPR-2281", orderDate: "2026-08-04", orderValue: 9800, leadId: "LEAD-23960", sourceOrPromo: "Promo code JPRAUG", proof: "Bill photo + POS screenshot", submittedBy: "Nikhil Arora", verification: "verified", verifiedBy: "Accounts — Pooja Nanda" },
-  { id: "OFF-3014", storeId: "STR-1121", reference: "INV-MUM-8842", orderDate: "2026-08-05", orderValue: 8400, leadId: "LEAD-24067", sourceOrPromo: "Promo code AAROHI10", proof: "Bill photo", submittedBy: "Nikhil Arora", verification: "pending" },
-  { id: "OFF-3015", storeId: "STR-1067", reference: "WALK-IN-1120", orderDate: "2026-08-05", orderValue: 4200, sourceOrPromo: "GMB offer post", proof: "Store register photo", submittedBy: "Store Manager — Indore", verification: "pending" },
+  { id: "OFF-3011", storeId: "STR-1042", reference: "INV-JPR-2281", orderDate: "2026-08-04", leadId: "LEAD-23960", sourceOrPromo: "Promo code JPRAUG", proof: "Bill photo + POS screenshot", submittedBy: "Nikhil Arora", verification: "verified", verifiedBy: "Accounts — Pooja Nanda" },
+  { id: "OFF-3014", storeId: "STR-1121", reference: "INV-MUM-8842", orderDate: "2026-08-05", leadId: "LEAD-24067", sourceOrPromo: "Promo code AAROHI10", proof: "Bill photo", submittedBy: "Nikhil Arora", verification: "pending" },
+  { id: "OFF-3015", storeId: "STR-1067", reference: "WALK-IN-1120", orderDate: "2026-08-05", sourceOrPromo: "GMB offer post", proof: "Store register photo", submittedBy: "Store Manager — Indore", verification: "pending" },
 ];
 
 /* ------------------------------------------------------------------- helpers */

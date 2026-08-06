@@ -636,7 +636,7 @@ export function AmFollowups() {
                   <F label="Project" v={`${open.projectId} · ${open.store}`} />
                   <F label="Project Coordinator" v={open.coordinator} />
                   <F label="Payment purpose" v={open.purpose} />
-                  <F label="Collection progress" v={`${Math.round((received(open) / open.amount) * 100)}% of target`} />
+                  <F label="Collection progress" v={`${received(open)}/${open.target} instalments (${progressPct(open)}% of target)`} />
                   <F label="Payment due date" v={open.due} />
                   <F label="Vyapar invoice" v={`${open.vyaparInvoice} · ${open.invoiceDate}`} />
                   <F label="Dispatch clearance required" v={open.clearanceRequired ? "Yes" : "No"} />
@@ -655,7 +655,7 @@ export function AmFollowups() {
                   <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs space-y-2">
                     <div className="font-medium text-amber-900">Partial payment</div>
                     <div className="grid grid-cols-2 gap-2">
-                      <F label="Collection progress" v={`${Math.round((received(open) / open.amount) * 100)}% of target`} />
+                      <F label="Collection progress" v={`${received(open)}/${open.target} instalments (${progressPct(open)}% of target)`} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       <div>
@@ -680,7 +680,7 @@ export function AmFollowups() {
                       size="sm"
                       onClick={() => {
                         if (ptDispatch === "yes" && !ptApproval.trim()) return toast.error("Authorised approval is required to allow dispatch on partial payment");
-                        update(open.id, (p) => log({ ...p, status: "Partially Paid", nextPaymentDue: ptNextDue, dispatchOnPartial: ptDispatch === "yes", partialApproval: ptApproval }, `Partial payment updated — ${Math.round((received(p) / p.amount) * 100)}% collected, dispatch on partial: ${ptDispatch}`));
+                        update(open.id, (p) => log({ ...p, status: "Partially Paid", nextPaymentDue: ptNextDue, dispatchOnPartial: ptDispatch === "yes", partialApproval: ptApproval }, `Partial payment updated — ${received(p)}/${p.target} instalments collected, dispatch on partial: ${ptDispatch}`));
                         toast.success("Partial payment details saved");
                       }}
                     >
@@ -802,11 +802,9 @@ export function AmFollowups() {
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Request date</Label><Input value={rDate} onChange={(e) => setRDate(e.target.value)} placeholder="4 Aug 2026" /></div>
-            <div><Label className="text-xs">Amount requested</Label><Input value={rAmount} onChange={(e) => setRAmount(e.target.value)} /></div>
             <div><Label className="text-xs">Due date</Label><Input value={rDue} onChange={(e) => setRDue(e.target.value)} /></div>
             <div><Label className="text-xs">Vyapar invoice number</Label><Input value={rInvoice} onChange={(e) => setRInvoice(e.target.value)} /></div>
             <div><Label className="text-xs">Invoice date</Label><Input value={rInvDate} onChange={(e) => setRInvDate(e.target.value)} /></div>
-            <div><Label className="text-xs">Invoice amount</Label><Input value={rInvAmt} onChange={(e) => setRInvAmt(e.target.value)} /></div>
             <div>
               <Label className="text-xs">Communication method</Label>
               <Select value={rMethod} onValueChange={setRMethod}>
@@ -823,11 +821,11 @@ export function AmFollowups() {
             <Button
               onClick={() => {
                 if (!open) return;
-                if (!rAmount || !rDue) return toast.error("Amount and due date are required");
+                if (!rDue) return toast.error("Due date is required");
                 update(open.id, (p) => log({
                   ...p, status: p.status === "Payment Requested" ? "Follow-up Scheduled" : p.status,
                   due: rDue, instructions: rInstr || p.instructions, vyaparInvoice: rInvoice || p.vyaparInvoice,
-                  invoiceDate: rInvDate || p.invoiceDate, invoiceAmount: Number(rInvAmt) || p.invoiceAmount,
+                  invoiceDate: rInvDate || p.invoiceDate,
                   nextAction: "Follow up on payment request", nextActionDue: rNext || p.nextActionDue,
                 }, `Payment requested via ${rMethod}${rMsg ? ` — ${rMsg}` : ""}`));
                 toast.success("Payment request recorded");
@@ -862,7 +860,6 @@ export function AmFollowups() {
               </Select>
             </div>
             <div><Label className="text-xs">Promise-to-pay date</Label><Input value={fuPromiseDate} onChange={(e) => setFuPromiseDate(e.target.value)} /></div>
-            <div><Label className="text-xs">Promised amount</Label><Input value={fuPromiseAmt} onChange={(e) => setFuPromiseAmt(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Franchise comments</Label><Textarea rows={2} value={fuComments} onChange={(e) => setFuComments(e.target.value)} /></div>
             <div className="col-span-2"><Label className="text-xs">Accounts Manager note</Label><Textarea rows={2} value={fuNote} onChange={(e) => setFuNote(e.target.value)} /></div>
             <div><Label className="text-xs">Next action</Label><Input value={fuNextAction} onChange={(e) => setFuNextAction(e.target.value)} /></div>
@@ -876,7 +873,7 @@ export function AmFollowups() {
                 if (!fuNextAction.trim() || !fuNextAt.trim()) return toast.error("Every active payment needs a next action and due date");
                 const entry: FollowUp = {
                   at: fuAt || "4 Aug 2026", person: fuPerson || open.owner, method: fuMethod, outcome: fuOutcome,
-                  promiseDate: fuPromiseDate || undefined, promiseAmount: fuPromiseAmt ? Number(fuPromiseAmt) : undefined,
+                  promiseDate: fuPromiseDate || undefined,
                   comments: fuComments || undefined, note: fuNote || undefined,
                   nextAction: fuNextAction.trim(), nextAt: fuNextAt.trim(),
                 };
@@ -887,7 +884,7 @@ export function AmFollowups() {
                 }, `Follow-up (${fuMethod}) — ${fuOutcome}`));
                 toast.success("Follow-up recorded");
                 setFollowOpen(false);
-                setFuAt(""); setFuPromiseDate(""); setFuPromiseAmt(""); setFuComments(""); setFuNote(""); setFuNextAction(""); setFuNextAt("");
+                setFuAt(""); setFuPromiseDate(""); setFuComments(""); setFuNote(""); setFuNextAction(""); setFuNextAt("");
               }}
             >
               Save follow-up
@@ -902,7 +899,7 @@ export function AmFollowups() {
           <DialogHeader>
             <DialogTitle>Record payment received</DialogTitle>
             <DialogDescription>
-              {open ? `${open.id} · ${open.owner} · ${Math.round((received(open) / open.amount) * 100)}% collected` : ""} — never enter passwords, OTPs, CVV or UPI PINs.
+              {open ? `${open.id} · ${open.owner} · ${received(open)}/${open.target} instalments collected` : ""} — never enter passwords, OTPs, CVV or UPI PINs.
             </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
