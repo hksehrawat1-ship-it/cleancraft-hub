@@ -20,7 +20,7 @@ import {
 } from "recharts";
 import {
   TrendingUp, Info, Download, Users, Phone, CalendarClock, FileText,
-  Trophy, IndianRupee, Percent, Clock, AlertTriangle, Target, Eye,
+  Trophy, Percent, Clock, AlertTriangle, Target, Eye,
   Lightbulb, ShieldCheck, ArrowUp, ArrowDown,
 } from "lucide-react";
 
@@ -40,15 +40,12 @@ type ExecPerf = {
   meetings: number;
   proposals: number;
   won: number;
-  revenue: number; // rupees
-  target: number;
-  pipelineValue: number;
-  weightedPipeline: number;
+  target: number; // count of expected conversions in the period
   overdueActions: number;
   avgCycleDays: number;
-  stalledValue: number;
-  paymentPending: number;
-  trend: { m: string; revenue: number }[];
+  stalledCount: number;
+  paymentPendingCount: number;
+  trend: { m: string; won: number }[];
   history: { at: string; note: string }[];
 };
 
@@ -57,45 +54,45 @@ const EXECS: ExecPerf[] = [
     name: "Ravi Sharma", territory: "Rajasthan", unit: "Franchise",
     assigned: 92, contacted: 86, firstResponseMin: 7, calls: 214, callsConnected: 158,
     followupsDue: 74, followupsOnTime: 68, meetings: 26, proposals: 19, won: 7,
-    revenue: 1260000, target: 1500000, pipelineValue: 8200000, weightedPipeline: 3150000,
-    overdueActions: 3, avgCycleDays: 22, stalledValue: 900000, paymentPending: 600000,
-    trend: [{ m: "Apr", revenue: 9 }, { m: "May", revenue: 11 }, { m: "Jun", revenue: 10 }, { m: "Jul", revenue: 12.6 }],
+    target: 8,
+    overdueActions: 3, avgCycleDays: 22, stalledCount: 4, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 5 }, { m: "May", won: 6 }, { m: "Jun", won: 6 }, { m: "Jul", won: 7 }],
     history: [{ at: "12 Jul", note: "3 leads transferred in from Amit Bansal (revenue credit retained by original owner)" }],
   },
   {
     name: "Neha Kulkarni", territory: "Maharashtra", unit: "Franchise",
     assigned: 84, contacted: 71, firstResponseMin: 19, calls: 168, callsConnected: 102,
     followupsDue: 66, followupsOnTime: 47, meetings: 18, proposals: 13, won: 4,
-    revenue: 760000, target: 1500000, pipelineValue: 6400000, weightedPipeline: 2050000,
-    overdueActions: 9, avgCycleDays: 31, stalledValue: 1900000, paymentPending: 450000,
-    trend: [{ m: "Apr", revenue: 8 }, { m: "May", revenue: 9.5 }, { m: "Jun", revenue: 8.2 }, { m: "Jul", revenue: 7.6 }],
+    target: 8,
+    overdueActions: 9, avgCycleDays: 31, stalledCount: 8, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 4 }, { m: "May", won: 5 }, { m: "Jun", won: 4 }, { m: "Jul", won: 4 }],
     history: [{ at: "04 Jul", note: "Nagpur cluster reassigned from Deepak Verma" }],
   },
   {
     name: "Amit Bansal", territory: "Delhi NCR", unit: "Master Franchise",
     assigned: 108, contacted: 101, firstResponseMin: 5, calls: 248, callsConnected: 191,
     followupsDue: 88, followupsOnTime: 84, meetings: 34, proposals: 27, won: 11,
-    revenue: 2140000, target: 1800000, pipelineValue: 10400000, weightedPipeline: 4380000,
-    overdueActions: 1, avgCycleDays: 18, stalledValue: 620000, paymentPending: 900000,
-    trend: [{ m: "Apr", revenue: 14 }, { m: "May", revenue: 16 }, { m: "Jun", revenue: 19 }, { m: "Jul", revenue: 21.4 }],
+    target: 10,
+    overdueActions: 1, avgCycleDays: 18, stalledCount: 3, paymentPendingCount: 3,
+    trend: [{ m: "Apr", won: 8 }, { m: "May", won: 9 }, { m: "Jun", won: 10 }, { m: "Jul", won: 11 }],
     history: [{ at: "12 Jul", note: "3 leads transferred out to Ravi Sharma" }],
   },
   {
     name: "Deepak Verma", territory: "Madhya Pradesh", unit: "Franchise",
     assigned: 68, contacted: 60, firstResponseMin: 14, calls: 141, callsConnected: 94,
     followupsDue: 52, followupsOnTime: 43, meetings: 15, proposals: 11, won: 5,
-    revenue: 940000, target: 1200000, pipelineValue: 5100000, weightedPipeline: 1720000,
-    overdueActions: 4, avgCycleDays: 26, stalledValue: 1100000, paymentPending: 300000,
-    trend: [{ m: "Apr", revenue: 7 }, { m: "May", revenue: 8 }, { m: "Jun", revenue: 8.8 }, { m: "Jul", revenue: 9.4 }],
+    target: 7,
+    overdueActions: 4, avgCycleDays: 26, stalledCount: 5, paymentPendingCount: 1,
+    trend: [{ m: "Apr", won: 3 }, { m: "May", won: 4 }, { m: "Jun", won: 4 }, { m: "Jul", won: 5 }],
     history: [{ at: "04 Jul", note: "Nagpur cluster transferred to Neha Kulkarni" }],
   },
   {
     name: "Sneha Iyer", territory: "Karnataka", unit: "Corporate Tie-up",
     assigned: 76, contacted: 70, firstResponseMin: 9, calls: 182, callsConnected: 128,
     followupsDue: 61, followupsOnTime: 55, meetings: 22, proposals: 16, won: 6,
-    revenue: 1180000, target: 1400000, pipelineValue: 6900000, weightedPipeline: 2460000,
-    overdueActions: 2, avgCycleDays: 24, stalledValue: 780000, paymentPending: 520000,
-    trend: [{ m: "Apr", revenue: 9 }, { m: "May", revenue: 10.2 }, { m: "Jun", revenue: 11 }, { m: "Jul", revenue: 11.8 }],
+    target: 8,
+    overdueActions: 2, avgCycleDays: 24, stalledCount: 4, paymentPendingCount: 2,
+    trend: [{ m: "Apr", won: 4 }, { m: "May", won: 5 }, { m: "Jun", won: 5 }, { m: "Jul", won: 6 }],
     history: [],
   },
 ];

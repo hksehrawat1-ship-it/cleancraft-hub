@@ -1074,20 +1074,18 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
   const active = opps.filter((o) => !isClosed(o.stage));
   const rows = STAGES.filter((s) => !isClosed(s)).map((s) => {
     const items = active.filter((o) => o.stage === s);
-    const value = items.reduce((a, o) => a + o.value, 0);
-    return { stage: s, count: items.length, value, weighted: (value * PROBABILITY[s]) / 100 };
+    return { stage: s, count: items.length, weighted: (items.length * PROBABILITY[s]) / 100 };
   });
   const totalW = rows.reduce((a, r) => a + r.weighted, 0);
-  const byMonth = new Map<string, { value: number; weighted: number; count: number }>();
+  const byMonth = new Map<string, { weighted: number; count: number }>();
   active.forEach((o) => {
     const k = monthKey(o.expectedCloseDate) || "Unscheduled";
-    const cur = byMonth.get(k) ?? { value: 0, weighted: 0, count: 0 };
-    cur.value += o.value;
-    cur.weighted += (o.value * PROBABILITY[o.stage]) / 100;
+    const cur = byMonth.get(k) ?? { weighted: 0, count: 0 };
+    cur.weighted += PROBABILITY[o.stage] / 100;
     cur.count += 1;
     byMonth.set(k, cur);
   });
-  const max = Math.max(1, ...rows.map((r) => r.value));
+  const max = Math.max(1, ...rows.map((r) => r.count));
 
   return (
     <div className="space-y-4">
@@ -1100,8 +1098,8 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
             </Badge>
           </div>
           <p className="text-xs text-muted-foreground">
-            Weighted value = opportunity value × stage probability. Probabilities are configurable
-            defaults, not commitments.
+            Weighted expected conversions = number of leads × stage probability. Probabilities are
+            configurable defaults, not commitments.
           </p>
           <div className="space-y-2">
             {rows.map((r) => (
@@ -1112,21 +1110,20 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
                 <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-primary/70 rounded-full"
-                    style={{ width: `${(r.value / max) * 100}%` }}
+                    style={{ width: `${(r.count / max) * 100}%` }}
                   />
                 </div>
                 <div className="w-16 text-xs tabular-nums text-right">{r.count} opp</div>
-                <div className="w-20 text-xs tabular-nums text-right">{inr(r.value)}</div>
-                <div className="w-20 text-xs tabular-nums text-right font-semibold">
-                  {inr(Math.round(r.weighted))}
+                <div className="w-24 text-xs tabular-nums text-right font-semibold">
+                  {r.weighted.toFixed(1)} expected
                 </div>
               </div>
             ))}
           </div>
           <Separator />
           <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Total weighted pipeline (estimate)</span>
-            <span className="font-semibold tabular-nums">{inr(Math.round(totalW))}</span>
+            <span className="text-muted-foreground">Total weighted expected conversions</span>
+            <span className="font-semibold tabular-nums">{totalW.toFixed(1)}</span>
           </div>
         </CardContent>
       </Card>
@@ -1151,10 +1148,8 @@ function ForecastView({ opps }: { opps: Opportunity[] }) {
                         })}
                   </span>
                   <span className="text-muted-foreground tabular-nums">
-                    {v.count} opp · {inr(v.value)} · weighted{" "}
-                    <span className="font-semibold text-foreground">
-                      {inr(Math.round(v.weighted))}
-                    </span>
+                    {v.count} opp · expected{" "}
+                    <span className="font-semibold text-foreground">{v.weighted.toFixed(1)}</span>
                   </span>
                 </div>
               ))}
