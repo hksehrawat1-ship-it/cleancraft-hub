@@ -136,6 +136,7 @@ export const CEO_GROUPS: CeoGroup[] = [
     label: "8. App & Pos Centre",
     icon: Smartphone,
     items: [
+      { key: "cto", label: "CTO", icon: Cpu, blurb: "Technology strategy, architecture, release approvals and platform oversight." },
       { key: "developer", label: "Developer", icon: Code, blurb: "App & POS development, releases, bug tracking, feature backlog." },
     ],
   },
