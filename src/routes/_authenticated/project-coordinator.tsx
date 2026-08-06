@@ -186,7 +186,17 @@ function ProjectCoordinatorDashboard() {
           ))}
         </div>
 
-        {active === "roles" && <RolesSection />}
+        {active === "roles" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Live shared work</h2>
+              <NotificationBell />
+            </div>
+            <MyWorkQueue />
+            <TeamWorkQueue department="projects" title="Projects Department Work" />
+            <RolesSection />
+          </div>
+        )}
         {active === "projects-status" && <ProjectsStatusSection />}
         {active === "stores" && <StoresSection />}
         {active === "mind-task" && <MindTaskSection />}
