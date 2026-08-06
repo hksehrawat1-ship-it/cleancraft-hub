@@ -548,14 +548,13 @@ export function SalesPipeline() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat icon={Target} label="Active opportunities" value={String(active.length)} />
-        <Stat icon={Wallet} label="Pipeline value" value={inr(totalValue)} />
         <Stat
           icon={Activity}
-          label="Weighted value (est.)"
-          value={inr(Math.round(weighted))}
-          hint="Estimate"
+          label="Weighted expected conversions"
+          value={weightedConversions.toFixed(1)}
+          hint="Sum of probability across active opportunities"
         />
         <Stat
           icon={CalendarClock}
@@ -564,8 +563,8 @@ export function SalesPipeline() {
         />
         <Stat
           icon={Trophy}
-          label="Won revenue (this month)"
-          value={inr(wonRevenue)}
+          label="Conversions (this month)"
+          value={String(wonThisMonth)}
           tone="emerald"
         />
       </div>
@@ -629,16 +628,6 @@ export function SalesPipeline() {
                 { v: "high", l: "80+" },
                 { v: "mid", l: "50–79" },
                 { v: "low", l: "Below 50" },
-              ]}
-            />
-            <Pick
-              label="Opportunity value"
-              value={f.value}
-              onChange={(v) => setF({ ...f, value: v })}
-              options={[
-                { v: "gt25", l: "₹25L+" },
-                { v: "15to25", l: "₹15L–25L" },
-                { v: "lt15", l: "Below ₹15L" },
               ]}
             />
             <Pick
@@ -822,7 +811,7 @@ function KanbanBoard({
       <div className="flex gap-3 min-w-max">
         {STAGES.map((stage) => {
           const items = opps.filter((o) => o.stage === stage);
-          const value = items.reduce((s, o) => s + o.value, 0);
+          const expected = items.length * (PROBABILITY[stage] / 100);
           // Conversion rate = share of all opportunities that reached this stage or beyond.
           const idx = STAGES.indexOf(stage);
           const reached = all.filter(
@@ -857,8 +846,8 @@ function KanbanBoard({
                   </div>
                   <div className="mt-1.5 grid grid-cols-3 gap-1 text-[11px] text-muted-foreground">
                     <div>
-                      <div className="font-semibold text-foreground tabular-nums">{inr(value)}</div>
-                      value
+                      <div className="font-semibold text-foreground tabular-nums">{expected.toFixed(1)}</div>
+                      expected
                     </div>
                     <div>
                       <div className="font-semibold text-foreground tabular-nums">{conv}%</div>
@@ -931,7 +920,7 @@ function OppCard({
       </div>
 
       <div className="flex items-center justify-between text-xs">
-        <span className="font-semibold tabular-nums">{inr(o.value)}</span>
+        <span className="font-semibold tabular-nums">{PROBABILITY[o.stage]}% likely</span>
         <span className="text-muted-foreground">Score {o.score}</span>
       </div>
 
@@ -995,8 +984,7 @@ function TableView({
                 "Lead",
                 "City",
                 "Stage",
-                "Value",
-                "Weighted",
+                "Probability",
                 "Score",
                 "Priority",
                 "Owner",
@@ -1024,10 +1012,7 @@ function TableView({
                     {o.stage}
                   </Badge>
                 </td>
-                <td className="px-3 py-2 tabular-nums">{inr(o.value)}</td>
-                <td className="px-3 py-2 tabular-nums text-muted-foreground">
-                  {inr(Math.round((o.value * PROBABILITY[o.stage]) / 100))}
-                </td>
+                <td className="px-3 py-2 tabular-nums">{PROBABILITY[o.stage]}%</td>
                 <td className="px-3 py-2 tabular-nums">{o.score}</td>
                 <td className="px-3 py-2">
                   <Badge
