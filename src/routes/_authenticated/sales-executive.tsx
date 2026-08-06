@@ -833,7 +833,7 @@ function HandoverForm({
             <label className="text-xs text-muted-foreground">Discount</label>
             <input
               className={inputCls}
-              placeholder="e.g. ₹25,000 or 10%"
+              placeholder="e.g. 10% off"
               value={form.discount}
               onChange={(e) => set("discount", e.target.value)}
             />
@@ -1046,18 +1046,12 @@ function BookingsView({ leads, profiles, onSaved }: ViewProps) {
 
 function LostView({ leads, profiles, onSaved }: ViewProps) {
   const lost = leads.filter((l) => l.lead_stage === "Lost");
-  const totalValue = lost.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
 
   return (
     <div className="space-y-6">
       <Section title="Lost Leads Summary">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <Stat label="Total Lost" value={lost.length} tone="text-red-600" />
-          <Stat
-            label="Lost Value"
-            value={`₹${totalValue.toLocaleString("en-IN")}`}
-            tone="text-red-600"
-          />
           <Stat
             label="Most Common Stage"
             value={mostCommon(lost.map((l) => l.lead_stage)) ?? "—"}
@@ -1074,14 +1068,13 @@ function LostView({ leads, profiles, onSaved }: ViewProps) {
                   <Th>City</Th>
                   <Th>Lost Reason</Th>
                   <Th>Lost Stage</Th>
-                  <Th>Lost Value</Th>
                   <Th></Th>
                 </tr>
               </thead>
               <tbody>
                 {lost.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="p-6 text-center text-sm text-muted-foreground">
+                    <td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">
                       No lost leads.
                     </td>
                   </tr>
@@ -1093,9 +1086,6 @@ function LostView({ leads, profiles, onSaved }: ViewProps) {
                     <td className="px-4 py-3">{(l as any).lost_reason ?? "—"}</td>
                     <td className="px-4 py-3">
                       <Badge variant="outline">{(l as any).lost_stage ?? l.lead_stage}</Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      ₹{(Number(l.engagement_letter_fee_amount) || 0).toLocaleString("en-IN")}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <Link to="/leads/$id" params={{ id: l.id }}>
@@ -1125,25 +1115,13 @@ function HandoverView({ leads, profiles, onSaved }: ViewProps) {
     (l) => l.lead_stage === "Booking Received" && !isHandoverDone(l.lead_stage),
   );
   const handoverDone = leads.filter((l) => isHandoverDone(l.lead_stage));
-  const sumAmt = (arr: Lead[]) =>
-    arr.reduce((s, l) => s + (Number(l.engagement_letter_fee_amount) || 0), 0);
 
   return (
     <div className="space-y-6">
       <Section title="Hand Over to Account Department">
         <div className="grid grid-cols-2 gap-3">
-          <BookingStat
-            label="Pending Handover"
-            count={handoverPending.length}
-            value={sumAmt(handoverPending)}
-            tone="text-orange-600"
-          />
-          <BookingStat
-            label="Handover Complete"
-            count={handoverDone.length}
-            value={sumAmt(handoverDone)}
-            tone="text-emerald-600"
-          />
+          <Stat label="Pending Handover" value={handoverPending.length} tone="text-orange-600" />
+          <Stat label="Handover Complete" value={handoverDone.length} tone="text-emerald-600" />
         </div>
       </Section>
       <Section title="Pending Handover">

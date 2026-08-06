@@ -146,7 +146,7 @@ const SEED: Meeting[] = [
     stage: "Payment Pending", startAt: at(0, 15, 0), durationMin: 30,
     confirmation: "Awaiting Confirmation",
     objective: "Confirm booking amount transfer date and agreement signing window.",
-    prepNotes: "", managerJoining: true, managerNotes: [], instructions: ["Sales Head to join — high value"],
+    prepNotes: "", managerJoining: true, managerNotes: [], instructions: ["Sales Head to join — key negotiation"],
     rescheduleCount: 1,
     history: [
       { at: at(-5, 11), note: "Meeting created by Neha Kulkarni" },

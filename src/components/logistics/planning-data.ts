@@ -581,7 +581,5 @@ export const PLANS: PlanRecord[] = [
   },
 ];
 
-export const inr = (n: number) => `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 0 })}`;
-
 export const maskRef = (ref: string) =>
   !ref || ref.length <= 6 ? ref : `${ref.slice(0, 4)}••••${ref.slice(-4)}`;
