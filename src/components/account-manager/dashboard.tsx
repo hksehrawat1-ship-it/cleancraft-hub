@@ -294,7 +294,7 @@ export function AmDashboard() {
     ...reqs.filter((r) => r.status === "Request Submitted").map((r) => ({ level: "amber", text: `${r.id} — Project request not accepted yet (${r.city})` })),
     ...reqs.filter((r) => r.due === "Today").map((r) => ({ level: "amber", text: `${r.id} — Payment due today` })),
     ...reqs.filter((r) => r.daysOverdue > 0).map((r) => ({ level: "red", text: `${r.id} — Payment overdue by ${r.daysOverdue} day(s)` })),
-    ...reqs.filter((r) => r.received > 0 && r.received < r.amount).map((r) => ({ level: "amber", text: `${r.id} — Only ${Math.round((r.received / r.target) * 100)}% of the expected target was matched — verify` })),
+    ...reqs.filter((r) => r.received > 0 && r.received < r.target).map((r) => ({ level: "amber", text: `${r.id} — Only ${Math.round((r.received / r.target) * 100)}% of the expected target was matched — verify` })),
     ...duplicateRefs(reqs).map((t) => ({ level: "red", text: t })),
     ...clrs.filter((c) => c.logistics === "Not Sent").map((c) => ({ level: "amber", text: `${c.reqId} — Payment verified but dispatch clearance not sent` })),
     ...clrs.filter((c) => c.logistics === "Sent — Awaiting Acceptance").map((c) => ({ level: "amber", text: `${c.id} — Logistics has not accepted the clearance` })),
