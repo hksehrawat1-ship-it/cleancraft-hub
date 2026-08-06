@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { MyWorkQueue } from "@/components/work/my-work-queue";
+import { NotificationBell } from "@/components/work/notification-bell";
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -430,7 +432,16 @@ function ProjectManagerDashboard() {
         {header}
         {section === "stores" && <StoresSection />}
         {section === "mind" && <MindTasksSection />}
-        {section === "pc-tasks" && <PCTasksSection />}
+        {section === "pc-tasks" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">Work assigned to me</h2>
+              <NotificationBell />
+            </div>
+            <MyWorkQueue />
+            <PCTasksSection />
+          </div>
+        )}
         {section === "expenses" && <ExpenseSheetSection stores={stores} />}
         {section === "resources" && <ResourcesSection />}
         {section === "performance" && <PerformanceSection stores={stores} />}
