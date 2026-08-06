@@ -526,23 +526,11 @@ export function AmFollowups() {
             </Select>
           </div>
           <div>
-            <Label className="text-[11px] text-muted-foreground">Amount range</Label>
-            <Select value={fAmt} onValueChange={setFAmt}>
-              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="lt1">Below ₹1L</SelectItem>
-                <SelectItem value="1to5">₹1L – ₹5L</SelectItem>
-                <SelectItem value="gt5">Above ₹5L</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
             <Label className="text-[11px] text-muted-foreground">Due date</Label>
             <Input className="h-9" placeholder="e.g. Aug" value={fDue} onChange={(e) => setFDue(e.target.value)} />
           </div>
           <div className="flex items-end">
-            <Button variant="ghost" size="sm" onClick={() => { setFCoord("all"); setFProject("all"); setFOwner("all"); setFType("all"); setFStatus("all"); setFMode("all"); setFClearance("all"); setFAmt("all"); setFDue(""); }}>Clear filters</Button>
+            <Button variant="ghost" size="sm" onClick={() => { setFCoord("all"); setFProject("all"); setFOwner("all"); setFType("all"); setFStatus("all"); setFMode("all"); setFClearance("all"); setFDue(""); }}>Clear filters</Button>
           </div>
         </CardContent>
       </Card>
@@ -557,9 +545,7 @@ export function AmFollowups() {
                   <TableHead>Request</TableHead>
                   <TableHead>Owner / project</TableHead>
                   <TableHead>Purpose</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                  <TableHead className="text-right">Received</TableHead>
-                  <TableHead className="text-right">Balance</TableHead>
+                  <TableHead className="text-right">Progress</TableHead>
                   <TableHead>Due</TableHead>
                   <TableHead>Last / next follow-up</TableHead>
                   <TableHead>Status</TableHead>
@@ -575,7 +561,7 @@ export function AmFollowups() {
                       <div className="text-xs text-muted-foreground">{p.store} · {p.projectId}</div>
                     </TableCell>
                     <TableCell className="text-xs max-w-[200px]">{p.purpose}</TableCell>
-                    <TableCell className="text-right tabular-nums">{Math.round((received(p) / p.amount) * 100)}%</TableCell>
+                    <TableCell className="text-right tabular-nums">{received(p)}/{p.target} · {progressPct(p)}%</TableCell>
                     <TableCell className="text-sm">
                       {p.due}
                       {p.daysOverdue > 0 && <div className="text-xs text-rose-600">{p.daysOverdue}d overdue</div>}
@@ -591,7 +577,7 @@ export function AmFollowups() {
                   </TableRow>
                 ))}
                 {list.length === 0 && (
-                  <TableRow><TableCell colSpan={10} className="text-center text-sm text-muted-foreground py-8">Nothing in this tab.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-sm text-muted-foreground py-8">Nothing in this tab.</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -607,7 +593,7 @@ export function AmFollowups() {
                 <div className="text-sm">{p.owner} · {p.store}</div>
                 <div className="text-xs text-muted-foreground">{p.purpose}</div>
                 <div className="text-sm tabular-nums">
-                  <span className="font-semibold">{Math.round((received(p) / p.amount) * 100)}% collected</span>
+                  <span className="font-semibold">{received(p)}/{p.target} instalments · {progressPct(p)}% of target</span>
                 </div>
                 <div className="text-xs text-muted-foreground">
                   Due {p.due}{p.daysOverdue > 0 ? ` · ${p.daysOverdue}d overdue` : ""} · Last {lastFollow(p)?.at ?? "—"} · Next {lastFollow(p)?.nextAt ?? p.nextActionDue}

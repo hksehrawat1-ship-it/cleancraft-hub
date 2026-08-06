@@ -439,46 +439,43 @@ export type StoreResult = {
   city: string;
   rm: string;
   executive: string;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
+  targetOrders: number;
   status: "good" | "watch" | "poor";
   nextAction: string;
 };
 
 export const STORE_RESULTS: StoreResult[] = [
-  { storeId: "STR-1042", store: "Clean Craft Jaipur — Vaishali", city: "Jaipur", rm: "Ritika Bansal", executive: "Nikhil Arora", spend: 62000, leads: 142, qualified: 92, orders: 51, sales: 486000, status: "good", nextAction: "Increase budget on best-performing search campaign" },
-  { storeId: "STR-1067", store: "Clean Craft Indore — Vijay Nagar", city: "Indore", rm: "Aakash Menon", executive: "Nikhil Arora", spend: 48500, leads: 118, qualified: 74, orders: 39, sales: 372000, status: "good", nextAction: "Refresh monsoon creative before 15 Aug" },
-  { storeId: "STR-1088", store: "Clean Craft Lucknow — Gomti Nagar", city: "Lucknow", rm: "Sanya Kapoor", executive: "Nikhil Arora", spend: 51000, leads: 64, qualified: 28, orders: 11, sales: 158000, status: "watch", nextAction: "Review lead form questions — high unqualified rate" },
-  { storeId: "STR-1103", store: "Clean Craft Surat — Adajan", city: "Surat", rm: "Yash Malhotra", executive: "Nikhil Arora", spend: 44000, leads: 38, qualified: 12, orders: 4, sales: 96000, status: "poor", nextAction: "Tighten service-area targeting and pause weak ad set" },
-  { storeId: "STR-1121", store: "Clean Craft Mumbai — Andheri West", city: "Mumbai", rm: "Ritika Bansal", executive: "Nikhil Arora", spend: 58000, leads: 96, qualified: 61, orders: 34, sales: 412000, status: "good", nextAction: "Repeat influencer collaboration that drove orders" },
-  { storeId: "STR-1134", store: "Clean Craft Nagpur — Dharampeth", city: "Nagpur", rm: "Aakash Menon", executive: "Nikhil Arora", spend: 39000, leads: 52, qualified: 21, orders: 9, sales: 118000, status: "watch", nextAction: "Ask store to confirm order updates in Sales CRM" },
-  { storeId: "STR-1149", store: "Clean Craft Kanpur — Swaroop Nagar", city: "Kanpur", rm: "Sanya Kapoor", executive: "Nikhil Arora", spend: 26000, leads: 18, qualified: 4, orders: 0, sales: 0, status: "poor", nextAction: "Spend with no orders — escalate to manager for review" },
+  { storeId: "STR-1042", store: "Clean Craft Jaipur — Vaishali", city: "Jaipur", rm: "Ritika Bansal", executive: "Nikhil Arora", leads: 142, qualified: 92, orders: 51, targetOrders: 45, status: "good", nextAction: "Increase reach on best-performing search campaign" },
+  { storeId: "STR-1067", store: "Clean Craft Indore — Vijay Nagar", city: "Indore", rm: "Aakash Menon", executive: "Nikhil Arora", leads: 118, qualified: 74, orders: 39, targetOrders: 40, status: "good", nextAction: "Refresh monsoon creative before 15 Aug" },
+  { storeId: "STR-1088", store: "Clean Craft Lucknow — Gomti Nagar", city: "Lucknow", rm: "Sanya Kapoor", executive: "Nikhil Arora", leads: 64, qualified: 28, orders: 11, targetOrders: 35, status: "watch", nextAction: "Review lead form questions — high unqualified rate" },
+  { storeId: "STR-1103", store: "Clean Craft Surat — Adajan", city: "Surat", rm: "Yash Malhotra", executive: "Nikhil Arora", leads: 38, qualified: 12, orders: 4, targetOrders: 30, status: "poor", nextAction: "Tighten service-area targeting and pause weak ad set" },
+  { storeId: "STR-1121", store: "Clean Craft Mumbai — Andheri West", city: "Mumbai", rm: "Ritika Bansal", executive: "Nikhil Arora", leads: 96, qualified: 61, orders: 34, targetOrders: 35, status: "good", nextAction: "Repeat influencer collaboration that drove orders" },
+  { storeId: "STR-1134", store: "Clean Craft Nagpur — Dharampeth", city: "Nagpur", rm: "Aakash Menon", executive: "Nikhil Arora", leads: 52, qualified: 21, orders: 9, targetOrders: 25, status: "watch", nextAction: "Ask store to confirm order updates in Sales CRM" },
+  { storeId: "STR-1149", store: "Clean Craft Kanpur — Swaroop Nagar", city: "Kanpur", rm: "Sanya Kapoor", executive: "Nikhil Arora", leads: 18, qualified: 4, orders: 0, targetOrders: 20, status: "poor", nextAction: "No orders — escalate to manager for review" },
 ];
 
 /* -------------------------------------------------------- source attribution */
 
 export type SourceResult = {
   source: LeadSource;
-  spend: number;
   leads: number;
   qualified: number;
   orders: number;
-  sales: number;
   tracked: boolean;
 };
 
 export const SOURCE_RESULTS: SourceResult[] = [
-  { source: "Google Ads", spend: 168000, leads: 214, qualified: 138, orders: 82, sales: 712000, tracked: true },
-  { source: "Meta Ads", spend: 142000, leads: 186, qualified: 96, orders: 48, sales: 468000, tracked: true },
-  { source: "Google Business Profile", spend: 0, leads: 74, qualified: 41, orders: 22, sales: 186000, tracked: true },
-  { source: "Facebook Organic", spend: 0, leads: 22, qualified: 9, orders: 4, sales: 34000, tracked: false },
-  { source: "Instagram Organic", spend: 0, leads: 31, qualified: 12, orders: 5, sales: 41000, tracked: false },
-  { source: "Influencer or YouTuber", spend: 68000, leads: 58, qualified: 34, orders: 19, sales: 214000, tracked: true },
-  { source: "Referral", spend: 0, leads: 24, qualified: 18, orders: 12, sales: 96000, tracked: true },
-  { source: "Other", spend: 0, leads: 19, qualified: 6, orders: 2, sales: 18000, tracked: false },
+  { source: "Google Ads", leads: 214, qualified: 138, orders: 82, tracked: true },
+  { source: "Meta Ads", leads: 186, qualified: 96, orders: 48, tracked: true },
+  { source: "Google Business Profile", leads: 74, qualified: 41, orders: 22, tracked: true },
+  { source: "Facebook Organic", leads: 22, qualified: 9, orders: 4, tracked: false },
+  { source: "Instagram Organic", leads: 31, qualified: 12, orders: 5, tracked: false },
+  { source: "Influencer or YouTuber", leads: 58, qualified: 34, orders: 19, tracked: true },
+  { source: "Referral", leads: 24, qualified: 18, orders: 12, tracked: true },
+  { source: "Other", leads: 19, qualified: 6, orders: 2, tracked: false },
 ];
 
 /* -------------------------------------------------------- campaign results */

@@ -1268,17 +1268,13 @@ function StageChangeDialog({
 }) {
   const to = move?.to;
   const [note, setNote] = useState("");
-  const [budget, setBudget] = useState("");
   const [timeline, setTimeline] = useState("");
   const [dm, setDm] = useState("");
   const [pref, setPref] = useState("");
   const [meetAt, setMeetAt] = useState("");
   const [meetMode, setMeetMode] = useState("Google Meet");
-  const [proposalValue, setProposalValue] = useState("");
   const [closeDate, setCloseDate] = useState("");
-  const [payAmount, setPayAmount] = useState("");
   const [payDate, setPayDate] = useState("");
-  const [finalAmount, setFinalAmount] = useState("");
   const [lossReason, setLossReason] = useState("");
 
   // Reset when a new move starts.
@@ -1287,17 +1283,13 @@ function StageChangeDialog({
   if (key !== lastKey) {
     setLastKey(key);
     setNote("");
-    setBudget("");
     setTimeline("");
     setDm("");
     setPref("");
     setMeetAt("");
     setMeetMode("Google Meet");
-    setProposalValue("");
     setCloseDate("");
-    setPayAmount("");
     setPayDate("");
-    setFinalAmount("");
     setLossReason("");
   }
 
@@ -1318,9 +1310,9 @@ function StageChangeDialog({
       return toast.error("Notes are required for this stage change");
 
     if (to === "Qualified") {
-      if (!budget || !timeline || !dm || !pref)
+      if (!timeline || !dm || !pref)
         return toast.error("Complete all qualification details");
-      patch.qualification = { budget, timeline, decisionMaker: dm, preference: pref };
+      patch.qualification = { timeline, decisionMaker: dm, preference: pref };
     }
     if (to === "Meeting Scheduled") {
       if (!meetAt) return toast.error("Meeting date and time are required");
@@ -1329,9 +1321,7 @@ function StageChangeDialog({
       patch.followupDue = meetAt.slice(0, 10);
     }
     if (to === "Proposal Sent") {
-      if (!proposalValue) return toast.error("Proposal value is required");
-      patch.proposal = { value: Number(proposalValue), sentAt: new Date().toISOString() };
-      patch.value = Number(proposalValue);
+      patch.proposal = { sentAt: new Date().toISOString() };
       patch.nextAction = "Proposal follow-up";
     }
     if (to === "Negotiation") {
@@ -1339,16 +1329,12 @@ function StageChangeDialog({
       patch.expectedCloseDate = closeDate;
     }
     if (to === "Payment Pending") {
-      if (!payAmount || !payDate)
-        return toast.error("Payment amount and expected date are required");
-      patch.payment = { amount: Number(payAmount), expectedAt: payDate, status: "Pending" };
+      if (!payDate) return toast.error("Expected payment date is required");
+      patch.payment = { expectedAt: payDate, status: "Pending" };
       patch.nextAction = "Payment follow-up";
       patch.followupDue = payDate;
     }
     if (to === "Won") {
-      if (!finalAmount) return toast.error("Final amount is required to mark Won");
-      patch.finalAmount = Number(finalAmount);
-      patch.value = Number(finalAmount);
       patch.nextAction = "Handover to Project Coordinator";
       if (opp!.payment) patch.payment = { ...opp!.payment, status: "Received" };
     }
@@ -1376,13 +1362,6 @@ function StageChangeDialog({
         <div className="space-y-3">
           {to === "Qualified" && (
             <div className="grid grid-cols-2 gap-2">
-              <Field label="Budget range">
-                <Input
-                  value={budget}
-                  onChange={(e) => setBudget(e.target.value)}
-                  placeholder="₹18L – ₹25L"
-                />
-              </Field>
               <Field label="Timeline">
                 <Input
                   value={timeline}
@@ -1431,43 +1410,14 @@ function StageChangeDialog({
               </Field>
             </div>
           )}
-          {to === "Proposal Sent" && (
-            <Field label="Proposal value (₹)">
-              <Input
-                type="number"
-                value={proposalValue}
-                onChange={(e) => setProposalValue(e.target.value)}
-                placeholder="2500000"
-              />
-            </Field>
-          )}
           {to === "Negotiation" && (
             <Field label="Expected closing date">
               <Input type="date" value={closeDate} onChange={(e) => setCloseDate(e.target.value)} />
             </Field>
           )}
           {to === "Payment Pending" && (
-            <div className="grid grid-cols-2 gap-2">
-              <Field label="Payment amount (₹)">
-                <Input
-                  type="number"
-                  value={payAmount}
-                  onChange={(e) => setPayAmount(e.target.value)}
-                />
-              </Field>
-              <Field label="Expected payment date">
-                <Input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
-              </Field>
-            </div>
-          )}
-          {to === "Won" && (
-            <Field label="Final amount (₹)">
-              <Input
-                type="number"
-                value={finalAmount}
-                onChange={(e) => setFinalAmount(e.target.value)}
-                placeholder="3000000"
-              />
+            <Field label="Expected payment date">
+              <Input type="date" value={payDate} onChange={(e) => setPayDate(e.target.value)} />
             </Field>
           )}
           {to === "Lost" && (
