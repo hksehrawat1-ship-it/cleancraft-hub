@@ -397,7 +397,7 @@ export function TeamWorkQueue({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(ctx?.departments ?? []).map((d) => (
+                    {((ctx?.departments ?? []) as any[]).map((d) => (
                       <SelectItem key={d.code} value={d.code}>
                         {d.name}
                       </SelectItem>

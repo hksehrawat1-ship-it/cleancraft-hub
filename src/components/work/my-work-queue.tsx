@@ -114,7 +114,7 @@ export function WorkHistoryDialog({ item, onClose }: { item: WorkItem; onClose: 
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          {(data?.events ?? []).map((e) => (
+          {((data?.events ?? []) as any[]).map((e) => (
             <div key={e.id} className="rounded-md border bg-card p-2 text-xs">
               <div className="font-medium">{e.event_type.replace(/_/g, " ")}</div>
               <div className="text-muted-foreground">
