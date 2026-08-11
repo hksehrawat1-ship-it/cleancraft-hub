@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { listNotifications, markNotificationRead } from "@/lib/work.functions";
+import { safeQuery } from "@/lib/work-safe";
 
 const TONE: Record<string, string> = {
   new_assignment: "text-primary",
@@ -31,7 +32,8 @@ export function NotificationBell() {
 
   const { data: items = [] } = useQuery({
     queryKey: ["notifications"],
-    queryFn: () => fetchAll(),
+    queryFn: () => safeQuery(() => fetchAll(), [] as any[]),
+    retry: false,
     refetchInterval: 60_000,
   });
 

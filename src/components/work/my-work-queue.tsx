@@ -26,6 +26,7 @@ import {
   updateWorkStatus,
 } from "@/lib/work.functions";
 import {
+import { safeQuery } from "@/lib/work-safe";
   EMPLOYEE_QUEUES,
   PRIORITY_TONE,
   STATUS_LABEL,
@@ -99,7 +100,8 @@ export function WorkHistoryDialog({ item, onClose }: { item: WorkItem; onClose: 
   const fetchHistory = useServerFn(listWorkHistory);
   const { data } = useQuery({
     queryKey: ["work-history", item.id],
-    queryFn: () => fetchHistory({ data: { workItemId: item.id } }),
+    queryFn: () => safeQuery(() => fetchHistory({ data: { workItemId: item.id } }), { events: [] as any[] }),
+    retry: false,
   });
 
   return (
@@ -143,7 +145,8 @@ export function MyWorkQueue({ title = "My Work" }: { title?: string }) {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["my-work"],
-    queryFn: () => fetchMine(),
+    queryFn: () => safeQuery(() => fetchMine(), [] as any[]),
+    retry: false,
   });
 
   const [queue, setQueue] = useState<string>("new");
