@@ -275,8 +275,8 @@ export function PerfMktDashboard() {
           icon={Target}
           tone="active"
         />
-        <Kpi label="Sales Generated" value={inr(salesMonth)} icon={IndianRupee} tone="healthy" />
-        <Kpi label="Advertising Spend" value={inr(totalSpend)} sub="This month" icon={TrendingUp} />
+        <Kpi label="Orders Generated" value={String(ordersMonth)} icon={IndianRupee} tone="healthy" />
+        <Kpi label="Active Campaigns" value={String(running)} sub="This month" icon={TrendingUp} />
       </div>
 
       {/* Next priority action */}
