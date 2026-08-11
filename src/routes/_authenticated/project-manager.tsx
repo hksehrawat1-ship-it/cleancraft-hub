@@ -183,6 +183,7 @@ const defaultCarpenter = (): SubStage => ({
     mkItem("cp-storage", "Storage cabinets built"),
     { id: "cp-partition", label: "Partitions installed", done: false, note: "A. 15kg stacker Size: L-81\", W-29.5', D-31\" • B. 10kg Stacker Size: L-77.5', W-29.5', D-30\" • C. 10kg Domas SIZE: L-82\" W-27.5\" D-31\"" },
     { id: "cp-doors", label: "Doors & frames fitted", done: false, note: "Partition Door: H: 82 by 3.5 ft" },
+    { id: "cp-packing-table", label: "Packing table built", done: false, note: "Size: 3ft by 3ft by 3ft" },
   ],
 });
 
