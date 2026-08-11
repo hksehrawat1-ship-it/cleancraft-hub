@@ -1904,9 +1904,9 @@ function ElectricSpecsDialog() {
 function PlumberSpecsDialog() {
   const specs = [
     { sno: "1", machine: "LG 10 kg Dryer - Electric", pipe: "Duct", qty: "1", specification: "4 Inch", remark: "" },
-    { sno: "2", machine: "LG 10 Kg Washer", pipe: "Pipe", qty: "2", specification: "½ inch hex nipple", remark: "" },
+    { sno: "2", machine: "LG 10 Kg Washer", pipe: "Pipe", qty: "2", specification: "0.75 inch hex nipple", remark: "" },
     { sno: "3", machine: "LG 15 Kg Gas Dryer", pipe: "Duct", qty: "1", specification: "4 Inch", remark: "" },
-    { sno: "4", machine: "LG 15 Kg Washer", pipe: "Pipe", qty: "2", specification: "½ inch hex nipple", remark: "" },
+    { sno: "4", machine: "LG 15 Kg Washer", pipe: "Pipe", qty: "2", specification: "0.75 inch hex nipple", remark: "" },
     { sno: "5", machine: "Press table", pipe: "NA", qty: "NA", specification: "NA", remark: "NA" },
     { sno: "6", machine: "Boiler", pipe: "", qty: "1", specification: "A) Hex Nipple ½ inch\nB) Elbow ½ inch", remark: "Drainage open with Bucket" },
     { sno: "7", machine: "Spotting table", pipe: "NA", qty: "NA", specification: "NA", remark: "NA" },
