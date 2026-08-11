@@ -889,15 +889,6 @@ export function collabAlerts(c: Collaboration): { text: string; critical: boolea
   return a;
 }
 
-export const cpl = (c: Collaboration) =>
-  c.results && c.results.qualifiedLeads > 0 ? Math.round(c.amount / c.results.qualifiedLeads) : null;
-
-export const cpa = (c: Collaboration) =>
-  c.results && c.results.orders > 0 ? Math.round(c.amount / c.results.orders) : null;
-
-export const roas = (c: Collaboration) =>
-  c.results && c.amount > 0 ? +(c.results.salesValue / c.amount).toFixed(2) : null;
-
 /** Performance data prepared here; the final KPI score is computed on the Performance page. */
 export const COLLAB_PERFORMANCE_PREP = {
   collaborationsCompleted: 6,
@@ -907,7 +898,6 @@ export const COLLAB_PERFORMANCE_PREP = {
   avgCorrectionRounds: 1.3,
   qualifiedLeads: 968,
   orders: 402,
-  avgCostPerLead: 168,
   creatorReturn: 4.6,
   highPerformingCreators: ["Jaipur Food & Life — Ankit Sharma", "Pune Homemaker Diaries — Sneha Kulkarni"],
   source: "Manual entry until YouTube, Meta, tracking-link and payment integrations are connected",

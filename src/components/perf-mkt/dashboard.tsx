@@ -167,9 +167,8 @@ export function PerfMktDashboard() {
   const attentionCampaigns = CAMPAIGNS.filter(
     (c) => c.status === "low_balance" || c.status === "needs_optimisation",
   ).length;
-  const totalSpend = STORES.reduce((s, x) => s + x.adSpend, 0);
   const leadsMonth = STORES.reduce((s, x) => s + x.leadsThisMonth, 0);
-  const salesMonth = STORES.reduce((s, x) => s + x.salesGenerated, 0);
+  const ordersMonth = STORES.reduce((s, x) => s + x.ordersThisMonth, 0);
 
   function accept(r: MarketingRequest) {
     setRequests((prev) =>
@@ -431,14 +430,14 @@ export function PerfMktDashboard() {
                     <div className="font-medium tabular-nums">{s.leadsThisMonth}</div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">Sales generated</div>
+                    <div className="text-muted-foreground">Orders this month</div>
                     <div className="font-medium tabular-nums text-emerald-600">
-                      {inr(s.salesGenerated)}
+                      {s.ordersThisMonth}
                     </div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">Ad spend</div>
-                    <div className="font-medium tabular-nums">{inr(s.adSpend)}</div>
+                    <div className="text-muted-foreground">Target achieved</div>
+                    <div className="font-medium tabular-nums">{s.targetAchievedPct}%</div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between gap-2">
@@ -541,7 +540,7 @@ export function PerfMktDashboard() {
               .filter((c) => c.status !== "completed")
               .map((c) => {
                 const meta = campaignStatusMeta[c.status];
-                const util = Math.min(100, Math.round((c.spend / c.budget) * 100));
+                const util = c.targetAchievedPct;
                 return (
                   <div key={c.id} className="rounded-md border p-3 space-y-2">
                     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-2">
@@ -560,9 +559,9 @@ export function PerfMktDashboard() {
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-5">
                       <div>
-                        <div className="text-muted-foreground">Budget / Spend</div>
+                        <div className="text-muted-foreground">Reach / Clicks</div>
                         <div className="font-medium tabular-nums">
-                          {inr(c.budget)} / {inr(c.spend)}
+                          {c.reach.toLocaleString("en-IN")} / {c.clicks.toLocaleString("en-IN")}
                         </div>
                       </div>
                       <div>
@@ -574,8 +573,8 @@ export function PerfMktDashboard() {
                         <div className="font-medium tabular-nums">{c.qualified}</div>
                       </div>
                       <div>
-                        <div className="text-muted-foreground">Sales</div>
-                        <div className="font-medium tabular-nums text-emerald-600">{inr(c.sales)}</div>
+                        <div className="text-muted-foreground">Orders</div>
+                        <div className="font-medium tabular-nums text-emerald-600">{c.orders}</div>
                       </div>
                       <div>
                         <div className="text-muted-foreground">Creative ready</div>
@@ -713,11 +712,8 @@ export function PerfMktDashboard() {
             <Kpi label="Leads handed over" value={String(LEADS_SUMMARY.handedOver)} icon={ArrowRight} tone="active" />
             <Kpi label="Leads contacted" value={String(LEADS_SUMMARY.contacted)} icon={CheckCircle2} tone="active" />
             <Kpi label="Orders generated" value={String(LEADS_SUMMARY.orders)} icon={CheckCircle2} tone="healthy" />
-            <Kpi label="Sales amount" value={inr(LEADS_SUMMARY.salesAmount)} icon={IndianRupee} tone="healthy" />
-            <Kpi label="Cost per lead" value={`₹${derived.costPerLead}`} icon={IndianRupee} />
-            <Kpi label="Cost per sale" value={`₹${derived.costPerSale}`} icon={IndianRupee} />
+            <Kpi label="Target achieved" value={`${LEADS_SUMMARY.targetAchievedPct}%`} icon={TrendingUp} tone="healthy" />
             <Kpi label="Lead-to-sale conversion" value={`${derived.conversion}%`} icon={TrendingUp} tone="healthy" />
-            <Kpi label="Ad spend attributed" value={inr(LEADS_SUMMARY.adSpend)} icon={Megaphone} />
           </div>
         </CardContent>
       </Card>
