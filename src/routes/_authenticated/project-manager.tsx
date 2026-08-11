@@ -127,7 +127,7 @@ const defaultInfra = (): SubStage => ({
 const defaultElectric = (): SubStage => ({
   id: "electric",
   label: "Electric Task",
-  remark: "From the pole to the shop, 10 mm copper wire and from the main Board, parallel wiring of 6 mm copper wire is compulsory.",
+  remark: "From the pole to the shop, 10 mm copper wire or 25 mm aluminium wire and from the main Board, parallel wiring of 6 mm copper wire is compulsory.",
   note: "Height of MCB should be 4 ft from floor.",
   items: [
     mkItem("el-load", "13 Kw Load sanction approved"),
