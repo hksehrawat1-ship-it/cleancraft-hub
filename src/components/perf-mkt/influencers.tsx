@@ -47,7 +47,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-import { inr, toneClasses } from "./data";
+import { toneClasses } from "./data";
 import {
   COLLABORATIONS,
   COLLAB_FLOW,
@@ -59,13 +59,10 @@ import {
   canComplete,
   collabAlerts,
   collabStatusMeta,
-  cpa,
-  cpl,
   creatorById,
   isCollabOverdue,
   isCommercialApproved,
   isContentApproved,
-  roas,
   type Collaboration,
   type CollabStatus,
   type Creator,
@@ -444,8 +441,6 @@ export function InfluencersPage() {
               <Stat label="Average correction rounds" value={COLLAB_PERFORMANCE_PREP.avgCorrectionRounds} />
               <Stat label="Qualified leads generated" value={COLLAB_PERFORMANCE_PREP.qualifiedLeads} />
               <Stat label="Orders generated" value={COLLAB_PERFORMANCE_PREP.orders} />
-              <Stat label="Sales generated" value={inr(COLLAB_PERFORMANCE_PREP.salesValue)} />
-              <Stat label="Average cost per lead" value={`₹${COLLAB_PERFORMANCE_PREP.avgCostPerLead}`} />
               <Stat label="Creator campaign return" value={`${COLLAB_PERFORMANCE_PREP.creatorReturn}x`} />
             </div>
             <div>
@@ -510,7 +505,6 @@ export function InfluencersPage() {
                     <Badge variant="outline">{c.scope === "Store" ? `${c.storeId}` : c.campaignRef}</Badge>
                     {c.campaignId && <Badge variant="outline">{c.campaignId}</Badge>}
                     {c.requestRef && <Badge variant="outline">{c.requestRef}</Badge>}
-                    <Badge variant="outline">{inr(c.amount)}</Badge>
                     <Badge variant="outline">{c.paymentStatus}</Badge>
                   </div>
 
@@ -547,7 +541,7 @@ export function InfluencersPage() {
                     <div className="grid grid-cols-3 gap-2 text-center text-xs">
                       <MiniStat label="Qualified leads" value={c.results.qualifiedLeads} />
                       <MiniStat label="Orders" value={c.results.orders} />
-                      <MiniStat label="Sales" value={inr(c.results.salesValue)} />
+                      <MiniStat label="Sales" value={c.results.orders} />
                     </div>
                   )}
                 </CardContent>
@@ -810,7 +804,6 @@ function CollabDetail({
           <Field label="Call to action" value={c.callToAction} />
           <Field label="Submission deadline" value={c.submissionDeadline} />
           <Field label="Planned publishing date" value={c.publishDate} />
-          <Field label="Agreed amount" value={inr(c.amount)} />
           <Field label="Payment terms" value={c.paymentTerms} />
           <Field label="Payment status" value={c.paymentStatus} />
           <Field label="Next action" value={`${c.nextAction} (by ${c.nextActionDue})`} />
@@ -825,12 +818,10 @@ function CollabDetail({
           <Field label="Average views" value={compact(c.approval.avgViews)} />
           <Field label="Engagement" value={`${c.approval.engagement}%`} />
           <Field label="Previous performance" value={c.approval.previousPerformance} />
-          <Field label="Quoted cost" value={inr(c.approval.quotedCost)} />
           <Field label="Estimated reach" value={compact(c.approval.estimatedReach)} />
           <Field label="Brand suitability" value={c.approval.brandSuitability} />
           <Field label="Risk notes" value={c.approval.riskNotes} />
           <Field label="Expected leads" value={`${c.approval.expectedLeads}`} />
-          <Field label="Expected cost per lead" value={`₹${c.approval.expectedCpl}`} />
           <Field
             label="Commercial approval"
             value={
@@ -931,7 +922,6 @@ function CollabDetail({
               <Field label="Published at" value={c.publishProof.publishedAt} />
               <Field label="Screenshot" value={c.publishProof.screenshot} />
               <Field label="Promo code / tracking link" value={c.publishProof.trackingRef} />
-              <Field label="Final amount" value={inr(c.publishProof.finalAmount)} />
               <Field label="Payment status" value={c.paymentStatus} />
             </>
           ) : (
@@ -957,10 +947,6 @@ function CollabDetail({
               <Field label="Enquiries" value={`${c.results.enquiries}`} />
               <Field label="Qualified leads" value={`${c.results.qualifiedLeads}`} />
               <Field label="Orders" value={`${c.results.orders}`} />
-              <Field label="Sales value" value={inr(c.results.salesValue)} />
-              <Field label="Cost per lead" value={cpl(c) ? `₹${cpl(c)}` : "—"} />
-              <Field label="Cost per acquisition" value={cpa(c) ? `₹${cpa(c)}` : "—"} />
-              <Field label="Return on collaboration cost" value={roas(c) ? `${roas(c)}x` : "—"} />
               <Field label="Measurement period" value={c.results.period} />
               <Field label="Data source" value={c.results.source} />
             </>
@@ -1057,7 +1043,6 @@ function CreatorDetail({ c }: { c: Creator }) {
           <Field label="Engagement rate" value={`${c.engagementRate}%`} />
           <Field label="Audience location" value={c.audienceLocation} />
           <Field label="Previous Clean Craft collaborations" value={`${c.pastCollabs}`} />
-          <Field label="Rate card" value={c.rateCard} />
           <Field label="Quality rating" value={`${c.qualityRating}/5`} />
           <Field label="Reliability rating" value={`${c.reliabilityRating}/5`} />
           <Field label="Notes" value={c.notes} />

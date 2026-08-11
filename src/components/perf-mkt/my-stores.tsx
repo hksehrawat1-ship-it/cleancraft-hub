@@ -409,9 +409,9 @@ export function PerfMktMyStores() {
                   <div className="font-medium tabular-nums">{store.leadsThisMonth}</div>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">Sales this month</div>
+                  <div className="text-muted-foreground">Orders this month</div>
                   <div className="font-medium tabular-nums text-emerald-600 flex items-center gap-1">
-                    {inr(store.salesGenerated)} <TrendIcon trend={detail.salesTrend} />
+                    {store.ordersThisMonth} <TrendIcon trend={detail.salesTrend} />
                   </div>
                 </div>
                 <div>
@@ -514,7 +514,7 @@ export function PerfMktMyStores() {
                       ["Operating status", open.detail.operatingStatus],
                       ["Primary marketing objective", open.detail.objective],
                       ["Target service area", open.detail.serviceArea],
-                      ["Monthly advertising budget", inr(open.detail.monthlyBudget)],
+                      ["Monthly lead target", String(open.detail.monthlyLeadTarget)],
                       [
                         "Current sales trend",
                         open.detail.salesTrend === "up"
@@ -583,9 +583,9 @@ export function PerfMktMyStores() {
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
                           <div>
-                            <div className="text-muted-foreground">Budget / Spend</div>
+                            <div className="text-muted-foreground">Reach / Clicks</div>
                             <div className="font-medium tabular-nums">
-                              {inr(c.budget)} / {inr(c.spend)}
+                              {c.reach.toLocaleString("en-IN")} / {c.clicks.toLocaleString("en-IN")}
                             </div>
                           </div>
                           <div>
@@ -595,9 +595,9 @@ export function PerfMktMyStores() {
                             </div>
                           </div>
                           <div>
-                            <div className="text-muted-foreground">Sales</div>
+                            <div className="text-muted-foreground">Orders</div>
                             <div className="font-medium tabular-nums text-emerald-600">
-                              {inr(c.sales)}
+                              {c.orders}
                             </div>
                           </div>
                           <div>
@@ -607,7 +607,7 @@ export function PerfMktMyStores() {
                             </div>
                           </div>
                         </div>
-                        <Progress value={Math.min(100, Math.round((c.spend / c.budget) * 100))} />
+                        <Progress value={c.targetAchievedPct} />
                       </div>
                     ))}
                     {CAMPAIGNS.filter((c) => c.storeId === open.store.id).length === 0 && (
@@ -693,7 +693,7 @@ export function PerfMktMyStores() {
                           {i.id} · {i.activity} · planned {i.plannedDate} · {i.status}
                         </div>
                         <div className="text-xs">
-                          Leads {i.leads} · Sales {inr(i.sales)}
+                          Leads {i.leads} · Orders {i.orders}
                           {i.publishedLink && (
                             <span className="text-muted-foreground"> · {i.publishedLink}</span>
                           )}
@@ -712,8 +712,6 @@ export function PerfMktMyStores() {
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     {(() => {
                       const l = open.detail.leadsSales;
-                      const cpl = l.leads ? Math.round(l.adSpend / l.leads) : 0;
-                      const cps = l.orders ? Math.round(l.adSpend / l.orders) : 0;
                       const conv = l.leads ? Math.round((l.orders / l.leads) * 1000) / 10 : 0;
                       return [
                         ["Leads generated", String(l.leads)],
@@ -721,9 +719,7 @@ export function PerfMktMyStores() {
                         ["Leads handed over", String(l.handedOver)],
                         ["Leads contacted", String(l.contacted)],
                         ["Orders generated", String(l.orders)],
-                        ["Sales amount", inr(l.salesAmount)],
-                        ["Cost per lead", `₹${cpl}`],
-                        ["Cost per sale", `₹${cps}`],
+                        ["Target achieved", `${l.targetAchievedPct}%`],
                         ["Conversion rate", `${conv}%`],
                       ].map(([l2, v]) => (
                         <div key={l2} className="rounded-md border p-2.5 bg-muted/20">
