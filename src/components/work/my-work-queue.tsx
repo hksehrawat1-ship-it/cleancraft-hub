@@ -100,7 +100,7 @@ export function WorkHistoryDialog({ item, onClose }: { item: WorkItem; onClose: 
   const fetchHistory = useServerFn(listWorkHistory);
   const { data } = useQuery({
     queryKey: ["work-history", item.id],
-    queryFn: () => safeQuery(() => fetchHistory({ data: { workItemId: item.id } }), { events: [] as any[] }),
+    queryFn: () => safeQuery(() => fetchHistory({ data: { workItemId: item.id } }), { events: [], assignments: [], handovers: [] } as any),
     retry: false,
   });
 

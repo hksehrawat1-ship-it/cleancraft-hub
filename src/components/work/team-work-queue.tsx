@@ -59,7 +59,7 @@ export function TeamWorkQueue({
   const doCreate = useServerFn(createWorkItem);
   const doReview = useServerFn(reviewWork);
 
-  const { data: ctx } = useQuery({ queryKey: ["work-context"], queryFn: () => safeQuery(() => fetchCtx(), null as any), retry: false });
+  const { data: ctx } = useQuery({ queryKey: ["work-context"], queryFn: () => safeQuery<any>(() => fetchCtx(), null), retry: false });
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["team-work", department],
     queryFn: () => safeQuery(() => fetchTeam({ data: { department } }), [] as any[]),
