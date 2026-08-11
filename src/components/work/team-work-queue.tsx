@@ -41,6 +41,7 @@ import {
   type WorkItem,
 } from "@/lib/work-types";
 import { WorkHistoryDialog, WorkItemCard } from "./my-work-queue";
+import { safeQuery } from "@/lib/work-safe";
 
 /** The eight-tile manager queue with assignment, review and handover oversight. */
 export function TeamWorkQueue({
@@ -58,10 +59,11 @@ export function TeamWorkQueue({
   const doCreate = useServerFn(createWorkItem);
   const doReview = useServerFn(reviewWork);
 
-  const { data: ctx } = useQuery({ queryKey: ["work-context"], queryFn: () => fetchCtx() });
+  const { data: ctx } = useQuery({ queryKey: ["work-context"], queryFn: () => safeQuery<any>(() => fetchCtx(), null), retry: false });
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["team-work", department],
-    queryFn: () => fetchTeam({ data: { department } }),
+    queryFn: () => safeQuery(() => fetchTeam({ data: { department } }), [] as any[]),
+    retry: false,
   });
 
   const [queue, setQueue] = useState<string>("workload");
@@ -90,7 +92,8 @@ export function TeamWorkQueue({
 
   const { data: candidates = [] } = useQuery({
     queryKey: ["assignable", role],
-    queryFn: () => fetchUsers({ data: role ? { role } : {} }),
+    queryFn: () => safeQuery(() => fetchUsers({ data: role ? { role } : {} }), [] as any[]),
+    retry: false,
     enabled: !!assignFor || creating,
   });
 
@@ -394,7 +397,7 @@ export function TeamWorkQueue({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {(ctx?.departments ?? []).map((d) => (
+                    {((ctx?.departments ?? []) as any[]).map((d) => (
                       <SelectItem key={d.code} value={d.code}>
                         {d.name}
                       </SelectItem>

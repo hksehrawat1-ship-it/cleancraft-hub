@@ -25,6 +25,7 @@ import {
   submitWorkForReview,
   updateWorkStatus,
 } from "@/lib/work.functions";
+import { safeQuery } from "@/lib/work-safe";
 import {
   EMPLOYEE_QUEUES,
   PRIORITY_TONE,
@@ -99,7 +100,8 @@ export function WorkHistoryDialog({ item, onClose }: { item: WorkItem; onClose: 
   const fetchHistory = useServerFn(listWorkHistory);
   const { data } = useQuery({
     queryKey: ["work-history", item.id],
-    queryFn: () => fetchHistory({ data: { workItemId: item.id } }),
+    queryFn: () => safeQuery(() => fetchHistory({ data: { workItemId: item.id } }), { events: [], assignments: [], handovers: [] } as any),
+    retry: false,
   });
 
   return (
@@ -112,7 +114,7 @@ export function WorkHistoryDialog({ item, onClose }: { item: WorkItem; onClose: 
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          {(data?.events ?? []).map((e) => (
+          {((data?.events ?? []) as any[]).map((e) => (
             <div key={e.id} className="rounded-md border bg-card p-2 text-xs">
               <div className="font-medium">{e.event_type.replace(/_/g, " ")}</div>
               <div className="text-muted-foreground">
@@ -143,7 +145,8 @@ export function MyWorkQueue({ title = "My Work" }: { title?: string }) {
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["my-work"],
-    queryFn: () => fetchMine(),
+    queryFn: () => safeQuery(() => fetchMine(), [] as any[]),
+    retry: false,
   });
 
   const [queue, setQueue] = useState<string>("new");
